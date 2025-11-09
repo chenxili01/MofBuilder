@@ -920,6 +920,11 @@ class EdgeGraphBuilder:
             if len(Xs_edge_indices) == 0:
                 # nothing to match for this edge
                 continue
+            elif len(Xs_edge_indices) ==1:
+                #only one dot in edge
+                #duplicate this dot
+                Xs_edge_fpoints = np.vstack([Xs_edge_fpoints]*2)
+                Xs_edge_indices = np.hstack([Xs_edge_indices]*2)
 
             # Cartesian coordinates for edge Xs
             Xs_edge_ccpoints = np.hstack((

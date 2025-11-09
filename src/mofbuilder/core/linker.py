@@ -41,6 +41,7 @@ class FrameLinker:
         self.linker_outer_X_data = None
         self.center_class = None
         self.center_nodes = None
+        self.fake_edge = False
 
     def check_dirs(self, passfilecheck=True):
         if not passfilecheck:
@@ -278,18 +279,8 @@ class FrameLinker:
                 #n should be added directly
                 frag = [n, frag_center]
                 #find the closest center node
-                center_node = None
-                min_path = float('inf')
-                for c in center_nodes:
-                    path_len = nx.shortest_path_length(G,
-                                                       source=frag_center,
-                                                       target=c)
-                    if path_len < min_path:
-                        min_path = path_len
-                        center_node = c
-                center_path = nx.shortest_path_length(G,
-                                                      source=frag_center,
-                                                      target=center_node)
+                center_node, center_path = FrameLinker.find_closest_center_node(G, center_nodes, frag_center)
+
                 for check_n in neighbors:
                     if check_n in frag:
                         continue
@@ -299,6 +290,8 @@ class FrameLinker:
                         continue
                     frag.append(check_n)
                     frag.extend(list(G.neighbors(check_n)))
+
+            
             frag = list(set(frag))
             f_labels = [G.nodes[i]["label"] for i in frag]
             if FrameLinker._in_frag_labels(f_labels, frag_labels):
@@ -310,6 +303,26 @@ class FrameLinker:
                     "labels": f_labels
                 }
         return boundary_frags
+
+    @staticmethod
+    def find_closest_center_node(G, center_nodes, frag_center):
+        center_node = None
+        min_path = float('inf')  
+        for c in center_nodes:
+            path_len = nx.shortest_path_length(G,
+                                                       source=frag_center,
+                                                       target=c)
+            # to avoid the center pair case, like oxalate
+            if path_len == 0:
+                continue
+            if path_len < min_path:
+                min_path = path_len
+                center_node = c
+        center_path = nx.shortest_path_length(G,
+                                                      source=frag_center,
+                                                      target=center_node)
+                                              
+        return center_node,center_path
 
     def process_linker_molecule(self, molecule, linker_connectivity):
         """
@@ -362,16 +375,29 @@ class FrameLinker:
         if linker_connectivity == 2:
             #remove all 2 fragments
             center_Xs = []
+            temp_lG = self.lG.copy()
             for f in potential_frags:
                 frag = potential_frags[f]['frag_nodes']
                 center_Xs.extend([
                     n for n in self.lG.neighbors(
                         potential_frags[f]['frag_center']) if n not in frag
                 ])
-                self.lG.remove_nodes_from(frag)
+                temp_lG.remove_nodes_from(frag)
 
-            self.lines, _ = self._lines_of_center_frag(self.lG.copy(),
-                                                       center_Xs, self.metals)
+            if temp_lG.number_of_nodes() == 0:
+                #exception for very small linkers, use two X from COO and set edge length to 0 later
+                self.fake_edge = True
+
+                temp_lG = self.lG.copy()
+                for f in potential_frags:
+                    frag = potential_frags[f]['frag_nodes']
+                    x_node = potential_frags[f]['frag_center']
+                    temp_lG.remove_nodes_from([n for n in frag if n != x_node])
+                self.lines, _ = self._lines_of_center_frag(
+                    temp_lG, center_Xs, self.metals)
+            else:
+                self.lines, _ = self._lines_of_center_frag(
+                    temp_lG, center_Xs, self.metals)
             if self.save_files:
                 edge_pdb_name = str(Path(save_edges_dir, "diedge"))
                 self.create_pdb(edge_pdb_name, self.lines)
@@ -382,6 +408,7 @@ class FrameLinker:
             branch_outer_Xs = []
             branch_inner_Xs = []
             center_Xs = []
+            temp_lG = self.lG.copy()
             for f in potential_frags:
                 frag = potential_frags[f]['frag_nodes']
                 outer_X = [
@@ -392,18 +419,33 @@ class FrameLinker:
                 inner_X = [
                     n for n in self.lG.neighbors(potential_frags[f]
                                                  ['center_node'])
-                    if n not in self.center_nodes
+                    if n not in self.center_nodes + frag
                 ]
-                branch_outer_Xs.extend(outer_X)
-                branch_inner_Xs.extend(inner_X)
-                center_Xs.append(center_X)
-                self.lG.remove_edge(center_X, inner_X[0])
-                self.lG.remove_nodes_from(frag)
+
+                if not inner_X:
+                    self.fake_edge = True
+                    #the -coo group is directly connected to center node
+                    #keep the C in -COO as X in outer fragment
+                    temp_lG.remove_nodes_from([
+                        n for n in frag
+                        if n != potential_frags[f]['frag_center']
+                    ])
+                    temp_lG.remove_edge(potential_frags[f]['frag_center'],
+                                        center_X)
+                    branch_outer_Xs.append(potential_frags[f]['frag_center'])
+                    #no inner X but need creat an edge with zero length, the edge is on same point
+                    branch_inner_Xs.append(potential_frags[f]['frag_center'])
+                    center_Xs.append(center_X)
+                else:
+                    branch_outer_Xs.extend(outer_X)
+                    branch_inner_Xs.extend(inner_X)
+                    center_Xs.append(center_X)
+                    temp_lG.remove_edge(center_X, inner_X[0])
+                    temp_lG.remove_nodes_from(frag)
 
             frag_nodes = list(
-                sorted(nx.connected_components(self.lG), key=len,
+                sorted(nx.connected_components(temp_lG), key=len,
                        reverse=True))
-
             center_frag_nodes = []
             outer_frag_nodes = []
             for f in frag_nodes:

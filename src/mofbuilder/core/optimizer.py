@@ -59,6 +59,7 @@ class NetOptimizer:
         self.sc_rot_node_X_pos = None
         self.sc_unit_cell = None
         self.sc_unit_cell_inv = None
+        self.fake_edge = False
         self.constant_length = 1.54  #default C-C single bond length
         self.linker_frag_length = None
 
@@ -270,7 +271,11 @@ class NetOptimizer:
 
         x_com_length = np.mean(
             [np.linalg.norm(i) for i in self.node_x_ccoords])
-        new_edge_length = self.linker_frag_length + 2 * self.constant_length + 2 * x_com_length
+        if self.fake_edge:
+            new_edge_length = self.constant_length + 2 * x_com_length
+        else:
+            new_edge_length = self.linker_frag_length + 2 * self.constant_length + 2 * x_com_length
+
         # update the node ccoords in G by loop edge, start from the start_node, and then update the connected node ccoords by the edge length, and update the next node ccords from the updated node
 
         new_ccoords, old_ccoords = self._update_node_ccoords(
@@ -357,8 +362,11 @@ class NetOptimizer:
         sG = self.sG.copy()
         sc_unit_cell_inv = self.sc_unit_cell_inv
         nodes_atom = self.nodes_atom
-
-        scalar = (linker_frag_length + 2 * self.constant_length) / linker_frag_length
+        if linker_frag_length > 0.0:
+            scalar = (linker_frag_length + 2 * self.constant_length) / linker_frag_length
+        else:
+            scalar = 1.0
+            
         extended_e_xx_vec = [i * scalar for i in e_xx_vec]
         norm_xx_vector_record = []
         rot_record = []
@@ -392,42 +400,47 @@ class NetOptimizer:
                 self.ostream.flush()
             # use superimpose to get the rotation matrix
             # use record to record the rotation matrix for get rid of the repeat calculation
-            indices = [
-                index for index, value in enumerate(norm_xx_vector_record)
-                if is_list_A_in_B(norm_xx_vector, value)
-            ]
-            if len(indices) == 1:
-                rot = rot_record[indices[0]]
-                # rot = reorthogonalize_matrix(rot)
+            if self.linker_frag_length >0.0:
+                # for normal linker, the direction is important
+                indices = [
+                    index for index, value in enumerate(norm_xx_vector_record)
+                    if is_list_A_in_B(norm_xx_vector, value)
+                ]
+                if len(indices) == 1:
+                    rot = rot_record[indices[0]]
+                    # rot = reorthogonalize_matrix(rot)
+                else:
+                    _, rot, trans = superimpose_rotation_only(extended_e_xx_vec,
+                                                        xx_vector)
+                    # rot = reorthogonalize_matrix(rot)
+                    norm_xx_vector_record.append(norm_xx_vector)
+                    # the rot may be opposite, so we need to check the angle between the two vectors
+                    # if the angle is larger than 90 degree, we need to reverse the rot
+                    roted_xx = np.dot(extended_e_xx_vec, rot)
+
+                    if np.dot(roted_xx[1] - roted_xx[0],
+                            xx_vector[1] - xx_vector[0]) < 0:
+                        ##rotate 180 around the axis of the cross product of the two vectors
+                        axis = np.cross(roted_xx[1] - roted_xx[0],
+                                        xx_vector[1] - xx_vector[0])
+                        # if 001 not linear to the two vectors
+                        if np.linalg.norm(axis) == 0:
+                            check_z_axis = np.cross(roted_xx[1] - roted_xx[0],
+                                                    [0, 0, 1])
+                            if np.linalg.norm(check_z_axis) == 0:
+                                axis = np.array([1, 0, 0])
+                            else:
+                                axis = np.array([0, 0, 1])
+
+                        axis = axis / np.linalg.norm(axis)
+                        flip_matrix = np.eye(3) - 2 * np.outer(
+                            axis, axis)  # Householder matrix for reflection
+                        rot = np.dot(rot, flip_matrix)
+                    # Flip the last column of the rotation matrix if the determinant is negative
+                    rot_record.append(rot)
             else:
-                _, rot, trans = superimpose_rotation_only(extended_e_xx_vec,
-                                                      xx_vector)
-                # rot = reorthogonalize_matrix(rot)
-                norm_xx_vector_record.append(norm_xx_vector)
-                # the rot may be opposite, so we need to check the angle between the two vectors
-                # if the angle is larger than 90 degree, we need to reverse the rot
-                roted_xx = np.dot(extended_e_xx_vec, rot)
-
-                if np.dot(roted_xx[1] - roted_xx[0],
-                          xx_vector[1] - xx_vector[0]) < 0:
-                    ##rotate 180 around the axis of the cross product of the two vectors
-                    axis = np.cross(roted_xx[1] - roted_xx[0],
-                                    xx_vector[1] - xx_vector[0])
-                    # if 001 not linear to the two vectors
-                    if np.linalg.norm(axis) == 0:
-                        check_z_axis = np.cross(roted_xx[1] - roted_xx[0],
-                                                [0, 0, 1])
-                        if np.linalg.norm(check_z_axis) == 0:
-                            axis = np.array([1, 0, 0])
-                        else:
-                            axis = np.array([0, 0, 1])
-
-                    axis = axis / np.linalg.norm(axis)
-                    flip_matrix = np.eye(3) - 2 * np.outer(
-                        axis, axis)  # Householder matrix for reflection
-                    rot = np.dot(rot, flip_matrix)
-                # Flip the last column of the rotation matrix if the determinant is negative
-                rot_record.append(rot)
+                #get a random rotation matrix
+                rot = np.eye(3)
 
             # use the rotation matrix to rotate the linker x coords
             placed_edge_ccoords = (np.dot(self.e_ccoords, rot) +

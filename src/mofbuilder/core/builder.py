@@ -81,6 +81,7 @@ class MetalOrganicFrameworkBuilder:
         self.linker_outer_data = None
         self.linker_outer_X_data = None
         self.linker_frag_length = None
+        self.linker_fake_edge = False
 
         #need to be set by user when reading the node
         self.node_metal = None  #need to be set by user
@@ -95,6 +96,10 @@ class MetalOrganicFrameworkBuilder:
         self.termination = True  # default use termination but need user to set the termination_filename
         self.termination_name = 'acetate'  #can be set as xyzfile or name
         self.termination_molecule = None  #can be set directly
+        self.termination_data = None
+        self.termination_X_data = None
+        self.termination_Y_data = None
+
 
         #optimization
         #need to be set by user
@@ -244,6 +249,13 @@ class MetalOrganicFrameworkBuilder:
         #pass linker data
         self.linker_center_data = self.frame_linker.linker_center_data
         self.linker_center_X_data = self.frame_linker.linker_center_X_data
+        if len(self.frame_linker.linker_center_X_data) == 1:
+            #is a point linker, duplicate the data
+            self.linker_center_X_data = np.vstack((
+                (self.frame_linker.linker_center_X_data, ),
+                (self.frame_linker.linker_center_X_data, )))
+        
+
         if self.frame_linker.linker_connectivity > 2:
             #RECENTER COM of outer data
             linker_com = np.mean(
@@ -257,6 +269,12 @@ class MetalOrganicFrameworkBuilder:
                 (self.frame_linker.linker_outer_X_data[:, 0:5],
                  self.frame_linker.linker_outer_X_data[:, 5:8].astype(float) -
                  linker_com, self.frame_linker.linker_outer_X_data[:, 8:]))
+            if len(self.frame_linker.linker_outer_X_data) == 2:
+                #is a point linker, duplicate the data
+                self.linker_outer_X_data = np.vstack((
+                    (self.frame_linker.linker_outer_X_data, ),
+                    (self.frame_linker.linker_outer_X_data, )))
+
             self.linker_frag_length = np.linalg.norm(
                 self.linker_outer_X_data[0, 5:8].astype(float) -
                 self.linker_outer_X_data[1, 5:8].astype(float))
@@ -264,7 +282,9 @@ class MetalOrganicFrameworkBuilder:
             self.linker_frag_length = np.linalg.norm(
                 self.linker_center_X_data[0, 5:8].astype(float) -
                 self.linker_center_X_data[1, 5:8].astype(float))
-        
+        if self.frame_linker.fake_edge:
+            self.linker_frag_length = 0.0
+            self.linker_fake_edge = self.frame_linker.fake_edge
 
 
     def _read_node(self):
@@ -387,6 +407,7 @@ class MetalOrganicFrameworkBuilder:
         self.net_optimizer.sorted_nodes = self.frame_net.sorted_nodes
         self.net_optimizer.sorted_edges = self.frame_net.sorted_edges
         self.net_optimizer.linker_frag_length = self.linker_frag_length
+        self.net_optimizer.fake_edge = self.linker_fake_edge
 
         self.ostream.print_separator()
         self.ostream.print_info(
@@ -438,7 +459,7 @@ class MetalOrganicFrameworkBuilder:
         self.edgegraphbuilder.custom_fbox = self.supercell_custom_fbox
         self.edgegraphbuilder.sc_unit_cell = self.net_optimizer.sc_unit_cell
         self.edgegraphbuilder.supercell = self.supercell
-        self.edgegraphbuilder._debug = False
+        self.edgegraphbuilder._debug = True
         self.edgegraphbuilder.build_edgeG_from_superG()
         self.eG = self.edgegraphbuilder.eG.copy()
         self.eG_index_name_dict = self.edgegraphbuilder.eG_index_name_dict
@@ -506,35 +527,32 @@ class MetalOrganicFrameworkBuilder:
         self.framework.xoo_dict = self.edgegraphbuilder.xoo_dict
 
 
+        self.defectgenerator.termination_data = self.termination_data
+        self.defectgenerator.termination_X_data = self.termination_X_data
+        self.defectgenerator.termination_Y_data = self.termination_Y_data
+        self.defectgenerator.cleaved_eG = self.cleaved_eG.copy()
+        self.defectgenerator.linker_connectivity = self.linker_connectivity
+        self.defectgenerator.node_connectivity = self.node_connectivity + self.vir_edge_max_neighbor if self.add_virtual_edge else self.node_connectivity
+        self.defectgenerator.eG_index_name_dict = self.edgegraphbuilder.eG_index_name_dict
+        self.defectgenerator.eG_matched_vnode_xind = self.edgegraphbuilder.matched_vnode_xind
+        self.defectgenerator.sc_unit_cell = self.net_optimizer.sc_unit_cell
+        self.defectgenerator.sc_unit_cell_inv = self.net_optimizer.sc_unit_cell_inv
+        self.defectgenerator.clean_unsaturated_linkers = self.clean_unsaturated_linkers
+        self.defectgenerator.update_node_termination = self.update_node_termination
+        self.defectgenerator.saved_unsaturated_linker = self.edgegraphbuilder.unsaturated_linkers
+        self.defectgenerator.matched_vnode_xind = self.edgegraphbuilder.matched_vnode_xind
+        self.defectgenerator.xoo_dict = self.edgegraphbuilder.xoo_dict
+        self.defectgenerator.use_termination = self.termination
+        self.defectgenerator.unsaturated_linkers = self.edgegraphbuilder.unsaturated_linkers
+        self.defectgenerator.unsaturated_nodes = self.edgegraphbuilder.unsaturated_nodes
+        #remove
+        terminated_G = self.defectgenerator.remove_items_or_terminate(res_idx2rm=[], cleaved_eG=self.cleaved_eG.copy())
+        #update the framework
+        self.framework.graph = terminated_G.copy()
+        self.framework.matched_vnode_xind = self.defectgenerator.updated_matched_vnode_xind
+        self.framework.unsaturated_linkers = self.defectgenerator.unsaturated_linkers
+        self.framework.unsaturated_nodes = self.defectgenerator.updated_unsaturated_nodes  
 
-
-        if self.termination:
-            self.defectgenerator.termination_data = self.termination_data
-            self.defectgenerator.termination_X_data = self.termination_X_data
-            self.defectgenerator.termination_Y_data = self.termination_Y_data
-            self.defectgenerator.cleaved_eG = self.cleaved_eG.copy()
-            self.defectgenerator.linker_connectivity = self.linker_connectivity
-            self.defectgenerator.node_connectivity = self.node_connectivity + self.vir_edge_max_neighbor if self.add_virtual_edge else self.node_connectivity
-            self.defectgenerator.eG_index_name_dict = self.edgegraphbuilder.eG_index_name_dict
-            self.defectgenerator.eG_matched_vnode_xind = self.edgegraphbuilder.matched_vnode_xind
-            self.defectgenerator.sc_unit_cell = self.net_optimizer.sc_unit_cell
-            self.defectgenerator.sc_unit_cell_inv = self.net_optimizer.sc_unit_cell_inv
-            self.defectgenerator.clean_unsaturated_linkers = self.clean_unsaturated_linkers
-            self.defectgenerator.update_node_termination = self.update_node_termination
-            self.defectgenerator.saved_unsaturated_linker = self.edgegraphbuilder.unsaturated_linkers
-            self.defectgenerator.matched_vnode_xind = self.edgegraphbuilder.matched_vnode_xind
-            self.defectgenerator.xoo_dict = self.edgegraphbuilder.xoo_dict
-            self.defectgenerator.use_termination = self.termination
-            self.defectgenerator.unsaturated_linkers = self.edgegraphbuilder.unsaturated_linkers
-            self.defectgenerator.unsaturated_nodes = self.edgegraphbuilder.unsaturated_nodes
-            #remove
-            terminated_G = self.defectgenerator.remove_items_or_terminate(res_idx2rm=[], cleaved_eG=self.cleaved_eG.copy())
-            #update the framework
-            self.framework.graph = terminated_G.copy()
-            self.framework.matched_vnode_xind = self.defectgenerator.updated_matched_vnode_xind
-            self.framework.unsaturated_linkers = self.defectgenerator.unsaturated_linkers
-            self.framework.unsaturated_nodes = self.defectgenerator.updated_unsaturated_nodes  
-        
             #pass 
         self.framework.get_merged_data()
         return self.framework
