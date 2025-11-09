@@ -12,12 +12,15 @@ from veloxchem.molecule import Molecule
 from ..io.pdb_reader import PdbReader
 from ..io.pdb_writer import PdbWriter
 
+
 class FrameLinker:
+
     def __init__(self, comm=None, ostream=None, filepath=None):
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
-        self.ostream = ostream or OutputStream(sys.stdout if self.rank == mpi_master() else None)
+        self.ostream = ostream or OutputStream(sys.stdout if self.rank ==
+                                               mpi_master() else None)
         self.properties = {}
         self.filename = filepath
         self.target_dir = None
@@ -27,33 +30,40 @@ class FrameLinker:
         self.pdbwriter = PdbWriter(comm=self.comm, ostream=self.ostream)
         self._debug = False
         self.linker_data = None
-        self.lines = None #center fragment lines
-        self.rows = None #outer fragment lines
+        self.lines = None  #center fragment lines
+        self.rows = None  #outer fragment lines
         self.save_files = False
-    
+        self.molecule = None
+        self.metals = []
+        self.linker_center_data = None
+        self.linker_center_X_data = None
+        self.linker_outer_data = None
+        self.linker_outer_X_data = None
+        self.center_class = None
+        self.center_nodes = None
+
     def check_dirs(self, passfilecheck=True):
         if not passfilecheck:
             assert_msg_critical(
                 Path(self.filename).exists(),
-                f"Linker file {self.filename} not found"
-            )
+                f"Linker file {self.filename} not found")
         self.target_dir = Path(self.target_dir or Path.cwd())
         self.target_dir.mkdir(parents=True, exist_ok=True)
         base = Path(self.filename).stem
         if self.save_files:
             self.new_pdbfilename = self.target_dir / f"{base}_processed.pdb"
-    
-        if not passfilecheck :
-            self.ostream.print_info(f"Processing linker file: {self.filename} ...")
+
+        if not passfilecheck:
+            self.ostream.print_info(
+                f"Processing linker file: {self.filename} ...")
         else:
+            self.ostream.print_separator()
             self.ostream.print_info(f"Processing linker data ...")
         self.ostream.print_info(f"Linker topic: {self.linker_connectivity}")
         self.ostream.flush()
 
         if self._debug:
             self.ostream.print_info(f"Target directory: {self.target_dir}")
-
-        
 
     def _create_lG(self, molecule):
         matrix = molecule.get_connectivity_matrix()
@@ -66,13 +76,16 @@ class FrameLinker:
         coords -= mass_center_angstrom
 
         metal_elements_list = {
-            "Ag", "Al", "Au", "Ba", "Be", "Bi", "Ca", "Cd", "Ce", "Co", "Cr", "Cs", "Cu", "Fe", "Ga", "Gd", "Hf", "Hg",
-            "In", "Ir", "K", "Li", "Mg", "Mn", "Na", "Ni", "Pb", "Pd", "Pt", "Rb", "Rh", "Sc", "Sn", "Sr", "Ti", "V",
-            "W", "Y", "Zn", "Zr"
+            "Ag", "Al", "Au", "Ba", "Be", "Bi", "Ca", "Cd", "Ce", "Co", "Cr",
+            "Cs", "Cu", "Fe", "Ga", "Gd", "Hf", "Hg", "In", "Ir", "K", "Li",
+            "Mg", "Mn", "Na", "Ni", "Pb", "Pd", "Pt", "Rb", "Rh", "Sc", "Sn",
+            "Sr", "Ti", "V", "W", "Y", "Zn", "Zr"
         }
 
         lG = nx.Graph()
-        metals = [i for i, label in enumerate(labels) if label in metal_elements_list]
+        metals = [
+            i for i, label in enumerate(labels) if label in metal_elements_list
+        ]
         for i, label in enumerate(labels):
             lG.add_node(i, label=label, coords=coords[i])
         for i in range(len(labels)):
@@ -82,7 +95,8 @@ class FrameLinker:
         if self._debug:
             self.ostream.print_info(f"Number of atoms: {len(labels)}")
             self.ostream.print_info(f"Number of metal atoms: {len(metals)}")
-            self.ostream.print_info(f"Number of bonds in linker graph: {lG.number_of_edges()}")
+            self.ostream.print_info(
+                f"Number of bonds in linker graph: {lG.number_of_edges()}")
             self.ostream.flush()
         self.lG = lG
         self.metals = metals
@@ -99,7 +113,8 @@ class FrameLinker:
             frag_num = nx.number_connected_components(lG_temp)
             frag_sizes = [len(f) for f in nx.connected_components(lG_temp)]
             frag_size_std = np.std(frag_sizes)
-            if frag_num > max_frag_num or (frag_num == max_frag_num and frag_size_std < min_frag_size_std):
+            if frag_num > max_frag_num or (frag_num == max_frag_num and
+                                           frag_size_std < min_frag_size_std):
                 max_frag_num = frag_num
                 min_frag_size_std = frag_size_std
                 center_cycle = cycle
@@ -124,7 +139,9 @@ class FrameLinker:
     def _find_centers(self, lG):
         barycenter = nx.barycenter(lG)
         normalcenter = nx.center(lG)
-        print(barycenter, normalcenter)
+        if self._debug:
+            self.ostream.print_info(
+                f"barycenter: {barycenter}, normalcenter: {normalcenter}")
         if set(barycenter).intersection(normalcenter):
             if self._in_same_cycle(lG, normalcenter) is not None:
                 return self._in_same_cycle(lG, normalcenter)
@@ -148,7 +165,9 @@ class FrameLinker:
             center_class = "cycle"
             center_nodes = self._find_center_cycle_nodes(lG)
         if self._debug:
-            self.ostream.print_info(f"center_nodes: {center_nodes}, center_class: {center_class}, n_centers: {len(centers)}")
+            self.ostream.print_info(
+                f"center_nodes: {center_nodes}, center_class: {center_class}, n_centers: {len(centers)}"
+            )
         self.lG = lG
         self.center_nodes = center_nodes
         self.center_class = center_class
@@ -158,13 +177,12 @@ class FrameLinker:
         for center_ind, center in enumerate(self.center_nodes):
             lengths = nx.single_source_shortest_path_length(lG, center)
             for k in lengths:
-                if center_ind == 0 or lengths[k] < lG.nodes[k].get("cnodes_l", (None, float('inf')))[1]:
+                if center_ind == 0 or lengths[k] < lG.nodes[k].get(
+                        "cnodes_l", (None, float('inf')))[1]:
                     lG.nodes[k]["cnodes_l"] = (center, lengths[k])
                 elif lengths[k] == lG.nodes[k]["cnodes_l"][1]:
                     lG.nodes[k]["cnodes_l"] = (-1, lengths[k])
         self.lG = lG
-
-    # ... (rest of the code remains mostly unchanged, apply similar optimizations for helper functions)
 
     def _get_pairX_outer_frag(self, connected_pairXs, outer_frag_nodes):
         for x in list(connected_pairXs):
@@ -173,37 +191,7 @@ class FrameLinker:
                 break
         return pairXs
 
-
-    def _cleave_outer_frag_subgraph(self, lG, pairXs, outer_frag_nodes):
-        subgraph_outer_frag = lG.subgraph(outer_frag_nodes)
-        kick_nodes = []
-        #test to remove nodeX and kick the small frag
-        for i in pairXs:
-            lG_temp = subgraph_outer_frag.copy()
-            lG_temp.remove_node(i)
-            frags = list(nx.connected_components(lG_temp))
-            #sort frags by size
-            frags.sort(key=len)
-            small_frag_nodes = list(frags[0])
-            if len(frags)==1:
-                continue
-            if self._debug:
-                self.ostream.print_info(f"small_frag_nodes: {small_frag_nodes}")
-                self.ostream.flush()
-            kick_nodes.extend(small_frag_nodes)
-
-        if self._debug:
-            self.ostream.print_info(f"kick_nodes: {kick_nodes}")
-            self.ostream.flush()
-
-        subgraph_single_frag = lG.subgraph(outer_frag_nodes - set(kick_nodes))
-        return subgraph_single_frag
-
-
-    def _lines_of_center_frag(self):
-        subgraph_center_frag = self.subgraph_center_frag
-        Xs_indices = self.Xs_indices
-        metals = self.metals
+    def _lines_of_center_frag(self, subgraph_center_frag, Xs_indices, metals):
         labels = self.molecule_labels
         coords = self.molecule_coords
         mass_center_angstrom = self.mass_center_angstrom
@@ -221,18 +209,19 @@ class FrameLinker:
                 Xs.append(count - 1)
             count += 1
             lines.append([name, label, coord[0], coord[1], coord[2]])
+
         for cm in metals:
             label = labels[cm]
             coord = coords[cm] - mass_center_angstrom
             name = label + str(count)
             lines.append([name, label, coord[0], coord[1], coord[2]])
-        
-        self.lines = lines
-        self.center_Xs = Xs
+
+        return lines, Xs
 
     def create_pdb(self, filename, lines):
         header = f"REMARK   Generated by MOFbuilder Linker module\n"
-        self.pdbwriter.write(filename, header=header, lines=lines)
+        data, x_data = self.pdbreader.expand_arr2data(lines)
+        self.pdbwriter.write(filename, header=header, lines=data)
         if self._debug:
             self.ostream.print_info(f"Written PDB file: {filename}")
             self.ostream.flush()
@@ -253,7 +242,76 @@ class FrameLinker:
             rows.append([name, label, coord[0], coord[1], coord[2]])
         return rows, Xs
 
-    def process_linker_molecule(self,molecule, linker_connectivity):
+    @staticmethod
+    def _find_boundary_atom(G, boundary_labels=["O"]):
+        boundary_atoms = []
+        for n in G.nodes:
+            if G.nodes[n]["label"] in boundary_labels:
+                #check if it belongs to a -COO group or -COOH group
+                #if only 1 edge on node n
+                neighbors = list(G.neighbors(n))
+                if len(neighbors) == 1:
+                    boundary_atoms.append((n, neighbors[0]))
+        return boundary_atoms
+
+    @staticmethod
+    def _in_frag_labels(f_labels, frag_labels):
+        for f in frag_labels:
+            if sorted(f) == sorted(f_labels):
+                return True
+        return False
+
+    @staticmethod
+    def _find_boundary_frag(G,
+                            center_nodes,
+                            frag_labels=[["C", "O", "O"], ["C", "O", "O",
+                                                           "H"]]):
+        boundary_nodes = FrameLinker._find_boundary_atom(G,
+                                                         boundary_labels=["O"])
+        center_labels = list(
+            set([i for i in sum(frag_labels, []) if i not in ["O", "H"]]))
+        boundary_frags = {}
+        for n, frag_center in boundary_nodes:
+            frag = []
+            if G.nodes[frag_center]["label"] in center_labels:
+                neighbors = list(G.neighbors(frag_center))
+                #n should be added directly
+                frag = [n, frag_center]
+                #find the closest center node
+                center_node = None
+                min_path = float('inf')
+                for c in center_nodes:
+                    path_len = nx.shortest_path_length(G,
+                                                       source=frag_center,
+                                                       target=c)
+                    if path_len < min_path:
+                        min_path = path_len
+                        center_node = c
+                center_path = nx.shortest_path_length(G,
+                                                      source=frag_center,
+                                                      target=center_node)
+                for check_n in neighbors:
+                    if check_n in frag:
+                        continue
+                    if nx.shortest_path_length(
+                            G, source=check_n,
+                            target=center_node) < center_path:
+                        continue
+                    frag.append(check_n)
+                    frag.extend(list(G.neighbors(check_n)))
+            frag = list(set(frag))
+            f_labels = [G.nodes[i]["label"] for i in frag]
+            if FrameLinker._in_frag_labels(f_labels, frag_labels):
+                boundary_frags["_".join(str(i) for i in frag)] = {
+                    "frag_nodes": frag,
+                    "frag_center": frag_center,
+                    "center_node": center_node,
+                    "center_length": center_path,
+                    "labels": f_labels
+                }
+        return boundary_frags
+
+    def process_linker_molecule(self, molecule, linker_connectivity):
         """
         Processes the linker molecule based on the linker_connectivity and center classification.
         Identifies center nodes, Xs (connection points), fragments, and writes PDB files for each fragment.
@@ -268,275 +326,152 @@ class FrameLinker:
         self._create_lG(molecule)
         self.lG.remove_nodes_from(self.metals)
         self._distinguish_G_centers(self.lG)
-
         # For large cycles, reduce center nodes to a pair
         if linker_connectivity == 2 and len(self.center_nodes) > 6:
-            self.center_nodes = self._find_center_nodes_pair(self.lG, self.center_nodes)
+            self.center_nodes = self._find_center_nodes_pair(
+                self.lG, self.center_nodes)
 
+        # check center class
         self._classify_nodes()
         if self._debug:
             self.ostream.print_info(f"Linker topic: {linker_connectivity}")
             self.ostream.print_info(f"Center class: {self.center_class}")
             self.ostream.print_info(f"Center nodes: {self.center_nodes}")
 
-        # Multitopic linker: center is a cycle
-        if self.center_class == "cycle" and linker_connectivity > 2:
-            if self._debug:
-                self.ostream.print_info(f"tritopic/tetratopic/multitopic: center is a cycle")
-            connected_pairXs = {}
-            Xs_indices = []
-            innerX_coords = []
+        # use center nodes to find the farest, single connected boundary atoms, for carboxylate, only O is-CO(OH) -CO(O)
+        frag_labels = [["C", "O", "O"], ["C", "O", "O", "H"]]
+        potential_frags = FrameLinker._find_boundary_frag(
+            self.lG, self.center_nodes, frag_labels)
+        if len(potential_frags) > linker_connectivity:
+            #check element count
+            lengths = [
+                potential_frags[i]['center_length'] for i in potential_frags
+            ]
+            #check if any length has the count same to linker_connectivity
+            length_counts = {len: lengths.count(len) for len in set(lengths)}
+            selected_length = None
+            for lc in length_counts:
+                if length_counts[lc] == linker_connectivity:
+                    selected_length = lc
+                    break
+            if selected_length is not None:
+                raise ValueError(
+                    "Cannot uniquely determine boundary fragments for multitopic linker."
+                )
 
-            # Find Xs connected to the cycle
-            for k in range(len(self.center_nodes)):
-                linker_C_l = []
-                l_list = []
-                for n in self.lG.nodes:
-                    if (self.lG.nodes[n]["cnodes_l"][0] == self.center_nodes[k] and
-                            self.lG.nodes[n]["label"] == "C"):
-                        linker_C_l.append((n, self.lG.nodes[n]["cnodes_l"]))
-                        l_list.append(self.lG.nodes[n]["cnodes_l"][1])
-                center_connected_C_ind = [
-                    ind for ind, value in enumerate(l_list) if value == 1
-                ]
-                outer_connected_C_ind = [
-                    ind for ind, value in enumerate(l_list)
-                    if value == (max(l_list) - 1)
-                ]
-                if len(center_connected_C_ind) == 1 and len(
-                        outer_connected_C_ind) == 1:
-                    inner_X = linker_C_l[center_connected_C_ind[0]]
-                    outer_X = linker_C_l[outer_connected_C_ind[0]]
-                    if self.center_nodes[k] not in [inner_X[0], outer_X[0]]:
-                        if self._debug:
-                            self.ostream.print_info(f"find connected X in edge frag: {inner_X[0]}, {outer_X[0]}, {self.center_nodes[k]}")
-                        self.lG.remove_edge(inner_X[0], self.center_nodes[k])
-                        connected_pairXs[self.center_nodes[k]] = (
-                            "inner_X",
-                            inner_X[0],
-                            "outer_X",
-                            outer_X[0],
-                        )
-                        Xs_indices += [self.center_nodes[k], inner_X[0], outer_X[0]]
-                        innerX_coords.append(self.lG.nodes[inner_X[0]]["coords"])
+        if linker_connectivity == 2:
+            #remove all 2 fragments
+            center_Xs = []
+            for f in potential_frags:
+                frag = potential_frags[f]['frag_nodes']
+                center_Xs.extend([
+                    n for n in self.lG.neighbors(
+                        potential_frags[f]['frag_center']) if n not in frag
+                ])
+                self.lG.remove_nodes_from(frag)
 
-            if (nx.number_connected_components(self.lG)
-                    != linker_connectivity + 1):  # for check linker_connectivitys+1
-                self.ostream.print_warning(f"wrong fragments")
-                raise ValueError
-
-            self.Xs_indices = Xs_indices
-            self.innerX_coords = innerX_coords
-            self.connected_pairXs = connected_pairXs
-
-        elif self.linker_connectivity == 2:
-            if self.center_class == "twopoints":
-                if self._debug:
-                    self.ostream.print_info(f"ditopic linker: center are two points")
-                
-                Xs_indices = []
-                for k in range(len(self.center_nodes)):
-                    linker_C_l = []
-                    l_list = []
-                    for n in self.lG.nodes:
-                        if (self.lG.nodes[n]["cnodes_l"][0] == self.center_nodes[k] and
-                                self.lG.nodes[n]["label"] == "C"):
-                            linker_C_l.append((n, self.lG.nodes[n]["cnodes_l"]))
-                            l_list.append(self.lG.nodes[n]["cnodes_l"][1])
-
-                    outer_connected_C_ind = [
-                        ind for ind, value in enumerate(l_list)
-                        if value == (max(l_list) - 1)
-                    ]
-
-                    if len(outer_connected_C_ind) == 1:
-                        outer_X = linker_C_l[outer_connected_C_ind[0]]
-                        if self.center_nodes[k] not in [outer_X[0]]:
-                            if self._debug:
-                                self.ostream.print_info(f"find connected X in edge: {outer_X[0]}")
-                            Xs_indices += [outer_X[0]]
-
-                self.Xs_indices = Xs_indices
-                
-
-            if self.center_class == "onepoint":
-                if self._debug:
-                    self.ostream.print_info(f"ditopic linker: center is a point")
-                Xs_indices = []
-                linker_C_l = []
-                l_list = []
-                for n in self.lG.nodes:
-                    if (self.lG.nodes[n]["cnodes_l"][0] == self.center_nodes[0] and
-                            self.lG.nodes[n]["label"] == "C"):
-                        linker_C_l.append((n, self.lG.nodes[n]["cnodes_l"]))
-                        l_list.append(self.lG.nodes[n]["cnodes_l"][1])
-
-                outer_connected_C_ind = [
-                    ind for ind, value in enumerate(l_list)
-                    if value == (max(l_list) - 1)
-                ]
-                for m in range(len(outer_connected_C_ind)):
-                    outer_X = linker_C_l[outer_connected_C_ind[m]]
-                    if self._debug:
-                        self.ostream.print_info(f"find connected X in edge: {outer_X[0]}")
-                    Xs_indices += [outer_X[0]]
-                self.Xs_indices = Xs_indices
-
-            if self.center_class == "cycle":
-                if self._debug:
-                    self.ostream.print_info(f"ditopic linker: center is a cycle")
-                connected_pairXs = {}
-                Xs_indices = []
-                for k in range(len(self.center_nodes)):
-                    linker_C_l = []
-                    l_list = []
-                    for n in self.lG.nodes:
-                        if (self.lG.nodes[n]["cnodes_l"][0] == self.center_nodes[k] and
-                                self.lG.nodes[n]["label"] == "C"):
-                            linker_C_l.append((n, self.lG.nodes[n]["cnodes_l"]))
-                            l_list.append(self.lG.nodes[n]["cnodes_l"][1])
-                    outer_connected_C_ind = [
-                        ind for ind, value in enumerate(l_list)
-                        if value == (max(l_list) - 1)
-                    ]
-                    if len(outer_connected_C_ind) == 1:
-                        outer_X = linker_C_l[outer_connected_C_ind[0]]
-                        if self.center_nodes[k] not in [outer_X[0]]:
-                            if self._debug:
-                                self.ostream.print_info(f"find connected X in edge: {outer_X[0]}")
-                            Xs_indices += [outer_X[0]]
-                self.Xs_indices = Xs_indices
-
-                if len(self.Xs_indices) < 2:
-                    if self._debug:
-                        self.ostream.print_info(f"Xs in the center cycle")
-                    # the linker is a cycle, but no Xs are found by the dist, then the X in in the center cycle:
-                    # the node whose adjacents(nonH) more than 2 are the Xs
-                    for n in self.center_nodes:
-                        adj_nonH_num = 0
-                        if self.lG.nodes[n]["label"] == "C":
-                            adj_nodes = list(self.lG.adj[n])
-                            for adj in adj_nodes:
-                                if self.lG.nodes[adj]["label"] not in ["H", "D", "F", "Cl", "Br", "I"]:
-                                    adj_nonH_num += 1
-                            if adj_nonH_num > 2:
-                                self.Xs_indices.append(n)
-                    #double check Xs_indices
-                    if len(self.Xs_indices) > self.linker_connectivity:
-                        #cut bond connected to Xs_indices and if there is a fragment include H then should exclude this Xs
-                        #use lG fragment
-                        for x in self.Xs_indices:
-                            lG_temp = self.lG.copy()
-                            lG_temp.remove_node(x)
-                            if nx.number_connected_components(lG_temp) == self.linker_connectivity:
-                                frags = list(nx.connected_components(lG_temp))
-                                #sort frags by size
-                                frags.sort(key=len)
-                                small_frag_nodes = list(frags[0])
-                                #labels of small frag
-                                small_frag_labels = [
-                                    lG_temp.nodes[n]["label"]
-                                    for n in small_frag_nodes
-                                ]
-                                if not any(label in  ["H", "D", "F", "Cl", "Br", "I"]
-                                        for label in small_frag_labels):
-                                    continue
-                                else:
-                                    self.Xs_indices.remove(x)
-                            else:
-                                self.Xs_indices.remove(x)
+            self.lines, _ = self._lines_of_center_frag(self.lG.copy(),
+                                                       center_Xs, self.metals)
+            if self.save_files:
+                edge_pdb_name = str(Path(save_edges_dir, "diedge"))
+                self.create_pdb(edge_pdb_name, self.lines)
 
         else:
-            raise ValueError(
-                "failed to recognize a multitopic linker whose center is not a cycle"
-            )
+            #out branch fragments
+            #center fragment
+            branch_outer_Xs = []
+            branch_inner_Xs = []
+            center_Xs = []
+            for f in potential_frags:
+                frag = potential_frags[f]['frag_nodes']
+                outer_X = [
+                    n for n in self.lG.neighbors(
+                        potential_frags[f]['frag_center']) if n not in frag
+                ]
+                center_X = potential_frags[f]['center_node']
+                inner_X = [
+                    n for n in self.lG.neighbors(potential_frags[f]
+                                                 ['center_node'])
+                    if n not in self.center_nodes
+                ]
+                branch_outer_Xs.extend(outer_X)
+                branch_inner_Xs.extend(inner_X)
+                center_Xs.append(center_X)
+                self.lG.remove_edge(center_X, inner_X[0])
+                self.lG.remove_nodes_from(frag)
 
-        # write pdb files
-        if self.linker_connectivity > 2:  # multitopic
             frag_nodes = list(
-                sorted(nx.connected_components(self.lG), key=len, reverse=True))
+                sorted(nx.connected_components(self.lG), key=len,
+                       reverse=True))
+
+            center_frag_nodes = []
+            outer_frag_nodes = []
             for f in frag_nodes:
+                if center_frag_nodes and outer_frag_nodes:
+                    break
                 if set(self.center_nodes) < set(f):
                     center_frag_nodes = f
                 else:
                     outer_frag_nodes = f
-            if self._debug:
-                self.ostream.print_info(f"center_frag_nodes: {center_frag_nodes}")
-                self.ostream.print_info(f"outer_frag_nodes: {outer_frag_nodes}")
-            self.subgraph_center_frag = self.lG.subgraph(center_frag_nodes)
-            self._lines_of_center_frag()
-            self.pairXs = self._get_pairX_outer_frag(connected_pairXs, outer_frag_nodes)
-            self.subgraph_single_frag = self._cleave_outer_frag_subgraph(
-                self.lG, self.pairXs, outer_frag_nodes)
-            if self._debug:
-                self.ostream.print_info(f"subgraph_single_frag nodes: {self.subgraph_single_frag.nodes}")
-            self.rows, self.frag_Xs = self._lines_of_single_frag(self.subgraph_single_frag, self.Xs_indices)
-            if self._debug:
-                self.ostream.print_info(f"subgraph_single_frag nodes: {self.subgraph_single_frag.nodes}")
-            if linker_connectivity == 3:
-                if self._debug:
-                    self.ostream.print_info(f"linker_center_frag: {self.subgraph_center_frag.number_of_nodes()}, {self.center_Xs}")
-                    self.ostream.print_info(f"linker_outer_frag: {self.subgraph_single_frag.number_of_nodes()}, {self.frag_Xs}")
-                linker_center_node_pdb_name = str(Path(save_nodes_dir, "tricenter"))
-                if self.save_files:
-                    self.create_pdb(linker_center_node_pdb_name, self.lines)
-                    linker_branch_pdb_name = str(Path(save_edges_dir, "triedge"))
-                    self.create_pdb(linker_branch_pdb_name, self.rows)
 
-            elif linker_connectivity == 4:
-                if self._debug:
-                    self.ostream.print_info(f"center_frag: {self.subgraph_center_frag.number_of_nodes()}, {self.center_Xs}")
-                    self.ostream.print_info(f"outer_frag: {self.subgraph_single_frag.number_of_nodes()}, {self.frag_Xs}")
-                if self.save_files:
-                    linker_center_node_pdb_name = str(Path(save_nodes_dir, "tetracenter"))
-                    self.create_pdb(linker_center_node_pdb_name, self.lines)
-                    linker_branch_pdb_name = str(Path(save_edges_dir, "tetraedge"))
-                    self.create_pdb(linker_branch_pdb_name, self.rows)
-
-            else:
-                linker_center_node_pdb_name = str(
-                    Path(save_nodes_dir, "multicenter"))
-                if self.save_files:
-                    self.create_pdb(linker_center_node_pdb_name, self.lines)
-                    linker_branch_pdb_name = str(Path(save_edges_dir, "multiedge"))
-                    self.create_pdb(linker_branch_pdb_name, self.rows)
-
-
-        elif linker_connectivity == 2:  # ditopic
-            pairXs = Xs_indices
-            if self._debug:
-                self.ostream.print_info(f"pairXs: {pairXs}")
-            self.subgraph_center_frag = self._cleave_outer_frag_subgraph(self.lG, pairXs, self.lG.nodes)
-            self._lines_of_center_frag()
+            self.lines, _ = self._lines_of_center_frag(
+                self.lG.subgraph(center_frag_nodes), center_Xs, self.metals)
+            self.rows, self.frag_Xs = self._lines_of_single_frag(
+                self.lG.subgraph(outer_frag_nodes),
+                branch_outer_Xs + branch_inner_Xs)
 
             if self.save_files:
-                edge_pdb_name = str(Path(save_edges_dir, "diedge"))
-                self.create_pdb(edge_pdb_name, self.lines)
-            if self._debug:
-                self.ostream.print_info(f"linker_center_frag: {self.subgraph_center_frag.number_of_nodes()}, {self.center_Xs}")
+                if linker_connectivity == 3:
+                    linker_center_node_pdb_name = str(
+                        Path(save_nodes_dir, "tricenter"))
+                    self.create_pdb(linker_center_node_pdb_name, self.lines)
+                    linker_branch_pdb_name = str(
+                        Path(save_edges_dir, "triedge"))
+                    self.create_pdb(linker_branch_pdb_name, self.rows)
 
+                elif linker_connectivity == 4:
+                    linker_center_node_pdb_name = str(
+                        Path(save_nodes_dir, "tetracenter"))
+                    self.create_pdb(linker_center_node_pdb_name, self.lines)
+                    linker_branch_pdb_name = str(
+                        Path(save_edges_dir, "tetraedge"))
+                    self.create_pdb(linker_branch_pdb_name, self.rows)
 
-
-
+                else:
+                    linker_center_node_pdb_name = str(
+                        Path(save_nodes_dir, "multicenter"))
+                    self.create_pdb(linker_center_node_pdb_name, self.lines)
+                    linker_branch_pdb_name = str(
+                        Path(save_edges_dir, "multiedge"))
+                    self.create_pdb(linker_branch_pdb_name, self.rows)
 
     def create(self, molecule=None):
         if self.save_files:
-            assert_msg_critical(self.target_dir is not None, "Linker: target_dir is not set. Please set the target directory.")
+            assert_msg_critical(
+                self.target_dir is not None,
+                "Linker: target_dir is not set. Please set the target directory."
+            )
         #assert_msg_critical(self.linker_connectivity in [2, 3, 4] or int(self.linker_connectivity) > 4, "Linker: linker_connectivity should be 2, 3, 4 or >4.")
 
         if molecule is None:
-            assert_msg_critical(self.filename is not None, "Linker: filename is not set. Please set the filename of the linker molecule.")
+            assert_msg_critical(
+                self.filename is not None,
+                "Linker: filename is not set. Please set the filename of the linker molecule."
+            )
             self.check_dirs()
             self.molecule = Molecule.read_xyz_file(self.filename)
         else:
             self.molecule = molecule
 
         self.process_linker_molecule(self.molecule, self.linker_connectivity)
-        self.linker_center_data, self.linker_center_X_data = self.pdbreader.expand_arr2data(self.lines)
-        self.linker_outer_data, self.linker_outer_X_data = self.pdbreader.expand_arr2data(self.rows)
+        self.linker_center_data, self.linker_center_X_data = self.pdbreader.expand_arr2data(
+            self.lines)
+        self.linker_outer_data, self.linker_outer_X_data = self.pdbreader.expand_arr2data(
+            self.rows)
         self.ostream.print_info("Linker processing completed.")
         if hasattr(self, "new_pdbfilename"):
-            self.ostream.print_info(f"Processed linker file is saved as: {self.new_pdbfilename}")
+            self.ostream.print_info(
+                f"Processed linker file is saved as: {self.new_pdbfilename}")
         self.ostream.flush()
 
 
