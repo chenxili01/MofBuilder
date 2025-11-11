@@ -36,7 +36,6 @@ class GroReader:
 
         # debug
         self._debug = False
-
     def read_gro(self, filepath=None, recenter=False, com_type=None):
         if filepath is not None:
             self.filepath = filepath
@@ -55,24 +54,6 @@ class GroReader:
 
         with open(filepath, 'r') as f:
             lines = f.readlines()
-
-        for line in lines[2:]:
-            if len(line.strip()) < 4:
-                continue
-            #read the line by %5d%-5s%5s%5d%8.3f%8.3f%8.3f
-            residue_number = int(line[0:5].strip())
-            residue_name = line[5:10].strip()
-            atom_label = line[10:15].strip()
-            atom_number = int(line[15:20].strip())
-            x = float(line[20:28]) * 10
-            y = float(line[28:36]) * 10
-            z = float(line[36:44]) * 10
-            atom_type = line[44:46].strip()
-            spin = 1.00
-            charge = 0.0
-            note = ''
-            data.append((atom_type, atom_label, atom_number, residue_name,
-                         residue_number, x, y, z, spin, charge, note))
 
         data = []
         count = 1
