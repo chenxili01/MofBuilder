@@ -111,8 +111,8 @@ class Framework:
         self.defectgenerator.sc_unit_cell_inv = self.sc_unit_cell_inv
         self.defectgenerator.clean_unsaturated_linkers = self.clean_unsaturated_linkers
         self.defectgenerator.update_node_termination = self.update_node_termination
-        self.defectgenerator.unsaturated_linkers = self.edgegraphbuilder.unsaturated_linkers
-        self.defectgenerator.unsaturated_nodes = self.edgegraphbuilder.unsaturated_nodes
+        self.defectgenerator.unsaturated_linkers = self.unsaturated_linkers
+        self.defectgenerator.unsaturated_nodes = self.unsaturated_nodes
         #exchange
         if exchange_node_pdbfile is not None:
             self.exchange_node_pdbfile = exchange_node_pdbfile
@@ -353,9 +353,8 @@ class Framework:
             # Run EM + NVT + NPT with single continuous PDB trajectory
 
 
-    def show(self,w=800,h=600,res_id=True,res_name=True):
+    def show(self,w=800,h=600,res_indices=False,res_name=False):
         self.viewer= Viewer()
         self.viewer.eG_dict= self.graph_index_name_dict
         self.viewer.merged_lines =self.framework_data
-        self.viewer.lines_show(w,h,res_id,res_name)
-    
+        self.viewer.lines_show(w,h,res_indices,res_name)

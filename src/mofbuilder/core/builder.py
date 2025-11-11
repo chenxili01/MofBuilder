@@ -483,8 +483,6 @@ class MetalOrganicFrameworkBuilder:
         self.optimize_framework()
         self.make_supercell()
 
-        
-
         #save the information to self.framework to pass the object information
         self.framework.data_path = self.data_path
         self.framework.target_directory = self.target_directory

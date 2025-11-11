@@ -189,6 +189,7 @@ class TerminationDefectGenerator:
                 self.ostream.print_info("no nodes or linkers to exchange, return the original G")
                 self.ostream.flush()
             return G
+        exG = G.copy()
         if exchange_nodes_name:
             self.ostream.print_info(f"exchange nodes: {exchange_nodes_name}")
             #check if the exchange_node_data is set

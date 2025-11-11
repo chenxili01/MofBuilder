@@ -123,6 +123,31 @@ class FrameLinker:
 
     def _find_center_cycle_nodes(self, lG):
         return self._find_center_highly_connected_isolated_cycle(lG)
+    
+    def _find_center_nodes_pair(self, lG, center_nodes):
+        if len(center_nodes) > 6:
+            centers = nx.barycenter(lG)
+
+        pairs = []
+        for i in range(len(centers)):
+            for j in range(i, len(centers)):
+                l = nx.shortest_path_length(lG, centers[i], centers[j])
+                if l == 1:
+                    pairs.append([centers[i], centers[j]])
+
+        # loop each pair to find center pair
+        for p in pairs:
+            a = p[0]
+            # b = p[1]
+            ds = []
+            for n in centers:
+                if n not in p:
+                    d = nx.shortest_path_length(lG, a, n)
+                    ds.append(d)
+            if len(set(ds)) < len(ds):
+                center_pair = p
+
+        return center_pair
 
     def _check_two_points_center(self, lG, centers):
         if nx.shortest_path_length(lG, centers[0], centers[1]) != 1:

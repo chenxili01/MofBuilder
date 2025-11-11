@@ -21,7 +21,7 @@ class Viewer:
         #the eG dict is a dictionary, key is index number and value is the name need to fetch the key
         self.eG_name_idx_dict={v:int(k) for k,v in self.eG_dict.items()}
         
-    def lines_show(self, w=800, h=600, res_id=True, res_name=True):
+    def lines_show(self, w=800, h=600, res_indices=True, res_name=True):
         try:
             import py3Dmol
             merged_lines = self.merged_lines
@@ -31,7 +31,7 @@ class Viewer:
             viewer.addModel("".join(xyz_lines), "xyz")
             viewer.setViewStyle({"style": "outline", "width": 0.05})
             viewer.setStyle({"stick": {}, "sphere": {"scale": 0.20}})
-            if res_id or res_name:
+            if res_indices or res_name:
                 self._reverse_eG_dict()
                 old_resnumber = 0
                 for line in merged_lines:
@@ -51,7 +51,7 @@ class Viewer:
                     text = ""
                     if res_name:
                         text += str(value_resname)
-                    if res_id:
+                    if res_indices:
                         text += str(value_resnumber)
 
                     viewer.addLabel(
