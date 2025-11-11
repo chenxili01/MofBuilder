@@ -262,10 +262,6 @@ class CifReader:
         for sym_line_idx in range(len(symmetry_operations)):
             transfromation_matrix = self._extract_transformation_matrix_from_symmetry_operator(
                 symmetry_operations[sym_line_idx])
-            # print(
-            #    f"symmetry_operations[sym_line_idx],{symmetry_operations[sym_line_idx]}\n,transfromation_matrix{transfromation_matrix}"
-            # )
-
             new_extend_xyz = np.matmul(transfromation_matrix,
                                        array_metal_extend_xyz.T).T
             new_xyz = new_extend_xyz[:, 0:3]
@@ -331,6 +327,7 @@ class CifReader:
             no_sym_array_metal_xyz, no_sym_indices = self._apply_sym_operator(
                 symmetry_operations, array_metal_xyz)
             array_metal_xyz_final = no_sym_array_metal_xyz
+            array_atom = np.tile(array_atom,(len(symmetry_operations), 1))[no_sym_indices]
 
         else:
             array_metal_xyz = array_xyz[array_atom[:, 0] == target_type]
@@ -338,6 +335,7 @@ class CifReader:
 
         self.fcoords = self._wrap_fccords_to_0_1(array_metal_xyz_final)
         self.target_fcoords = self._wrap_fccords_to_0_1(array_metal_xyz_final)
+
 
         #make data
         self.data = []

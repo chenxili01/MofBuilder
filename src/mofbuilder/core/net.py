@@ -36,7 +36,7 @@ class FrameNet:
         self.ostream = ostream
 
         self.G = nx.Graph()
-        
+
         self.cifreader = CifReader()
         self.cif_file = None
         self.edge_length_range = []
@@ -53,7 +53,7 @@ class FrameNet:
         self.max_degree = None
         self.sorted_nodes = None
         self.sorted_edges = None
-        self.linker_connectivity = None  
+        self.linker_connectivity = None
 
         #debug
         self._debug = False
