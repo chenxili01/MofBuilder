@@ -23,7 +23,7 @@ class FrameLinker:
                                                mpi_master() else None)
         self.properties = {}
         self.filename = filepath
-        self.target_dir = None
+        self.target_directory = None
         self.new_xyzfilename = None
         self.linker_connectivity = 2
         self.pdbreader = PdbReader(comm=self.comm, ostream=self.ostream)
@@ -48,11 +48,11 @@ class FrameLinker:
             assert_msg_critical(
                 Path(self.filename).exists(),
                 f"Linker file {self.filename} not found")
-        self.target_dir = Path(self.target_dir or Path.cwd())
-        self.target_dir.mkdir(parents=True, exist_ok=True)
+        self.target_directory = Path(self.target_directory or Path.cwd())
+        self.target_directory.mkdir(parents=True, exist_ok=True)
         base = Path(self.filename).stem
         if self.save_files:
-            self.new_pdbfilename = self.target_dir / f"{base}_processed.pdb"
+            self.new_pdbfilename = self.target_directory / f"{base}_processed.pdb"
 
         if not passfilecheck:
             self.ostream.print_info(
@@ -64,7 +64,7 @@ class FrameLinker:
         self.ostream.flush()
 
         if self._debug:
-            self.ostream.print_info(f"Target directory: {self.target_dir}")
+            self.ostream.print_info(f"Target directory: {self.target_directory}")
 
     def _create_lG(self, molecule):
         matrix = molecule.get_connectivity_matrix()
@@ -355,8 +355,8 @@ class FrameLinker:
         Identifies center nodes, Xs (connection points), fragments, and writes PDB files for each fragment.
         """
         if self.save_files:
-            save_nodes_dir = Path(self.target_dir, "nodes")
-            save_edges_dir = Path(self.target_dir, "edges")
+            save_nodes_dir = Path(self.target_directory, "nodes")
+            save_edges_dir = Path(self.target_directory, "edges")
         self.molecule_coords = molecule.get_coordinates_in_angstrom()
         self.molecule_labels = molecule.get_labels()
 
@@ -515,7 +515,7 @@ class FrameLinker:
     def create(self, molecule=None):
         if self.save_files:
             assert_msg_critical(
-                self.target_dir is not None,
+                self.target_directory is not None,
                 "Linker: target_dir is not set. Please set the target directory."
             )
         #assert_msg_critical(self.linker_connectivity in [2, 3, 4] or int(self.linker_connectivity) > 4, "Linker: linker_connectivity should be 2, 3, 4 or >4.")

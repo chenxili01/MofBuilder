@@ -60,7 +60,7 @@ class NetOptimizer:
         self.sc_unit_cell = None
         self.sc_unit_cell_inv = None
         self.fake_edge = False
-        self.constant_length = 1.54  #default C-C single bond length
+        #self.constant_length = 1.54  #default C-C single bond length
         self.linker_frag_length = None
 
         self.load_optimized_rotations = None
@@ -153,6 +153,9 @@ class NetOptimizer:
         1. optimize the node rotation (vertex or edge center)
         2. optimize the cell parameters to fit the target MOF cell
         """
+        #if self._debug:
+        self.ostream.print_info(f"constant_length: {self.constant_length}")
+        self.ostream.flush()
 
         G = self.G.copy()
         self.node_x_ccoords = self.V_X_data[:, 5:8].astype(float)
@@ -264,7 +267,8 @@ class NetOptimizer:
         rot_node_X_pos_dict, _ = self._apply_rot2atoms_pos(
             opt_rots, G, node_X_pos_dict)
 
-        start_node = self.sorted_edges[0][0]  # find_nearest_node_to_beginning_point(G)
+        start_node = self.sorted_edges[0][
+            0]  # find_nearest_node_to_beginning_point(G)
 
         # loop all of the edges in G and get the lengths of the edges, length is the distance between the two nodes ccoords
         edge_lengths, lengths = self._get_edge_lengths(G)
@@ -275,7 +279,7 @@ class NetOptimizer:
             new_edge_length = self.constant_length + 2 * x_com_length
         else:
             new_edge_length = self.linker_frag_length + 2 * self.constant_length + 2 * x_com_length
-
+            
         # update the node ccoords in G by loop edge, start from the start_node, and then update the connected node ccoords by the edge length, and update the next node ccords from the updated node
 
         new_ccoords, old_ccoords = self._update_node_ccoords(
@@ -363,10 +367,11 @@ class NetOptimizer:
         sc_unit_cell_inv = self.sc_unit_cell_inv
         nodes_atom = self.nodes_atom
         if linker_frag_length > 0.0:
-            scalar = (linker_frag_length + 2 * self.constant_length) / linker_frag_length
+            scalar = (linker_frag_length +
+                      2 * self.constant_length) / linker_frag_length
         else:
             scalar = 1.0
-            
+
         extended_e_xx_vec = [i * scalar for i in e_xx_vec]
         norm_xx_vector_record = []
         rot_record = []
@@ -400,7 +405,7 @@ class NetOptimizer:
                 self.ostream.flush()
             # use superimpose to get the rotation matrix
             # use record to record the rotation matrix for get rid of the repeat calculation
-            if self.linker_frag_length >0.0:
+            if self.linker_frag_length >= 0.0:
                 # for normal linker, the direction is important
                 indices = [
                     index for index, value in enumerate(norm_xx_vector_record)
@@ -410,8 +415,8 @@ class NetOptimizer:
                     rot = rot_record[indices[0]]
                     # rot = reorthogonalize_matrix(rot)
                 else:
-                    _, rot, trans = superimpose_rotation_only(extended_e_xx_vec,
-                                                        xx_vector)
+                    _, rot, trans = superimpose_rotation_only(
+                        extended_e_xx_vec, xx_vector)
                     # rot = reorthogonalize_matrix(rot)
                     norm_xx_vector_record.append(norm_xx_vector)
                     # the rot may be opposite, so we need to check the angle between the two vectors
@@ -419,7 +424,7 @@ class NetOptimizer:
                     roted_xx = np.dot(extended_e_xx_vec, rot)
 
                     if np.dot(roted_xx[1] - roted_xx[0],
-                            xx_vector[1] - xx_vector[0]) < 0:
+                              xx_vector[1] - xx_vector[0]) < 0:
                         ##rotate 180 around the axis of the cross product of the two vectors
                         axis = np.cross(roted_xx[1] - roted_xx[0],
                                         xx_vector[1] - xx_vector[0])
@@ -490,7 +495,7 @@ class NetOptimizer:
             self.ostream.print_warning(
                 "Warning: more than one type of edge length")
             # if the length are close, which can be shown by std
-            if np.std(lengths) < 1: #1 Angstrom
+            if np.std(lengths) < 1:  #1 Angstrom
                 self.ostream.print_info("the edge lengths are close")
             else:
                 self.ostream.print_info("the edge lengths are not close")
@@ -721,8 +726,10 @@ class OptimizationDriver:
             #for idx_i in range(len(rotated_i_positions)):
             #    dist = np.linalg.norm(rotated_i_positions[idx_i] - com_j)
             #    dist_matrix[idx_i, 0] = dist
-            dist_matrix = np.linalg.norm(rotated_i_positions - com_j, axis=1, keepdims=True)
-                # total_distance += dist ** 2
+            dist_matrix = np.linalg.norm(rotated_i_positions - com_j,
+                                         axis=1,
+                                         keepdims=True)
+            # total_distance += dist ** 2
             if np.argmin(dist_matrix) > 1:
                 total_distance += 1e4  # penalty for the distance difference
             total_distance += np.min(dist_matrix)**2
@@ -755,23 +762,23 @@ class OptimizationDriver:
         #for i, j in self.sorted_edges:
         #    R_i = reorthogonalize_matrix(rotation_matrices[i])
         #    R_j = reorthogonalize_matrix(rotation_matrices[j])
-#
+        #
         #    com_i = G.nodes[self.sorted_nodes[i]]["ccoords"]
         #    com_j = G.nodes[self.sorted_nodes[j]]["ccoords"]
 
-            # Rotate positions around their mass center
-            #rotated_i_positions = (
-            #    np.dot(static_atom_positions[i][:, 1:] - com_i, R_i.T) + com_i)
-            #rotated_j_positions = (
-            #    np.dot(static_atom_positions[j][:, 1:] - com_j, R_j.T) + com_j)
-#
-            #dist_matrix = np.empty(
-            #    (len(rotated_i_positions), len(rotated_j_positions)))
-            #for idx_i in range(len(rotated_i_positions)):
-            #    for idx_j in range(len(rotated_j_positions)):
-            #        dist = np.linalg.norm(rotated_i_positions[idx_i] -
-            #                              rotated_j_positions[idx_j])
-            #        dist_matrix[idx_i, idx_j] = dist
+        # Rotate positions around their mass center
+        #rotated_i_positions = (
+        #    np.dot(static_atom_positions[i][:, 1:] - com_i, R_i.T) + com_i)
+        #rotated_j_positions = (
+        #    np.dot(static_atom_positions[j][:, 1:] - com_j, R_j.T) + com_j)
+        #
+        #dist_matrix = np.empty(
+        #    (len(rotated_i_positions), len(rotated_j_positions)))
+        #for idx_i in range(len(rotated_i_positions)):
+        #    for idx_j in range(len(rotated_j_positions)):
+        #        dist = np.linalg.norm(rotated_i_positions[idx_i] -
+        #                              rotated_j_positions[idx_j])
+        #        dist_matrix[idx_i, idx_j] = dist
         for i, j in self.sorted_edges:
             R_i = reorthogonalize_matrix(rotation_matrices[i])
             R_j = reorthogonalize_matrix(rotation_matrices[j])
@@ -788,10 +795,11 @@ class OptimizationDriver:
             )  # shape (Nj, 3)
 
             # Vectorized pairwise distance matrix
-            diff = rotated_i_positions[:, None, :] - rotated_j_positions[None, :, :]  
+            diff = rotated_i_positions[:, None, :] - rotated_j_positions[
+                None, :, :]
             # shape (Ni, Nj, 3)
 
-            dist_matrix = np.linalg.norm(diff, axis=2) 
+            dist_matrix = np.linalg.norm(diff, axis=2)
 
             if np.argmin(dist_matrix) > 1:
                 total_distance += 1e4  # penalty for the distance difference

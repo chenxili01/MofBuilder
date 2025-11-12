@@ -55,7 +55,6 @@ class SupercellBuilder:
         self.linker_connectivity = None
         self.supercell = [1, 1, 1]
         self.cell_info = None #a list of 6 elements, a,b,c,alpha,beta,gamma
-
         #virtual edge settings for bridge type nodes
         self.add_virtual_edge = False
         self.vir_edge_range = 0.5 #in fractional coordinate should be less than 0.5
@@ -64,6 +63,8 @@ class SupercellBuilder:
         #will be generated during the process
         self.multiedge_bundlings = None
         self.superG = None
+
+        self._debug = False
 
 
     def _is_ditopic_linker(self):
@@ -480,6 +481,8 @@ class EdgeGraphBuilder:
         self.unsaturated_nodes = []
         self.unsaturated_linkers = []
 
+        self._debug = False
+
     def build_edgeG_from_superG(self):
 
         # Build the edge graph (eG) from the supercell graph (superG)
@@ -578,8 +581,8 @@ class EdgeGraphBuilder:
 
                 # Pair X atoms between the CV center and neighbor edges, converting matched X -> x
                 ec_merged_edges = self._make_paired_Xto_x(
-                    node_data.get("f_points"), merged_edges, len(neighbors), sc_unit_cell
-                )
+                        node_data.get("f_points"), merged_edges, len(neighbors), sc_unit_cell
+                    )
 
                 edge_name = "EDGE_" + str(2*edge_count) # EDGE_2, EDGE_4, ...
                 eG.add_node(
@@ -706,6 +709,7 @@ class EdgeGraphBuilder:
             ec_fpoints = np.vstack([ec_fpoints] * neighbor_number)
         # extract only the X atoms in the neighbor edges but not the cv nodes: [len(ec_arr) :]
         nei_indices, nei_fcpoints = fetch_X_atoms_ind_array(merged_arr, 0, "X") 
+
         #skip atom type column
         row_ind, col_ind = find_pair_x_edge_fc(ec_fpoints[:, 2:5].astype(float), nei_fcpoints[:, 2:5].astype(float), sc_unit_cell) 
 
@@ -817,7 +821,7 @@ class EdgeGraphBuilder:
             Xs_edge_ccpoints = np.hstack((
                 Xs_edge_fpoints[:, 0:2],
                 np.dot(sc_unit_cell, Xs_edge_fpoints[:, 2:5].astype(float).T).T,
-            ))  # NOTE: modified to skip atom type
+            ))  
             V_nodes = [i for i in eG.neighbors(n) if pname(i) != "EDGE"]
             if len(V_nodes) == 0:
                 # unsaturated_linker.append(n)
@@ -842,7 +846,7 @@ class EdgeGraphBuilder:
                     Xs_vnode_fpoints[:, 0:2],
                     np.dot(sc_unit_cell, Xs_vnode_fpoints[:,
                                                         2:5].astype(float).T).T,
-                ))  # NOTE: modified to skip atom type
+                ))  
                 for ind in Xs_vnode_indices:
                     all_Xs_vnodes_ind.append([v, ind, n])
                 all_Xs_vnodes_ccpoints = np.vstack(
@@ -863,9 +867,7 @@ class EdgeGraphBuilder:
                     unsaturated_linker.append(n)
                     if self._debug:
                         self.ostream.print_warning(
-                            f"{min_dist} no xoo for edge node, this linker is a dangling unsaturated linker",
-                            n,
-                        )
+                            f"{min_dist} no xoo for edge node, this linker is a dangling unsaturated linker{n}")
                         self.ostream.flush()
                     continue
                 # add the xoo to the edge node
@@ -992,8 +994,7 @@ class EdgeGraphBuilder:
                     unsaturated_linker.append(edge)
                     if self._debug:
                         self.ostream.print_warning(
-                            f"{min_dist} no xoo for edge node, this linker is a dangling unsaturated linker",
-                            edge,
+                            f"{min_dist} no xoo for edge node, this linker is a dangling unsaturated linker{edge}"
                         )
                         self.ostream.flush()
                     continue

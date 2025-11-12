@@ -86,6 +86,20 @@ class MofTopLibrary:
 
         self.ostream.flush()
 
+    def list_available_metals(self, mof_family):
+        if self.mof_top_dict is None:
+            self._read_mof_top_dict(self.data_path)
+        if mof_family not in self.mof_top_dict.keys():
+            self.ostream.print_warning(f"{mof_family} not in database")
+            self.ostream.print_info("please select a MOF family from below:")
+            self.ostream.flush()
+            self.list_mof_family()
+            return
+        self.ostream.print_title(f"Available metals for {mof_family}:")
+        for metal in self.mof_top_dict[mof_family]["metal"]:
+            self.ostream.print_info(f" - {metal}")
+
+        self.ostream.flush()
 
     def select_mof_family(self, mof_family):
         self.mof_family = mof_family

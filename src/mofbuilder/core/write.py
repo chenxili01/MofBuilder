@@ -85,6 +85,8 @@ class MofWriter:
             for i in range(len(arr)):
                 atom_type = arr[i, 0]
                 atom_label = arr[i, 1]
+                if atom_label=="Fr":
+                    continue
                 value_x = float(arr[i, 2])
                 value_y = float(arr[i, 3])
                 value_z = float(arr[i, 4])

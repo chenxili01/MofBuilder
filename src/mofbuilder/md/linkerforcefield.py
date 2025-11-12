@@ -34,6 +34,8 @@ class LinkerForceFieldGenerator:
         #self.mmforcefield_generator = MMForceFieldGenerator()
         self.linker_ff_name = "Linker"
         self.linker_residue_name = "EDG"  #default residue name for linker
+        self.resp_charges = True  #whether to use resp charges for forcefield generation
+        self.linker_fake_edge = False  #whether to treat x-x as fake edges without reconnecting
 
         self.linker_charge = -2
         self.linker_multiplicity = 1
@@ -42,8 +44,10 @@ class LinkerForceFieldGenerator:
 
         self.src_linker_forcefield_itpfile = None  #set before use
         self.src_linker_molecule = None  #set before use
-        self.dest_linker_molecule = None  #will be generated after reconnecting
+        self.dest_linker_molecule = None  #will be generated after reconnecting #TODO: implement
         self.linker_itp_path = None  #final itp path after mapping
+
+        self.free_opt_linker_mol = None  #will be set after optimization
 
         self._debug = False
 
@@ -79,10 +83,15 @@ class LinkerForceFieldGenerator:
         molecule = Molecule.read_xyz_string(xyz_string)
 
         connectivity_matrix = molecule.get_connectivity_matrix()
-        connectivity_matrix, connect_constraints = self._reconnect(
-            X_indices_coords, connectivity_matrix)
-        connectivity_matrix, connect_constraints = self._reconnect(
-            lower_x_indices_coords, connectivity_matrix, connect_constraints)
+        if not self.linker_fake_edge:
+            connectivity_matrix, connect_constraints = self._reconnect(
+                X_indices_coords, connectivity_matrix)
+            connectivity_matrix, connect_constraints = self._reconnect(
+                lower_x_indices_coords, connectivity_matrix, connect_constraints)
+        else:
+            all_x_indices_coords = X_indices_coords + lower_x_indices_coords
+            connectivity_matrix, connect_constraints = self._reconnect(
+                all_x_indices_coords, connectivity_matrix)
         if self._debug:
             self.ostream.print_info(f"constaints{connect_constraints}")
             self.ostream.flush()
@@ -128,6 +137,7 @@ class LinkerForceFieldGenerator:
             ff_gen.create_topology(free_opt_linker_mol, resp=True)
             ff_gen.write_gromacs_files(filename=ffname,
                                        mol_name=self.linker_residue_name)
+            self.free_opt_linker_mol = free_opt_linker_mol
         elif (self.linker_optimization and self.optimize_drv == "xtb"):
             self.ostream.print_info(
                 f"xtb driver is using for linker optimization")
@@ -140,6 +150,7 @@ class LinkerForceFieldGenerator:
             free_opt_linker_mol, scf_result = self._dft_optimize(constrained_opt_linker_mol, None)
             free_opt_linker_mol.set_charge(self.linker_charge)
             free_opt_linker_mol.set_multiplicity(self.linker_multiplicity)
+            self.free_opt_linker_mol = free_opt_linker_mol
             ff_gen = MMForceFieldGenerator()
             self.ostream.print_info(
                 f"generating forcefield of linker molecule for Gromacs")
@@ -148,7 +159,7 @@ class LinkerForceFieldGenerator:
                 self.target_directory,
                 Path(self.linker_ff_name).with_suffix('.itp'))
             ffname = str(self.linker_itp_path).removesuffix('.itp')
-            ff_gen.create_topology(free_opt_linker_mol, resp=True)
+            ff_gen.create_topology(free_opt_linker_mol, resp=self.resp_charges)
             Path(self.linker_itp_path).parent.mkdir(parents=True,
                                                     exist_ok=True)
             ff_gen.write_gromacs_files(filename=ffname,
@@ -163,8 +174,8 @@ class LinkerForceFieldGenerator:
         half_len_X_num = len(X_indices_coords) // 2
         X1_ind_coords = X_indices_coords[:half_len_X_num]
         X2_ind_coords = X_indices_coords[half_len_X_num:]
-        #print(f"X1_indices: {X1_ind_coords}")
-        #print(f"X2_indices: {X2_ind_coords}")
+        print(f"X1_indices: {X1_ind_coords}")
+        print(f"X2_indices: {X2_ind_coords}")
 
         for i, j in zip(X1_ind_coords, X2_ind_coords):
             #check distance

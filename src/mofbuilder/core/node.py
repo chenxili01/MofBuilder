@@ -69,8 +69,8 @@ class FrameNode:
             self.target_dir.mkdir(parents=True, exist_ok=True)
             base = Path(self.filename).stem
             self.new_pdbfilename = self.target_dir / (f"{base}_dummy.pdb"
-                                                    if self.dummy_node else Path(
-                                                        self.filename).name)
+                                                      if self.dummy_node else
+                                                      Path(self.filename).name)
             if self.dummy_node:
                 self.new_dummy_dictfilename = self.target_dir / f"{base}_dummy_dict.txt"
         if self._debug:
@@ -81,7 +81,7 @@ class FrameNode:
 
     def _nodepdb2xyz(self):
         self.pdbreader.filepath = self.filename
-        self.pdbreader.read_pdb(recenter=True,com_type=self.node_com_type)
+        self.pdbreader.read_pdb(recenter=True, com_type=self.node_com_type)
         self.node_data = self.pdbreader.data
         xyz_lines = [f"{len(self.node_data)}\n", "\n"]
         xyz_lines += [f"{n[1]} {n[5]} {n[6]} {n[7]}\n" for n in self.node_data]
@@ -163,9 +163,15 @@ class FrameNode:
 
     def _add_dummy_atoms_nodepdb(self):
         metal = self.node_metal_type
-        self.metal_valence = 4 if metal in [
-            "Zr", "Hf"
-        ] else 3 if metal in ["Al", "Fe", "Cr"] else None
+        if metal in ["Zr", "Hf","Ti","Ce","Th","U", "Nb", "Ta", "Mo", "W", "Re",
+                     "V"]:
+            self.metal_valence = 4
+        elif metal in ["Al", "Fe", "Cr", "Sc", "In", "Ga", "Y", "La", "Pr", "Nd",
+                       "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb",
+                       "Lu"]:
+            self.metal_valence = 3
+        elif metal in ["Zn", "Cu", "Co", "Ni", "Mn", "Cd", "Mg", "Ca", "Sr", "Ba"]:
+            self.metal_valence = 2
         self.dummy_pdbfile = f"{Path(self.filename).stem}_dummy.pdb"
         template = self._fetch_template(metal)
         sG = self.nodeG.copy()
@@ -211,15 +217,17 @@ class FrameNode:
                     d_ccoords = []
                     for nO in neighbor_nodes:
                         sO = np.round(sG.nodes[nO]["ccoords"], 4)
-                        cnorm_vec = (
-                            sO - beginning_cc) / np.linalg.norm(sO - beginning_cc)
+                        cnorm_vec = (sO - beginning_cc
+                                     ) / np.linalg.norm(sO - beginning_cc)
                         d_ccoords.append(beginning_cc + cnorm_vec)
                         sG.remove_edge(mn, nO)
-                    ordered_ccoords = self._order_ccoords(d_ccoords, template,
-                                                        beginning_cc)
+                    ordered_ccoords = self._order_ccoords(
+                        d_ccoords, template, beginning_cc)
                     for row in range(len(d_ccoords)):
                         d_name = f"D{count}"
-                        sG.add_node(d_name, type="D", ccoords=ordered_ccoords[row])
+                        sG.add_node(d_name,
+                                    type="D",
+                                    ccoords=ordered_ccoords[row])
                         sG.add_edge(mn, d_name)
                         count += 1
         else:
@@ -247,14 +255,14 @@ class FrameNode:
             #just metal atom
             def not_metal_nodes(nodes):
                 l = [nn(node) for node in nodes]
-                return l.count(self.node_metal_type)==0
+                return l.count(self.node_metal_type) == 0
 
+            rows = [[
+                n, subgraph.nodes[n]["type"], *subgraph.nodes[n]["ccoords"]
+            ] for n in subgraph_nodes]
 
-            rows=[[n, subgraph.nodes[n]["type"], *subgraph.nodes[n]["ccoords"]]
-                for n in subgraph_nodes]
-            
             if not_metal_nodes(subgraph_nodes):
-                rows.sort(key=lambda x: (x[1], x[0]))  
+                rows.sort(key=lambda x: (x[1], x[0]))
 
             return rows
 
@@ -274,7 +282,8 @@ class FrameNode:
 
     def _write_dummy_node_pdb(self):
         if self.save_files:
-            dummy_pdbfile_full_path = Path(self.target_dir) / self.dummy_pdbfile
+            dummy_pdbfile_full_path = Path(
+                self.target_dir) / self.dummy_pdbfile
         metal = self.node_metal_type
         sG = self.sG
 
@@ -290,15 +299,18 @@ class FrameNode:
             sorted_nodes = sorted(subnodes)
             #extend Dummy or metal node firstly
             if self.node_metal_type in [nn(sn) for sn in subnodes]:
-                all_atom_lines_head.extend(self._lines_of_atoms(subgraph, sorted_nodes))
-                all_atom_bonds_head.extend(self._get_bonds_from_subgraph(subgraph))
+                all_atom_lines_head.extend(
+                    self._lines_of_atoms(subgraph, sorted_nodes))
+                all_atom_bonds_head.extend(
+                    self._get_bonds_from_subgraph(subgraph))
             else:
-                all_atom_lines_tail.extend(self._lines_of_atoms(subgraph, sorted_nodes))
-                all_atom_bonds_tail.extend(self._get_bonds_from_subgraph(subgraph))
+                all_atom_lines_tail.extend(
+                    self._lines_of_atoms(subgraph, sorted_nodes))
+                all_atom_bonds_tail.extend(
+                    self._get_bonds_from_subgraph(subgraph))
 
             all_atom_bonds = all_atom_bonds_head + all_atom_bonds_tail
             all_atom_lines = all_atom_lines_head + all_atom_lines_tail
-
 
         header = (
             "Generated by MOFbuilder\n"
@@ -308,41 +320,50 @@ class FrameNode:
         )
         if self.save_files:
             self.pdbwriter.write(dummy_pdbfile_full_path,
-                                header=header,
-                                lines=all_atom_lines)
+                                 header=header,
+                                 lines=all_atom_lines)
         self.lines = all_atom_lines
         self.bonds = all_atom_bonds
 
     def _generate_dummy_node_split_dict(self):
         #head: without dummy atoms
         #tail: with dummy atoms and metal atoms
-        nodes_dict={'O':[],'HO':[],'HHO':[],'METAL':[],'others':[],'OOX':[]}
+        nodes_dict = {
+            'O': [],
+            'HO': [],
+            'HHO': [],
+            'METAL': [],
+            'others': [],
+            'OOX': []
+        }
 
         def is_OOX(list):
             if len(list) != 3:
                 return False
             #two oxygens and one X connected atoms
             return list.count("O") == 2 and list.count("X") == 1
+
         def is_O(list):
             if len(list) != 1:
                 return False
             #two oxygens connected atoms
             return list.count("O") == 1
+
         def is_HO(list):
             if len(list) != 2:
                 return False
             #one oxygen and one hydrogen connected atoms
             return list.count("O") == 1 and list.count("H") == 1
+
         def is_HHO(list):
             if len(list) != 3:
                 return False
             #one oxygen and two hydrogen connected atoms
             return list.count("O") == 1 and list.count("H") == 2
+
         def is_METAL(list):
-            nnlist=[nn(i) for i in list]
-            return nnlist.count(self.node_metal_type)==1
-
-
+            nnlist = [nn(i) for i in list]
+            return nnlist.count(self.node_metal_type) == 1
 
         head, tail = [], []
         for sub in self.sG_subparts:
@@ -367,7 +388,6 @@ class FrameNode:
 
         self.subpart_nodes = head + tail
 
- 
         dummy_count = len(nodes_dict['METAL'])
         hho_count = len(nodes_dict['HHO'])
         ho_count = len(nodes_dict['HO'])
@@ -385,8 +405,8 @@ class FrameNode:
         }
         self.dummy_node_split_dict = node_split_dict
         if self.save_files:
-            self.dummy_node_split_dict_path = Path(
-                self.target_dir) / (Path(self.filename).stem + "_dummy_dict.txt")
+            self.dummy_node_split_dict_path = Path(self.target_dir) / (
+                Path(self.filename).stem + "_dummy_dict.txt")
 
     def _write_dummy_node_split_dict(self):
         if not self.save_files:
@@ -419,7 +439,6 @@ class FrameNode:
             self.lines = src.readlines()
         self.ostream.print_info(f"Node pdb file copied to {target_path}")
 
-
     def create(self):
         self.check_dirs()
         self._nodepdb2xyz()
@@ -439,9 +458,7 @@ class FrameNode:
                 )
                 self.ostream.flush()
         else:
-            self.ostream.print_info(
-                "No dummy atoms to add."
-            )
+            self.ostream.print_info("No dummy atoms to add.")
             self.ostream.flush()
 
             self._add_dummy_atoms_nodepdb()
@@ -451,8 +468,9 @@ class FrameNode:
             self._write_dummy_node_pdb()
             self._write_dummy_node_split_dict()
             #self._copy_node_pdb2target()
-        
-        self.node_data, self.node_X_data = self.pdbreader.expand_arr2data(self.lines)
+
+        self.node_data, self.node_X_data = self.pdbreader.expand_arr2data(
+            self.lines)
 
         if self.save_files:
             #read the new pdb file to get self.node_data

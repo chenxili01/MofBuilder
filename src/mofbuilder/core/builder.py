@@ -28,18 +28,20 @@ from ..md.setup import OpenmmSetup
 from .framework import Framework
 
 
-
 #sG:scaled and rotated G
 #eG: edge graph with only edge and V node, and XOO atoms linked to the edge
 #superG: supercell of sG
 class MetalOrganicFrameworkBuilder:
+
     def __init__(self, comm=None, ostream=None, mof_family=None):
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
-        self.ostream = ostream or OutputStream(sys.stdout if self.rank == mpi_master() else None)
+        self.ostream = ostream or OutputStream(sys.stdout if self.rank ==
+                                               mpi_master() else None)
         #need to be set before building the framework
-        self.framework = Framework() #will be returned as the built framework object
+        self.framework = Framework(
+        )  #will be returned as the built framework object
 
         self.mof_family = mof_family
         self.node_metal = None
@@ -56,7 +58,8 @@ class MetalOrganicFrameworkBuilder:
                                              ostream=self.ostream)
         self.net_optimizer = NetOptimizer(comm=self.comm, ostream=self.ostream)
         self.mofwriter = MofWriter(comm=self.comm, ostream=self.ostream)
-        self.defectgenerator = TerminationDefectGenerator(comm=self.comm,ostream=self.ostream)
+        self.defectgenerator = TerminationDefectGenerator(comm=self.comm,
+                                                          ostream=self.ostream)
 
         #will be set when reading the net
         self.net_spacegroup = None
@@ -100,7 +103,6 @@ class MetalOrganicFrameworkBuilder:
         self.termination_X_data = None
         self.termination_Y_data = None
 
-
         #optimization
         #need to be set by user
         self.constant_length = 1.54  # X-X bond length in Angstrom, default 1.54A
@@ -139,8 +141,9 @@ class MetalOrganicFrameworkBuilder:
         self.clean_unsaturated_linkers = True  #default cleave the unsaturated linkers after making defects
 
         #MD preparation
-        self.framework_data = None  #merged data for the whole framework, generated in write() 
-        self.solvationbuilder = SolvationBuilder(comm=self.comm, ostream=self.ostream)
+        self.framework_data = None  #merged data for the whole framework, generated in write()
+        self.solvationbuilder = SolvationBuilder(comm=self.comm,
+                                                 ostream=self.ostream)
         self.solvents = []  #list of solvent names or xyz files
         self.solvents_molecules = []  #list of solvent molecules
         self.solvents_proportions = []  #list of solvent proportions
@@ -171,40 +174,50 @@ class MetalOrganicFrameworkBuilder:
         self.superG = None  #supercell of sG
         self.eG = None  #edge graph with only edge and V node, and XOO atoms linked to the edge
         self.cleaved_eG = None  #edge graph after cleaving the extra edges
-    
+
     def list_available_mof_family(self):
         if self.data_path is None:
             self.data_path = get_data_path()
         self.mof_top_library._debug = self._debug
         self.mof_top_library.data_path = self.data_path
         self.mof_top_library.list_mof_family()
-    
+
+    def list_available_metals(self, mof_family=None):
+        if self.data_path is None:
+            self.data_path = get_data_path()
+        if mof_family is None:
+            mof_family = self.mof_family
+        self.mof_top_library._debug = self._debug
+        self.mof_top_library.data_path = self.data_path
+        self.mof_top_library.list_available_metals(mof_family=mof_family)
+
     def list_available_terminations(self):
         if self.data_path is None:
             self.data_path = get_data_path()
         self.ostream.print_title("Available Terminations:")
         if Path(self.data_path, 'terminations_itps').is_dir():
-            for term_file in Path(self.data_path, 'terminations_itps').rglob('*.itp'):
-                if Path(self.data_path, 'terminations_database',term_file.stem + '.pdb').is_file():
+            for term_file in Path(self.data_path,
+                                  'terminations_itps').rglob('*.itp'):
+                if Path(self.data_path, 'terminations_database',
+                        term_file.stem + '.pdb').is_file():
                     self.ostream.print_info(f" - {term_file.stem}")
             self.ostream.flush()
         else:
             self.ostream.print_warning("No terminations found.")
             self.ostream.flush()
-    
+
     def list_available_solvents(self):
         if self.data_path is None:
             self.data_path = get_data_path()
         self.ostream.print_title("Available Solvents:")
         if Path(self.data_path, 'solvents_database').is_dir():
-            for solv_file in Path(self.data_path, 'solvents_database').rglob('*.itp'):
+            for solv_file in Path(self.data_path,
+                                  'solvents_database').rglob('*.itp'):
                 self.ostream.print_info(f" - {solv_file.stem}")
             self.ostream.flush()
         else:
             self.ostream.print_warning("No solvents found.")
             self.ostream.flush()
-
-
 
     def _read_net(self):
         if self.data_path is None:
@@ -234,27 +247,36 @@ class MetalOrganicFrameworkBuilder:
         self.net_sorted_edges = self.frame_net.sorted_edges
         self.net_pair_vertex_edge = self.frame_net.pair_vertex_edge
 
-
-
     def _read_linker(self):
         self.frame_linker.linker_connectivity = self.linker_connectivity
+        if self.save_files:  #TODO: check if the target directory is set
+            if self.linker_xyzfile is not None:
+                self.frame_linker.filename = self.linker_xyzfile
+            else:
+                self.frame_linker.filename = "Linker"
+            self.frame_linker.target_directory = self.target_directory
+            self.frame_linker.save_files = self.save_files
+
         if self.linker_molecule is not None:
             self.frame_linker.create(molecule=self.linker_molecule)
         else:
             self.frame_linker.filename = self.linker_xyzfile
-            if self.save_files:  #TODO: check if the target directory is set
-                self.frame_linker.target_directory = self.target_directory
+
             self.frame_linker.create()
 
         #pass linker data
         self.linker_center_data = self.frame_linker.linker_center_data
         self.linker_center_X_data = self.frame_linker.linker_center_X_data
         if len(self.frame_linker.linker_center_X_data) == 1:
-            #is a point linker, duplicate the data
-            self.linker_center_X_data = np.vstack((
-                (self.frame_linker.linker_center_X_data, ),
-                (self.frame_linker.linker_center_X_data, )))
-        
+            #is a point linker, prolong a norm point and get two points. can just +1 at col 5 for x
+            dup_point = np.hstack(
+                (self.linker_center_data[:, 0:5],
+                 self.linker_center_data[:, 5:8].astype(float) +
+                 [1.0, 0, 0], self.linker_center_data[:, 8:]))
+            self.linker_center_data = np.vstack(
+                (self.linker_center_data, dup_point))
+            self.linker_center_X_data = self.linker_center_data
+            self.linker_center_data[:, 1] = "Fr"
 
         if self.frame_linker.linker_connectivity > 2:
             #RECENTER COM of outer data
@@ -269,11 +291,16 @@ class MetalOrganicFrameworkBuilder:
                 (self.frame_linker.linker_outer_X_data[:, 0:5],
                  self.frame_linker.linker_outer_X_data[:, 5:8].astype(float) -
                  linker_com, self.frame_linker.linker_outer_X_data[:, 8:]))
-            if len(self.frame_linker.linker_outer_X_data) == 2:
+            if len(self.frame_linker.linker_outer_X_data) == 1:
                 #is a point linker, duplicate the data
-                self.linker_outer_X_data = np.vstack((
-                    (self.frame_linker.linker_outer_X_data, ),
-                    (self.frame_linker.linker_outer_X_data, )))
+                dup_point = np.hstack(
+                    (self.linker_outer_data[:, 0:5],
+                     self.linker_outer_data[:, 5:8].astype(float) +
+                     [1.0, 0, 0], self.linker_outer_data[:, 8:]))
+                self.linker_outer_data = np.vstack(
+                    (self.linker_outer_data, dup_point))
+                self.linker_outer_X_data = self.linker_outer_data
+                self.linker_outer_data[:, 1] = "Fr"
 
             self.linker_frag_length = np.linalg.norm(
                 self.linker_outer_X_data[0, 5:8].astype(float) -
@@ -285,7 +312,6 @@ class MetalOrganicFrameworkBuilder:
         if self.frame_linker.fake_edge:
             self.linker_frag_length = 0.0
             self.linker_fake_edge = self.frame_linker.fake_edge
-
 
     def _read_node(self):
         assert_msg_critical(self.node_connectivity is not None,
@@ -312,15 +338,14 @@ class MetalOrganicFrameworkBuilder:
         self.node_X_data = self.frame_nodes.node_X_data
         self.dummy_atom_node_dict = self.frame_nodes.dummy_node_split_dict
 
-
-
     def _read_termination(self):
         if not self.termination:
             return
         #try to get a valid termination file
         if self.termination_name is None:
             self.ostream.print_info(
-                "Termination is set to True but termination_name is None. Skipping termination.")
+                "Termination is set to True but termination_name is None. Skipping termination."
+            )
             self.termination = False
             return
         #termination_name can be a file path or a name in the termination database
@@ -358,8 +383,6 @@ class MetalOrganicFrameworkBuilder:
         self.termination_X_data = self.frame_terminations.termination_X_data  #X for -X-YY in -C-OO
         self.termination_Y_data = self.frame_terminations.termination_Y_data  #Y for -X-YY in -C-OO
 
-
-
     def load_framework(self):
         self._read_net()
         self._read_linker()
@@ -382,13 +405,12 @@ class MetalOrganicFrameworkBuilder:
                 self.ostream.print_info(f"Termination: None")
             self.ostream.print_info("Finished reading framework components.")
             self.ostream.flush()
-        
 
     def optimize_framework(self):
         self.net_optimizer._debug = self._debug
         self.net_optimizer.skip_rotation_optimization = self.skip_rotation_optimization
-        self.net_optimizer.rotation_filename = self.rotation_filename #file to save the optimized rotations
-        self.net_optimizer.load_optimized_rotations = self.load_optimized_rotations #h5 file with optimized rotations to load 
+        self.net_optimizer.rotation_filename = self.rotation_filename  #file to save the optimized rotations
+        self.net_optimizer.load_optimized_rotations = self.load_optimized_rotations  #h5 file with optimized rotations to load
         self.net_optimizer.G = self.G.copy()
         self.net_optimizer.cell_info = self.net_cell_info
         self.net_optimizer.V_data = self.frame_nodes.node_data
@@ -418,14 +440,13 @@ class MetalOrganicFrameworkBuilder:
         self.ostream.print_info(
             "Finished optimizing the node rotations and cell parameters")
         self.ostream.print_separator()
-        self.net_optimizer._debug = False
+        self.net_optimizer._debug = self._debug
         self.net_optimizer.place_edge_in_net()
         #here we can get the unit cell with nodes and edges placed
         self.sG = self.net_optimizer.sG.copy()  #scaled and rotated G
         self.frame_cell_info = self.net_optimizer.optimized_cell_info
         self.frame_unit_cell = self.net_optimizer.sc_unit_cell
         # save_xyz("scale_optimized_nodesstructure.xyz", scaled_rotated_node_positions)
-
 
     def make_supercell(self):
         self.supercellbuilder = SupercellBuilder(comm=self.comm,
@@ -439,7 +460,7 @@ class MetalOrganicFrameworkBuilder:
         self.supercellbuilder.add_virtual_edge = self.add_virtual_edge
         self.supercellbuilder.vir_edge_range = self.vir_edge_range
         self.supercellbuilder.vir_edge_max_neighbor = self.vir_edge_max_neighbor
-        self.supercellbuilder._debug = False
+        #self.supercellbuilder._debug = self._debug
 
         self.supercellbuilder.build_supercellGraph()
         self.superG = self.supercellbuilder.superG
@@ -448,18 +469,19 @@ class MetalOrganicFrameworkBuilder:
         #convert to edge graph
         self.edgegraphbuilder = EdgeGraphBuilder(comm=self.comm,
                                                  ostream=self.ostream)
-        self.edgegraphbuilder._debug = False
+
         if self._debug:
             self.ostream.print_info(
                 f"superG has {len(self.supercellbuilder.superG.nodes())} nodes and {len(self.supercellbuilder.superG.edges())} edges"
             )
         self.edgegraphbuilder.superG = self.supercellbuilder.superG
         self.edgegraphbuilder.linker_connectivity = self.linker_connectivity
+        self.edgegraphbuilder.linker_frag_length = self.linker_frag_length
         self.edgegraphbuilder.node_connectivity = self.node_connectivity + self.vir_edge_max_neighbor if self.add_virtual_edge else self.node_connectivity
         self.edgegraphbuilder.custom_fbox = self.supercell_custom_fbox
         self.edgegraphbuilder.sc_unit_cell = self.net_optimizer.sc_unit_cell
         self.edgegraphbuilder.supercell = self.supercell
-        self.edgegraphbuilder._debug = True
+        #self.edgegraphbuilder._debug = self._debug
         self.edgegraphbuilder.build_edgeG_from_superG()
         self.eG = self.edgegraphbuilder.eG.copy()
         self.eG_index_name_dict = self.edgegraphbuilder.eG_index_name_dict
@@ -474,9 +496,6 @@ class MetalOrganicFrameworkBuilder:
                 f"cleaved_eG has {len(self.edgegraphbuilder.cleaved_eG.nodes())} nodes and {len(self.edgegraphbuilder.cleaved_eG.edges())} edges"
             )
             self.ostream.flush()
-
-
-        
 
     def build(self):
         self.load_framework()
@@ -524,7 +543,6 @@ class MetalOrganicFrameworkBuilder:
         self.framework.matched_vnode_xind = self.edgegraphbuilder.matched_vnode_xind
         self.framework.xoo_dict = self.edgegraphbuilder.xoo_dict
 
-
         self.defectgenerator.termination_data = self.termination_data
         self.defectgenerator.termination_X_data = self.termination_X_data
         self.defectgenerator.termination_Y_data = self.termination_Y_data
@@ -544,15 +562,18 @@ class MetalOrganicFrameworkBuilder:
         self.defectgenerator.unsaturated_linkers = self.edgegraphbuilder.unsaturated_linkers
         self.defectgenerator.unsaturated_nodes = self.edgegraphbuilder.unsaturated_nodes
         #remove
-        terminated_G = self.defectgenerator.remove_items_or_terminate(res_idx2rm=[], cleaved_eG=self.cleaved_eG.copy())
+        terminated_G = self.defectgenerator.remove_items_or_terminate(
+            res_idx2rm=[], cleaved_eG=self.cleaved_eG.copy())
         #update the framework
         self.framework.graph = terminated_G.copy()
         self.framework.matched_vnode_xind = self.defectgenerator.updated_matched_vnode_xind
         self.framework.unsaturated_linkers = self.defectgenerator.unsaturated_linkers
-        self.framework.unsaturated_nodes = self.defectgenerator.updated_unsaturated_nodes  
+        self.framework.unsaturated_nodes = self.defectgenerator.updated_unsaturated_nodes
 
-            #pass 
+        #exceptions for linker forcefield generation
+        self.framework.linker_fake_edge = self.linker_fake_edge
+        self.framework._debug = self._debug
+
+        #pass
         self.framework.get_merged_data()
         return self.framework
-
-        
