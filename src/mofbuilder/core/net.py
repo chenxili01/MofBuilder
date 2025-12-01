@@ -37,7 +37,7 @@ class FrameNet:
 
         self.G = nx.Graph()
 
-        self.cifreader = CifReader()
+        self.cifreader = CifReader(comm=self.comm, ostream=self.ostream)
         self.cif_file = None
         self.edge_length_range = []
 
