@@ -93,7 +93,7 @@ class GroWriter:
                     residue_number,
                     residue_name[:5],
                     atom_label[:5],
-                    atom_number,
+                    atom_number[-5:],
                     x,
                     y,
                     z,
