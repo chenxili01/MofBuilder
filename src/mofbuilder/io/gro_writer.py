@@ -89,11 +89,11 @@ class GroWriter:
                 charge = values[9]
                 note = values[10]
 
-                formatted_line = "%5d%-5s%5s%5d%8.3f%8.3f%8.3f" % (
+                formatted_line = "%5d%-5s%5s%5s%8.3f%8.3f%8.3f" % (
                     residue_number,
                     residue_name[:5],
                     atom_label[:5],
-                    atom_number[-5:],
+                    str(atom_number)[-5:],
                     x,
                     y,
                     z,
