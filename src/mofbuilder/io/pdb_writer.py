@@ -4,7 +4,7 @@ from veloxchem.outputstream import OutputStream
 from veloxchem.veloxchemlib import mpi_master
 import mpi4py.MPI as MPI
 from veloxchem.errorhandler import assert_msg_critical
-
+from .basic import nn
 
 class PdbWriter:
 
@@ -74,28 +74,24 @@ class PdbWriter:
                 z = values[7]
                 spin = values[8]
                 charge = values[9]
-                note = values[10]
+                note = values[10].split('_')[0]  
                 # Format the values using the specified format string
-
-                # Format the values using the specified format string
+                # Fixed formatting string
                 formatted_line = (
-                    "%-6s%5d %-4s%s%3s %1s%4d%s   "
-                    "%8.3f%8.3f%8.3f%6.2f%6.2f          %4s"
+                    "%-6s%5d  %-3s%1s%3s %1s%4d%1s   "
+                    "%8.3f%8.3f%8.3f%6.2f%6.2f          %2s"
                 ) % (
-                    "ATOM",                 # record
-                    int(atom_number),       # atom serial
-                    atom_label,             # atom name
-                    "",                     # altLoc (blank)
-                    residue_name[:3],       # residue name
-                    "A",                    # chain ID (default A)
-                    int(residue_number),    # resSeq
-                    "",                     # iCode (blank)
-                    float(x),               # x
-                    float(y),               # y
-                    float(z),               # z
-                    1.00,                   # occupancy (default 1.00, or spin if that's what you mean)
-                    0.00,                   # B-factor (default 0.00, or use real)
-                    note if isinstance(note, str) else note[1]  # element symbol
+                    "ATOM",                 # 1-6
+                    int(atom_number),       # 7-11
+                    atom_label[:3],         # 13-15 (Atom Name - 3 chars max)
+                    " ",                    # 16    (AltLoc - MUST BE SPACE)
+                    residue_name[:3],       # 18-20 (Residue Name)
+                    "A",                    # 22    (Chain ID)
+                    int(residue_number),    # 23-26 (Residue Seq)
+                    " ",                    # 27    (iCode)
+                    float(x), float(y), float(z),
+                    1.00, 0.00,
+                    nn(atom_label)       # 77-78 (Element symbol)
                 )
                 newpdb.append(formatted_line + "\n")
             fp.writelines(newpdb)
