@@ -68,7 +68,6 @@ class CifWriter:
             new_cif.write("_audit_creation_method           "+header + '\n')
             new_cif.write("_symmetry_space_group_name     'P1'" + '\n')
             new_cif.write('_symmetry_Int_Tables_number       1' + '\n')
-            new_cif.write('_symmetry_cell_setting            triclinic' + '\n')
             new_cif.write('loop_' + '\n')
             new_cif.write('_symmetry_equiv_pos_as_xyz' + '\n')
             new_cif.write('  x,y,z' + '\n')
