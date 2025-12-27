@@ -17,6 +17,42 @@ from ..io.pdb_writer import PdbWriter
 
 
 class FrameNode:
+    '''
+    node file should have unique atom name/indices
+    Docstring for FrameNode
+    Class to handle node processing, including adding dummy atoms if needed.
+    Attributes:
+        properties: Dictionary to store node properties
+        filename: Path to the input node pdb file
+        target_dir: Directory to save output files
+        new_pdbfilename: Path to the output pdb file with dummy atoms
+        new_dummy_dictfilename: Path to the output dummy dictionary file
+        dummy_node: Boolean indicating if dummy atoms should be added
+        node_metal_type: String indicating the metal type of the node
+        node_com_type: String indicating the center of mass type for recentering
+        node_data: List to store node atom data
+        node_xyz_string: String representation of node in xyz format
+        nodeG: NetworkX graph representation of the node
+        pdbreader: PdbReader instance for reading pdb files
+        pdbwriter: PdbWriter instance for writing pdb files
+        sG: NetworkX graph after adding dummy atoms
+        sG_subparts: List of connected components in sG
+    Methods:
+        check_dirs: Check and create target directories
+        _nodepdb2xyz: Convert node pdb to xyz format
+        _nodepdb2G: Convert node pdb to graph representation
+        _fetch_template: Fetch dummy atom template based on metal type
+        _order_ccoords: Order dummy atom coordinates based on template
+        _add_dummy_atoms_nodepdb: Add dummy atoms to node graph
+        _lines_of_atoms: Generate lines for pdb output
+        _get_bonds_from_subgraph: Get bonds from a subgraph
+        _write_dummy_node_pdb: Write the new pdb file with dummy atoms
+        _generate_dummy_node_split_dict: Generate dummy node split dictionary
+        _write_dummy_node_split_dict: Write the dummy node split dictionary to file
+        _copy_node_pdb2target: Copy original node pdb to target directory
+        create: Main method to process the node and add dummy atoms if needed    
+    '''
+
 
     def __init__(self, comm=None, ostream=None, filepath=None):
         self.comm = comm or MPI.COMM_WORLD
