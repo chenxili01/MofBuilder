@@ -5,7 +5,6 @@ from veloxchem.veloxchemlib import mpi_master
 from veloxchem.errorhandler import assert_msg_critical
 import mpi4py.MPI as MPI
 import sys
-import time
 from .other import safe_copy
 from ..utils.environment import get_data_path
 from ..utils.fetch import fetch_pdbfile
@@ -107,6 +106,10 @@ class Framework:
 
         self.residues_info = None  #dictionary of residue name and quantity
         self.solvents_dict = None  #dictionary of solvents info after solvation
+
+        #MLP energy minimization
+        self.mlp_type = 'mace'  #default MLP type
+        self.mlp_model_path = None  #path to the MLP model file
 
 
     def exchange(self,
@@ -249,6 +252,8 @@ class Framework:
     def _boundary_overlap_indices(self):
         boundary_overlap_list = []
         for i in self.unsaturated_linkers+self.unsaturated_nodes:
+            if i not in self.graph.nodes:
+                continue
             def mean_list(lst):
                 arr = np.vstack(lst)
                 mean_arr = np.mean(arr, axis=0)
@@ -265,12 +270,42 @@ class Framework:
                 boundary_overlap_list.append(index)
 
         return boundary_overlap_list
+    
+
+    def _mlp_omm_minimize(self,maxIterations=None):
+        try:
+            from openmm.app import Simulation, PDBFile
+            from openmm import LangevinIntegrator, unit
+            from openmmml import MLPotential
+            from pathlib import Path
+        except ImportError:
+            assert_msg_critical(
+                False,
+                "openmmml is not installed. Please install openmmml to use MLP energy minimization feature."
+            )
+        #write a pdb file #with a random name
+        self.write(format='pdb')
+        pdb = PDBFile(f"{self.filename}.pdb")
+        #delete the temporary pdb file after loading
+        Path(f"{self.filename}.pdb").unlink() 
+        potential = MLPotential(self.mlp_type, modelPath=self.mlp_model_path)
+        system = potential.createSystem(pdb.topology)
+        integrator = LangevinIntegrator(300*unit.kelvin, 1/unit.picosecond, 1*unit.femtoseconds)
+        simulation = Simulation(pdb.topology, system, integrator)
+        simulation.context.setPositions(pdb.positions)
+        if maxIterations is None:
+            simulation.minimizeEnergy()
+        else:
+            simulation.minimizeEnergy(maxIterations)
+        state = simulation.context.getState(getPositions=True, enforcePeriodicBox=True)
+        positions = state.getPositions()
+        em_ccoords = np.vstack(positions.value_in_unit(unit.nanometers))*10  # Convert nm to Angstroms
+        em_fcoords = np.dot(em_ccoords, self.sc_unit_cell_inv)
+        return em_ccoords, em_fcoords
 
 
-    def write(self, format=[], filename=None,periodicity=False):
-        self.filename = str(
-            Path(filename).parent / Path(filename).stem
-        ) if filename is not None else f"{self.mof_family}_mofbuilder_output"
+    def write(self, format=[], filename=None,periodicity=False,mlp_em=False,mlp_maxIterations=None):
+
         if periodicity or self.periodicity:
             self.ostream.print_info("Writing periodic system")
             self.ostream.flush()
@@ -280,26 +315,37 @@ class Framework:
                 #created a new Framework object, only update the graph to mofwriter
                 new_framework = self.remove_defects(remove_indices=boundary_overlap_list)
                 self.get_merged_data(extra_graph=new_framework.graph)
-                    
+
+        if mlp_em:
+            self.ostream.print_info("Performing MLP energy minimization before writing output files...")
+            self.ostream.flush()
+            #update ccoords and fcoords in mofwriter
+            em_ccoords, em_fcoords = self._mlp_omm_minimize(mlp_maxIterations)
+            em_merged_data = np.hstack((
+                self.framework_data[:, 0:5], em_ccoords,
+                self.framework_data[:, 8:]))
+            em_merged_fcoords = np.hstack((
+                self.framework_fcoords_data[:, 0:5], em_fcoords[:self.framework_fcoords_data.shape[0], :],
+                self.framework_fcoords_data[:, 8:]))
+            self.mofwriter.merged_data = em_merged_data
+            self.mofwriter.merged_fcoords_data = em_merged_fcoords
+            self.framework_data = em_merged_data
+            self.framework_fcoords_data = em_merged_fcoords
+            
+        self.filename = str(Path(filename).parent / Path(filename).stem) if filename is not None else f"{self.mof_family}_mofbuilder_output" 
         self.mofwriter.filename = self.filename  #whole path including directory
         self.ostream.print_info(f"Writing output files to {self.filename}.*")
         self.ostream.flush()
-
         if "xyz" in format:
             self.mofwriter.write_xyz(skip_merge=True)
         if "cif" in format:
-            self.mofwriter.write_cif(skip_merge=False,
-                                     supercell_boundary=self.supercell,
-                                     frame_cell_info=self.supercell_info)
+            self.mofwriter.write_cif(skip_merge=True,
+                                    supercell_boundary=self.supercell,
+                                    frame_cell_info=self.supercell_info)
         if "pdb" in format:
             self.mofwriter.write_pdb(skip_merge=True)
         if "gro" in format:
             self.mofwriter.write_gro(skip_merge=True)
-
-        ##write linker data to a file
-        #with open(str(Path( self.mof_family + "_linker.xyz")), 'w') as f:
-        #    for line in self.mofwriter.edges_data[0]:
-        #        f.write(' '.join(map(str, line)) + '\n')
 
     def solvate(self,
                 solvents_files=[],
