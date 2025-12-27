@@ -93,6 +93,8 @@ class Framework:
         self.virtual_edge_max_neighbor = None
         self.sc_unit_cell = None
         self.sc_unit_cell_inv = None
+        self.periodicity = False  #whether the framework are periodic
+
 
         self.linker_fake_edge = False #TODO: check
 
@@ -105,6 +107,7 @@ class Framework:
 
         self.residues_info = None  #dictionary of residue name and quantity
         self.solvents_dict = None  #dictionary of solvents info after solvation
+
 
     def exchange(self,
                  exchange_indices=[],
@@ -228,8 +231,8 @@ class Framework:
         new_framework.get_merged_data()
         return new_framework
 
-    def get_merged_data(self):
-        self.mofwriter.G = self.graph
+    def get_merged_data(self,extra_graph=None):
+        self.mofwriter.G = extra_graph if extra_graph is not None else self.graph
         self.mofwriter.frame_cell_info = self.supercell_info
         self.mofwriter.sc_unit_cell = self.sc_unit_cell
         self.mofwriter.xoo_dict = self.xoo_dict
@@ -243,10 +246,41 @@ class Framework:
         self.linker_molecule_data = self.mofwriter.edges_data[
             0] if self.mofwriter.edges_data else None
 
-    def write(self, format=[], filename=None):
+    def _boundary_overlap_indices(self):
+        boundary_overlap_list = []
+        for i in self.unsaturated_linkers+self.unsaturated_nodes:
+            def mean_list(lst):
+                arr = np.vstack(lst)
+                mean_arr = np.mean(arr, axis=0)
+                return mean_arr
+            com = mean_list(self.graph.nodes[i]['fcoords'])
+            #every point should be less than 1
+            def primitive_cell_check(point):
+                for i in point:
+                    if i >=1:
+                        return False
+                return True
+            if not primitive_cell_check(com):
+                index = self.graph.nodes[i]['index']
+                boundary_overlap_list.append(index)
+
+        return boundary_overlap_list
+
+
+    def write(self, format=[], filename=None,periodicity=False):
         self.filename = str(
             Path(filename).parent / Path(filename).stem
         ) if filename is not None else f"{self.mof_family}_mofbuilder_output"
+        if periodicity or self.periodicity:
+            self.ostream.print_info("Writing periodic system")
+            self.ostream.flush()
+            boundary_overlap_list = self._boundary_overlap_indices()
+            if len(boundary_overlap_list) > 0:
+                #remove these linkers/nodes that overlap with boundary, but remove_defects() will 
+                #created a new Framework object, only update the graph to mofwriter
+                new_framework = self.remove_defects(remove_indices=boundary_overlap_list)
+                self.get_merged_data(extra_graph=new_framework.graph)
+                    
         self.mofwriter.filename = self.filename  #whole path including directory
         self.ostream.print_info(f"Writing output files to {self.filename}.*")
         self.ostream.flush()
