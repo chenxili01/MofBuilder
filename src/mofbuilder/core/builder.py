@@ -168,6 +168,11 @@ class MetalOrganicFrameworkBuilder:
         #specific settings
         self.linker_frag_length_search_range = []  #in Angstrom, [min, max]
 
+        #MLP energy minimization
+        self.mlp_type = 'mace'  #default MLP type
+        self.mlp_model_path = None  #path to the MLP model file
+
+
         #Graph will be generated
         self.G = None  #original net graph from cif file
         self.sG = None  #scaled and rotated G
@@ -576,4 +581,8 @@ class MetalOrganicFrameworkBuilder:
 
         #pass
         self.framework.get_merged_data()
+
+        #pass MLP settings to framework
+        self.framework.mlp_type = self.mlp_type
+        self.framework.mlp_model_path = self.mlp_model_path
         return self.framework
