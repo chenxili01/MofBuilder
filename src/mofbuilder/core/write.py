@@ -299,8 +299,8 @@ class MofWriter:
                 cG.nodes[n]["f_data"] = edge_f_data
                 edges_data.append(edge_f_data)
 
-        self.nodes_f_data = np.vstack(nodes_data)
-        self.edges_f_data = np.vstack(edges_data)
+        self.nodes_f_data = np.vstack(nodes_data) if len(nodes_data)>0 else np.empty((0,11))
+        self.edges_f_data = np.vstack(edges_data) if len(edges_data) > 0 else np.empty((0, 11))
         self.cG = cG
 
     def get_merged_fcoords_data(self):
