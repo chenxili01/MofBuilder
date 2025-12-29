@@ -35,8 +35,7 @@ class Framework:
         self.framework_data = None  #merged data for the whole framework, generated in write()
         self.framework_fcoords_data = None  #merged fractional coordinates for the whole framework, generated in write()
 
-        self.solvationbuilder = SolvationBuilder(comm=self.comm,
-                                                 ostream=self.ostream)
+
         self.solvents = []  #list of solvent names or xyz files
         self.solvents_molecules = []  #list of solvent molecules
         self.solvents_proportions = []  #list of solvent proportions
@@ -112,11 +111,11 @@ class Framework:
         self.mlp_model_path = None  #path to the MLP model file
 
 
-    def exchange(self,
-                 exchange_indices=[],
-                 exchange_node_pdbfile=None,
-                 exchange_linker_pdbfile=None,
-                 exchange_linker_molecule=None):
+    def replace(self,
+                 replace_indices=[],
+                 new_node_pdbfile=None,
+                 new_linker_pdbfile=None,
+                 new_linker_molecule=None):
         self.defectgenerator = TerminationDefectGenerator(comm=self.comm,
                                                           ostream=self.ostream)
         self.defectgenerator.use_termination = self.termination
@@ -130,70 +129,69 @@ class Framework:
         self.defectgenerator.update_node_termination = self.update_node_termination
         self.defectgenerator.unsaturated_linkers = self.unsaturated_linkers
         self.defectgenerator.unsaturated_nodes = self.unsaturated_nodes
-        #exchange
-        if exchange_node_pdbfile is not None:
-            self.exchange_node_pdbfile = exchange_node_pdbfile
-            #use pdbreader to read the exchange node pdb files
+        #replace
+        if new_node_pdbfile is not None:
+            self.new_node_pdbfile = new_node_pdbfile
+            #use pdbreader to read the replace node pdb files
             pdbreader = PdbReader(comm=self.comm, ostream=self.ostream)
-            self.defectgenerator.exchange_node_data = pdbreader.read_pdb(
-                filepath=self.exchange_node_pdbfile)
-            self.defectgenerator.exchange_node_X_data = pdbreader.X_data
-        if exchange_linker_pdbfile is not None:
-            self.exchange_linker_pdbfile = exchange_linker_pdbfile
-            #use pdbreader to read the exchange linker pdb files
+            self.defectgenerator.new_node_data = pdbreader.read_pdb(
+                filepath=self.new_node_pdbfile)
+            self.defectgenerator.new_node_X_data = pdbreader.X_data
+        if new_linker_pdbfile is not None:
+            self.new_linker_pdbfile = new_linker_pdbfile
+            #use pdbreader to read the replace linker pdb files
             pdbreader = PdbReader(comm=self.comm, ostream=self.ostream)
-            self.defectgenerator.exchange_linker_data = pdbreader.read_pdb(
-                filepath=self.exchange_linker_pdbfile)
-            self.defectgenerator.exchange_linker_X_data = pdbreader.X_data
-        if exchange_linker_molecule is not None:
-            self.exchange_linker_molecule = exchange_linker_molecule
+            self.defectgenerator.new_linker_data = pdbreader.read_pdb(
+                filepath=self.new_linker_pdbfile)
+            self.defectgenerator.new_linker_X_data = pdbreader.X_data
+        if new_linker_molecule is not None:
+            self.new_linker_molecule = new_linker_molecule
             #use the molecule directly
-            fr_ex_linker = FrameLinker(comm=self.comm, ostream=self.ostream)
-            fr_ex_linker.linker_connectivity = self.linker_connectivity
-            fr_ex_linker.create(molecule=self.exchange_linker_molecule)
+            fr_new_linker = FrameLinker(comm=self.comm, ostream=self.ostream)
+            fr_new_linker.linker_connectivity = self.linker_connectivity
             if self.save_files:  #TODO: check if the target directory is set
-                fr_ex_linker.target_directory = self.target_directory
-            fr_ex_linker.create(molecule=self.exchange_linker_molecule)
+                fr_new_linker.target_directory = self.target_directory
+            fr_new_linker.create(molecule=self.new_linker_molecule)
             #pass linker data
-            ex_linker_center_data = fr_ex_linker.linker_center_data
-            ex_linker_center_X_data = fr_ex_linker.linker_center_X_data
-            if fr_ex_linker.linker_connectivity > 2:
+            new_linker_center_data = fr_new_linker.linker_center_data
+            new_linker_center_X_data = fr_new_linker.linker_center_X_data
+            if fr_new_linker.linker_connectivity > 2:
                 #recenter com of out data
-                ex_linker_com = np.mean(
-                    fr_ex_linker.linker_outer_X_data[:, 5:8].astype(float),
+                new_linker_com = np.mean(
+                    fr_new_linker.linker_outer_X_data[:, 5:8].astype(float),
                     axis=0)
-                ex_linker_outer_data = np.hstack(
-                    (fr_ex_linker.linker_outer_data[:, 0:5],
-                     fr_ex_linker.linker_outer_data[:, 5:8].astype(float) -
-                     ex_linker_com, fr_ex_linker.linker_outer_data[:, 8:]))
-                ex_linker_outer_X_data = np.hstack(
-                    (fr_ex_linker.linker_outer_X_data[:, 0:5],
-                     fr_ex_linker.linker_outer_X_data[:, 5:8].astype(float) -
-                     ex_linker_com, fr_ex_linker.linker_outer_X_data[:, 8:]))
-                ex_linker_frag_length = np.linalg.norm(
-                    ex_linker_outer_X_data[0, 5:8].astype(float) -
-                    ex_linker_outer_X_data[1, 5:8].astype(float))
+                new_linker_outer_data = np.hstack(
+                    (fr_new_linker.linker_outer_data[:, 0:5],
+                     fr_new_linker.linker_outer_data[:, 5:8].astype(float) -
+                     new_linker_com, fr_new_linker.linker_outer_data[:, 8:]))
+                new_linker_outer_X_data = np.hstack(
+                    (fr_new_linker.linker_outer_X_data[:, 0:5],
+                     fr_new_linker.linker_outer_X_data[:, 5:8].astype(float) -
+                     new_linker_com, fr_new_linker.linker_outer_X_data[:, 8:]))
+                new_linker_frag_length = np.linalg.norm(
+                    new_linker_outer_X_data[0, 5:8].astype(float) -
+                    new_linker_outer_X_data[1, 5:8].astype(float))
             else:
-                ex_linker_frag_length = np.linalg.norm(
-                    ex_linker_center_X_data[0, 5:8].astype(float) -
-                    ex_linker_center_X_data[1, 5:8].astype(float))
+                new_linker_frag_length = np.linalg.norm(
+                    new_linker_center_X_data[0, 5:8].astype(float) -
+                    new_linker_center_X_data[1, 5:8].astype(float))
 
-            self.defectgenerator.exchange_linker_data = ex_linker_center_data
-            self.defectgenerator.exchange_linker_X_data = ex_linker_center_X_data
+            self.defectgenerator.new_linker_data = new_linker_center_data
+            self.defectgenerator.new_linker_X_data = new_linker_center_X_data
 
-        exG = self.defectgenerator.exchange_items(exchange_indices,
+        rpG = self.defectgenerator.replace_items(replace_indices,
                                                   self.graph.copy())
-        # create a new Framework object to hold the exchanged graph
+        # create a new Framework object to hold the replaced graph
         new_framework = Framework(comm=self.comm, ostream=self.ostream)
         #inherit the properties from the current framework all attributes except graph
         for attr, value in self.__dict__.items():
             if attr not in ['graph', 'defectgenerator', 'framework_data']:
                 setattr(new_framework, attr, safe_copy(value))
-        new_framework.graph = exG.copy()
+        new_framework.graph = rpG.copy()
         new_framework.get_merged_data()
         return new_framework
 
-    def remove_defects(self, remove_indices=[]):
+    def remove(self, remove_indices=[]):
         self.defectgenerator = TerminationDefectGenerator(comm=self.comm,
                                                           ostream=self.ostream)
         self.defectgenerator.use_termination = self.termination
@@ -352,7 +350,12 @@ class Framework:
                 solvents_proportions=[],
                 solvents_quantities=[],
                 padding_angstrom=10):
+        self.solvationbuilder = SolvationBuilder(comm=self.comm, ostream=self.ostream)
         self.solvationbuilder.solvents_files = solvents_files if solvents_files else self.solvents
+        #if not provided, use TIP3P as default solvent
+        if not self.solvationbuilder.solvents_files:
+            self.solvents_file = Path(self.data_path, 'solvents_database', 'TIP3P.xyz')
+            solvents_proportions = [1]
         self.solvationbuilder.solute_data = self.framework_data
         self.solvationbuilder.solvents_proportions = solvents_proportions if solvents_proportions else self.solvents_proportions
         self.solvationbuilder.solvents_quantities = solvents_quantities if solvents_quantities else self.solvents_quantities
@@ -467,6 +470,7 @@ class Framework:
         self.ostream.print_info(
             f"MD input gro file: {grofile}, top file: {self.gmx_ff.top_path}")
         self.ostream.flush()
+        
         #setup MD driver
         self.md_driver = OpenmmSetup(gro_file=grofile,
                                      top_file=self.gmx_ff.top_path,
@@ -475,8 +479,8 @@ class Framework:
         self.md_driver.system_pbc = system_pbc
         # Run EM + NVT + NPT with single continuous PDB trajectory
 
-    def show(self, w=800, h=600, res_indices=False, res_name=False):
+    def show(self, w=800, h=600, residue_indices=False, residue_name=False):
         self.viewer = Viewer()
         self.viewer.eG_dict = self.graph_index_name_dict
         self.viewer.merged_lines = self.framework_data
-        self.viewer.lines_show(w, h, res_indices, res_name)
+        self.viewer.lines_show(w, h, residue_indices, residue_name) 
