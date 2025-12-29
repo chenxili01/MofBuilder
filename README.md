@@ -62,7 +62,7 @@ If you use MofBuilder in your research, please cite:
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/caseyli01/MofBuilder/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/caseyli01/MofBuilder/discussions)
+- **Issues**: [GitHub Issues](https://github.com/chenxili01/MofBuilder/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/chenxili01/MofBuilder/discussions)
 - **Documentation**: [ReadTheDocs](https://mofbuilder.readthedocs.io)
 
