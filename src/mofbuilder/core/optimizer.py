@@ -206,6 +206,7 @@ class NetOptimizer:
         node_pos_dict, node_X_pos_dict = self._apply_rot_trans2dict(
             G, node_pos_dict, node_X_pos_dict)
         ###3D free rotation
+        saved_optimized_rotations = None
 
         ini_rot = (np.eye(3, 3).reshape(1, 3, 3).repeat(len(pname_set),
                                                         axis=0))
@@ -227,6 +228,9 @@ class NetOptimizer:
                     "use the loaded optimized_rotations from the previous optimization as initial guess"
                 )
                 ini_rot = saved_optimized_rotations.reshape(-1, 3, 3)
+
+        if saved_optimized_rotations is None:
+            self.skip_rotation_optimization = False
 
         if not self.skip_rotation_optimization:
             ####TODO: modified for mil53
@@ -438,8 +442,7 @@ class NetOptimizer:
                                 axis = np.array([0, 0, 1])
 
                         axis = axis / np.linalg.norm(axis)
-                        flip_matrix = np.eye(3) - 2 * np.outer(
-                            axis, axis)  # Householder matrix for reflection
+                        flip_matrix = np.eye(3) - 2 * np.outer(axis, axis)  # Householder matrix for reflection
                         rot = np.dot(rot, flip_matrix)
                     # Flip the last column of the rotation matrix if the determinant is negative
                     rot_record.append(rot)
@@ -687,6 +690,8 @@ class OptimizationDriver:
         self.display = True
         self.eps = 1e-8
 
+        self.fixed_cell_shape = True
+
         self._debug = False
 
     def _objective_function_pre(self, params, G, static_atom_positions):
@@ -909,9 +914,15 @@ class OptimizationDriver:
         return optimized_rotations, static_atom_positions
 
     def _scale_objective_function(self, params, old_cell_params,
-                                  old_cartesian_coords, new_cartesian_coords):
-        a_new, b_new, c_new, _, _, _ = params
+                                  old_cartesian_coords, new_cartesian_coords,ratio_ba,ratio_ca):
+
         a_old, b_old, c_old, alpha_old, beta_old, gamma_old = old_cell_params
+        a_new, b_new, c_new, _, _, _ = params
+        #constrain the angles to be the same as old cell
+        if self.fixed_cell_shape:
+            b_new = a_new * ratio_ba
+            c_new = a_new * ratio_ca
+
 
         # Compute transformation matrix for the old unit cell, T is the unit cell matrix
         T_old = unit_cell_to_cartesian_matrix(a_old, b_old, c_old, alpha_old,
@@ -960,11 +971,14 @@ class OptimizationDriver:
         # Bounds: a, b, c > 3; angles [0, 180]
         bounds = [(3, None), (3, None), (3, None)] + [(20, 180)] * 3
 
+        ratio_ba = round(initial_params[1] / initial_params[0], 5)
+        ratio_ca = round(initial_params[2] / initial_params[0], 5)
+
         # Optimize using L-BFGS-B to minimize the objective function
         result = minimize(
             self._scale_objective_function,
             x0=initial_params,
-            args=(old_cell_params, old_cartesian_coords, new_cartesian_coords),
+            args=(old_cell_params, old_cartesian_coords, new_cartesian_coords,ratio_ba,ratio_ca),
             method="L-BFGS-B",
             bounds=bounds,
         )
@@ -974,7 +988,11 @@ class OptimizationDriver:
         self.ostream.print_info(
             f"Optimized New Cell Parameters: {optimized_params}\nTemplate Cell Parameters: {cell_info}"
         )
-
+        if self.fixed_cell_shape:
+            self.ostream.print_info(
+                "Note: Cell shape is fixed during optimization.")
+            optimized_params[1]= optimized_params[0]*(old_cell_params[1]/old_cell_params[0])
+            optimized_params[2]= optimized_params[0]*(old_cell_params[2]/old_cell_params[0])
         return optimized_params
 
     # use optimized_params to update all of nodes ccoords in G, according to the fccoords
