@@ -174,8 +174,10 @@ class LinkerForceFieldGenerator:
         half_len_X_num = len(X_indices_coords) // 2
         X1_ind_coords = X_indices_coords[:half_len_X_num]
         X2_ind_coords = X_indices_coords[half_len_X_num:]
-        print(f"X1_indices: {X1_ind_coords}")
-        print(f"X2_indices: {X2_ind_coords}")
+        if self._debug:
+            self.ostream.print_info(f"X1_indices: {X1_ind_coords}")
+            self.ostream.print_info(f"X2_indices: {X2_ind_coords}")
+            self.ostream.flush()
 
         for i, j in zip(X1_ind_coords, X2_ind_coords):
             #check distance
@@ -241,6 +243,7 @@ class LinkerForceFieldGenerator:
         mol_scf_drv.ostream.mute()
         mol_scf_results = mol_scf_drv.compute(molecule, basis)
         mol_opt_drv = OptimizationDriver(mol_scf_drv)
+        mol_opt_drv.ostream.mute()
         mol_opt_drv.conv_energy = 1e-04
         mol_opt_drv.conv_drms = 1e-02
         mol_opt_drv.conv_dmax = 2e-02
