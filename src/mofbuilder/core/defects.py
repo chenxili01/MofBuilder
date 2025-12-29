@@ -28,8 +28,8 @@ class TerminationDefectGenerator:
     find unstatuirated node 
     remove node
     remove linker
-    exchange node by superimpose
-    exchange linker by superimpose
+    replace node by superimpose
+    replace linker by superimpose
     """
 
     def __init__(self, comm=None, ostream=None):
@@ -64,13 +64,13 @@ class TerminationDefectGenerator:
         self.clean_unsaturated_linkers = False
         self.update_node_termination = True
 
-        #for exchange
-        self.nodes_idx2ex = []
-        self.linkers_idx2ex = []
-        self.exchange_node_data = None
-        self.exchange_node_X_data = None
-        self.exchange_linker_data = None
-        self.exchange_linker_X_data = None
+        #for replace
+        self.nodes_idx2rp = []
+        self.linkers_idx2rp = []
+        self.new_node_data = None
+        self.new_node_X_data = None
+        self.new_linker_data = None
+        self.new_linker_X_data = None
 
         #will be set after use
         #self.saved_eG_matched_vnode_xind = None  #saved matched_vnode_xind before remove items
@@ -178,43 +178,43 @@ class TerminationDefectGenerator:
             return termG
 
 
-    def exchange_items(self, res_idx2ex, G):
-        nodes_name2ex = self._extract_node_name_from_eG_dict(
-            res_idx2ex, self.eG_index_name_dict)
+    def replace_items(self, res_idx2rp, G):
+        nodes_name2rp = self._extract_node_name_from_eG_dict(
+            res_idx2rp, self.eG_index_name_dict)
         #split the node or edge name
-        exchange_nodes_name = [n for n in nodes_name2ex if pname(n) != "EDGE"]
-        exchange_edges_name = [n for n in nodes_name2ex if pname(n) == "EDGE"]
-        if (not exchange_nodes_name) and (not exchange_edges_name):
+        new_nodes_name = [n for n in nodes_name2rp if pname(n) != "EDGE"]
+        replace_edges_name = [n for n in nodes_name2rp if pname(n) == "EDGE"]
+        if (not new_nodes_name) and (not replace_edges_name):
             if self._debug:
-                self.ostream.print_info("no nodes or linkers to exchange, return the original G")
+                self.ostream.print_info("no nodes or linkers to replace, return the original G")
                 self.ostream.flush()
             return G
-        exG = G.copy()
-        if exchange_nodes_name:
-            self.ostream.print_info(f"exchange nodes: {exchange_nodes_name}")
-            #check if the exchange_node_data is set
-            if self.exchange_node_data is None:
-                self.ostream.print_warning("exchange_node_data is not set, skip exchanging nodes")
-                #skip exchanging nodes
-                exG = G.copy()
+        rpG = G.copy()
+        if new_nodes_name:
+            self.ostream.print_info(f"replace nodes: {new_nodes_name}")
+            #check if the new_node_data is set
+            if self.new_node_data is None:
+                self.ostream.print_warning("new_node_data is not set, skip replacing nodes")
+                #skip replacing nodes
+                rpG = G.copy()
             else:
-                exG = self._exchange_items_in_G(exchange_nodes_name, G,
-                                                self.exchange_node_data,
-                                                self.exchange_node_X_data,
+                rpG = self._replace_items_in_G(new_nodes_name, G,
+                                                self.new_node_data,
+                                                self.new_node_X_data,
                                                 self.sc_unit_cell_inv)
-        if exchange_edges_name:
-            self.ostream.print_info(f"exchange linkers: {exchange_edges_name}")
-            #check if the exchange_linker_data is set
-            if self.exchange_linker_data is None:
-                self.ostream.print_warning("exchange_linker_data is not set, skip exchanging linkers")
-                #skip exchanging linkers
-                exG = exG.copy()
+        if replace_edges_name:
+            self.ostream.print_info(f"replace linkers: {replace_edges_name}")
+            #check if the new_linker_data is set
+            if self.new_linker_data is None:
+                self.ostream.print_warning("new_linker_data is not set, skip replacing linkers")
+                #skip replacing linkers
+                rpG = rpG.copy()
             else:
-                exG = self._exchange_items_in_G(exchange_edges_name, exG,
-                                            self.exchange_linker_data,
-                                            self.exchange_linker_X_data,
+                rpG = self._replace_items_in_G(replace_edges_name, rpG,
+                                            self.new_linker_data,
+                                            self.new_linker_X_data,
                                             self.sc_unit_cell_inv)
-        return exG
+        return rpG
 
     def _find_unsaturated_nodes(self, eG, node_connectivity):
         # find unsaturated node V in eG
@@ -461,7 +461,7 @@ class TerminationDefectGenerator:
 
         return eG
 
-    def _exchange_items_in_G(self,
+    def _replace_items_in_G(self,
                              edge_n_list,
                              G,
                              new_n_data,
@@ -504,6 +504,6 @@ class TerminationDefectGenerator:
 
             G.nodes[n]["f_points"] = replaced_linker_f_points
             G.nodes[n]["name"] = newname if newname else "R" + G.nodes[n]["name"]
-            self.ostream.print_info(f"linker {n} exchanged")
+            self.ostream.print_info(f"linker {n} replaced")
 
         return G
