@@ -94,7 +94,7 @@ class OpenmmSetup:
                      record_interval_ps=record_interval, whole_traj_file=whole_traj_file)
 
     def run_pipeline(self, steps=['em','nvt','npt'], nvt_time=100, npt_time=100,
-                     output_prefix='sim', record_interval=1, whole_traj=False):
+                     output_prefix='mdsim', record_interval=1, whole_traj=False):
         """Run a sequence of steps. If whole_traj=True, all frames are appended to a single PDB."""
         self.temperature = self.temperature_K*kelvin
         self.timestep = self.timestep_fs*femtoseconds
