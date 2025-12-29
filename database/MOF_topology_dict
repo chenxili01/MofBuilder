@@ -1,10 +1,10 @@
 MOF            node_connectivity    metal     linker_topic     topology 
-UiO-66                 12             Zr           2              fcu        
-UiO-66                 12             Hf           2              fcu        
-UiO-67                 12             Zr           2              fcu        
-UiO-67                 12             Hf           2              fcu        
-UiO-68                 12             Zr           2              fcu        
-UiO-68                 12             Hf           2              fcu        
+UIO-66                 12             Zr           2              fcu        
+UIO-66                 12             Hf           2              fcu        
+UIO-67                 12             Zr           2              fcu        
+UIO-67                 12             Hf           2              fcu        
+UIO-68                 12             Zr           2              fcu        
+UIO-68                 12             Hf           2              fcu        
 PCN-222                8              Zr           4              csq        
 PCN-222                8              Hf           4              csq        
 MOF-545                8              Zr           4              csq        
