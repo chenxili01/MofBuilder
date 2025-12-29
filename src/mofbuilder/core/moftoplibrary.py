@@ -10,8 +10,8 @@ from veloxchem.errorhandler import assert_msg_critical
 from veloxchem.environment import get_data_path
 
 
-
 class MofTopLibrary:
+
     def __init__(self, comm=None, ostream=None, filepath=None):
         if comm is None:
             comm = MPI.COMM_WORLD
@@ -57,9 +57,12 @@ class MofTopLibrary:
             # titles = lines[0].split()
             mofs = lines[1:]
         if self._debug:
-            self.ostream.print_info(f"MOF_topology_dict path: {mof_top_dict_path}")
-            self.ostream.print_info(f"Got {len(mofs)} MOF families from MOF_topology_dict")
-            self.ostream.print_info(f"MOF families: {[mof.split()[0] for mof in mofs]}")
+            self.ostream.print_info(
+                f"MOF_topology_dict path: {mof_top_dict_path}")
+            self.ostream.print_info(
+                f"Got {len(mofs)} MOF families from MOF_topology_dict")
+            self.ostream.print_info(
+                f"MOF families: {[mof.split()[0] for mof in mofs]}")
             self.ostream.flush()
         mof_top_dict = {}
         for mof in mofs:
@@ -75,14 +78,13 @@ class MofTopLibrary:
                 mof_top_dict[mof_name]["metal"].append(mof.split()[2])
         self.mof_top_dict = mof_top_dict
 
-
     def list_mof_families(self):
         # print mof_top_dict keys fit to screen
         if self.mof_top_dict is None:
             self._read_mof_top_dict(self.data_path)
-        print("-"*80)
-        print("\t"*3,"Available MOF Families:")
-        print("-"*80)
+        print("-" * 80)
+        print("\t" * 3, "Available MOF Families:")
+        print("-" * 80)
         for mof_family in self.mof_top_dict.keys():
             print(f" - {mof_family}")
 
@@ -104,8 +106,10 @@ class MofTopLibrary:
 
     def select_mof_family(self, mof_family):
         self.mof_family = mof_family.upper()
-        self.node_connectivity = self.mof_top_dict[mof_family]["node_connectivity"]
-        self.linker_connectivity = self.mof_top_dict[mof_family]["linker_topic"]
+        self.node_connectivity = self.mof_top_dict[mof_family][
+            "node_connectivity"]
+        self.linker_connectivity = self.mof_top_dict[mof_family][
+            "linker_topic"]
         self.net_filename = self.mof_top_dict[mof_family]["topology"] + ".cif"
         # check if template cif exists
         self.ostream.print_info(f"MOF family {mof_family} is selected")
@@ -117,26 +121,39 @@ class MofTopLibrary:
             return
         self.ostream.print_info(f"node connectivity: {self.node_connectivity}")
         self.ostream.print_info(f"linker topic: {self.linker_connectivity}")
-        self.ostream.print_info(f"available metal nodes: {self.mof_top_dict[self.mof_family]['metal']}")
+        self.ostream.print_info(
+            f"available metal nodes: {self.mof_top_dict[self.mof_family]['metal']}"
+        )
         self.ostream.flush()
         if self.template_directory is None:
             self.template_directory = str(
                 Path(self.data_path, "template_database"))  # default
-            self.ostream.print_info(f"Searching template cif files in {self.template_directory}...")
+            self.ostream.print_info(
+                f"Searching template cif files in {self.template_directory}..."
+            )
             self.ostream.flush()
 
-        template_cif_file = str(Path(self.template_directory, self.net_filename))
+        template_cif_file = str(
+            Path(self.template_directory, self.net_filename))
 
         if not Path(template_cif_file).exists():
-            self.ostream.print_info(f"{self.net_filename} net does not exist in {self.template_directory}")
-            self.ostream.print_info("please select another MOF family, or upload the template cif file")
+            self.ostream.print_info(
+                f"{self.net_filename} net does not exist in {self.template_directory}"
+            )
+            self.ostream.print_info(
+                "please select another MOF family, or upload the template cif file"
+            )
 
             #TODO: set it as repository for template cif files
-            self.ostream.print_info("or download the template cif files from the internet and  set it as the template directory") 
+            self.ostream.print_info(
+                "or download the template cif files from the internet and  set it as the template directory"
+            )
             self.ostream.flush()
             return
         else:
-            self.ostream.print_info(f"{self.net_filename} is found and will be used for MOF building")
+            self.ostream.print_info(
+                f"{self.net_filename} is found and will be used for MOF building"
+            )
             self.ostream.flush()
             self.selected_template_cif_file = template_cif_file
 
@@ -160,24 +177,30 @@ class MofTopLibrary:
         assert_msg_critical(
             Path(template_cif).exists(),
             f"template cif file {template_cif} does not exist, please upload it first",
-        )   
+        )
 
-        assert_msg_critical(Path(template_cif).suffix == ".cif",
+        assert_msg_critical(
+            Path(template_cif).suffix == ".cif",
             f"template cif file {template_cif} is not a cif file, please upload a cif file",
-        )   
+        )
 
-        assert isinstance(template_mof_node_connectivity, int), "please enter an integer for node connectivity"
-        assert isinstance(template_node_metal, str), "please enter a string for node metal"
-        assert isinstance(template_linker_topic, int), "please enter an integer for linker topic"
+        assert isinstance(template_mof_node_connectivity,
+                          int), "please enter an integer for node connectivity"
+        assert isinstance(template_node_metal,
+                          str), "please enter a string for node metal"
+        assert isinstance(template_linker_topic,
+                          int), "please enter an integer for linker topic"
 
-        self.ostream.print_info(f"Submitting {mof_family} to the database {Path(self.data_path, 'template_database')}")
+        self.ostream.print_info(
+            f"Submitting {mof_family} to the database {Path(self.data_path, 'template_database')}"
+        )
         self.ostream.print_info(f"template cif file: {template_cif}")
-        self.ostream.print_info(f"node connectivity: {template_mof_node_connectivity}")
+        self.ostream.print_info(
+            f"node connectivity: {template_mof_node_connectivity}")
         self.ostream.print_info(f"node metal: {template_node_metal}")
         self.ostream.print_info(f"linker topic: {template_linker_topic}")
         self.ostream.print_info(f"overwrite existing mof family: {overwrite}")
         self.ostream.flush()
-
 
         if mof_family in self.mof_top_dict.keys():
             if not overwrite:
@@ -197,8 +220,7 @@ class MofTopLibrary:
         self.ostream.flush()
 
         # rewrite mof_top_dict file
-        with open(str(Path(self.data_path, "MOF_topology_dict")),
-                    "w") as fp:
+        with open(str(Path(self.data_path, "MOF_topology_dict")), "w") as fp:
             head = "MOF            node_connectivity    metal     linker_topic     topology \n"
             fp.write(head)
             for key in self.mof_top_dict.keys():
@@ -215,26 +237,26 @@ class MofTopLibrary:
         self.ostream.print_info("mof_top_dict file is updated")
         self.ostream.flush()
         return str(Path(self.data_path, "template_database", template_cif))
-    
-    def fetch(self,mof_family=None):
+
+    def fetch(self, mof_family=None):
         mof_family = mof_family.upper()
         self._read_mof_top_dict(self.data_path)
         if mof_family is None:
             self.ostream.print_info("please select a MOF family from below:")
             self.ostream.flush()
             self.list_mof_families()
-            return 
+            return
         else:
             if mof_family not in self.mof_top_dict.keys():
                 self.ostream.print_warning(f"{mof_family} not in database")
-                self.ostream.print_info("please select a MOF family from below:")
+                self.ostream.print_info(
+                    "please select a MOF family from below:")
                 self.ostream.flush()
                 self.list_mof_families()
-                return 
+                return
             else:
                 self.select_mof_family(mof_family)
                 return self.selected_template_cif_file
-
 
 
 if __name__ == "__main__":
@@ -251,5 +273,3 @@ if __name__ == "__main__":
     #    template_linker_topic=2,
     #    overwrite=True,
     #)
-
-    

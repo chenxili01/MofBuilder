@@ -283,7 +283,7 @@ class NetOptimizer:
             new_edge_length = self.constant_length + 2 * x_com_length
         else:
             new_edge_length = self.linker_frag_length + 2 * self.constant_length + 2 * x_com_length
-            
+
         # update the node ccoords in G by loop edge, start from the start_node, and then update the connected node ccoords by the edge length, and update the next node ccords from the updated node
 
         new_ccoords, old_ccoords = self._update_node_ccoords(
@@ -442,7 +442,8 @@ class NetOptimizer:
                                 axis = np.array([0, 0, 1])
 
                         axis = axis / np.linalg.norm(axis)
-                        flip_matrix = np.eye(3) - 2 * np.outer(axis, axis)  # Householder matrix for reflection
+                        flip_matrix = np.eye(3) - 2 * np.outer(
+                            axis, axis)  # Householder matrix for reflection
                         rot = np.dot(rot, flip_matrix)
                     # Flip the last column of the rotation matrix if the determinant is negative
                     rot_record.append(rot)
@@ -914,7 +915,8 @@ class OptimizationDriver:
         return optimized_rotations, static_atom_positions
 
     def _scale_objective_function(self, params, old_cell_params,
-                                  old_cartesian_coords, new_cartesian_coords,ratio_ba,ratio_ca):
+                                  old_cartesian_coords, new_cartesian_coords,
+                                  ratio_ba, ratio_ca):
 
         a_old, b_old, c_old, alpha_old, beta_old, gamma_old = old_cell_params
         a_new, b_new, c_new, _, _, _ = params
@@ -922,7 +924,6 @@ class OptimizationDriver:
         if self.fixed_cell_shape:
             b_new = a_new * ratio_ba
             c_new = a_new * ratio_ca
-
 
         # Compute transformation matrix for the old unit cell, T is the unit cell matrix
         T_old = unit_cell_to_cartesian_matrix(a_old, b_old, c_old, alpha_old,
@@ -978,7 +979,8 @@ class OptimizationDriver:
         result = minimize(
             self._scale_objective_function,
             x0=initial_params,
-            args=(old_cell_params, old_cartesian_coords, new_cartesian_coords,ratio_ba,ratio_ca),
+            args=(old_cell_params, old_cartesian_coords, new_cartesian_coords,
+                  ratio_ba, ratio_ca),
             method="L-BFGS-B",
             bounds=bounds,
         )
@@ -991,8 +993,10 @@ class OptimizationDriver:
         if self.fixed_cell_shape:
             self.ostream.print_info(
                 "Note: Cell shape is fixed during optimization.")
-            optimized_params[1]= optimized_params[0]*(old_cell_params[1]/old_cell_params[0])
-            optimized_params[2]= optimized_params[0]*(old_cell_params[2]/old_cell_params[0])
+            optimized_params[1] = optimized_params[0] * (old_cell_params[1] /
+                                                         old_cell_params[0])
+            optimized_params[2] = optimized_params[0] * (old_cell_params[2] /
+                                                         old_cell_params[0])
         return optimized_params
 
     # use optimized_params to update all of nodes ccoords in G, according to the fccoords

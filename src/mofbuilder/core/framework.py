@@ -35,7 +35,6 @@ class Framework:
         self.framework_data = None  #merged data for the whole framework, generated in write()
         self.framework_fcoords_data = None  #merged fractional coordinates for the whole framework, generated in write()
 
-
         self.solvents = []  #list of solvent names or xyz files
         self.solvents_molecules = []  #list of solvent molecules
         self.solvents_proportions = []  #list of solvent proportions
@@ -93,8 +92,7 @@ class Framework:
         self.sc_unit_cell_inv = None
         self.periodicity = False  #whether the framework are periodic
 
-
-        self.linker_fake_edge = False #TODO: check
+        self.linker_fake_edge = False  #TODO: check
 
         self.clean_unsaturated_linkers = False
         self.update_node_termination = True
@@ -110,12 +108,11 @@ class Framework:
         self.mlp_type = 'mace'  #default MLP type
         self.mlp_model_path = None  #path to the MLP model file
 
-
     def replace(self,
-                 replace_indices=[],
-                 new_node_pdbfile=None,
-                 new_linker_pdbfile=None,
-                 new_linker_molecule=None):
+                replace_indices=[],
+                new_node_pdbfile=None,
+                new_linker_pdbfile=None,
+                new_linker_molecule=None):
         self.defectgenerator = TerminationDefectGenerator(comm=self.comm,
                                                           ostream=self.ostream)
         self.defectgenerator.use_termination = self.termination
@@ -180,7 +177,7 @@ class Framework:
             self.defectgenerator.new_linker_X_data = new_linker_center_X_data
 
         rpG = self.defectgenerator.replace_items(replace_indices,
-                                                  self.graph.copy())
+                                                 self.graph.copy())
         # create a new Framework object to hold the replaced graph
         new_framework = Framework(comm=self.comm, ostream=self.ostream)
         #inherit the properties from the current framework all attributes except graph
@@ -232,7 +229,7 @@ class Framework:
         new_framework.get_merged_data()
         return new_framework
 
-    def get_merged_data(self,extra_graph=None):
+    def get_merged_data(self, extra_graph=None):
         self.mofwriter.G = extra_graph if extra_graph is not None else self.graph
         self.mofwriter.frame_cell_info = self.supercell_info
         self.mofwriter.sc_unit_cell = self.sc_unit_cell
@@ -249,28 +246,31 @@ class Framework:
 
     def _boundary_overlap_indices(self):
         boundary_overlap_list = []
-        for i in self.unsaturated_linkers+self.unsaturated_nodes:
+        for i in self.unsaturated_linkers + self.unsaturated_nodes:
             if i not in self.graph.nodes:
                 continue
+
             def mean_list(lst):
                 arr = np.vstack(lst)
                 mean_arr = np.mean(arr, axis=0)
                 return mean_arr
+
             com = mean_list(self.graph.nodes[i]['fcoords'])
+
             #every point should be less than 1
             def primitive_cell_check(point):
                 for i in point:
-                    if i >=1:
+                    if i >= 1:
                         return False
                 return True
+
             if not primitive_cell_check(com):
                 index = self.graph.nodes[i]['index']
                 boundary_overlap_list.append(index)
 
         return boundary_overlap_list
-    
 
-    def _mlp_omm_minimize(self,maxIterations=None):
+    def _mlp_omm_minimize(self, maxIterations=None):
         try:
             from openmm.app import Simulation, PDBFile
             from openmm import LangevinIntegrator, unit
@@ -285,52 +285,65 @@ class Framework:
         self.write(format='pdb')
         pdb = PDBFile(f"{self.filename}.pdb")
         #delete the temporary pdb file after loading
-        Path(f"{self.filename}.pdb").unlink() 
+        Path(f"{self.filename}.pdb").unlink()
         potential = MLPotential(self.mlp_type, modelPath=self.mlp_model_path)
         system = potential.createSystem(pdb.topology)
-        integrator = LangevinIntegrator(300*unit.kelvin, 1/unit.picosecond, 1*unit.femtoseconds)
+        integrator = LangevinIntegrator(300 * unit.kelvin, 1 / unit.picosecond,
+                                        1 * unit.femtoseconds)
         simulation = Simulation(pdb.topology, system, integrator)
         simulation.context.setPositions(pdb.positions)
         if maxIterations is None:
             simulation.minimizeEnergy()
         else:
             simulation.minimizeEnergy(maxIterations)
-        state = simulation.context.getState(getPositions=True, enforcePeriodicBox=True)
+        state = simulation.context.getState(getPositions=True,
+                                            enforcePeriodicBox=True)
         positions = state.getPositions()
-        em_ccoords = np.vstack(positions.value_in_unit(unit.nanometers))*10  # Convert nm to Angstroms
+        em_ccoords = np.vstack(positions.value_in_unit(
+            unit.nanometers)) * 10  # Convert nm to Angstroms
         em_fcoords = np.dot(em_ccoords, self.sc_unit_cell_inv)
         return em_ccoords, em_fcoords
 
-
-    def write(self, format=[], filename=None,periodicity=False,mlp_em=False,mlp_maxIterations=None):
+    def write(self,
+              format=[],
+              filename=None,
+              periodicity=False,
+              mlp_em=False,
+              mlp_maxIterations=None):
 
         if periodicity or self.periodicity:
             self.ostream.print_info("Writing periodic system")
             self.ostream.flush()
             boundary_overlap_list = self._boundary_overlap_indices()
             if len(boundary_overlap_list) > 0:
-                #remove these linkers/nodes that overlap with boundary, but remove_defects() will 
+                #remove these linkers/nodes that overlap with boundary, but remove_defects() will
                 #created a new Framework object, only update the graph to mofwriter
-                new_framework = self.remove_defects(remove_indices=boundary_overlap_list)
+                new_framework = self.remove_defects(
+                    remove_indices=boundary_overlap_list)
                 self.get_merged_data(extra_graph=new_framework.graph)
 
         if mlp_em:
-            self.ostream.print_info("Performing MLP energy minimization before writing output files...")
+            self.ostream.print_info(
+                "Performing MLP energy minimization before writing output files..."
+            )
             self.ostream.flush()
             #update ccoords and fcoords in mofwriter
             em_ccoords, em_fcoords = self._mlp_omm_minimize(mlp_maxIterations)
-            em_merged_data = np.hstack((
-                self.framework_data[:, 0:5], em_ccoords,
-                self.framework_data[:, 8:]))
-            em_merged_fcoords = np.hstack((
-                self.framework_fcoords_data[:, 0:5], em_fcoords[:self.framework_fcoords_data.shape[0], :],
-                self.framework_fcoords_data[:, 8:]))
+            em_merged_data = np.hstack((self.framework_data[:, 0:5],
+                                        em_ccoords, self.framework_data[:,
+                                                                        8:]))
+            em_merged_fcoords = np.hstack(
+                (self.framework_fcoords_data[:, 0:5],
+                 em_fcoords[:self.framework_fcoords_data.shape[0], :],
+                 self.framework_fcoords_data[:, 8:]))
             self.mofwriter.merged_data = em_merged_data
             self.mofwriter.merged_fcoords_data = em_merged_fcoords
             self.framework_data = em_merged_data
             self.framework_fcoords_data = em_merged_fcoords
-            
-        self.filename = str(Path(filename).parent / Path(filename).stem) if filename is not None else f"{self.mof_family}_mofbuilder_output" 
+
+        self.filename = str(
+            Path(filename).parent / Path(filename).stem
+        ) if filename is not None else f"{self.mof_family}_mofbuilder_output"
         self.mofwriter.filename = self.filename  #whole path including directory
         self.ostream.print_info(f"Writing output files to {self.filename}.*")
         self.ostream.flush()
@@ -338,8 +351,8 @@ class Framework:
             self.mofwriter.write_xyz(skip_merge=True)
         if "cif" in format:
             self.mofwriter.write_cif(skip_merge=True,
-                                    supercell_boundary=self.supercell,
-                                    frame_cell_info=self.supercell_info)
+                                     supercell_boundary=self.supercell,
+                                     frame_cell_info=self.supercell_info)
         if "pdb" in format:
             self.mofwriter.write_pdb(skip_merge=True)
         if "gro" in format:
@@ -350,11 +363,13 @@ class Framework:
                 solvents_proportions=[],
                 solvents_quantities=[],
                 padding_angstrom=10):
-        self.solvationbuilder = SolvationBuilder(comm=self.comm, ostream=self.ostream)
+        self.solvationbuilder = SolvationBuilder(comm=self.comm,
+                                                 ostream=self.ostream)
         self.solvationbuilder.solvents_files = solvents_files if solvents_files else self.solvents
         #if not provided, use TIP3P as default solvent
         if not self.solvationbuilder.solvents_files:
-            self.solvents_file = Path(self.data_path, 'solvents_database', 'TIP3P.xyz')
+            self.solvents_file = Path(self.data_path, 'solvents_database',
+                                      'TIP3P.xyz')
             solvents_proportions = [1]
         self.solvationbuilder.solute_data = self.framework_data
         self.solvationbuilder.solvents_proportions = solvents_proportions if solvents_proportions else self.solvents_proportions
@@ -470,7 +485,7 @@ class Framework:
         self.ostream.print_info(
             f"MD input gro file: {grofile}, top file: {self.gmx_ff.top_path}")
         self.ostream.flush()
-        
+
         #setup MD driver
         self.md_driver = OpenmmSetup(gro_file=grofile,
                                      top_file=self.gmx_ff.top_path,
@@ -483,4 +498,4 @@ class Framework:
         self.viewer = Viewer()
         self.viewer.eG_dict = self.graph_index_name_dict
         self.viewer.merged_lines = self.framework_data
-        self.viewer.lines_show(w, h, residue_indices, residue_name) 
+        self.viewer.lines_show(w, h, residue_indices, residue_name)

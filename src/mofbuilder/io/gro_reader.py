@@ -36,6 +36,7 @@ class GroReader:
 
         # debug
         self._debug = False
+
     def read_gro(self, filepath=None, recenter=False, com_type=None):
         if filepath is not None:
             self.filepath = filepath

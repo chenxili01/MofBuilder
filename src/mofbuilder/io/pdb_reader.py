@@ -6,11 +6,13 @@ from veloxchem.veloxchemlib import mpi_master
 from veloxchem.errorhandler import assert_msg_critical
 import mpi4py.MPI as MPI
 import sys
-
 """
 atom_type, atom_label, atom_number, residue_name, residue_number, x, y, z, spin, charge, note
 """
+
+
 class PdbReader:
+
     def __init__(self, comm=None, ostream=None, filepath=None):
         if comm is None:
             comm = MPI.COMM_WORLD
@@ -36,7 +38,7 @@ class PdbReader:
         # debug
         self._debug = False
 
-    def read_pdb(self,filepath=None,recenter=False,com_type=None):
+    def read_pdb(self, filepath=None, recenter=False, com_type=None):
         if filepath is not None:
             self.filepath = filepath
         assert_msg_critical(
@@ -55,71 +57,85 @@ class PdbReader:
             line = line.strip()
             if len(line) > 0:  # skip blank line
                 if line.startswith("ATOM") or line.startswith("HETATM"):
-                    atom_number    = int(line[6:11]) if line[6:11].strip() else 1  # atom serial
-                    atom_type      = line[12:16].strip()  # atom name (e.g. "X1")
-                    residue_name   = line[17:20].strip()  # residue name
-                    chain_id       = line[21].strip() if line[21].strip() else "A"  # chain
-                    residue_number = int(line[22:26]) if line[22:26].strip() else 1  # residue number
-                    value_x        = float(line[30:38])
-                    value_y        = float(line[38:46])
-                    value_z        = float(line[46:54])
-                    occupancy      = float(line[54:60]) if line[54:60].strip() else 0.0
-                    b_factor       = float(line[60:66]) if line[60:66].strip() else 0.0
-                    atom_label     = line[76:78].strip()  # element symbol (e.g. "C")
-                    charge         = line[78:80].strip()  # formal charge (string like "2+")
+                    atom_number = int(
+                        line[6:11]) if line[6:11].strip() else 1  # atom serial
+                    atom_type = line[12:16].strip()  # atom name (e.g. "X1")
+                    residue_name = line[17:20].strip()  # residue name
+                    chain_id = line[21].strip() if line[21].strip(
+                    ) else "A"  # chain
+                    residue_number = int(line[22:26]) if line[22:26].strip(
+                    ) else 1  # residue number
+                    value_x = float(line[30:38])
+                    value_y = float(line[38:46])
+                    value_z = float(line[46:54])
+                    occupancy = float(
+                        line[54:60]) if line[54:60].strip() else 0.0
+                    b_factor = float(
+                        line[60:66]) if line[60:66].strip() else 0.0
+                    atom_label = line[76:78].strip(
+                    )  # element symbol (e.g. "C")
+                    charge = line[78:80].strip(
+                    )  # formal charge (string like "2+")
 
                     # custom mapping
                     note = nn(atom_type)
 
                     data.append([
-                        atom_type,       # assigned atom name, e.g. "CA"
-                        atom_label,      # element symbol, e.g. "C"
-                        atom_number,     # serial number
-                        residue_name,    # residue name
+                        atom_type,  # assigned atom name, e.g. "CA"
+                        atom_label,  # element symbol, e.g. "C"
+                        atom_number,  # serial number
+                        residue_name,  # residue name
                         residue_number,  # residue index
-                        value_x, value_y, value_z,
-                        occupancy,       # occupancy
-                        b_factor,       # B-factor
-                        note             # custom mapping
+                        value_x,
+                        value_y,
+                        value_z,
+                        occupancy,  # occupancy
+                        b_factor,  # B-factor
+                        note  # custom mapping
                     ])
-        
-        
+
         self.data = np.vstack(data)
+
         #should set type of array elements
         def type_data(arr):
-            arr[:,2] = arr[:,2].astype(int)
-            arr[:,4] = arr[:,4].astype(int)
-            arr[:,5:8] = arr[:,5:8].astype(float)
-            arr[:,8] = arr[:,8].astype(float)
-            arr[:,9] = arr[:,9].astype(float)
+            arr[:, 2] = arr[:, 2].astype(int)
+            arr[:, 4] = arr[:, 4].astype(int)
+            arr[:, 5:8] = arr[:, 5:8].astype(float)
+            arr[:, 8] = arr[:, 8].astype(float)
+            arr[:, 9] = arr[:, 9].astype(float)
             return arr
+
         self.data = type_data(self.data)
 
         if recenter:
             #if not define com_type, use all atoms to calculate com
             #else use the specified atom type to calculate com
             if com_type is None:
-                com_type_ccoords = self.data[:,5:8].astype(float)
+                com_type_ccoords = self.data[:, 5:8].astype(float)
             else:
-                if com_type not in self.data[:,-1]:
-                    self.ostream.print_warning(f"com_type {com_type} not in the pdb file, use all atoms to calculate com")
-                    com_type_ccoords = self.data[:,5:8].astype(float)
+                if com_type not in self.data[:, -1]:
+                    self.ostream.print_warning(
+                        f"com_type {com_type} not in the pdb file, use all atoms to calculate com"
+                    )
+                    com_type_ccoords = self.data[:, 5:8].astype(float)
                 else:
-                    com_type_ccoords = self.data[self.data[:,-1]==com_type][:,5:8].astype(float)
+                    com_type_ccoords = self.data[
+                        self.data[:, -1] == com_type][:, 5:8].astype(float)
             com = np.mean(com_type_ccoords, axis=0)
             if self._debug:
-                self.ostream.print_info(f"Center of mass type {com_type} at {com}")
+                self.ostream.print_info(
+                    f"Center of mass type {com_type} at {com}")
             self.data[:, 5:8] = self.data[:, 5:8].astype(float) - com
 
-        self.X_data = self.data[self.data[:,-1]=='X']
+        self.X_data = self.data[self.data[:, -1] == 'X']
 
     def expand_arr2data(self, arr):
         #arr type is [atom_type,atom_label,x,y,z]
         if arr is None or len(arr) == 0:
-            return None,None
+            return None, None
         if isinstance(arr, list):
             arr = np.vstack(arr)
-            
+
         data = []
         for i in range(len(arr)):
             atom_type = arr[i, 0]
@@ -133,12 +149,13 @@ class PdbReader:
             charge = 0.0
             spin = 0
             note = nn(atom_type)
-            data.append(
-                [atom_type, atom_label, atom_number, residue_name, residue_number, value_x, value_y, value_z, spin,
-                 charge, note])
+            data.append([
+                atom_type, atom_label, atom_number, residue_name,
+                residue_number, value_x, value_y, value_z, spin, charge, note
+            ])
         data = np.vstack(data)
-        X_data = data[data[:,-1]=='X']
-        return data,X_data
+        X_data = data[data[:, -1] == 'X']
+        return data, X_data
 
     def process_node_pdb(self):
         # pdb only have cartesian coordinates
@@ -179,4 +196,3 @@ if __name__ == "__main__":
     pdb.read_pdb()
     print(pdb.data)
     pdb.process_node_pdb()
-

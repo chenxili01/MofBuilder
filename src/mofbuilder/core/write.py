@@ -32,8 +32,8 @@ class MofWriter:
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
-        self.ostream = ostream or OutputStream(sys.stdout if self.rank == mpi_master() else None)
-
+        self.ostream = ostream or OutputStream(sys.stdout if self.rank ==
+                                               mpi_master() else None)
 
         #write the eG to the file
         #need to be set before use
@@ -44,7 +44,7 @@ class MofWriter:
         self.sc_unit_cell = None  #3x3 matrix of the supercell unit cell
         self.xoo_dict = None  #dict of xoo atom indices in the edge
         self.dummy_atom_node_dict = None  #dict of dummy atom counts in the node
-        
+
         self.residues_info = {}
         self.merged_data = None  #merged data of nodes, edges, terms
         self.merged_f_data = None  #merged fractional data of nodes, edges
@@ -69,8 +69,6 @@ class MofWriter:
                                            axis=0)
                 eG.nodes[n]["noxoo_f_points"] = noxoo_f_points
         return eG
-    
-   
 
     def convert_graph_to_data(self, G, sc_unit_cell):
         #convert the graph to the data array and anlyze the residues
@@ -87,7 +85,7 @@ class MofWriter:
             for i in range(len(arr)):
                 atom_type = arr[i, 0]
                 atom_label = arr[i, 1]
-                if atom_label=="Fr":
+                if atom_label == "Fr":
                     continue
                 value_x = float(arr[i, 2])
                 value_y = float(arr[i, 3])
@@ -150,7 +148,8 @@ class MofWriter:
                 if "term_c_points" in cG.nodes[n]:
                     for term_ind_key, c_positions in cG.nodes[n][
                             "term_c_points"].items():
-                        term_name = "T" + cG.nodes[n]["name"] #TODO: set term name
+                        term_name = "T" + cG.nodes[n][
+                            "name"]  #TODO: set term name
                         term_count -= 1
                         term_data = arr2data(c_positions,
                                              residue_name=term_name,
@@ -164,7 +163,7 @@ class MofWriter:
 
         self.nodes_data = nodes_data
         self.edges_data = edges_data
-        self.terms_data = terms_data 
+        self.terms_data = terms_data
         self.cG = cG
 
     def get_merged_data(self, dummy_atom_node_dict=None):
@@ -188,7 +187,6 @@ class MofWriter:
              )) if len(edges_data) > 0 or len(terms_data) > 0 else nodes_data
         self.merged_data = merged_data
 
-
         #get residue names and counts, include dummy_atom_node_dict if provided
 
         nodes_number = len(self.nodes_data)
@@ -196,16 +194,21 @@ class MofWriter:
         terms_number = len(self.terms_data)
 
         if dummy_atom_node_dict is not None:
-            self.residues_info['METAL']=nodes_number*dummy_atom_node_dict.get('METAL_count',0)
-            self.residues_info['HHO']=nodes_number*dummy_atom_node_dict.get('HHO_count',0)
-            self.residues_info['HO']=nodes_number*dummy_atom_node_dict.get('HO_count',0)
-            self.residues_info['O']=nodes_number*dummy_atom_node_dict.get('O_count',0)
-        self.residues_info[';NODE']=nodes_number #ingnore
-        self.residues_info['EDGE']=edges_number
-        self.residues_info['TNODE']=terms_number
+            self.residues_info[
+                'METAL'] = nodes_number * dummy_atom_node_dict.get(
+                    'METAL_count', 0)
+            self.residues_info[
+                'HHO'] = nodes_number * dummy_atom_node_dict.get(
+                    'HHO_count', 0)
+            self.residues_info['HO'] = nodes_number * dummy_atom_node_dict.get(
+                'HO_count', 0)
+            self.residues_info['O'] = nodes_number * dummy_atom_node_dict.get(
+                'O_count', 0)
+        self.residues_info[';NODE'] = nodes_number  #ingnore
+        self.residues_info['EDGE'] = edges_number
+        self.residues_info['TNODE'] = terms_number
 
         return merged_data
-
 
     def convert_graph_to_fcoords_data(self, G, supercell_boundary):
         #convert the graph to the data array and anlyze the residues
@@ -240,7 +243,8 @@ class MofWriter:
             return data
 
         def get_node_fcoords_data(n, G):
-            node_f_points = G.nodes[n]["noxoo_f_points"] # fractional coordinates
+            node_f_points = G.nodes[n][
+                "noxoo_f_points"]  # fractional coordinates
             res_name = G.nodes[n]["name"]
             res_idx = G.nodes[n]["index"]
             node_data = arr2data(node_f_points,
@@ -259,10 +263,10 @@ class MofWriter:
                                  residue_number=res_idx,
                                  note=n)
             return edge_data
-        
+
         def check_supercell_box_range(f_coords, box):
             #box is a list of 6 elements [x_min,x_max,y_min,y_max,z_min,z_max]
-            if f_coords.ndim == 2: # ditopic linker saved two connected nodes fcoords 
+            if f_coords.ndim == 2:  # ditopic linker saved two connected nodes fcoords
                 f_coords = np.mean(f_coords, axis=0)
             x, y, z = map(float, f_coords)
             box_xmax, box_ymax, box_zmax = map(float, box)
@@ -285,7 +289,8 @@ class MofWriter:
         edges_data = []
         for n in cG.nodes():
             if pname(n) != "EDGE":
-                if not check_supercell_box_range(cG.nodes[n]["fcoords"], supercell_boundary):
+                if not check_supercell_box_range(cG.nodes[n]["fcoords"],
+                                                 supercell_boundary):
                     continue
                 node_f_data = get_node_fcoords_data(n, rG)
                 cG.nodes[n]["f_data"] = node_f_data
@@ -293,26 +298,30 @@ class MofWriter:
                 #check if the node have terminations
 
             elif pname(n) == "EDGE":
-                if not check_supercell_box_range(cG.nodes[n]["fcoords"], supercell_boundary):
+                if not check_supercell_box_range(cG.nodes[n]["fcoords"],
+                                                 supercell_boundary):
                     continue
                 edge_f_data = get_edge_fcoords_data(n, cG)
                 cG.nodes[n]["f_data"] = edge_f_data
                 edges_data.append(edge_f_data)
 
-        self.nodes_f_data = np.vstack(nodes_data) if len(nodes_data)>0 else np.empty((0,11))
-        self.edges_f_data = np.vstack(edges_data) if len(edges_data) > 0 else np.empty((0, 11))
+        self.nodes_f_data = np.vstack(nodes_data) if len(
+            nodes_data) > 0 else np.empty((0, 11))
+        self.edges_f_data = np.vstack(edges_data) if len(
+            edges_data) > 0 else np.empty((0, 11))
         self.cG = cG
 
     def get_merged_fcoords_data(self):
         #merge the nodes, edges to a single array
         #rename the dummy atom names if dummy_atom_node_dict is provided
-        nodes_f_data = np.vstack(self.nodes_f_data) if len(self.nodes_f_data)>0 else np.empty((0,11))
-        edges_f_data = np.vstack(self.edges_f_data) if len(self.edges_f_data)>0 else np.empty((0,11))
-
+        nodes_f_data = np.vstack(self.nodes_f_data) if len(
+            self.nodes_f_data) > 0 else np.empty((0, 11))
+        edges_f_data = np.vstack(self.edges_f_data) if len(
+            self.edges_f_data) > 0 else np.empty((0, 11))
 
         merged_f_data = np.vstack(
-            (nodes_f_data, edges_f_data
-             )) if len(edges_f_data) > 0 else nodes_f_data
+            (nodes_f_data,
+             edges_f_data)) if len(edges_f_data) > 0 else nodes_f_data
         self.merged_f_data = merged_f_data
         return merged_f_data
 
@@ -320,11 +329,9 @@ class MofWriter:
         self.convert_graph_to_data(self.G, self.sc_unit_cell)
         self.merged_data = self.get_merged_data(self.dummy_atom_node_dict)
 
-        self.convert_graph_to_fcoords_data(self.G,self.supercell_boundary)
+        self.convert_graph_to_fcoords_data(self.G, self.supercell_boundary)
         self.merged_f_data = self.get_merged_fcoords_data()
         return self.merged_data, self.merged_f_data
-        
-
 
     def write_pdb(self, skip_merge=False):
         if self.merged_data is None:
@@ -380,7 +387,6 @@ class MofWriter:
             self.convert_graph_to_data(self.G, self.sc_unit_cell)
             merged_data = self.get_merged_data(self.dummy_atom_node_dict)
             self.merged_data = merged_data
-        
 
         gro_writer = GroWriter(comm=self.comm, ostream=self.ostream)
         header = "Generated by MOFbuilder\n"
@@ -392,8 +398,11 @@ class MofWriter:
                          header=header,
                          lines=merged_data,
                          box=self.frame_cell_info)
-    
-    def write_cif(self,skip_merge=False,supercell_boundary=None,frame_cell_info=None):
+
+    def write_cif(self,
+                  skip_merge=False,
+                  supercell_boundary=None,
+                  frame_cell_info=None):
         #cif file use f_coords so no terminations needed and boundary box to filter
         if frame_cell_info is None:
             frame_cell_info = self.frame_cell_info
@@ -408,9 +417,11 @@ class MofWriter:
             merged_f_data = self.get_merged_fcoords_data()
             self.merged_f_data = merged_f_data
 
-        assert_msg_critical(frame_cell_info is not None, "frame_cell_info is not provided for cif writing")
-        assert_msg_critical(supercell_boundary is not None, "supercell_boundary is not provided for cif writing")
-
+        assert_msg_critical(frame_cell_info is not None,
+                            "frame_cell_info is not provided for cif writing")
+        assert_msg_critical(
+            supercell_boundary is not None,
+            "supercell_boundary is not provided for cif writing")
 
         cif_writer = CifWriter(comm=self.comm, ostream=self.ostream)
         header = "Generated by MOFbuilder\n"
@@ -425,7 +436,6 @@ class MofWriter:
                          lines=self.merged_f_data,
                          cell_info=frame_cell_info,
                          supercell_boundary=supercell_boundary)
-
 
     def _rename_node_name(self, nodes_data, dummy_atom_node_dict):
         if dummy_atom_node_dict is None:
@@ -444,18 +454,14 @@ class MofWriter:
 
         # generate new_name_list for all dummy atoms in order
         # For each residue, repeat the name for the number of atoms in that residue, incrementing the residue index
-# Build tuples of (name, count) for each residue type
-        residue_specs = (
-            [("METAL", dummy_res_len)] * metal_count +
-            [("HHO", 3)] * hho_count +
-            [("HO", 2)] * ho_count +
-            [("O", 1)] * o_count
-        )
+        # Build tuples of (name, count) for each residue type
+        residue_specs = ([("METAL", dummy_res_len)] * metal_count +
+                         [("HHO", 3)] * hho_count + [("HO", 2)] * ho_count +
+                         [("O", 1)] * o_count)
 
         # Use list comprehension with enumerate for fast generation
         new_name_list = [
-            f"{name}_{i+1}"
-            for i, (name, count) in enumerate(residue_specs)
+            f"{name}_{i+1}" for i, (name, count) in enumerate(residue_specs)
             for _ in range(count)
         ]
         nodes_data = np.vstack(nodes_data)
@@ -467,24 +473,26 @@ class MofWriter:
 
         name_col = np.tile(new_name_list, nodes_num).reshape(-1, 1)
         #hstack the new_name_col to the stacked array, replacing the original name column
-        rename_data = np.hstack((nodes_data[:, 0:3], name_col, nodes_data[:, 4:]))
+        rename_data = np.hstack((nodes_data[:, 0:3], name_col, nodes_data[:,
+                                                                          4:]))
         #reshape the rename_data to a list of arrays for each node
         #reorder the atoms in each node to METAL, HHO, HO, O
         rename_data = rename_data.reshape(nodes_num, -1, 11)
-        metals_data = np.vstack(rename_data[:, :metal_num, :]) if metal_num > 0 else np.empty((0,11))
-        hhos_data = np.vstack(rename_data[:, metal_num:metal_num + hho_num, :]) if hho_num > 0 else np.empty((0,11))
-        hos_data = np.vstack(rename_data[:, metal_num + hho_num:metal_num + hho_num + ho_num, :]) if ho_num > 0 else np.empty((0,11))
-        os_data = np.vstack(rename_data[:, metal_num + hho_num + ho_num:, :]) if o_num > 0 else np.empty((0,11))
+        metals_data = np.vstack(
+            rename_data[:, :metal_num, :]) if metal_num > 0 else np.empty(
+                (0, 11))
+        hhos_data = np.vstack(
+            rename_data[:, metal_num:metal_num +
+                        hho_num, :]) if hho_num > 0 else np.empty((0, 11))
+        hos_data = np.vstack(
+            rename_data[:, metal_num + hho_num:metal_num + hho_num +
+                        ho_num, :]) if ho_num > 0 else np.empty((0, 11))
+        os_data = np.vstack(
+            rename_data[:, metal_num + hho_num +
+                        ho_num:, :]) if o_num > 0 else np.empty((0, 11))
         ordered_data = np.vstack((metals_data, hhos_data, hos_data, os_data))
 
         return ordered_data
 
 
-
- 
-
 #################below are from display.py######################
-
-
-
-    

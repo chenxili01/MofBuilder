@@ -113,11 +113,12 @@ class CifReader:
             symmetry_operation = ["x,y,z"]
         else:
             if self._debug:
-                self.ostream.print_info(f"apply {len(symmetry_operation)}  symmetry operation")
+                self.ostream.print_info(
+                    f"apply {len(symmetry_operation)}  symmetry operation")
                 self.ostream.flush()
 
         return symmetry_operation
-    
+
     def _fetch_spacegroup_from_cifinfo(self):
         pattern = r"_symmetry_space_group_name_H-M\s+'([^']+)'"
         match = re.search(pattern, )
@@ -125,7 +126,7 @@ class CifReader:
             return match.group(1)
         else:
             return "P1"
-    
+
     def _valid_net_name_line(self, line):
         if re.search(r"net", line):
             potential_net_name = line.split()[0].split("_")[1]
@@ -133,28 +134,26 @@ class CifReader:
                 return Path(self.filepath).stem
             else:
                 return potential_net_name
-            
-    
+
     def _valid_spacegroup_line(self, line):
         if re.search(r"_symmetry_space_group_name_H-M", line):
-            space_group = re.search(r"_symmetry_space_group_name_H-M\s+'([^']+)'", line)[1]
+            space_group = re.search(
+                r"_symmetry_space_group_name_H-M\s+'([^']+)'", line)[1]
             return space_group
-        elif re.search(r"^data_", line) and line.count("_") >=3:
-            potential_net_name =line.split()[0].split("_")[2]
+        elif re.search(r"^data_", line) and line.count("_") >= 3:
+            potential_net_name = line.split()[0].split("_")[2]
             return potential_net_name
         return "P1"
-    
+
     def _valid_hallnumber_line(self, line):
         if re.search(r"_symmetry_Int_Tables_number", line):
-            hall_number = re.search(r"_symmetry_Int_Tables_number\s+(\d+)", line)[1]
+            hall_number = re.search(r"_symmetry_Int_Tables_number\s+(\d+)",
+                                    line)[1]
             return hall_number
         elif re.search(r"hall_number:\s*(\d+)", line):
             hall_number = re.search(r"hall_number:\s*(\d+)", line)[1]
             return hall_number
         return "1"
-        
-    
-
 
     def read_cif(self, cif_file=None):
         net_flag = False
@@ -170,8 +169,10 @@ class CifReader:
         if self._debug:
             self.ostream.print_info(f"Reading cif file {self.filepath}")
             self.ostream.flush()
+
         def valid_line(line):
             return line.strip() != "" and not line.strip().startswith("#")
+
         with open(self.filepath, "r") as f:
             lines = f.readlines()
             nonempty_lines = [line for line in lines if valid_line(line)]
@@ -194,9 +195,10 @@ class CifReader:
                     hallnumber_flag = True
             if not vcon_flag and re.search(r"V_con:\s*(\d+)", line):
                 self.V_con = re.search(r"V_con:\s*(\d+)", line)[1]
-                vcon_flag = True    
-                self.EC_con = re.search(r"EC_con:\s*(\d+)", line)[1] if re.search(r"EC_con:\s*(\d+)", line) else None
-            
+                vcon_flag = True
+                self.EC_con = re.search(r"EC_con:\s*(\d+)",
+                                        line)[1] if re.search(
+                                            r"EC_con:\s*(\d+)", line) else None
 
         if hasattr(self, 'net_name'):
             self.ostream.print_info(f"Found net name: {self.net_name}")
@@ -380,7 +382,8 @@ class CifReader:
             no_sym_array_metal_xyz, no_sym_indices = self._apply_sym_operator(
                 symmetry_operations, array_metal_xyz)
             array_metal_xyz_final = no_sym_array_metal_xyz
-            array_atom = np.tile(array_atom,(len(symmetry_operations), 1))[no_sym_indices]
+            array_atom = np.tile(array_atom,
+                                 (len(symmetry_operations), 1))[no_sym_indices]
 
         else:
             array_metal_xyz = array_xyz[array_atom[:, 0] == target_type]
@@ -388,7 +391,6 @@ class CifReader:
 
         self.fcoords = self._wrap_fccords_to_0_1(array_metal_xyz_final)
         self.target_fcoords = self._wrap_fccords_to_0_1(array_metal_xyz_final)
-
 
         #make data
         self.data = []

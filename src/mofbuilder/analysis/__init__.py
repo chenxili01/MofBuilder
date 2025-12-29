@@ -21,5 +21,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #from .porosity import PorosityAnalyzer
 #from .graph_analysis import GraphAnalyzer
 
-
 #__all__ = ["PorosityAnalyzer", "GraphAnalyzer"]

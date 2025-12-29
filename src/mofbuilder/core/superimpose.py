@@ -26,6 +26,7 @@ def match_vectors(arr1, arr2, num):
 
     return closest_vectors_arr1, closest_vectors_arr2
 
+
 def superimpose(src_arr, target_arr, min_rmsd=1e6):
     """
     Find the best rotation and translation that aligns src_arr to target_arr.
@@ -48,7 +49,8 @@ def superimpose(src_arr, target_arr, min_rmsd=1e6):
     target_arr = np.asarray(target_arr)
 
     # Select up to 6 representative vectors from each array to match by distance
-    m_src, m_target = match_vectors(src_arr, target_arr, min(6, len(src_arr), len(target_arr)))
+    m_src, m_target = match_vectors(src_arr, target_arr,
+                                    min(6, len(src_arr), len(target_arr)))
 
     # Initialize best transformation to identity/no-translation
     best_rot, best_tran = np.eye(3), np.zeros(3)
@@ -106,7 +108,7 @@ def superimpose_rotation_only(arr1, arr2, min_rmsd=1e6):
         rmsd, rot, tran = svd_superimpose(np.asarray(perm), m_arr2)
         if rmsd < min_rmsd:
             min_rmsd, best_rot, best_tran = rmsd, rot, tran
-            if np.allclose(np.dot(best_tran, np.zeros(3)), 1e-1):
+            if np.allclose(np.dot(best_tran, np.zeros(3)), 1e-2):
                 break
 
     return min_rmsd, best_rot, best_tran

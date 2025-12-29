@@ -44,7 +44,7 @@ class MetalOrganicFrameworkBuilder:
         self.framework = Framework(
         )  #will be returned as the built framework object
 
-        self.mof_family = mof_family #need to be set by user
+        self.mof_family = mof_family  #need to be set by user
         self.node_metal = None
         self.dummy_atom_node = None
         self.dummy_atom_node_dict = None
@@ -174,7 +174,6 @@ class MetalOrganicFrameworkBuilder:
         self.mlp_type = 'mace'  #default MLP type
         self.mlp_model_path = None  #path to the MLP model file
 
-
         #Graph will be generated
         self.G = None  #original net graph from cif file
         self.sG = None  #scaled and rotated G
@@ -280,8 +279,8 @@ class MetalOrganicFrameworkBuilder:
             #is a point linker, prolong a norm point and get two points. can just +1 at col 5 for x
             dup_point = np.hstack(
                 (self.linker_center_data[:, 0:5],
-                 self.linker_center_data[:, 5:8].astype(float) +
-                 [1.0, 0, 0], self.linker_center_data[:, 8:]))
+                 self.linker_center_data[:, 5:8].astype(float) + [1.0, 0, 0],
+                 self.linker_center_data[:, 8:]))
             self.linker_center_data = np.vstack(
                 (self.linker_center_data, dup_point))
             self.linker_center_X_data = self.linker_center_data

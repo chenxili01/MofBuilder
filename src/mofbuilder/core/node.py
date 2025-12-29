@@ -53,7 +53,6 @@ class FrameNode:
         create: Main method to process the node and add dummy atoms if needed    
     '''
 
-
     def __init__(self, comm=None, ostream=None, filepath=None):
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
@@ -199,14 +198,19 @@ class FrameNode:
 
     def _add_dummy_atoms_nodepdb(self):
         metal = self.node_metal_type
-        if metal in ["Zr", "Hf","Ti","Ce","Th","U", "Nb", "Ta", "Mo", "W", "Re",
-                     "V"]:
+        if metal in [
+                "Zr", "Hf", "Ti", "Ce", "Th", "U", "Nb", "Ta", "Mo", "W", "Re",
+                "V"
+        ]:
             self.metal_valence = 4
-        elif metal in ["Al", "Fe", "Cr", "Sc", "In", "Ga", "Y", "La", "Pr", "Nd",
-                       "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb",
-                       "Lu"]:
+        elif metal in [
+                "Al", "Fe", "Cr", "Sc", "In", "Ga", "Y", "La", "Pr", "Nd",
+                "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu"
+        ]:
             self.metal_valence = 3
-        elif metal in ["Zn", "Cu", "Co", "Ni", "Mn", "Cd", "Mg", "Ca", "Sr", "Ba"]:
+        elif metal in [
+                "Zn", "Cu", "Co", "Ni", "Mn", "Cd", "Mg", "Ca", "Sr", "Ba"
+        ]:
             self.metal_valence = 2
         self.dummy_pdbfile = f"{Path(self.filename).stem}_dummy.pdb"
         template = self._fetch_template(metal)

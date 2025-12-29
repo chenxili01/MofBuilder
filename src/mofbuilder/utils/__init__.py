@@ -22,4 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #from .periodic_table import element_info, get_atomic_mass, get_atomic_radius
 from .geometry import unit_cell_to_cartesian_matrix, fractional_to_cartesian, cartesian_to_fractional
 from .fetch import fetch_pdbfile
-__all__ = ["fetch_pdbfile", "unit_cell_to_cartesian_matrix", "fractional_to_cartesian", "cartesian_to_fractional"]
+
+__all__ = [
+    "fetch_pdbfile", "unit_cell_to_cartesian_matrix",
+    "fractional_to_cartesian", "cartesian_to_fractional"
+]

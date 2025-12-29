@@ -5,7 +5,8 @@ from veloxchem.veloxchemlib import mpi_master
 import mpi4py.MPI as MPI
 from veloxchem.errorhandler import assert_msg_critical
 
-class XyzWriter:    
+
+class XyzWriter:
 
     def __init__(self, comm=None, ostream=None, filepath=None, debug=False):
         if comm is None:
@@ -27,7 +28,6 @@ class XyzWriter:
         self.filepath = filepath
         self._debug = debug
 
-
     def write(self, filepath=None, header='', lines=[]):
         """
         line format:
@@ -36,8 +36,10 @@ class XyzWriter:
         ATOM      1    C       MOL          1            1.000 2.000 3.000 1.00 0.00 C1
         """
         "data format[atom_type, atom_label, atom_number, residue_name, residue_number, value_x, value_y, value_z, spin, charge, note]"
-        filepath = Path(filepath) if filepath is not None else Path(self.filepath)
-        assert_msg_critical(filepath is not None, "pdb filepath is not specified")
+        filepath = Path(filepath) if filepath is not None else Path(
+            self.filepath)
+        assert_msg_critical(filepath is not None,
+                            "pdb filepath is not specified")
         # check if the file directory exists and create it if it doesn't
         self.file_dir = Path(filepath).parent
         if self._debug:
@@ -46,7 +48,7 @@ class XyzWriter:
 
         if filepath.suffix != ".xyz":
             filepath = filepath.with_suffix(".xyz")
-        
+
         newxyz = []
         newxyz.append(f"{len(lines)}\n")
         newxyz.append(header)
@@ -60,7 +62,7 @@ class XyzWriter:
                 x = float(values[5])
                 y = float(values[6])
                 z = float(values[7])
-                #xyz format line is 
+                #xyz format line is
                 formatted_line = "%-5s%8.3f%8.3f%8.3f" % (
                     atom_label,
                     x,
@@ -70,7 +72,6 @@ class XyzWriter:
                 newxyz.append(formatted_line + "\n")
             fp.writelines(newxyz)
 
-
     def get_xyzlines(self, header='', lines=[]):
         """
         line format:
@@ -79,10 +80,10 @@ class XyzWriter:
         ATOM      1    C       MOL          1            1.000 2.000 3.000 1.00 0.00 C1
         """
         "data format[atom_type, atom_label, atom_number, residue_name, residue_number, value_x, value_y, value_z, spin, charge, note]"
-        
+
         newxyz = []
         newxyz.append(f"{len(lines)}\n")
-        newxyz.append(header.strip('\n')+'\n')
+        newxyz.append(header.strip('\n') + '\n')
         # Iterate over each line in the input file
         for i in range(len(lines)):
             values = lines[i]
@@ -91,7 +92,7 @@ class XyzWriter:
             x = float(values[5])
             y = float(values[6])
             z = float(values[7])
-            #xyz format line is 
+            #xyz format line is
             formatted_line = "%-5s%8.3f%8.3f%8.3f" % (
                 atom_label,
                 x,
@@ -100,4 +101,3 @@ class XyzWriter:
             )
             newxyz.append(formatted_line + "\n")
         return newxyz
-    

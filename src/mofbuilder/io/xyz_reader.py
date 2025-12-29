@@ -6,12 +6,13 @@ from veloxchem.errorhandler import assert_msg_critical
 import mpi4py.MPI as MPI
 import sys
 import re
-
 """
 atom_type, atom_label, atom_number, residue_name, residue_number, x, y, z, spin, charge, note
 """
 
+
 class XyzReader:
+
     def __init__(self, comm=None, ostream=None, filepath=None):
         if comm is None:
             comm = MPI.COMM_WORLD
@@ -37,7 +38,12 @@ class XyzReader:
         self._debug = False
 
     #all the info to convert is atom_type,atom_label, atom_number, residue_name, residue_number, x, y, z, charge, comment
-    def read_xyz(self, filepath=None, recenter=False, com_type=None, residue_name='MOL', residue_number=1):
+    def read_xyz(self,
+                 filepath=None,
+                 recenter=False,
+                 com_type=None,
+                 residue_name='MOL',
+                 residue_number=1):
         with open(self.filepath, 'r') as f:
             lines = f.readlines()
 
@@ -67,11 +73,8 @@ class XyzReader:
                 note = ''
             spin = 1.00
             data.append((atom_type, atom_label, atom_number, res_name,
-                          res_number, x, y, z, spin, charge, note))
+                         res_number, x, y, z, spin, charge, note))
 
-
-
-        
         #should set type of array elements
         def type_data(arr):
             arr[:, 2] = arr[:, 2].astype(int)

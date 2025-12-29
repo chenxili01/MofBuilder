@@ -8,9 +8,10 @@ from veloxchem.scfrestdriver import ScfRestrictedDriver
 from veloxchem.molecularbasis import MolecularBasis
 from veloxchem.optimizationdriver import OptimizationDriver
 from veloxchem.mmforcefieldgenerator import MMForceFieldGenerator
-from veloxchem.veloxchemlib import mpi_master,hartree_in_kcalpermol, hartree_in_kjpermol
+from veloxchem.veloxchemlib import mpi_master, hartree_in_kcalpermol, hartree_in_kjpermol
 from veloxchem.errorhandler import assert_msg_critical
 import mpi4py.MPI as MPI
+
 
 class GromacsForcefieldMerger():
 
@@ -25,24 +26,22 @@ class GromacsForcefieldMerger():
         self.database_dir = None
         self.target_dir = None
         self.node_metal_type = None
-        self.dummy_atom_node=False
+        self.dummy_atom_node = False
         self.termination_name = None
         self.linker_itp_dir = ''
-        self.linker_name=None
+        self.linker_name = None
         self.residues_info = None
         self.mof_name = None
-        self.other_residues=['O','HO','HHO']
-    
+        self.other_residues = ['O', 'HO', 'HHO']
 
         #self.solvate = False #later
         #
         self.solvents_name = None
-        self.solvents_dict = None 
+        self.solvents_dict = None
         #self.neutral_system = False #later
         #self.counter_ion_names = None #later
 
         self._debug = False
-
 
     def _copy_file(self, old_path, new_path):
         src = Path(old_path)
@@ -52,10 +51,11 @@ class GromacsForcefieldMerger():
                 dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(src.read_text())
         if self._debug:
-            self.ostream.print_info(f"File copied from {old_path} to {new_path}")
+            self.ostream.print_info(
+                f"File copied from {old_path} to {new_path}")
             self.ostream.flush()
 
-    def _backup_and_rename(self,target_path: str):
+    def _backup_and_rename(self, target_path: str):
         p = Path(target_path)
         if p.exists() and any(p.iterdir()):  # non-empty
             i = 1
@@ -63,7 +63,8 @@ class GromacsForcefieldMerger():
             while new_path.exists():
                 i += 1
                 new_path = Path(p.parent, f"#{i}_{p.name}")
-            self.ostream.print_info(f"{p} existed and not empty, renaming {p} --> {new_path}")
+            self.ostream.print_info(
+                f"{p} existed and not empty, renaming {p} --> {new_path}")
             self.ostream.flush()
             p.rename(new_path)
             #recreate the original folder
@@ -85,26 +86,26 @@ class GromacsForcefieldMerger():
         else:
             node_itp_name = f"{self.node_metal_type}"
         if self._debug:
-            self.ostream.print_info(f"looking for {node_itp_name}.itp for node")
+            self.ostream.print_info(
+                f"looking for {node_itp_name}.itp for node")
 
         for i in Path(data_path, 'nodes_itps').rglob("*.itp"):
             #find correct node itp file, check dummy or not dummy, or other residues like O HO HHO
-            if (i.stem== node_itp_name) or (i.stem in self.other_residues):
-                dest_p = Path(target_itp_path,i.name)
+            if (i.stem == node_itp_name) or (i.stem in self.other_residues):
+                dest_p = Path(target_itp_path, i.name)
                 self._copy_file(i, dest_p)
-
 
         # copy EDGE(/TERM) itps
         if self.linker_itp_dir not in [None, '']:
             for j in Path(self.linker_itp_dir).rglob('*.itp'):
                 itp_name = j.stem
-                dest_p = Path(target_itp_path,j.name)
+                dest_p = Path(target_itp_path, j.name)
                 if itp_name == Path(self.linker_name).stem:
                     self._copy_file(j, dest_p)
 
         # copy TERM itp
         for k in Path(data_path, 'terminations_itps').rglob('*.itp'):
-            dest_p = Path(target_itp_path,k.name)
+            dest_p = Path(target_itp_path, k.name)
             if k.stem == Path(self.termination_name).stem:
                 self._copy_file(k, dest_p)
                 self.ostream.print_info(f"term.  {k} to {dest_p}")
@@ -113,53 +114,61 @@ class GromacsForcefieldMerger():
         # copy solvent, ions, gas itps
         for sol in self.solvents_name:
             #check if solvent itp file exist in database
-            src_p= Path(data_path, 'solvents_database', f'{sol}.itp')
+            src_p = Path(data_path, 'solvents_database', f'{sol}.itp')
             if not src_p.is_file():
                 #generate solvent itp file if not found in database
-                self.ostream.print_info(f"solvent itp file {src_p} not found in database... will generate {sol} forcefield and add it to database!")
+                self.ostream.print_info(
+                    f"solvent itp file {src_p} not found in database... will generate {sol} forcefield and add it to database!"
+                )
                 self.ostream.flush()
                 sol_molecule = self.solvents_dict[sol]['molecule']
                 #optimize and generate itp file
-                src_p = self._generate_solvent_itp(sol,sol_molecule,str(Path(data_path, 'solvents_database')))
-            
-            dest_p = target_itp_path / f'{sol}.itp'
-            self.ostream.print_info(f"copying solvent itp file {src_p} to {dest_p}")
-            self.ostream.flush()
-            self._copy_file(src_p,dest_p)
+                src_p = self._generate_solvent_itp(
+                    sol, sol_molecule, str(Path(data_path,
+                                                'solvents_database')))
 
+            dest_p = target_itp_path / f'{sol}.itp'
+            self.ostream.print_info(
+                f"copying solvent itp file {src_p} to {dest_p}")
+            self.ostream.flush()
+            self._copy_file(src_p, dest_p)
 
         # Print target_itp_path files
-        final_itp_files = [str(i) for i in Path(target_itp_path).rglob("*.itp")]
-        str_itps= ",".join(final_itp_files)
+        final_itp_files = [
+            str(i) for i in Path(target_itp_path).rglob("*.itp")
+        ]
+        str_itps = ",".join(final_itp_files)
         if self._debug:
-            self.ostream.print_info(f"{str(target_itp_path)} directory have {len(final_itp_files)} files")
+            self.ostream.print_info(
+                f"{str(target_itp_path)} directory have {len(final_itp_files)} files"
+            )
             self.ostream.print_info(f"include {str_itps}")
             self.ostream.flush()
 
-    def _generate_solvent_itp(self, solvent_name, molecule,target_path):
+    def _generate_solvent_itp(self, solvent_name, molecule, target_path):
         mol_scf_drv = ScfRestrictedDriver()
-        mol_basis = MolecularBasis.read(molecule,"def2-svp")
+        mol_basis = MolecularBasis.read(molecule, "def2-svp")
         mol_scf_drv.conv_thresh = 1e-3
-        mol_scf_drv.file_name=f"{solvent_name}_opt_scf"
+        mol_scf_drv.file_name = f"{solvent_name}_opt_scf"
         mol_scf_drv.xcfun = "b3lyp"
         mol_scf_drv.ostream.mute()
-        mol_scf_results = mol_scf_drv.compute(molecule,mol_basis)
+        mol_scf_results = mol_scf_drv.compute(molecule, mol_basis)
         mol_opt_drv = OptimizationDriver(mol_scf_drv)
         mol_opt_drv.conv_energy = 1e-04
         mol_opt_drv.conv_drms = 1e-02
         mol_opt_drv.conv_dmax = 2e-02
         mol_opt_drv.conv_grms = 4e-03
         mol_opt_drv.conv_gmax = 8e-03
-    #mol_opt_drv.constraints=["freeze xyz 1,2,3,4,5,6,16,17,18,19,20,21,22,23,24,33,34,35,37,41"]#,"scan distance 51 45 1.0 1.2 3"]
+        #mol_opt_drv.constraints=["freeze xyz 1,2,3,4,5,6,16,17,18,19,20,21,22,23,24,33,34,35,37,41"]#,"scan distance 51 45 1.0 1.2 3"]
         mol_opt_drv.tmax = 0.02
         mol_opt_drv.filename = mol_scf_drv.file_name
         mol_opt_drv.ostream.mute()
         opt_results = mol_opt_drv.compute(molecule, mol_basis, mol_scf_results)
         opt_mol = Molecule.read_xyz_string(opt_results["final_geometry"])
-        ffgen= MMForceFieldGenerator()
+        ffgen = MMForceFieldGenerator()
         ffgen.create_topology(opt_mol)
         ff_name = str(Path(target_path, f"{solvent_name}"))
-        ffgen.write_gromacs_files(filename=f"{ff_name}",mol_name=solvent_name)
+        ffgen.write_gromacs_files(filename=f"{ff_name}", mol_name=solvent_name)
         #remove gro and top files generated
         gro_file = ff_name + ".gro"
         top_file = ff_name + ".top"
@@ -217,10 +226,7 @@ class GromacsForcefieldMerger():
         ]
         return unique_atomtypes
 
-
-
     ####below are from itp_process.py############################
-
 
     def _parsetop(self, inputfile):
         # newpath = os.path.abspath ( '')+'/'+str(outputfile)+'/'    # input file
@@ -257,22 +263,22 @@ class GromacsForcefieldMerger():
 
         return middlelines, sectorname
 
-
     # fetch atomtype sector
 
- 
-
-
-
-    def _generate_top_file(self, itp_path, data_path=None, res_info=[], model_name=None):
+    def _generate_top_file(self,
+                           itp_path,
+                           data_path=None,
+                           res_info=[],
+                           model_name=None):
         all_secs = self._extract_atomstypes(itp_path)
         unique_atomtypes = self._get_unique_atomtypes(all_secs)
         middlelines, sectorname = self._parsetop(
-            str(Path(data_path, "nodes_itps/template.top")))  # fetch template.top
+            str(Path(data_path,
+                     "nodes_itps/template.top")))  # fetch template.top
 
         top_res_lines = []
         for resname in list(res_info):
-            if resname[0]==';':
+            if resname[0] == ';':
                 continue
             if res_info[resname] <= 0:
                 continue
@@ -284,7 +290,8 @@ class GromacsForcefieldMerger():
         for i in Path(itp_path).rglob("*itp"):
             if str(Path(i).name) not in ["posre.itp"]:
                 if self._debug:
-                    self.ostream.print_info(f"found file: {i} in path {itp_path}")
+                    self.ostream.print_info(
+                        f"found file: {i} in path {itp_path}")
                     self.ostream.flush()
                 line = '#include "itps/' + i.name + '"\n'
                 top_itp_lines.append(line)
@@ -297,9 +304,9 @@ class GromacsForcefieldMerger():
         # sec4 = top_res_lines + ["\n"] + ["\n"]
 
         newtop = (middlelines[0] + ["\n"] + ["\n"] + middlelines[1] +
-                unique_atomtypes + ["\n"] + ["\n"] + top_itp_lines + ["\n"] +
-                ["\n"] + middlelines[2] + ["MOF"] + ["\n"] + ["\n"] +
-                middlelines[3] + ["\n"] + top_res_lines)
+                  unique_atomtypes + ["\n"] + ["\n"] + top_itp_lines + ["\n"] +
+                  ["\n"] + middlelines[2] + ["MOF"] + ["\n"] + ["\n"] +
+                  middlelines[3] + ["\n"] + top_res_lines)
         if model_name is None:
             model_name = "MOF"
         topname = model_name + ".top"
@@ -312,27 +319,18 @@ class GromacsForcefieldMerger():
         self.ostream.flush()
         return top_path
 
-
     def _copy_mdps(self, data_path=None):
         if data_path is None:
             data_path = self.database_dir
-        dest_mdp_path = Path(self.target_dir,"MD_run","mdps")
+        dest_mdp_path = Path(self.target_dir, "MD_run", "mdps")
         dest_mdp_path.mkdir(parents=True, exist_ok=True)
-        src_mdp_path = Path(data_path,"mdps")
+        src_mdp_path = Path(data_path, "mdps")
         for i in src_mdp_path.rglob("*.mdp"):
             self._copy_file(i, Path(dest_mdp_path, Path(i).name))
         return dest_mdp_path
 
-
-        
-
-
-
     #########below are from atom2C.py##########
 
-
-
-        
     def generate_MOF_gromacsfile(self):
         database_path = self.database_dir
         itps_path = Path(self.target_dir, 'MD_run/itps')
@@ -340,7 +338,8 @@ class GromacsForcefieldMerger():
         model_name = self.mof_name
 
         self._get_itps_from_database()
-        self.top_path = self._generate_top_file(itps_path,database_path,res_info,model_name)
+        self.top_path = self._generate_top_file(itps_path, database_path,
+                                                res_info, model_name)
         self._copy_mdps()
 
 
@@ -349,10 +348,10 @@ if __name__ == "__main__":
     gmx_ff.database_dir = 'tests/database'
     gmx_ff.target_dir = 'tests/out'
     gmx_ff.node_metal_type = 'Zr'
-    gmx_ff.dummy_atom_node= True
+    gmx_ff.dummy_atom_node = True
     gmx_ff.termination_name = 'acetate'
     gmx_ff.linker_itp_dir = ''
-    gmx_ff.linker_name='Linker'
-    gmx_ff.residues_info = {"METAL":5}
+    gmx_ff.linker_name = 'Linker'
+    gmx_ff.residues_info = {"METAL": 5}
     gmx_ff.mof_name = "testmof"
     gmx_ff.generate_MOF_gromacsfile()

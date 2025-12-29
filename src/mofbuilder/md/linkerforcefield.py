@@ -87,7 +87,8 @@ class LinkerForceFieldGenerator:
             connectivity_matrix, connect_constraints = self._reconnect(
                 X_indices_coords, connectivity_matrix)
             connectivity_matrix, connect_constraints = self._reconnect(
-                lower_x_indices_coords, connectivity_matrix, connect_constraints)
+                lower_x_indices_coords, connectivity_matrix,
+                connect_constraints)
         else:
             all_x_indices_coords = X_indices_coords + lower_x_indices_coords
             connectivity_matrix, connect_constraints = self._reconnect(
@@ -124,7 +125,8 @@ class LinkerForceFieldGenerator:
             constrained_opt_linker_mol, scf_result = self._dft_optimize(
                 molecule, self.reconnected_constraints)
             constrained_opt_linker_mol.set_charge(self.linker_charge)
-            constrained_opt_linker_mol.set_multiplicity(self.linker_multiplicity)
+            constrained_opt_linker_mol.set_multiplicity(
+                self.linker_multiplicity)
             free_opt_linker_mol, scf_result = self._dft_optimize(
                 constrained_opt_linker_mol, None)
             free_opt_linker_mol.set_charge(self.linker_charge)
@@ -142,12 +144,14 @@ class LinkerForceFieldGenerator:
             self.ostream.print_info(
                 f"xtb driver is using for linker optimization")
             self.ostream.flush()
-            constrained_opt_linker_mol = self._xtb_optimize(molecule,
-                                                self.reconnected_constraints)
+            constrained_opt_linker_mol = self._xtb_optimize(
+                molecule, self.reconnected_constraints)
             constrained_opt_linker_mol.set_charge(self.linker_charge)
-            constrained_opt_linker_mol.set_multiplicity(self.linker_multiplicity)
+            constrained_opt_linker_mol.set_multiplicity(
+                self.linker_multiplicity)
 
-            free_opt_linker_mol, scf_result = self._dft_optimize(constrained_opt_linker_mol, None)
+            free_opt_linker_mol, scf_result = self._dft_optimize(
+                constrained_opt_linker_mol, None)
             free_opt_linker_mol.set_charge(self.linker_charge)
             free_opt_linker_mol.set_multiplicity(self.linker_multiplicity)
             self.free_opt_linker_mol = free_opt_linker_mol

@@ -122,12 +122,9 @@ def Carte_points_generator(xyz_num):
     x = np.arange(x_num + 1)
     y = np.arange(y_num + 1)
     z = np.arange(z_num + 1)
-    
+
     # Create meshgrid and reshape to get all points
     xx, yy, zz = np.meshgrid(x, y, z, indexing='ij')
     points = np.vstack([xx.ravel(), yy.ravel(), zz.ravel()]).T
-    
+
     return points
-
-
-

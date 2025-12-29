@@ -103,16 +103,16 @@ def element_info(element: str) -> Dict[str, any]:
     """
     if element not in ATOMIC_MASSES:
         raise KeyError(f"Unknown element: {element}")
-    
+
     atomic_number = get_atomic_number(element)
-    
+
     info = {
         "symbol": element,
         "atomic_number": atomic_number,
         "atomic_mass": ATOMIC_MASSES[element],
         "covalent_radius": ATOMIC_RADII.get(element, 1.0),
     }
-    
+
     # Add some basic properties based on atomic number
     if atomic_number:
         if atomic_number == 1:
@@ -130,7 +130,7 @@ def element_info(element: str) -> Dict[str, any]:
             info["period"] = 3
             info["block"] = "s" if atomic_number <= 12 else "p"
         # Add more periods as needed
-    
+
     return info
 
 
@@ -166,7 +166,9 @@ def is_nonmetal(element: str) -> bool:
     Returns:
         True if the element is a nonmetal, False otherwise.
     """
-    nonmetals = {"H", "C", "N", "O", "F", "P", "S", "Cl", "Se", "Br", "I", "At"}
+    nonmetals = {
+        "H", "C", "N", "O", "F", "P", "S", "Cl", "Se", "Br", "I", "At"
+    }
     return element in nonmetals
 
 

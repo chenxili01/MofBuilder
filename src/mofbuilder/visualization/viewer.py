@@ -3,7 +3,10 @@ import mpi4py.MPI as MPI
 from veloxchem.outputstream import OutputStream
 from veloxchem.veloxchemlib import mpi_master
 from ..io.xyz_writer import XyzWriter
+
+
 class Viewer:
+
     def __init__(self, comm=None, ostream=None, filepath=None):
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
@@ -14,13 +17,13 @@ class Viewer:
                                    mpi_master() else None)
         self.ostream = ostream
         self.eG_dict = None
-        self.merged_lines=None
+        self.merged_lines = None
 
     def _reverse_eG_dict(self):
 
         #the eG dict is a dictionary, key is index number and value is the name need to fetch the key
-        self.eG_name_idx_dict={v:int(k) for k,v in self.eG_dict.items()}
-        
+        self.eG_name_idx_dict = {v: int(k) for k, v in self.eG_dict.items()}
+
     def lines_show(self, w=800, h=600, res_indices=True, res_name=True):
         try:
             import py3Dmol
@@ -39,11 +42,11 @@ class Viewer:
                     if value_resname.strip() == "TNO":
                         continue
                     value_resnumber = self.eG_name_idx_dict[line[10]]
-                    if value_resnumber==old_resnumber:
+                    if value_resnumber == old_resnumber:
                         continue
 
-                    old_resnumber=value_resnumber
-                    
+                    old_resnumber = value_resnumber
+
                     value_x = float(line[5])
                     value_y = float(line[6])
                     value_z = float(line[7])

@@ -64,7 +64,8 @@ class FrameLinker:
         self.ostream.flush()
 
         if self._debug:
-            self.ostream.print_info(f"Target directory: {self.target_directory}")
+            self.ostream.print_info(
+                f"Target directory: {self.target_directory}")
 
     def _create_lG(self, molecule):
         matrix = molecule.get_connectivity_matrix()
@@ -123,7 +124,7 @@ class FrameLinker:
 
     def _find_center_cycle_nodes(self, lG):
         return self._find_center_highly_connected_isolated_cycle(lG)
-    
+
     def _find_center_nodes_pair(self, lG, center_nodes):
         if len(center_nodes) > 6:
             centers = nx.barycenter(lG)
@@ -304,7 +305,8 @@ class FrameLinker:
                 #n should be added directly
                 frag = [n, frag_center]
                 #find the closest center node
-                center_node, center_path = FrameLinker.find_closest_center_node(G, center_nodes, frag_center)
+                center_node, center_path = FrameLinker.find_closest_center_node(
+                    G, center_nodes, frag_center)
 
                 for check_n in neighbors:
                     if check_n in frag:
@@ -316,7 +318,6 @@ class FrameLinker:
                     frag.append(check_n)
                     frag.extend(list(G.neighbors(check_n)))
 
-            
             frag = list(set(frag))
             f_labels = [G.nodes[i]["label"] for i in frag]
             if FrameLinker._in_frag_labels(f_labels, frag_labels):
@@ -332,11 +333,9 @@ class FrameLinker:
     @staticmethod
     def find_closest_center_node(G, center_nodes, frag_center):
         center_node = None
-        min_path = float('inf')  
+        min_path = float('inf')
         for c in center_nodes:
-            path_len = nx.shortest_path_length(G,
-                                                       source=frag_center,
-                                                       target=c)
+            path_len = nx.shortest_path_length(G, source=frag_center, target=c)
             # to avoid the center pair case, like oxalate
             if path_len == 0:
                 continue
@@ -344,10 +343,10 @@ class FrameLinker:
                 min_path = path_len
                 center_node = c
         center_path = nx.shortest_path_length(G,
-                                                      source=frag_center,
-                                                      target=center_node)
-                                              
-        return center_node,center_path
+                                              source=frag_center,
+                                              target=center_node)
+
+        return center_node, center_path
 
     def process_linker_molecule(self, molecule, linker_connectivity):
         """
