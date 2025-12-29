@@ -3,6 +3,7 @@ import networkx as nx
 from veloxchem.outputstream import OutputStream
 from veloxchem.veloxchemlib import mpi_master
 from veloxchem.errorhandler import assert_msg_critical
+from veloxchem.molecule import Molecule
 import mpi4py.MPI as MPI
 import sys
 import time
@@ -75,6 +76,7 @@ class MetalOrganicFrameworkBuilder:
         #need to be set by user
         self.linker_xyzfile = None  #can be set directly
         self.linker_molecule = None  #can be set directly
+        self.linker_smiles = None  #can be set directly
         self.linker_charge = None
         self.linker_multiplicity = None
 
@@ -264,9 +266,11 @@ class MetalOrganicFrameworkBuilder:
 
         if self.linker_molecule is not None:
             self.frame_linker.create(molecule=self.linker_molecule)
-        else:
+        elif self.linker_smiles is not None:
+            mol = Molecule.read_smiles(self.linker_smiles)
+            self.frame_linker.create(molecule=mol)
+        elif self.linker_xyzfile is not None:
             self.frame_linker.filename = self.linker_xyzfile
-
             self.frame_linker.create()
 
         #pass linker data
