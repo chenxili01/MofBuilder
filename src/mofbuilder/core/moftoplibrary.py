@@ -76,47 +76,48 @@ class MofTopLibrary:
         self.mof_top_dict = mof_top_dict
 
 
-    def list_mof_family(self):
+    def list_mof_families(self):
         # print mof_top_dict keys fit to screen
         if self.mof_top_dict is None:
             self._read_mof_top_dict(self.data_path)
-        self.ostream.print_title("Available MOF Family:")
+        print("-"*80)
+        print("\t"*3,"Available MOF Families:")
+        print("-"*80)
         for mof_family in self.mof_top_dict.keys():
-            self.ostream.print_info(f" - {mof_family}")
-
-        self.ostream.flush()
+            print(f" - {mof_family}")
 
     def list_available_metals(self, mof_family):
+        mof_family = mof_family.upper()
         if self.mof_top_dict is None:
             self._read_mof_top_dict(self.data_path)
         if mof_family not in self.mof_top_dict.keys():
             self.ostream.print_warning(f"{mof_family} not in database")
             self.ostream.print_info("please select a MOF family from below:")
             self.ostream.flush()
-            self.list_mof_family()
+            self.list_mof_families()
             return
         self.ostream.print_title(f"Available metals for {mof_family}:")
-        for metal in self.mof_top_dict[mof_family]["metal"]:
+        for metal in self.mof_top_dict[mof_family.upper()]["metal"]:
             self.ostream.print_info(f" - {metal}")
 
         self.ostream.flush()
 
     def select_mof_family(self, mof_family):
-        self.mof_family = mof_family
+        self.mof_family = mof_family.upper()
         self.node_connectivity = self.mof_top_dict[mof_family]["node_connectivity"]
         self.linker_connectivity = self.mof_top_dict[mof_family]["linker_topic"]
         self.net_filename = self.mof_top_dict[mof_family]["topology"] + ".cif"
         # check if template cif exists
         self.ostream.print_info(f"MOF family {mof_family} is selected")
-        if mof_family not in self.mof_top_dict.keys():
+        if self.mof_family not in self.mof_top_dict.keys():
             self.ostream.print_warning(f"{mof_family} not in database")
             self.ostream.print_info("please select a MOF family from below:")
             self.ostream.flush()
-            self.list_mof_family()
+            self.list_mof_families()
             return
         self.ostream.print_info(f"node connectivity: {self.node_connectivity}")
         self.ostream.print_info(f"linker topic: {self.linker_connectivity}")
-        self.ostream.print_info(f"available metal nodes: {self.mof_top_dict[mof_family]['metal']}")
+        self.ostream.print_info(f"available metal nodes: {self.mof_top_dict[self.mof_family]['metal']}")
         self.ostream.flush()
         if self.template_directory is None:
             self.template_directory = str(
@@ -150,6 +151,7 @@ class MofTopLibrary:
     ):
         # add this item to mof_top_dict in data path
         # check if template cif exists
+        mof_family = mof_family.upper()
         assert_msg_critical(
             Path(self.data_path, "template_database").is_dir(),
             f"template_database directory {Path(self.data_path, 'template_database')} does not exist, please create it first",
@@ -215,18 +217,19 @@ class MofTopLibrary:
         return str(Path(self.data_path, "template_database", template_cif))
     
     def fetch(self,mof_family=None):
+        mof_family = mof_family.upper()
         self._read_mof_top_dict(self.data_path)
         if mof_family is None:
             self.ostream.print_info("please select a MOF family from below:")
             self.ostream.flush()
-            self.list_mof_family()
+            self.list_mof_families()
             return 
         else:
             if mof_family not in self.mof_top_dict.keys():
                 self.ostream.print_warning(f"{mof_family} not in database")
                 self.ostream.print_info("please select a MOF family from below:")
                 self.ostream.flush()
-                self.list_mof_family()
+                self.list_mof_families()
                 return 
             else:
                 self.select_mof_family(mof_family)
@@ -238,7 +241,7 @@ if __name__ == "__main__":
     moflib = MofTopLibrary()
     moflib.data_path = 'tests/database'
     #moflib._debug = True
-    moflib.fetch(mof_family="Ui-66")
+    moflib.fetch(mof_family="UiO-66")
 
     #moflib.submit_template(
     #    template_cif="tests/database/template_database/fcu.cif",

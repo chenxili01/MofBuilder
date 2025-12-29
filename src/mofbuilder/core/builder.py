@@ -44,7 +44,7 @@ class MetalOrganicFrameworkBuilder:
         self.framework = Framework(
         )  #will be returned as the built framework object
 
-        self.mof_family = mof_family
+        self.mof_family = mof_family #need to be set by user
         self.node_metal = None
         self.dummy_atom_node = None
         self.dummy_atom_node_dict = None
@@ -182,12 +182,12 @@ class MetalOrganicFrameworkBuilder:
         self.eG = None  #edge graph with only edge and V node, and XOO atoms linked to the edge
         self.cleaved_eG = None  #edge graph after cleaving the extra edges
 
-    def list_available_mof_family(self):
+    def list_available_mof_families(self):
         if self.data_path is None:
             self.data_path = get_data_path()
         self.mof_top_library._debug = self._debug
         self.mof_top_library.data_path = self.data_path
-        self.mof_top_library.list_mof_family()
+        self.mof_top_library.list_mof_families()
 
     def list_available_metals(self, mof_family=None):
         if self.data_path is None:
