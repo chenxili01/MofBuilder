@@ -23,7 +23,7 @@ MofBuilder provides a modular and extensible framework for working with MOF stru
 ### From Source
 
 ```bash
-git clone https://github.com/caseyli01/MofBuilder.git
+git clone https://github.com/chenxili01/MofBuilder.git
 cd MofBuilder
 pip install -e .
 ```
@@ -31,7 +31,7 @@ pip install -e .
 ### Development Installation
 
 ```bash
-git clone https://github.com/caseyli01/MofBuilder.git
+git clone https://github.com/chenxili01/MofBuilder.git
 cd MofBuilder
 pip install -e ".[dev]"
 ```
