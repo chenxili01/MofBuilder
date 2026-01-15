@@ -871,7 +871,7 @@ class SolvationBuilder:
             residue_number = np.repeat(
                 np.arange(res_idx_start,
                           data['accepted_quantity'] + res_idx_start),
-                data['n_atoms']).reshape(-1, 1)
+                len(labels)).reshape(-1, 1)
             res_idx_start += data['accepted_quantity']
 
             if len(labels) > 0:
