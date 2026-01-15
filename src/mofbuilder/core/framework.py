@@ -35,6 +35,8 @@ class Framework:
         self.framework_data = None  #merged data for the whole framework, generated in write()
         self.framework_fcoords_data = None  #merged fractional coordinates for the whole framework, generated in write()
 
+        self.solvationbuilder = SolvationBuilder(comm=self.comm,
+                                                 ostream=self.ostream)
         self.solvents = []  #list of solvent names or xyz files
         self.solvents_molecules = []  #list of solvent molecules
         self.solvents_proportions = []  #list of solvent proportions
@@ -363,8 +365,7 @@ class Framework:
                 solvents_proportions=[],
                 solvents_quantities=[],
                 padding_angstrom=10):
-        self.solvationbuilder = SolvationBuilder(comm=self.comm,
-                                                 ostream=self.ostream)
+        
         self.solvationbuilder.solvents_files = solvents_files if solvents_files else self.solvents
         #if not provided, use TIP3P as default solvent
         if not self.solvationbuilder.solvents_files:
@@ -373,7 +374,7 @@ class Framework:
             solvents_proportions = [1]
         self.solvationbuilder.solute_data = self.framework_data
         #mof box as preferred region
-        self.solvationbuilder.preferred_region_box = np.array([[0, self.supercell_info[0]], [0, self.supercell_info[1]], [0, self.supercell_info[2]]]) 
+        self.solvationbuilder.preferred_region_box = np.array([[0, self.supercell_info[0]+10], [0, self.supercell_info[1]+10], [0, self.supercell_info[2]+10]]) 
         self.solvationbuilder.solvents_proportions = solvents_proportions if solvents_proportions else self.solvents_proportions
         self.solvationbuilder.solvents_quantities = solvents_quantities if solvents_quantities else self.solvents_quantities
         self.solvationbuilder.target_directory = self.target_directory
