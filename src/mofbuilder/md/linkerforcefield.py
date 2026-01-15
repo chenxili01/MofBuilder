@@ -2,7 +2,12 @@ import numpy as np
 import sys
 import networkx as nx
 import re
-import linecache
+from rdkit import Chem
+import numpy as np
+import networkx as nx
+from networkx.algorithms.isomorphism import DiGraphMatcher
+
+
 from pathlib import Path
 from veloxchem.molecule import Molecule
 from veloxchem.mmforcefieldgenerator import MMForceFieldGenerator
@@ -270,86 +275,97 @@ class LinkerForceFieldGenerator:
             opt_mol.write_xyz_file(fname)
         return opt_mol, mol_scf_results
 
-    #mapping molecule indices to process for linker forcefield
+    def _find_isomorphism_and_mapping(self, src_mol, dest_mol):
+        def get_graph_from_molecule(m):
+            mol = Chem.MolFromXYZBlock(m.get_xyz_string())
+            Chem.AssignStereochemistry(
+                mol,
+                cleanIt=True,
+                force=True
+            )
+            import veloxchem as vlx
+            m = vlx.Molecule.read_smiles("C")
 
-    def _create_graph_from_matrix(self, matrix, coords_matrix, labels):
-        """ Create a graph from a given connectivity matrix. """
-        G = nx.Graph()
-        for n in range(len(matrix)):
-            G.add_node(n, atom_id=n, coords=coords_matrix[n], label=labels[n])
-        for i in range(len(matrix)):
-            for j in range(i, len(matrix)):
-                G.add_edge(i, j, weight=matrix[i][j], orientation=0)
-        ref_vec = None
-        boundary_nodes = [
-            n for n, d in G.degree()
-            if ((d == 1) and (nn(G.nodes[n]['label']) in ['O', 'Y']))
-        ]
-        #find 2 step away neighbors of boundary nodes
-        for bn in boundary_nodes:
-            #find 2 step away neighbors of bn, use path length to find not for loop
-            two_step_neighbors = [
-                n for n, d in nx.single_source_shortest_path_length(
-                    G, source=bn).items() if d == 2
-            ]
+            def get_node_features(mol):
+                features = {}
+                for atom in mol.GetAtoms():
+                    features[atom.GetIdx()] = {
+                        "element": atom.GetSymbol(),
+                        "atomic_num": atom.GetAtomicNum(),
+                        "chiral_tag": atom.GetChiralTag().name
+                    }
+                return features
+            def get_directed_edges(mol):
+                edges = []
+                for bond in mol.GetBonds():
+                    i = bond.GetBeginAtomIdx()
+                    j = bond.GetEndAtomIdx()
 
-            for nnbr in two_step_neighbors:
-                if (not G.has_edge(bn, nnbr)
-                        and (nn(G.nodes[nnbr]['label']) in ['O', 'Y'])):
-                    #add edge from bn to nnbr
-                    # determine orientation
-                    vec_bn_nnbr = np.array(coords_matrix[nnbr]) - np.array(
-                        coords_matrix[bn])
-                    if ref_vec is None:
-                        ref_vec = vec_bn_nnbr
-                    dot_ref = np.dot(ref_vec, vec_bn_nnbr)
-                    if dot_ref >= 0:
-                        orientation = 1
-                    else:
-                        orientation = -1
-                    G.add_edge(bn, nnbr, weight=0.5, orientation=orientation)
-        return G
+                    bond_type = bond.GetBondType().name
+                    stereo = bond.GetStereo().name
 
-    def _find_isomorphism_and_mapping(self, src_matrix1, dest_matrix2,
-                                      src_coords_matrix, dest_coords_matrix,
-                                      src_labels, dest_labels):
-        """ Check if two matrices are isomorphic and return the mapping. """
-        G1 = self._create_graph_from_matrix(src_matrix1, src_coords_matrix,
-                                            src_labels)
-        G2 = self._create_graph_from_matrix(dest_matrix2, dest_coords_matrix,
-                                            dest_labels)
+                    # i → j
+                    edges.append((i, j, {
+                        "bond_type": bond_type,
+                        "stereo": stereo,
+                        "direction": "forward"
+                    }))
 
-        #flip_G2 = G2.copy()  # Create a copy of G2 to flip edges
-        #for u, v, data in flip_G2.edges(data=True):
-        #    data['orientation'] *= -1  # Flip the orientation
-        #edge_match = nx.algorithms.isomorphism.categorical_edge_match(
-        #    ['weight', 'orientation'], [None, None])
+                    # j → i
+                    edges.append((j, i, {
+                        "bond_type": bond_type,
+                        "stereo": stereo,
+                        "direction": "reverse"
+                    }))
+                return edges
+            def adjacency_matrix(mol):
+                return Chem.GetAdjacencyMatrix(mol)
+            def rdkit_to_digraph(mol):
+                G = nx.DiGraph()
 
-        def orientation_match(e1, e2):
-            return e1.get('orientation', 0) == e2.get('orientation', 0) or \
-                e1.get('orientation', 0) == -e2.get('orientation', 0)
+                # nodes
+                node_features = get_node_features(mol)
+                for idx, feats in node_features.items():
+                    G.add_node(idx, **feats)
 
-        gm = nx.algorithms.isomorphism.GraphMatcher(G1, G2, orientation_match)
+                # edges
+                for u, v, data in get_directed_edges(mol):
+                    G.add_edge(u, v, **data)
 
-        #gm = nx.algorithms.isomorphism.GraphMatcher(G1, G2)
-        if gm.is_isomorphic():
-            #return mapping to node attribute atom_id
-            mapping = {
-                G1.nodes[k]['atom_id']: G2.nodes[v]['atom_id']
-                for k, v in gm.mapping.items()
-            }
-            return True, mapping
-        else:
-            #try flipped G2
-            ##gm_flip = nx.algorithms.isomorphism.GraphMatcher(
-            #    G1, flip_G2, edge_match=edge_match)
-            #if gm_flip.is_isomorphic():
-            #    mapping = {
-            #        G1.nodes[k]['atom_id']: flip_G2.nodes[v]['atom_id']
-            #        for k, v in gm_flip.mapping.items()
-            #    }
-            #    return True, mapping
-            return False, None
+                return G
+
+            G = rdkit_to_digraph(mol)
+            A = adjacency_matrix(mol)
+            if self._debug:
+                print("Adjacency Matrix:\n", A)
+            return G
+
+        def node_match(n1, n2):
+            return (
+                n1["atomic_num"] == n2["atomic_num"] and
+                n1["chiral_tag"] == n2["chiral_tag"]
+            )
+
+        def edge_match(e1, e2):
+            return (
+                e1["bond_type"] == e2["bond_type"] and
+                e1["stereo"] == e2["stereo"] and
+                e1["direction"] == e2["direction"]
+            )
+
+        G1 = get_graph_from_molecule(src_mol)
+        G2 = get_graph_from_molecule(dest_mol)
+        GM = DiGraphMatcher(G1, G2,
+                            node_match=node_match,
+                            edge_match=edge_match)
+
+        isomorphic = GM.is_isomorphic()
+        mapping = GM.mapping
+        if self._debug:
+            print("Isomorphic:", isomorphic)
+            print("Mapping:", mapping)
+        return isomorphic, mapping
+
 
     def map_existing_forcefield(self, linker_mol_data=None):
         save_itp_path = Path(self.target_directory,
@@ -384,26 +400,14 @@ class ForceFieldMapper:
         self.dest_molecule_connectivity_matrix = None
 
     def _get_mapping_between_two_molecules(self, src_molecule, dest_molecule):
-        src_mol_connectivity = src_molecule.get_connectivity_matrix()
-        if self.dest_molecule_connectivity_matrix is not None:
-            dest_mol_connectivity = self.dest_molecule_connectivity_matrix
-        else:
-            dest_mol_connectivity = dest_molecule.get_connectivity_matrix()
-        # add clockwise connection to edge atoms based on np.cross product
-        # to make the connectivity more unique
-        # this is to avoid the issue of symmetric molecules
-        #for edge atoms whose connectivity is 1, find the connected atom
-        ##add clockwise connection to boundary atoms based on np.cross product
-
         isomorphic, mapping = LinkerForceFieldGenerator(
         )._find_isomorphism_and_mapping(
-            src_mol_connectivity, dest_mol_connectivity,
-            src_molecule.get_coordinates_in_angstrom(),
-            dest_molecule.get_coordinates_in_angstrom(),
-            src_molecule.get_labels(), dest_molecule.get_labels())
+            src_molecule,
+            dest_molecule)
 
         #rebuild the connectivity of the linker in MOF
         #reconnect the X-X bonds and seperate the frags
+        
         if not isomorphic:
             raise ValueError(
                 "The linker molecule in MOF is not isomorphic to the reference linker molecule."
@@ -411,7 +415,6 @@ class ForceFieldMapper:
         else:
             #sort mapping by src indices
             mapping = dict(sorted(mapping.items()))
-            #mapping should be like {0: 1, 1: 0, 2: 3, 3: 2, 4: 5, 5: 4, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15}
             mapping = {
                 k + 1: v + 1
                 for k, v in mapping.items()
