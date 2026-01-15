@@ -372,6 +372,8 @@ class Framework:
                                       'TIP3P.xyz')
             solvents_proportions = [1]
         self.solvationbuilder.solute_data = self.framework_data
+        #mof box as preferred region
+        self.solvationbuilder.preferred_region_box = np.array([[0, self.supercell_info[0]], [0, self.supercell_info[1]], [0, self.supercell_info[2]]]) 
         self.solvationbuilder.solvents_proportions = solvents_proportions if solvents_proportions else self.solvents_proportions
         self.solvationbuilder.solvents_quantities = solvents_quantities if solvents_quantities else self.solvents_quantities
         self.solvationbuilder.target_directory = self.target_directory
