@@ -46,10 +46,12 @@ class SolvationBuilder:
         self.best_solvents_dict = None
 
         self.custom_solvent_data = {}
+        
+        #set a boundary box to place more solvents close to a center 
+        self.preferred_region_box = None  # [[x_min, x_max], [y_min, y_max], [z_min, z_max]]
 
         #write output files to target directory
         self.target_directory = None
-
         self._debug = False
 
     def _read_xyz(self, filename):
@@ -280,8 +282,7 @@ class SolvationBuilder:
             # Create a mask for the solvent with True values for the current residue indices
             ex_residue_idx = np.zeros((sum(all_sol_atoms_num), 1), dtype=bool)
 
-            end_idx = start_idx + _target_mol_number * sol_dict[solvent_name][
-                'n_atoms']
+            end_idx = start_idx + _target_mol_number * sol_dict[solvent_name]['n_atoms']
             ex_residue_idx[start_idx:end_idx] = True
             start_idx = end_idx
 
@@ -463,12 +464,20 @@ class SolvationBuilder:
 
     def grid_points_template(self, solvents_dict, box_size, grid_spacing=None):
         #generate a cubic grid points with given spacing and box size
-        x_points = np.arange(0 + grid_spacing, box_size[0] - grid_spacing,
-                             2 * grid_spacing)
-        y_points = np.arange(0 + grid_spacing, box_size[1] - grid_spacing,
-                             2 * grid_spacing)
-        z_points = np.arange(0 + grid_spacing, box_size[2] - grid_spacing,
-                             2 * grid_spacing)
+        if self.preferred_region_box is not None:
+            x_points = np.arange(self.preferred_region_box[0][0] + grid_spacing, self.preferred_region_box[0][1] - grid_spacing,
+                                 2 * grid_spacing)
+            y_points = np.arange(self.preferred_region_box[1][0] + grid_spacing, self.preferred_region_box[1][1] - grid_spacing,
+                                 2 * grid_spacing)
+            z_points = np.arange(self.preferred_region_box[2][0] + grid_spacing, self.preferred_region_box[2][1] - grid_spacing,
+                                 2 * grid_spacing)
+        else:
+            x_points = np.arange(0 + grid_spacing, box_size[0] - grid_spacing,
+                                2 * grid_spacing)
+            y_points = np.arange(0 + grid_spacing, box_size[1] - grid_spacing,
+                                2 * grid_spacing)
+            z_points = np.arange(0 + grid_spacing, box_size[2] - grid_spacing,
+                                2 * grid_spacing)
         xx, yy, zz = np.meshgrid(x_points, y_points, z_points)
         points_template = np.vstack([xx.ravel(), yy.ravel(), zz.ravel()]).T
         if self._debug:
@@ -479,7 +488,6 @@ class SolvationBuilder:
         return points_template
 
     def solvate(self):
-
         #calculate the proportion of each solvent
         #LOAD solute and solvents
         original_solvents_dict = self._initialize_solvents_dict(
@@ -816,6 +824,26 @@ class SolvationBuilder:
         return best_solvents_dict
 
     def _update_datalines(self, res_idx_start=1):
+        #generate data lines for solute if solute data is not provided from MOFBuilder
+        if self.solute_data is None:
+            #datalines "labels, labels, atom_number, residue_name, residue_number, x, y, z, spin, charge, note"
+            self.solute_data = np.empty((self.solute_dict['n_atoms'], 11), dtype=object)
+            self.solute_data[:,5:8] = self.solute_dict['coords'] 
+            self.solute_data[:,1] = self.solute_dict['labels']
+            self.solute_data[:,0] = self.solute_dict['labels']
+            atom_numbers = np.arange(1, self.solute_dict['n_atoms'] + 1)
+            self.solute_data[:,2] = atom_numbers
+            self.solute_data[:,3] = np.array(['SOLUTE'] * self.solute_dict['n_atoms'])
+            residue_numbers = np.repeat(np.arange(res_idx_start,
+                                                res_idx_start +
+                                                1),
+                                       self.solute_dict['n_atoms'])
+            self.solute_data[:,4] = residue_numbers
+            self.solute_data[:,8] = np.array([1] * self.solute_dict['n_atoms'])
+            self.solute_data[:,9] = np.array([0] * self.solute_dict['n_atoms'])
+            self.solute_data[:,10] = np.array([''] * self.solute_dict['n_atoms'])
+            self.solute_data[:,5:8] = self.solute_data[:,5:8].astype(float)
+            res_idx_start += 1
 
         #update solute data lines by translating to the center of the box
         self.solute_data[:, 5:8] = self.solute_data[:, 5:8].astype(
@@ -825,7 +853,7 @@ class SolvationBuilder:
         #generate data lines for each solvent and combine them
         solvents_datalines = np.empty((0, 11))
         if self.best_solvents_dict is None:
-            self.solvents_datalines = solvents_datalines
+            self.solvents_datalines = solvents_datalines                   
             return self.solute_data, self.solvents_datalines
 
         for solvent, data in self.best_solvents_dict.items():
