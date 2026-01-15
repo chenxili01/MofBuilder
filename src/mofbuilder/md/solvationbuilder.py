@@ -30,7 +30,7 @@ class SolvationBuilder:
         self.buffer = 1.8  # Å
         self.box_size = None
         self.trial_rounds = 1
-        self.max_fill_rounds = 500  # Maximum number of filling rounds
+        self.max_fill_rounds = 1000  # Maximum number of filling rounds
         #scalar to control the number of candidates generated in each round, 1.0 means generate number of candidates equal to cavity number
         self.scalar = 1.0
         #use solute file
