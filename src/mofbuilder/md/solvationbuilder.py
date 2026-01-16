@@ -370,13 +370,13 @@ class SolvationBuilder:
         if proportion:
             #normalize proportion
             total_prop = sum(proportion)
-            proportion = [p / total_prop for p in proportion]
+            proportion = [round(p / total_prop,3) for p in proportion]
 
         elif quantities:
             total_quant = sum(quantities)
             if total_quant == 0:
                 return None
-            proportion = [q / total_quant for q in quantities]
+            proportion = [round(q / total_quant,3) for q in quantities]
 
         else:
             self.ostream.print_warning(
@@ -729,8 +729,8 @@ class SolvationBuilder:
                         resid_mask.flatten()]
                 #make sure the accepted proportion is not more than target proportion
                 best_solvents_dict[solvent_name][
-                    'accepted_proportion'] = accepted_quantity / len(
-                        set(best_accepted_residues.flatten()))
+                    'accepted_proportion'] = round(accepted_quantity / len(
+                        set(best_accepted_residues.flatten())),3)
                 accepted_proportions.append(
                     best_solvents_dict[solvent_name]['accepted_proportion'])
                 target_proportions.append(
