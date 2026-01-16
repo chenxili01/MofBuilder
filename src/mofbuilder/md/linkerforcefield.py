@@ -5,7 +5,7 @@ import re
 from rdkit import Chem
 import numpy as np
 import networkx as nx
-from networkx.algorithms.isomorphism import DiGraphMatcher
+from networkx.algorithms.isomorphism import GraphMatcher
 
 
 from pathlib import Path
@@ -50,6 +50,7 @@ class LinkerForceFieldGenerator:
         self.src_linker_forcefield_itpfile = None  #set before use
         self.src_linker_molecule = None  #set before use
         self.dest_linker_molecule = None  #will be generated after reconnecting #TODO: implement
+        self.dest_molecule_connectivity_matrix = None  #should be set by the reconncted linker in MOF
         self.linker_itp_path = None  #final itp path after mapping
 
         self.free_opt_linker_mol = None  #will be set after optimization
@@ -192,11 +193,6 @@ class LinkerForceFieldGenerator:
             #check distance
             dist = np.linalg.norm(np.array(i[1]) - np.array(j[1]))
             if dist < 4.0:  #threshold for x-x bond
-                #clean all other bonds to X, should n
-                #connectivity_matrix[i[0], :] = 0
-                #connectivity_matrix[:, i[0]] = 0
-                #connectivity_matrix[j[0], :] = 0
-                #connectivity_matrix[:, j[0]] = 0
                 #rebuild bond between X and C
                 connectivity_matrix[i[0], j[0]] = 1
                 connectivity_matrix[j[0], i[0]] = 1
@@ -276,95 +272,44 @@ class LinkerForceFieldGenerator:
         return opt_mol, mol_scf_results
 
     def _find_isomorphism_and_mapping(self, src_mol, dest_mol):
-        def get_graph_from_molecule(m):
-            mol = Chem.MolFromXYZBlock(m.get_xyz_string())
-            Chem.AssignStereochemistry(
-                mol,
-                cleanIt=True,
-                force=True
-            )
-            import veloxchem as vlx
-            m = vlx.Molecule.read_smiles("C")
-
-            def get_node_features(mol):
-                features = {}
-                for atom in mol.GetAtoms():
-                    features[atom.GetIdx()] = {
-                        "element": atom.GetSymbol(),
-                        "atomic_num": atom.GetAtomicNum(),
-                        "chiral_tag": atom.GetChiralTag().name
-                    }
-                return features
-            def get_directed_edges(mol):
-                edges = []
-                for bond in mol.GetBonds():
-                    i = bond.GetBeginAtomIdx()
-                    j = bond.GetEndAtomIdx()
-
-                    bond_type = bond.GetBondType().name
-                    stereo = bond.GetStereo().name
-
-                    # i → j
-                    edges.append((i, j, {
-                        "bond_type": bond_type,
-                        "stereo": stereo,
-                        "direction": "forward"
-                    }))
-
-                    # j → i
-                    edges.append((j, i, {
-                        "bond_type": bond_type,
-                        "stereo": stereo,
-                        "direction": "reverse"
-                    }))
-                return edges
-            def adjacency_matrix(mol):
-                return Chem.GetAdjacencyMatrix(mol)
-            def rdkit_to_digraph(mol):
-                G = nx.DiGraph()
-
-                # nodes
-                node_features = get_node_features(mol)
-                for idx, feats in node_features.items():
-                    G.add_node(idx, **feats)
-
-                # edges
-                for u, v, data in get_directed_edges(mol):
-                    G.add_edge(u, v, **data)
-
-                return G
-
-            G = rdkit_to_digraph(mol)
-            A = adjacency_matrix(mol)
-            if self._debug:
-                print("Adjacency Matrix:\n", A)
+        src_mol_connectivity = src_mol.get_connectivity_matrix()
+        if self.dest_molecule_connectivity_matrix is not None:
+            dest_mol_connectivity = self.dest_molecule_connectivity_matrix
+        else:
+            dest_mol_connectivity = dest_mol.get_connectivity_matrix()
+        #check if atoms number and bonds number are the same
+        bond_num_src = np.sum(src_mol_connectivity) // 2
+        bond_num_dest = np.sum(dest_mol_connectivity) // 2
+        if (len(src_mol.get_labels()) != len(dest_mol.get_labels()) or bond_num_src != bond_num_dest):
+            raise ValueError(f"The two molecules are not isomorphic because of different number of atoms or bonds.{len(src_mol.get_labels())} atoms and {bond_num_src} bonds in source molecule vs {len(dest_mol.get_labels())} atoms and {bond_num_dest} bonds in destination molecule.")
+        src_mol.show(atom_indices=True)
+        dest_mol.show(atom_indices=True)
+            
+        def get_graph_from_molecule(mol, connectivity_matrix):
+            labels = mol.get_labels()
+            element_ids= mol.get_element_ids()
+            G = nx.Graph()
+            for n in range(len(labels)):
+                G.add_node(n, atom_id=n, element_id=element_ids[n], label=labels[n])
+            for i in range(len(labels)):
+                for j in range(i, len(labels)):
+                    if connectivity_matrix[i][j]:
+                            G.add_edge(i, j)
             return G
-
+        
         def node_match(n1, n2):
-            return (
-                n1["atomic_num"] == n2["atomic_num"] and
-                n1["chiral_tag"] == n2["chiral_tag"]
-            )
+            return n1['element_id'] == n2['element_id'] and n1['label'] == n2['label'] 
 
-        def edge_match(e1, e2):
-            return (
-                e1["bond_type"] == e2["bond_type"] and
-                e1["stereo"] == e2["stereo"] and
-                e1["direction"] == e2["direction"]
-            )
 
-        G1 = get_graph_from_molecule(src_mol)
-        G2 = get_graph_from_molecule(dest_mol)
-        GM = DiGraphMatcher(G1, G2,
-                            node_match=node_match,
-                            edge_match=edge_match)
-
+        G1 = get_graph_from_molecule(src_mol,src_mol_connectivity)
+        G2 = get_graph_from_molecule(dest_mol,dest_mol_connectivity)
+        GM = GraphMatcher(G1, G2, node_match=node_match)
         isomorphic = GM.is_isomorphic()
-        mapping = GM.mapping
-        if self._debug:
-            print("Isomorphic:", isomorphic)
-            print("Mapping:", mapping)
+        mapping = next(GM.isomorphisms_iter(), None)
         return isomorphic, mapping
+            
+
+
 
 
     def map_existing_forcefield(self, linker_mol_data=None):
