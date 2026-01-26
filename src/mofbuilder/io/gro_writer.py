@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 import numpy as np
+from .basic import nn, nl
 from veloxchem.outputstream import OutputStream
 from veloxchem.veloxchemlib import mpi_master
 import mpi4py.MPI as MPI
@@ -39,13 +40,13 @@ class GroWriter:
         line format:
         atom_type, atom_label, atom_number, residue_name, residue_number, x, y, z, spin, charge, note
         1         2    3      4            5              6  7  8 9    10 11
-        ATOM      1    C       MOL          1            1.000 2.000 3.000 1.00 0.00 C1
+        X1      1    C       MOL          1            1.000 2.000 3.000 1.00 0.00 C1
         """
         "data format[atom_type, atom_label, atom_number, residue_name, residue_number, value_x, value_y, value_z, spin, charge, note]"
         filepath = Path(filepath) if filepath is not None else Path(
             self.filepath)
         assert_msg_critical(filepath is not None,
-                            "pdb filepath is not specified")
+                            "gro filepath is not specified")
         # check if the file directory exists and create it if it doesn't
         self.file_dir = Path(filepath).parent
         if self._debug:
@@ -85,6 +86,7 @@ class GroWriter:
                     residue_count += 1
                     last_name = lines[i][3]
                     last_residue_number = lines[i][4]
+                    j = 0
                 atom_type = values[0]
                 atom_label = values[1]
                 atom_number = i + 1
@@ -100,12 +102,13 @@ class GroWriter:
                 formatted_line = "%5d%-5s%5s%5s%8.3f%8.3f%8.3f" % (
                     residue_number,
                     residue_name[:5],
-                    atom_label[:5],
+                    (nn(atom_label[:5])+str(j+1))[:5],
                     str(atom_number)[-5:],
                     x,
                     y,
                     z,
                 )
+                j += 1
                 newgro.append(formatted_line + "\n")
             if triclinic:
                 tail = f"{float(box[0])/10:.6f} {float(box[1])/10:.6f} {float(box[2])/10:.6f} {float(box[3]):.2f} {float(box[4]):.2f} {float(box[5]):.2f}\n"

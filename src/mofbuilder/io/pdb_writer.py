@@ -65,8 +65,9 @@ class PdbWriter:
                     residue_count += 1
                     last_name = lines[i][3]
                     last_residue_number = lines[i][4]
+                    j=0
                 atom_type = values[0]
-                atom_label = values[1] + str(i + 1)
+                atom_label = values[1] + str(j + 1)
                 atom_number = i + 1
                 residue_name = values[3].split('_')[0]
                 residue_number = residue_count
@@ -76,6 +77,7 @@ class PdbWriter:
                 spin = values[8]
                 charge = values[9]
                 note = values[10].split('_')[0]
+                j+=1
                 # Format the values using the specified format string
                 # Fixed formatting string
                 formatted_line = (
