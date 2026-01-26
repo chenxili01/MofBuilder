@@ -369,8 +369,9 @@ class Framework:
         self.solvationbuilder.solvents_files = solvents_files if solvents_files else self.solvents
         #if not provided, use TIP3P as default solvent
         if not self.solvationbuilder.solvents_files:
-            self.solvents_file = Path(self.data_path, 'solvents_database',
-                                      'TIP3P.xyz')
+            self.ostream.print_info("No solvents provided, using TIP3P as default solvent.")
+            self.solvents_file = str(Path(self.data_path, 'solvents_database','TIP3P.xyz'))
+            self.solvationbuilder.solvents_files = [self.solvents_file]
             solvents_proportions = [1]
         self.solvationbuilder.solute_data = self.framework_data
         #mof box as preferred region
