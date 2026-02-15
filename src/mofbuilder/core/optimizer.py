@@ -46,6 +46,7 @@ class NetOptimizer:
         self.sorted_nodes = None
         self.sorted_edges = None
         self.cell_info = None
+        self.twodimension = False
 
         #will be generated
         self.sorted_edges_of_sortednodeidx = None
@@ -60,7 +61,7 @@ class NetOptimizer:
         self.sc_unit_cell = None
         self.sc_unit_cell_inv = None
         self.fake_edge = False
-        #self.constant_length = 1.54  #default C-C single bond length
+        self.constant_length = 1.54  #default C-C single bond length
         self.linker_frag_length = None
 
         self.load_optimized_rotations = None
@@ -232,15 +233,23 @@ class NetOptimizer:
         if saved_optimized_rotations is None:
             self.skip_rotation_optimization = False
 
-        if not self.skip_rotation_optimization:
-            ####TODO: modified for mil53
-            opt_rot_pre, _ = self.opt_drv._optimize_rotations_pre(
-                num_nodes, G, node_X_pos_dict, ini_rot)
-            opt_rot_aft, _ = self.opt_drv._optimize_rotations_after(
-                num_nodes, G, node_X_pos_dict, opt_rot_pre)
+        if not self.twodimension and not self.skip_rotation_optimization:
+                ####TODO: modified for mil53
+                opt_rot_pre, _ = self.opt_drv._optimize_rotations_pre(
+                    num_nodes, G, node_X_pos_dict, ini_rot)
+                opt_rot_aft, _ = self.opt_drv._optimize_rotations_after(
+                    num_nodes, G, node_X_pos_dict, opt_rot_pre)
+        if self.twodimension==True and not self.skip_rotation_optimization:
+                target_axis = np.array([0, 1, 0])
+                ini_thetas = np.zeros(len(pname_set_dict.keys()))
+                # for 2D layer, only optimize the rotation around z axis, which is the last column of the rotation matrix, and set the first two columns to be identity matrix
+                opt_thetas_pre = self.opt_drv._axis_optimize_rotations_pre(ini_thetas,target_axis,G, node_X_pos_dict)
+                opt_thetas_aft = self.opt_drv._axis_optimize_rotations_after(opt_thetas_pre,target_axis,G, node_X_pos_dict)
+                opt_rot_aft = [reorthogonalize_matrix(OptimizationDriver()._axis_rotation_matrix(target_axis, theta)) for theta in opt_thetas_aft]
+        
+
         else:
             opt_rot_aft = saved_optimized_rotations.reshape(-1, 3, 3)
-
         if self.rotation_filename is not None:
             #save it as h5 file
             with h5py.File(self.rotation_filename, 'w') as hf:
@@ -263,7 +272,7 @@ class NetOptimizer:
                     for node, positions in rot_node_pos.items():
                         for pos in positions:
                             file.write(
-                                f"X{node}   {pos[0]:.8f} {pos[1]:.8f} {pos[2]:.8f}\n"
+                                f"X{node}   {pos[1]:.8f} {pos[2]:.8f} {pos[3]:.8f}\n"
                             )
 
             temp_save_xyz("optimized_nodesstructure.xyz", rot_node_pos)
@@ -277,20 +286,24 @@ class NetOptimizer:
         # loop all of the edges in G and get the lengths of the edges, length is the distance between the two nodes ccoords
         edge_lengths, lengths = self._get_edge_lengths(G)
 
-        x_com_length = np.mean(
-            [np.linalg.norm(i) for i in self.node_x_ccoords])
-        if self.fake_edge:
-            new_edge_length = self.constant_length + 2 * x_com_length
+        if self.EC_data is not None:
+            x_com_length = np.mean([np.linalg.norm(i) for i in self.node_x_ccoords])+ np.mean([np.linalg.norm(i) for i in self.ec_x_ccoords])
         else:
-            new_edge_length = self.linker_frag_length + 2 * self.constant_length + 2 * x_com_length
-
+            x_com_length = 2*np.mean([np.linalg.norm(i) for i in self.node_x_ccoords])
+        print("x_com_length",x_com_length)
+        if self.fake_edge:
+            new_edge_length = self.constant_length + x_com_length
+        else:
+            new_edge_length = self.linker_frag_length + 2 * self.constant_length +  x_com_length
         # update the node ccoords in G by loop edge, start from the start_node, and then update the connected node ccoords by the edge length, and update the next node ccords from the updated node
 
         new_ccoords, old_ccoords = self._update_node_ccoords(
             G, edge_lengths, start_node, new_edge_length)
-        # exclude the start_node in updated_ccoords and original_ccoords
-        new_ccoords = {k: v for k, v in new_ccoords.items() if k != start_node}
-        old_ccoords = {k: v for k, v in old_ccoords.items() if k != start_node}
+        
+        if len(new_ccoords.keys()) > 2:
+            # exclude the start_node in updated_ccoords and original_ccoords when more than two nodes
+            new_ccoords = {k: v for k, v in new_ccoords.items() if k != start_node}
+            old_ccoords = {k: v for k, v in old_ccoords.items() if k != start_node}
 
         # use optimized_params to update all of nodes ccoords in G, according to the fccoords
         if self.optimized_cell_info is None:
@@ -307,9 +320,11 @@ class NetOptimizer:
             self.ostream.print_info(
                 "Finished the cell parameters optimization")
             self.ostream.print_info("-" * 80)
+            self.ostream.flush()
         else:
             self.ostream.print_info(
                 "use the optimized_cell_info from the previous optimization")
+            self.ostream.flush()
             optimized_cell_info = self.optimized_cell_info
 
         # get scaled unit cell and inverse and sG
@@ -913,18 +928,213 @@ class OptimizationDriver:
         optimized_rotations = np.array(optimized_rotations)
 
         return optimized_rotations, static_atom_positions
+    
+    def _axis_rotation_matrix(self,axis, theta):
+        """
+        Compute the rotation matrix for a rotation around an axis by an angle theta.
+
+        Parameters:
+            axis (tuple): The axis vector (a, b, c).
+            theta (float): The rotation angle in radians.
+
+        Returns:
+            numpy.ndarray: The 3x3 rotation matrix.
+        """
+        a, b, c = axis
+        axis = np.array([a, b, c])
+        axis = axis / np.linalg.norm(axis)  # Normalize the axis vector
+        a, b, c = axis
+
+        cos_theta = np.cos(theta)
+        sin_theta = np.sin(theta)
+        I = np.eye(3)
+        K = np.array([
+            [0, -c, b],
+            [c, 0, -a],
+            [-b, a, 0]
+        ])
+        
+        R = I + sin_theta * K + (1 - cos_theta) * np.dot(K, K)
+        return R
+
+    def _axis_objective_function_pre(self,thetas, axis, static_atom_positions, G):
+        """
+        Objective function to minimize distances between paired node to paired node_com along edges.
+
+        Parameters:
+            theta (float): The rotation angle in radians.
+            axis (tuple): The axis vector (a, b, c).
+            G (networkx.Graph): Graph structure.
+            static_atom_positions (dict): Original positions of X atoms for each node.
+
+        Returns:
+            float: Total distance metric to minimize.
+        """
+        set_rotation_matrices = np.array(
+            [self._axis_rotation_matrix(axis, theta) for theta in thetas]) 
+        set_rotation_matrices = set_rotation_matrices.reshape(len(self.pname_set_dict), 3, 3)  
+        rotation_matrices = expand_set_rots(self.pname_set_dict,
+                                            set_rotation_matrices,
+                                            self.sorted_nodes)
+        total_distance = 0.0
+
+        for i, j in self.sorted_edges:
+            R_i = reorthogonalize_matrix(rotation_matrices[i])
+
+            com_i = G.nodes[self.sorted_nodes[i]]["ccoords"]
+            com_j = G.nodes[self.sorted_nodes[j]]["ccoords"]
+            # Rotate positions around their mass center
+            rotated_i_positions = (
+                np.dot(static_atom_positions[i][:, 1:] - com_i, R_i.T) + com_i)
+
+            dist_matrix = np.linalg.norm(rotated_i_positions - com_j,
+                                         axis=1,
+                                         keepdims=True)
+
+            if np.argmin(dist_matrix) > 1:
+                total_distance += 1e4  # penalty for the distance difference
+            total_distance += np.min(dist_matrix)**2
+
+            total_distance += 1e3 / (np.max(dist_matrix) - np.min(dist_matrix)
+                                     )  # reward for the distance difference
+
+        return total_distance
+
+    def _axis_objective_function_after(self,thetas, axis, static_atom_positions, G):
+        """
+        Objective function to minimize distances between paired atoms along edges.
+
+        Parameters:
+            theta (float): The rotation angle in radians.
+            axis (tuple): The axis vector (a, b, c).
+            G (networkx.Graph): Graph structure.
+            static_atom_positions (dict): Original positions of X atoms for each node.
+            edge_pairings (dict): Precomputed pairings for each edge.
+
+        Returns:
+            float: Total distance metric to minimize.
+        """
+        set_rotation_matrices = np.array(
+            [self._axis_rotation_matrix(axis, theta) for theta in thetas]) 
+        set_rotation_matrices = set_rotation_matrices.reshape(len(self.pname_set_dict), 3, 3)  
+        rotation_matrices = expand_set_rots(self.pname_set_dict,
+                                            set_rotation_matrices,
+                                            self.sorted_nodes)
+        total_distance = 0.0
+
+        for (i, j) in self.sorted_edges:
+            R_i = reorthogonalize_matrix(rotation_matrices[i])
+            R_j = reorthogonalize_matrix(rotation_matrices[j])
+
+            com_i = G.nodes[self.sorted_nodes[i]]['ccoords']
+            com_j = G.nodes[self.sorted_nodes[j]]['ccoords']
+
+            # Rotate positions around their mass center
+            rotated_i_positions = np.dot(static_atom_positions[i][:,1:] - com_i, R_i.T) + com_i
+            rotated_j_positions = np.dot(static_atom_positions[j][:,1:] - com_j, R_j.T) + com_j
+
+            # Vectorized pairwise distance matrix
+            diff = rotated_i_positions[:, None, :] - rotated_j_positions[
+                None, :, :]
+            # shape (Ni, Nj, 3)
+
+            dist_matrix = np.linalg.norm(diff, axis=2)
+
+            if np.argmin(dist_matrix) > 1:
+                total_distance += 1e4  # penalty for the distance difference
+
+            total_distance += np.min(dist_matrix)**2
+
+        return total_distance
+    
+    def _axis_optimize_rotations_pre(self, initial_thetas, axis,G, atom_positions,opt_methods="L-BFGS-B",maxfun=15000):
+        """
+        Optimize the rotation angles around a given axis to minimize the difference between
+        rotated and target positions for each node.
+
+        Parameters:
+            axis (tuple): The axis vector (a, b, c).
+            G (networkx.Graph): Graph structure.
+            static_atom_positions (dict): Original positions of X atoms for each node.
+            edge_pairings (dict): Precomputed pairings for each edge.
+            initial_thetas (numpy.ndarray): Initial guesses for the rotation angles.    
+        Returns:
+            numpy.ndarray: The optimized rotation angles for each node.
+        """ 
+        static_atom_positions = atom_positions.copy()
+        # Precompute edge-specific pairings
+        #edge_pairings = find_edge_pairings(sorted_edges, atom_positions)
+        result = minimize(self._axis_objective_function_pre, initial_thetas, 
+                        args=(axis, static_atom_positions,G), 
+                        method=self.opt_method,
+                        options={
+                            "maxfun": self.maxfun,
+                            "maxiter": self.maxiter,
+                            "disp": self.display,
+                            "eps": self.eps,
+                            "maxls": 50,
+                        })
+        optimized_thetas = result.x
+
+
+        return optimized_thetas
+
+    def _axis_optimize_rotations_after(self, initial_thetas, axis,G, atom_positions,opt_methods="L-BFGS-B",maxfun=30000):
+        """
+        Optimize the rotation angles around a given axis to minimize the difference between
+        rotated and target positions for each node.
+
+        Parameters:
+            axis (tuple): The axis vector (a, b, c).
+            G (networkx.Graph): Graph structure.
+            static_atom_positions (dict): Original positions of X atoms for each node.
+            edge_pairings (dict): Precomputed pairings for each edge.
+            initial_thetas (numpy.ndarray): Initial guesses for the rotation angles.
+
+        Returns:
+            numpy.ndarray: The optimized rotation angles for each node.
+        """
+        static_atom_positions = atom_positions.copy()
+        # Precompute edge-specific pairings
+        #edge_pairings = find_edge_pairings(sorted_edges, atom_positions)
+        result = minimize(self._axis_objective_function_after, initial_thetas, 
+                        args=(axis, static_atom_positions,G), 
+                        method=self.opt_method,
+                        options={
+                            "maxfun": self.maxfun,
+                            "maxiter": self.maxiter,
+                            "disp": self.display,
+                            "eps": self.eps,
+                        })
+        optimized_thetas = result.x
+
+        # Compute the rotation matrices for each node
+        #optimized_rotations = [reorthogonalize_matrix(self._axis_rotation_matrix(axis, theta)) for theta in optimized_thetas]
+        
+        # Return the optimized rotation matrices 
+
+        return optimized_thetas
+
+
+
 
     def _scale_objective_function(self, params, old_cell_params,
-                                  old_cartesian_coords, new_cartesian_coords,
-                                  ratio_ba, ratio_ca):
+                                  old_cartesian_coords, new_cartesian_coords,fix_shape=True):
 
-        a_old, b_old, c_old, alpha_old, beta_old, gamma_old = old_cell_params
-        a_new, b_new, c_new, _, _, _ = params
+        if fix_shape:
+            # constrain the cell shape to be the same as old cell
+            a_old, b_old, c_old, alpha_old, beta_old, gamma_old = old_cell_params
+            new_a_scalar = params[0]
+            new_b_scalar = new_a_scalar 
+            new_c_scalar = new_a_scalar
+            params = (new_a_scalar, new_b_scalar, new_c_scalar, alpha_old,
+                      beta_old, gamma_old)
+            
+        else:
+            a_old, b_old, c_old, alpha_old, beta_old, gamma_old = old_cell_params
+            new_a_scalar, new_b_scalar, new_c_scalar = params[0], params[1], params[2]
+
         #constrain the angles to be the same as old cell
-        if self.fixed_cell_shape:
-            b_new = a_new * ratio_ba
-            c_new = a_new * ratio_ca
-
         # Compute transformation matrix for the old unit cell, T is the unit cell matrix
         T_old = unit_cell_to_cartesian_matrix(a_old, b_old, c_old, alpha_old,
                                               beta_old, gamma_old)
@@ -934,7 +1144,11 @@ class OptimizationDriver:
 
         # backup
         # old_fractional_coords = cartesian_to_fractional(old_cartesian_coords,T_old_inv)
-
+        a_new = new_a_scalar*a_old
+        b_new = new_b_scalar*b_old
+        c_new = new_c_scalar*c_old
+        print("Trying cell parameters:", (a_new, b_new, c_new, alpha_old,
+                                         beta_old, gamma_old))
         # Compute transformation matrix for the new unit cell
         T_new = unit_cell_to_cartesian_matrix(a_new, b_new, c_new, alpha_old,
                                               beta_old, gamma_old)
@@ -948,9 +1162,83 @@ class OptimizationDriver:
 
         # Compute difference from original fractional coordinates
         diff = new_fractional_coords - old_fractional_coords
-        return np.sum(diff**2)  # Sum of squared differences
+        return np.sum(abs(diff)/1000)  # Sum of squared differences
 
-    def _optimize_cell_params(self, cell_info, original_ccoords,
+    def _optimize_cell_params(self, cell_info, original_ccoords, updated_ccoords):
+        """
+        Analytic lattice scaling under fixed fractional coordinates
+        using pairwise Cartesian distances.
+        """
+
+        # ---- unpack cell ----
+        a_old, b_old, c_old, alpha, beta, gamma = cell_info
+
+        # ---- Cartesian coordinates ----
+        r_old = np.vstack(list(original_ccoords.values()))
+        r_new = np.vstack(list(updated_ccoords.values()))
+
+        # ---- build template unit cell ----
+        T0 = unit_cell_to_cartesian_matrix(
+            a_old, b_old, c_old, alpha, beta, gamma
+        )
+
+        # ---- fractional coordinates (locked) ----
+        fcoords = cartesian_to_fractional(r_old, np.linalg.inv(T0))
+
+        # ---- compute analytic scale(s) ----
+        if self.fixed_cell_shape:
+            scale = self._analytic_global_scale(fcoords, r_new, T0)
+            a_new, b_new, c_new = scale * a_old, scale * b_old, scale * c_old
+        else:
+            sa, sb, sc = self._analytic_abc_scales(fcoords, r_new, T0)
+            a_new, b_new, c_new = sa * a_old, sb * b_old, sc * c_old
+
+        new_cell_params = [a_new, b_new, c_new, alpha, beta, gamma]
+
+        self.ostream.print_info(
+            f"Analytic cell scaling applied.\n"
+            f"Optimized New Cell Parameters: {new_cell_params}\n"
+            f"Template Cell Parameters: {cell_info}"
+        )
+        self.ostream.flush()
+
+        return new_cell_params
+
+    def _analytic_global_scale(self, fcoords, r_new, T0, max_pairs=2000):
+        """
+        Closed-form global scale from pairwise distances.
+        """
+
+        N = len(fcoords)
+        num = 0.0
+        den = 0.0
+        count = 0
+
+        for i in range(N):
+            for j in range(i + 1, N):
+                df = fcoords[i] - fcoords[j]
+                d0 = np.linalg.norm(T0 @ df)
+                if d0 < 1e-8:
+                    continue
+
+                d_new = np.linalg.norm(r_new[i] - r_new[j])
+
+                num += d_new * d0
+                den += d0 ** 2
+                count += 1
+
+                if count >= max_pairs:
+                    break
+            if count >= max_pairs:
+                break
+
+        if den < 1e-12:
+            raise ValueError("Degenerate structure: cannot determine global scale.")
+
+        return num / den
+
+    
+    def __optimize_cell_params(self, cell_info, original_ccoords,
                               updated_ccoords):
 
         assert_msg_critical("scipy" in sys.modules,
@@ -967,29 +1255,31 @@ class OptimizationDriver:
         new_cartesian_coords = np.vstack(list(
             updated_ccoords.values()))  # updated_ccoords
         # Initial guess for new unit cell parameters (e.g., slightly modified cell)
-        initial_params = cell_info
-
+        new_a_scalar,new_b_scalar,new_c_scalar = 1,1,1
+        alpha, beta, gamma = cell_info[3], cell_info[4], cell_info[5]
+        initial_params = new_a_scalar, new_b_scalar, new_c_scalar, alpha, beta, gamma
+        
         # Bounds: a, b, c > 3; angles [0, 180]
-        bounds = [(3, None), (3, None), (3, None)] + [(20, 180)] * 3
-
-        ratio_ba = round(initial_params[1] / initial_params[0], 5)
-        ratio_ca = round(initial_params[2] / initial_params[0], 5)
+        bounds = [(0.01, None), (0.01, None), (0.01, None)] + [(20, 180)] * 3
 
         # Optimize using L-BFGS-B to minimize the objective function
         result = minimize(
             self._scale_objective_function,
             x0=initial_params,
-            args=(old_cell_params, old_cartesian_coords, new_cartesian_coords,
-                  ratio_ba, ratio_ca),
+            args=(old_cell_params, old_cartesian_coords, new_cartesian_coords),
+            #different method
             method="L-BFGS-B",
             bounds=bounds,
+            options={
+                "maxfun": 3000,
+                "maxiter": 30000,
+                "disp": self.display,
+                "eps": self.eps,
+            },
         )
 
         # Extract optimized parameters
         optimized_params = np.round(result.x, 5)
-        self.ostream.print_info(
-            f"Optimized New Cell Parameters: {optimized_params}\nTemplate Cell Parameters: {cell_info}"
-        )
         if self.fixed_cell_shape:
             self.ostream.print_info(
                 "Note: Cell shape is fixed during optimization.")
@@ -997,8 +1287,18 @@ class OptimizationDriver:
                                                          old_cell_params[0])
             optimized_params[2] = optimized_params[0] * (old_cell_params[2] /
                                                          old_cell_params[0])
-        return optimized_params
-
+            self.ostream.flush()
+        new_cell_params = [optimized_params[0]*old_cell_params[0],
+                           optimized_params[1]*old_cell_params[1],
+                           optimized_params[2]*old_cell_params[2],
+                           old_cell_params[3],
+                           old_cell_params[4],  
+                            old_cell_params[5]]
+        self.ostream.print_info(
+            f"Optimized New Cell Parameters: {new_cell_params}\nTemplate Cell Parameters: {cell_info}"
+        )
+        self.ostream.flush()
+        return new_cell_params
     # use optimized_params to update all of nodes ccoords in G, according to the fccoords
     def _update_ccoords_by_optimized_cell_params(self, G, optimized_params):
         sG = G.copy()
@@ -1045,6 +1345,9 @@ def expand_set_rots(pname_set_dict, set_rotations, sorted_nodes):
     """
         Expand set rotations to all nodes based on the set dictionary.
         """
+    #check if set_rotations is list
+    if isinstance(set_rotations, list):
+        set_rotations = np.array(set_rotations)
     set_rotations = set_rotations.reshape(len(pname_set_dict), 3, 3)
     rotations = np.empty((len(sorted_nodes), 3, 3))
     idx = 0
