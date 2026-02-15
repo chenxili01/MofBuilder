@@ -44,6 +44,8 @@ class XyzReader:
                  com_type=None,
                  residue_name='MOL',
                  residue_number=1):
+        if filepath is not None:
+            self.filepath = filepath
         with open(self.filepath, 'r') as f:
             lines = f.readlines()
 
@@ -84,7 +86,7 @@ class XyzReader:
             arr[:, 9] = arr[:, 9].astype(float)
             return arr
 
-        self.data = type_data(self.data)
+        self.data = type_data(np.array(data))
 
         if recenter:
             #if not define com_type, use all atoms to calculate com
