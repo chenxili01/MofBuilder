@@ -16,7 +16,7 @@ from veloxchem.veloxchemlib import mpi_master, hartree_in_kcalpermol, hartree_in
 from veloxchem.errorhandler import assert_msg_critical
 import mpi4py.MPI as MPI
 import sys
-
+import math
 
 class SolvationBuilder:
 
@@ -231,13 +231,24 @@ class SolvationBuilder:
         '''
 
         all_data = {}
-        all_sol_mols = []
-        for solvent_name in sol_dict:
-            n_mol = int(target_number * sol_dict[solvent_name]['proportion'])
-            if n_mol == 0:
-                if sol_dict[solvent_name]['proportion'] > 0:
-                    n_mol = 1
-            all_sol_mols.append(n_mol)
+        
+        solvent_names = list(sol_dict.keys())
+        proportions = [sol_dict[name]['proportion'] for name in solvent_names]
+
+        all_sol_mols = self._distribute_by_proportion(target_number, proportions)
+
+        # guarantee at least 1 molecule if proportion > 0 and total_number >= number of solvents
+        for i, name in enumerate(solvent_names):
+            if proportions[i] > 0 and all_sol_mols[i] == 0 and target_number >= len(solvent_names):
+                all_sol_mols[i] = 1
+
+        diff = target_number - sum(all_sol_mols)
+        if diff != 0:
+            # adjust largest solvent
+            idx = np.argmax(all_sol_mols)
+            all_sol_mols[idx] += diff
+
+
         all_sol_atoms_num = [
             n_mol * sol_dict[solvent_name]['n_atoms']
             for n_mol, solvent_name in zip(all_sol_mols, sol_dict)
@@ -370,13 +381,13 @@ class SolvationBuilder:
         if proportion:
             #normalize proportion
             total_prop = sum(proportion)
-            proportion = [round(p / total_prop,3) for p in proportion]
+            proportion = [p / total_prop for p in proportion]
 
         elif quantities:
             total_quant = sum(quantities)
             if total_quant == 0:
                 return None
-            proportion = [round(q / total_quant,3) for q in quantities]
+            proportion = [q / total_quant for q in quantities]
 
         else:
             self.ostream.print_warning(
@@ -486,6 +497,32 @@ class SolvationBuilder:
             )
             self.ostream.flush()
         return points_template
+
+    def _distribute_by_proportion(self, total_number, proportions):
+        """
+        Remainder-safe integer distribution.
+        Guarantees sum(counts) == total_number.
+        """
+        proportions = np.array(proportions, dtype=float)
+
+        if proportions.sum() == 0:
+            return np.zeros_like(proportions, dtype=int)
+
+        proportions = proportions / proportions.sum()
+
+        raw = proportions * total_number
+        base = np.floor(raw).astype(int)
+
+        remainder = total_number - base.sum()
+
+        if remainder > 0:
+            fractional = raw - base
+            order = np.argsort(-fractional)
+            for i in range(remainder):
+                base[order[i]] += 1
+
+        return base
+
 
     def solvate(self):
         #calculate the proportion of each solvent
@@ -698,7 +735,7 @@ class SolvationBuilder:
             target_proportions = []
             proportion_diff = []
             total_number_limit = total_number
-            overshoot_flag = True
+            overshoot_flag = False
 
             for solvent_name in best_solvents_dict:
                 #incase overshoot, only select beginning[:target_mol*n_atom] values
@@ -730,7 +767,7 @@ class SolvationBuilder:
                 #make sure the accepted proportion is not more than target proportion
                 best_solvents_dict[solvent_name][
                     'accepted_proportion'] = round(accepted_quantity / len(
-                        set(best_accepted_residues.flatten())),3)
+                        set(best_accepted_residues.flatten())),8)
                 accepted_proportions.append(
                     best_solvents_dict[solvent_name]['accepted_proportion'])
                 target_proportions.append(
@@ -740,7 +777,7 @@ class SolvationBuilder:
                     best_solvents_dict[solvent_name]['proportion'])
                 total_number_limit = min(
                     total_number_limit,
-                    int(accepted_quantity /
+                    math.ceil(accepted_quantity /
                         best_solvents_dict[solvent_name]['proportion']
                         if best_solvents_dict[solvent_name]['proportion'] >
                         0 else total_number))
@@ -763,7 +800,7 @@ class SolvationBuilder:
             if overshoot_flag:
                 for solvent_name in best_solvents_dict:
                     #check if overshoot
-                    limited_quantity = int(
+                    limited_quantity = math.ceil(
                         total_number_limit *
                         best_solvents_dict[solvent_name]['proportion'])
                     if best_solvents_dict[solvent_name][
@@ -868,8 +905,7 @@ class SolvationBuilder:
             note = np.array([''] * len(labels)).reshape(-1, 1)
             residue_name = np.array([solvent] * len(labels)).reshape(-1, 1)
             atom_number = np.arange(1, len(labels) + 1).reshape(-1, 1)
-            residue_number = np.repeat(
-                np.arange(res_idx_start,
+            residue_number = np.repeat(np.arange(res_idx_start,
                           data['accepted_quantity'] + res_idx_start),
                 data['n_atoms']).reshape(-1, 1)
             res_idx_start += data['accepted_quantity']
@@ -935,7 +971,7 @@ class SolvationBuilder:
         volume_cm3 = volume_A3 * 1e-24  # cm³
         # Calculate number of mols
         N_A = 6.022e23  # Avogadro's number
-        n_mols = int(density * volume_cm3 * N_A * proportion / molar_mass)
+        n_mols = math.ceil(density * volume_cm3 * N_A * proportion / molar_mass)
         return n_mols
 
     def _number2density(self, n_mols, molar_mass, box_size):
@@ -956,7 +992,7 @@ if __name__ == "__main__":
         V_A3 = np.prod(box_size)  # Å³
         V_cm3 = V_A3 * 1e-24  # cm³
         N_A = 6.022e23  # Avogadro's number
-        n_mols = int(density * V_cm3 * N_A / molar_mass)
+        n_mols = math.ceil(density * V_cm3 * N_A / molar_mass)
         return n_mols
 
 
