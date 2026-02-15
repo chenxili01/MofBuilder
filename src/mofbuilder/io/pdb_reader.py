@@ -38,7 +38,7 @@ class PdbReader:
         # debug
         self._debug = False
 
-    def read_pdb(self, filepath=None, recenter=False, com_type=None):
+    def read_pdb(self, filepath=None, recenter=True, com_type=None):
         if filepath is not None:
             self.filepath = filepath
         assert_msg_critical(
