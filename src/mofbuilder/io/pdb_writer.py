@@ -96,7 +96,7 @@ class PdbWriter:
                         float(z),
                         1.00,
                         0.00,
-                        nn(atom_label)  # 77-78 (Element symbol)
+                        nn(note)  # 77-78 (Element symbol)
                     )
                 newpdb.append(formatted_line + "\n")
             fp.writelines(newpdb)
