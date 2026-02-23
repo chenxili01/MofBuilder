@@ -1,17 +1,43 @@
+"""Superposition of point sets: SVD-based alignment and rotation-only matching."""
+
+from __future__ import annotations
+
 import itertools
+from typing import List, Tuple, Union
+
 import numpy as np
 
 
-def sort_by_distance(arr):
-    # Calculate distances from the first element to all other elements
+def sort_by_distance(arr: np.ndarray) -> List[Tuple[float, int]]:
+    """Sort indices by distance from the first point to each point in arr.
+
+    Args:
+        arr: (N, 3) array of points.
+
+    Returns:
+        List of (distance, index) tuples sorted by ascending distance.
+    """
     distances = [(np.linalg.norm(arr[0] - arr[i]), i) for i in range(len(arr))]
-    # Sort distances in ascending order
     distances.sort(key=lambda x: x[0])
     return distances
 
 
-def match_vectors(arr1, arr2, num):
-    # Get sorted distances
+def match_vectors(
+    arr1: np.ndarray, arr2: np.ndarray, num: int
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Select num points from each set by distance-from-first ordering and return aligned subsets.
+
+    Picks the num closest points to the first element in each array, then returns
+    those subsets in the same distance order for use in superimposition.
+
+    Args:
+        arr1: First (N1, 3) array of points.
+        arr2: Second (N2, 3) array of points.
+        num: Number of points to select from each (e.g. min(6, len(arr1), len(arr2))).
+
+    Returns:
+        Tuple (closest_vectors_arr1, closest_vectors_arr2): (num, 3) arrays.
+    """
     sorted_distances_arr1 = sort_by_distance(arr1)
     sorted_distances_arr2 = sort_by_distance(arr2)
 
@@ -27,9 +53,12 @@ def match_vectors(arr1, arr2, num):
     return closest_vectors_arr1, closest_vectors_arr2
 
 
-def superimpose(src_arr, target_arr, min_rmsd=1e6):
-    """
-    Find the best rotation and translation that aligns src_arr to target_arr.
+def superimpose(
+    src_arr: Union[np.ndarray, List],
+    target_arr: Union[np.ndarray, List],
+    min_rmsd: float = 1e6,
+) -> Tuple[float, np.ndarray, np.ndarray]:
+    """Find the best rotation and translation that aligns src_arr to target_arr.
 
     Procedure:
     - Convert inputs to numpy arrays.
@@ -39,10 +68,14 @@ def superimpose(src_arr, target_arr, min_rmsd=1e6):
       SVD-based superposition against the selected vectors from arr2.
     - Keep the rotation/translation that yields the smallest RMSD.
 
+    Args:
+        src_arr: Source point set (N, 3).
+        target_arr: Target point set (M, 3).
+        min_rmsd: Initial RMSD threshold; best solution below this is kept.
+
     Returns:
-    - min_rmsd: best RMSD found
-    - best_rot: 3x3 rotation matrix
-    - best_tran: translation vector (length 3)
+        Tuple of (min_rmsd, best_rot, best_tran): best RMSD, 3x3 rotation matrix,
+        translation vector (length 3).
     """
     # Ensure inputs are numpy arrays
     src_arr = np.asarray(src_arr)
@@ -67,12 +100,20 @@ def superimpose(src_arr, target_arr, min_rmsd=1e6):
     return min_rmsd, best_rot, best_tran
 
 
-def svd_superimpose(src_arr, target_arr):
-    """
-    Calculates RMSD and rotation matrix for superimposing two sets of points,
-    using SVD. Ref.: "Least-Squares Fitting of Two 3-D Point Sets", IEEE
-    Transactions on Pattern Analysis and Machine Intelligence, 1987, PAMI-9(5),
-    698-700. DOI: 10.1109/TPAMI.1987.4767965
+def svd_superimpose(
+    src_arr: Union[np.ndarray, List], target_arr: Union[np.ndarray, List]
+) -> Tuple[float, np.ndarray, np.ndarray]:
+    """Compute RMSD and rotation/translation for superimposing two point sets via SVD.
+
+    Ref.: "Least-Squares Fitting of Two 3-D Point Sets", IEEE Trans. Pattern
+    Anal. Mach. Intell., 1987, PAMI-9(5), 698-700. DOI: 10.1109/TPAMI.1987.4767965
+
+    Args:
+        src_arr: Source point set (N, 3).
+        target_arr: Target point set (M, 3); N should equal M for meaningful RMSD.
+
+    Returns:
+        Tuple of (rmsd, rot_mat, trans): RMSD, 3x3 rotation matrix, translation vector.
     """
 
     src_arr = np.array(src_arr)
@@ -99,7 +140,24 @@ def svd_superimpose(src_arr, target_arr):
     return rmsd, rot_mat, trans
 
 
-def superimpose_rotation_only(arr1, arr2, min_rmsd=1e6):
+def superimpose_rotation_only(
+    arr1: Union[np.ndarray, List],
+    arr2: Union[np.ndarray, List],
+    min_rmsd: float = 1e6,
+) -> Tuple[float, np.ndarray, np.ndarray]:
+    """Find the best rotation (no translation) that aligns arr1 to arr2 by minimizing RMSD.
+
+    Uses the same permutation search over matched subsets as superimpose, but keeps
+    translation fixed (identity). Useful when only orientation matters.
+
+    Args:
+        arr1: Source point set (N, 3).
+        arr2: Target point set (M, 3).
+        min_rmsd: Initial RMSD threshold; best solution below this is kept.
+
+    Returns:
+        Tuple (min_rmsd, best_rot, best_tran): best RMSD, 3x3 rotation, translation (often zero).
+    """
     arr1 = np.asarray(arr1)
     arr2 = np.asarray(arr2)
     m_arr1, m_arr2 = match_vectors(arr1, arr2, min(6, len(arr1), len(arr2)))

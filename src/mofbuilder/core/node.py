@@ -1,5 +1,10 @@
+"""Metal node processing: load node PDB, add dummy atoms, output graph and data for MOF building."""
+
+from __future__ import annotations
+
 import sys
 from pathlib import Path
+from typing import Any, Dict, Optional
 
 import numpy as np
 import networkx as nx
@@ -17,43 +22,46 @@ from ..io.pdb_writer import PdbWriter
 
 
 class FrameNode:
-    '''
-    node file should have unique atom name/indices
-    Docstring for FrameNode
-    Class to handle node processing, including adding dummy atoms if needed.
-    Attributes:
-        properties: Dictionary to store node properties
-        filename: Path to the input node pdb file
-        target_dir: Directory to save output files
-        new_pdbfilename: Path to the output pdb file with dummy atoms
-        new_dummy_dictfilename: Path to the output dummy dictionary file
-        dummy_node: Boolean indicating if dummy atoms should be added
-        node_metal_type: String indicating the metal type of the node
-        node_com_type: String indicating the center of mass type for recentering
-        node_data: List to store node atom data
-        node_xyz_string: String representation of node in xyz format
-        nodeG: NetworkX graph representation of the node
-        pdbreader: PdbReader instance for reading pdb files
-        pdbwriter: PdbWriter instance for writing pdb files
-        sG: NetworkX graph after adding dummy atoms
-        sG_subparts: List of connected components in sG
-    Methods:
-        check_dirs: Check and create target directories
-        _nodepdb2xyz: Convert node pdb to xyz format
-        _nodepdb2G: Convert node pdb to graph representation
-        _fetch_template: Fetch dummy atom template based on metal type
-        _order_ccoords: Order dummy atom coordinates based on template
-        _add_dummy_atoms_nodepdb: Add dummy atoms to node graph
-        _lines_of_atoms: Generate lines for pdb output
-        _get_bonds_from_subgraph: Get bonds from a subgraph
-        _write_dummy_node_pdb: Write the new pdb file with dummy atoms
-        _generate_dummy_node_split_dict: Generate dummy node split dictionary
-        _write_dummy_node_split_dict: Write the dummy node split dictionary to file
-        _copy_node_pdb2target: Copy original node pdb to target directory
-        create: Main method to process the node and add dummy atoms if needed    
-    '''
+    """Load and process metal node PDB: recenter, build graph, optionally add dummy atoms (HHO, HO, O).
 
-    def __init__(self, comm=None, ostream=None, filepath=None):
+    Node file should have unique atom names/indices. Produces node_data, nodeG/sG,
+    and (if dummy_node) new PDB and dummy_node_split_dict for use in the builder.
+
+    Attributes:
+        comm: MPI communicator.
+        rank: MPI rank of this process.
+        nodes: MPI size (number of processes).
+        ostream: Output stream for logging.
+        properties: Dict for optional properties.
+        filename: Path to node PDB file.
+        target_dir: Directory for output files (when save_files).
+        new_pdbfilename: Output PDB path (with or without dummy atoms).
+        new_dummy_dictfilename: Path to dummy dict file (when dummy_node and save_files).
+        dummy_node: If True, add dummy atoms to node.
+        node_metal_type: Metal type string for the node.
+        node_com_type: Center-of-mass type for recentering (default "X").
+        node_data: Atom data array from PDB (set by _nodepdb2xyz/create).
+        node_xyz_string: XYZ-format string of node (set by _nodepdb2xyz).
+        nodeG: NetworkX graph of node (set by _nodepdb2G).
+        pdbreader: PdbReader instance.
+        pdbwriter: PdbWriter instance.
+        sG: Graph after adding dummy atoms (set by create).
+        sG_subparts: Connected components of sG.
+        _debug: If True, print extra debug messages.
+        save_files: If True, write output files.
+        lines: Optional lines for output.
+        metal_valence: Valence for dummy template (when dummy_node).
+        dummy_pdbfile: Path to dummy template PDB.
+        dummy_node_split_dict: Dict of dummy atom counts and ordering (set by create).
+        dummy_node_split_dict_path: Path to save dummy_node_split_dict.
+    """
+
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[Any] = None,
+        filepath: Optional[str] = None,
+    ) -> None:
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
@@ -95,7 +103,8 @@ class FrameNode:
         self.dummy_node_split_dict_path = None
         self.node_data = None
 
-    def check_dirs(self):
+    def check_dirs(self) -> None:
+        """Ensure node file exists; if save_files, create target_dir and set new_pdbfilename / new_dummy_dictfilename."""
         assert_msg_critical(
             Path(self.filename).exists(),
             f"Node pdb file {self.filename} not found")

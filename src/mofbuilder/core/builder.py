@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any, Optional
+
 import numpy as np
 import networkx as nx
 from veloxchem.outputstream import OutputStream
@@ -29,12 +33,77 @@ from ..md.setup import OpenmmSetup
 from .framework import Framework
 
 
-#sG:scaled and rotated G
-#eG: edge graph with only edge and V node, and XOO atoms linked to the edge
-#superG: supercell of sG
 class MetalOrganicFrameworkBuilder:
+    """Orchestrates MOF building: load net and topology, place nodes and linkers, optimize, supercell, defects, write.
 
-    def __init__(self, comm=None, ostream=None, mof_family=None):
+    Set mof_family, node_metal, linker (xyz/molecule/SMILES), then call build() to get a Framework.
+    sG: scaled and rotated net graph; eG: edge graph (V + EDGE nodes, XOO on edges); superG: supercell of sG.
+
+    Attributes:
+        comm: MPI communicator.
+        rank: MPI rank of this process.
+        nodes: MPI size (number of processes).
+        ostream: Output stream for logging.
+        framework: Framework instance (result of build()).
+        mof_family: MOF family name (e.g. "HKUST-1").
+        node_metal: Metal type string for nodes.
+        dummy_atom_node: Whether to add dummy atoms to nodes.
+        dummy_atom_node_dict: Dict of dummy atom counts (set after node processing).
+        data_path: Path to database directory.
+        frame_nodes: FrameNode instance.
+        frame_linker: FrameLinker instance.
+        frame_terminations: FrameTermination instance.
+        frame_net: FrameNet instance.
+        mof_top_library: MofTopLibrary instance.
+        net_optimizer: NetOptimizer instance.
+        mofwriter: MofWriter instance.
+        defectgenerator: TerminationDefectGenerator instance.
+        net_spacegroup: Space group from net (set when net is loaded).
+        net_cell_info: Cell parameters from net.
+        net_unit_cell: 3x3 unit cell matrix from net.
+        net_unit_cell_inv: Inverse of net_unit_cell.
+        node_connectivity: Node connectivity from topology.
+        linker_connectivity: Linker connectivity (topic) from topology.
+        net_sorted_nodes: Sorted list of node names from net.
+        net_sorted_edges: Sorted list of edges from net.
+        net_pair_vertex_edge: Vertex-edge pairs from net.
+        linker_xyzfile: Path to linker XYZ file (optional).
+        linker_molecule: VeloxChem molecule for linker (optional).
+        linker_smiles: SMILES string for linker (optional).
+        linker_charge: Linker charge.
+        linker_multiplicity: Linker multiplicity.
+        linker_center_data: Center fragment data (set when linker is loaded).
+        linker_center_X_data: Center X-atom data.
+        linker_outer_data: Outer fragment(s) data.
+        linker_outer_X_data: Outer X-atom data.
+        linker_frag_length: Length of linker fragment.
+        linker_fake_edge: Whether linker is fake (zero-length) edge.
+        node_data: Node atom data (set when node is loaded).
+        node_X_data: Node X-atom data.
+        termination: Whether to use terminations.
+        termination_name: Name of termination group (e.g. 'acetate').
+        termination_molecule: Termination molecule (optional).
+        termination_data: Termination atom data.
+        termination_X_data: Termination X atoms.
+        termination_Y_data: Termination Y atoms.
+        constant_length: X-X bond length in Angstrom (default 1.54).
+        load_optimized_rotations: Path to H5 file with saved rotations (optional).
+        skip_rotation_optimization: If True, skip rotation optimization.
+        rotation_filename: Path to save optimized rotations (optional).
+        frame_unit_cell: 3x3 frame unit cell (set after build).
+        frame_cell_info: Frame cell parameters.
+        supercell: Supercell dimensions (nx, ny, nz).
+        remove_node_list: List of node indices to remove (defects).
+        remove_edge_list: List of edge indices to remove (defects).
+        _debug: If True, print extra debug messages.
+    """
+
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[Any] = None,
+        mof_family: Optional[str] = None,
+    ) -> None:
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
@@ -188,7 +257,8 @@ class MetalOrganicFrameworkBuilder:
         self.mof_top_library.data_path = self.data_path
         self.mof_top_library.list_mof_families()
 
-    def list_available_metals(self, mof_family=None):
+    def list_available_metals(self, mof_family: Optional[str] = None) -> None:
+        """Print available metals for the given (or current) MOF family from the topology library."""
         if self.data_path is None:
             self.data_path = get_data_path()
         if mof_family is None:
@@ -505,7 +575,8 @@ class MetalOrganicFrameworkBuilder:
             )
             self.ostream.flush()
 
-    def build(self):
+    def build(self) -> Framework:
+        """Load net and topology, place nodes/linkers, optimize rotations and cell, build supercell (and defects). Returns self.framework."""
         self.load_framework()
         self.optimize_framework()
         self.make_supercell()

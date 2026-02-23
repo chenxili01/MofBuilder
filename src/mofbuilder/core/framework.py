@@ -1,3 +1,9 @@
+"""Built MOF framework: write output, solvation, force field, and defect replacement."""
+
+from __future__ import annotations
+
+from typing import Any, List, Optional
+
 import numpy as np
 import networkx as nx
 from veloxchem.outputstream import OutputStream
@@ -21,8 +27,85 @@ from .defects import TerminationDefectGenerator
 
 
 class Framework:
+    """Holds the built MOF: graph, cell, merged data, and options for writing, solvation, and MD.
 
-    def __init__(self, comm=None, ostream=None):
+    Set by MetalOrganicFrameworkBuilder.build(). Provides write() for file output,
+    replace() for defects, and access to solvationbuilder and linker FF settings.
+
+    Attributes:
+        comm: MPI communicator.
+        rank: MPI rank of this process.
+        nodes: MPI size (number of processes).
+        ostream: Output stream for logging.
+        mofwriter: MofWriter instance for writing PDB/GRO/XYZ/CIF.
+        framework_data: Merged Cartesian data for the whole framework (set in write()).
+        framework_fcoords_data: Merged fractional data (set in write()).
+        solvationbuilder: SolvationBuilder instance for adding solvents.
+        solvents: List of solvent names or xyz files.
+        solvents_molecules: List of solvent molecules.
+        solvents_proportions: List of solvent proportions.
+        solvents_quantities: List of solvent quantities.
+        solvated_gro_file: Path to solvated GRO file (set after solvation).
+        target_directory: Output directory for files.
+        data_path: Path to database directory.
+        save_files: If True, save intermediate/output files.
+        linker_ff_name: Name for linker force field (default "Linker").
+        linker_charge: Linker charge for FF generation.
+        linker_multiplicity: Linker multiplicity.
+        linker_reconnect_drv: Driver for reconnection (e.g. 'xtb').
+        linker_reconnect_opt: Whether to run reconnection optimization.
+        reconnected_linker_molecule: Molecule after reconnection (set by FF step).
+        provided_linker_itpfile: Optional path to pre-made linker .itp file.
+        filename: Base filename for output (set in write()).
+        resp_charges: Whether to use RESP charges for linker.
+        _debug: If True, print extra debug messages.
+        mof_family: MOF family name (set by builder).
+        node_metal: Metal type string.
+        dummy_atom_node: Whether nodes include dummy atoms.
+        net_spacegroup: Space group of the net.
+        net_cell_info: Cell parameters [a, b, c, alpha, beta, gamma].
+        net_unit_cell: 3x3 unit cell matrix.
+        node_connectivity: Node connectivity.
+        linker_connectivity: Linker connectivity (topic).
+        linker_fragment_length: Length of linker fragment.
+        node_data: Node atom data.
+        dummy_atom_node_dict: Dict of dummy atom counts per node.
+        termination_data: Termination atom data.
+        termination_X_data: Termination X atoms.
+        termination_Y_data: Termination Y atoms.
+        frame_unit_cell: 3x3 frame unit cell matrix.
+        frame_cell_info: Frame cell parameters.
+        graph: Edge graph (eG) after building.
+        cleaved_graph: Graph after cleaving/defects.
+        graph_index_name_dict: Mapping from index to node/edge name.
+        graph_matched_vnode_xind: Matched (node, xind, edge) list.
+        supercell_info: Supercell dimensions info.
+        supercell: Supercell (nx, ny, nz).
+        termination: Whether to use terminations.
+        termination_name: Name of termination group.
+        add_virtual_edge: Whether to add virtual edges for bridge nodes.
+        virtual_edge_max_neighbor: Max neighbors for virtual edge.
+        sc_unit_cell: 3x3 supercell unit cell matrix.
+        sc_unit_cell_inv: Inverse of sc_unit_cell.
+        periodicity: Whether framework is periodic.
+        linker_fake_edge: Whether linker is fake (zero-length) edge.
+        clean_unsaturated_linkers: Whether to remove unsaturated linkers.
+        update_node_termination: Whether to update node terminations after removal.
+        unsaturated_linkers: List of unsaturated linker names.
+        unsaturated_nodes: List of unsaturated node names.
+        matched_vnode_xind: Matched (node, xind, edge) list.
+        xoo_dict: Dict mapping X index to O indices (XOO) per node.
+        residues_info: Dict of residue names and counts.
+        solvents_dict: Dict of solvent info after solvation.
+        mlp_type: MLP type for energy minimization (e.g. 'mace').
+        mlp_model_path: Path to MLP model file.
+    """
+
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[Any] = None,
+    ) -> None:
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
@@ -110,11 +193,15 @@ class Framework:
         self.mlp_type = 'mace'  #default MLP type
         self.mlp_model_path = None  #path to the MLP model file
 
-    def replace(self,
-                replace_indices=[],
-                new_node_pdbfile=None,
-                new_linker_pdbfile=None,
-                new_linker_molecule=None):
+    def replace(
+        self,
+        replace_indices: Optional[List[int]] = None,
+        new_node_pdbfile: Optional[str] = None,
+        new_linker_pdbfile: Optional[str] = None,
+        new_linker_molecule: Optional[Any] = None,
+    ) -> "Framework":
+        """Replace nodes or linkers at given indices with new geometry; update cleaved_graph and merged data."""
+        replace_indices = replace_indices or []
         self.defectgenerator = TerminationDefectGenerator(comm=self.comm,
                                                           ostream=self.ostream)
         self.defectgenerator.use_termination = self.termination
@@ -306,12 +393,16 @@ class Framework:
         em_fcoords = np.dot(em_ccoords, self.sc_unit_cell_inv)
         return em_ccoords, em_fcoords
 
-    def write(self,
-              format=[],
-              filename=None,
-              periodicity=False,
-              mlp_em=False,
-              mlp_maxIterations=None):
+    def write(
+        self,
+        format: Optional[List[str]] = None,
+        filename: Optional[str] = None,
+        periodicity: bool = False,
+        mlp_em: bool = False,
+        mlp_maxIterations: Optional[int] = None,
+    ) -> None:
+        """Write framework to file(s). format: list of 'pdb'|'gro'|'xyz'|'cif'; optional MLP energy minimization."""
+        format = format or []
 
         if periodicity or self.periodicity:
             self.ostream.print_info("Writing periodic system")

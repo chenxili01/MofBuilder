@@ -1,5 +1,10 @@
+"""Defect generation: remove or replace nodes/linkers and add terminations to unsaturated sites."""
+
+from __future__ import annotations
+
 import sys
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import networkx as nx
@@ -23,15 +28,53 @@ from .superimpose import superimpose_rotation_only, superimpose
 
 
 class TerminationDefectGenerator:
-    """
-    find unstatuirated node 
-    remove node
-    remove linker
-    replace node by superimpose
-    replace linker by superimpose
+    """Generate defects by finding unsaturated nodes, removing nodes/linkers, and adding terminations.
+
+    Can remove specified nodes/linkers (by index), optionally clean unsaturated linkers,
+    add termination groups to unsaturated nodes (using termination_data), and replace
+    nodes or linkers by superimposing new geometry onto the existing graph.
+
+    Attributes:
+        comm: MPI communicator.
+        rank: MPI rank of this process.
+        nodes: MPI size (number of processes).
+        ostream: Output stream for logging.
+        cleaved_eG: Edge graph (eG) after cleaving; set before use.
+        node_connectivity: Expected number of real neighbors per node.
+        linker_connectivity: Expected number of connections per linker (edge).
+        eG_index_name_dict: Mapping from eG index to node/edge name.
+        sc_unit_cell: 3x3 supercell unit cell matrix.
+        sc_unit_cell_inv: Inverse of sc_unit_cell.
+        res_idx2rm: List of eG indices to remove (nodes/edges).
+        xoo_dict: Dict mapping X index to list of O indices (XOO groups) in node.
+        matched_vnode_xind: List of (node, xind, edge) for matched V-node X to edges.
+        updated_matched_vnode_xind: Same after removal/termination.
+        unsaturated_nodes: List of unsaturated node names.
+        updated_unsaturated_nodes: Same after removal.
+        unsaturated_linkers: List of unsaturated linker (EDGE) names.
+        termination_data: Full termination atom array (XOO).
+        termination_X_data: Termination X atoms.
+        termination_Y_data: Termination Y atoms (e.g. O-O center).
+        use_termination: If True, add terminations to unsaturated nodes.
+        clean_unsaturated_linkers: If True, remove unsaturated linkers from graph.
+        update_node_termination: If True, update matched nodes after removal.
+        nodes_idx2rp: Indices of nodes to replace.
+        linkers_idx2rp: Indices of linkers to replace.
+        new_node_data: New node atom data for replacement (set by caller).
+        new_node_X_data: New node X-atom data for replacement.
+        new_linker_data: New linker atom data for replacement.
+        new_linker_X_data: New linker X-atom data for replacement.
+        defectG: eG after removing nodes/linkers (no terminations).
+        termG: eG after adding terminations.
+        finalG: eG after removing XOO from nodes.
+        _debug: If True, print extra debug messages.
     """
 
-    def __init__(self, comm=None, ostream=None):
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[Any] = None,
+    ) -> None:
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
@@ -80,10 +123,27 @@ class TerminationDefectGenerator:
         #debug
         self._debug = False
 
-    def remove_items_or_terminate(self, res_idx2rm=[], cleaved_eG=None):
-        #cleave
-        #xoo
+    def remove_items_or_terminate(
+        self,
+        res_idx2rm: Optional[List[int]] = None,
+        cleaved_eG: Optional[nx.Graph] = None,
+    ) -> nx.Graph:
+        """Remove nodes/linkers by index and optionally add terminations to unsaturated nodes.
 
+        If res_idx2rm is empty, only finds unsaturated linkers and optionally adds
+        terminations to unsaturated nodes. Otherwise removes the given nodes/linkers,
+        optionally removes unsaturated linkers, then adds terminations to unsaturated
+        nodes using termination_data.
+
+        Args:
+            res_idx2rm: List of eG indices (nodes/edges) to remove.
+            cleaved_eG: Edge graph (eG) to modify; a copy is used.
+
+        Returns:
+            Defect graph after removal and termination (termG or defectG).
+        """
+        if res_idx2rm is None:
+            res_idx2rm = []
         #just terminate nodes
         if not res_idx2rm:
             defectG = cleaved_eG.copy()
@@ -187,7 +247,18 @@ class TerminationDefectGenerator:
             self.updated_matched_vnode_xind = self.matched_vnode_xind
             return termG
 
-    def replace_items(self, res_idx2rp, G):
+    def replace_items(
+        self, res_idx2rp: List[int], G: nx.Graph
+    ) -> nx.Graph:
+        """Replace specified nodes or linkers in G with new_node_data/new_linker_data by superimposition.
+
+        Args:
+            res_idx2rp: List of eG indices to replace (nodes or EDGE names).
+            G: Edge graph to modify (copy is used).
+
+        Returns:
+            Graph with replaced node/linker coordinates; unchanged if data not set.
+        """
         nodes_name2rp = self._extract_node_name_from_eG_dict(
             res_idx2rp, self.eG_index_name_dict)
         #split the node or edge name
@@ -228,8 +299,10 @@ class TerminationDefectGenerator:
                                                self.sc_unit_cell_inv)
         return rpG
 
-    def _find_unsaturated_nodes(self, eG, node_connectivity):
-        # find unsaturated node V in eG
+    def _find_unsaturated_nodes(
+        self, eG: nx.Graph, node_connectivity: int
+    ) -> List[str]:
+        """Return list of node names in eG that have fewer real neighbors than node_connectivity."""
         unsaturated_nodes = []
         for n in eG.nodes():
             if pname(n) != "EDGE":
@@ -241,8 +314,10 @@ class TerminationDefectGenerator:
                     unsaturated_nodes.append(n)
         return unsaturated_nodes
 
-    def _find_unsaturated_linkers(self, eG, linker_topics):
-        # find unsaturated linker in eG
+    def _find_unsaturated_linkers(
+        self, eG: nx.Graph, linker_topics: int
+    ) -> List[str]:
+        """Return list of EDGE node names in eG that have fewer neighbors than linker_topics."""
         unsaturated_linkers = []
         for n in eG.nodes():
             if pname(n) == "EDGE" and len(list(
@@ -250,13 +325,18 @@ class TerminationDefectGenerator:
                 unsaturated_linkers.append(n)
         return unsaturated_linkers
 
-    def _extract_node_name_from_eG_dict(self, idx_list, eG_dict):
+    def _extract_node_name_from_eG_dict(
+        self, idx_list: List[int], eG_dict: Dict[int, str]
+    ) -> List[str]:
+        """Map eG indices to node/edge names using eG_index_name_dict."""
         return [eG_dict[i] for i in idx_list if i in eG_dict]
 
-    def _update_matched_nodes_xind(self, nodes_name_list,
-                                   old_matched_vnode_xind):
-        # if linked edge is removed and the connected node is not removed, then remove this line from matched_vnode_xind
-        # add remove the middle xind of the node to matched_vnode_xind_dict[node] list
+    def _update_matched_nodes_xind(
+        self,
+        nodes_name_list: List[str],
+        old_matched_vnode_xind: List[Tuple[str, int, str]],
+    ) -> List[Tuple[str, int, str]]:
+        """Drop (node, xind, edge) entries where node or edge was removed from the graph."""
         update_matched_vnode_xind = []
         for i in range(len(old_matched_vnode_xind)):
             # format: old_matched_vnode_xind[i]: old_matched_vnode_xind[i]
@@ -356,8 +436,7 @@ class TerminationDefectGenerator:
 
     def _make_unsaturated_vnode_xoo_dict(self, unsaturated_nodes, xoo_dict,
                                          matched_vnode_xind, eG, sc_unit_cell):
-        """
-            Build data structures for unsaturated nodes:
+        """Build data structures for unsaturated nodes:
               - unsaturated_vnode_xind_dict: for each unsaturated node -> list of exposed X indices
               - unsaturated_vnode_xoo_dict: for each (node, xind) -> metadata including fractional and cartesian points
               - matched_vnode_xind_dict: mapping node -> list of matched x indices
@@ -462,10 +541,8 @@ class TerminationDefectGenerator:
             matched_vnode_xind_dict,
         )
 
-    def _remove_xoo_from_node(self, G):
-        """
-        remove the XOO atoms from the node after adding the terminations, add ['noxoo_f_points'] to the node in eG
-        """
+    def _remove_xoo_from_node(self, G: nx.Graph) -> nx.Graph:
+        """Remove XOO atom rows from each node's f_points and set noxoo_f_points on each node in eG."""
 
         xoo_dict = self.xoo_dict
         eG = G.copy()
@@ -485,13 +562,16 @@ class TerminationDefectGenerator:
 
         return eG
 
-    def _replace_items_in_G(self,
-                            edge_n_list,
-                            G,
-                            new_n_data,
-                            new_n_X_data,
-                            sc_unit_cell_inv,
-                            newname=None):
+    def _replace_items_in_G(
+        self,
+        edge_n_list: List[str],
+        G: nx.Graph,
+        new_n_data: np.ndarray,
+        new_n_X_data: np.ndarray,
+        sc_unit_cell_inv: np.ndarray,
+        newname: Optional[str] = None,
+    ) -> nx.Graph:
+        """Replace coordinates of nodes in edge_n_list with new_n_data, aligned by X atoms via superimpose."""
         new_n_atoms = new_n_data[:, 0:2]
         new_n_ccoords = new_n_data[:, 5:8].astype(float)
         new_n_x_ccoords = new_n_X_data[:, 5:8].astype(float)

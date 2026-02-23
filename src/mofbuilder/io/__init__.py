@@ -18,17 +18,39 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from .cif_reader import CifReader
-from .cif_writer import CifWriter
-from .xyz_reader import XyzReader
-from .xyz_writer import XyzWriter
-from .pdb_reader import PdbReader
-from .pdb_writer import PdbWriter
-from .gro_reader import GroReader
-from .gro_writer import GroWriter
-from .basic import nn, nl
+from __future__ import annotations
+
+import importlib
+from typing import Any, Dict, Tuple
+
+from .basic import nl, nn
 
 __all__ = [
     "CifReader", "CifWriter", "XyzReader", "XyzWriter", "PdbReader",
     "PdbWriter", "GroReader", "GroWriter", "nn", "nl"
 ]
+
+_LAZY_ATTRS: Dict[str, Tuple[str, str]] = {
+    "CifReader": ("mofbuilder.io.cif_reader", "CifReader"),
+    "CifWriter": ("mofbuilder.io.cif_writer", "CifWriter"),
+    "XyzReader": ("mofbuilder.io.xyz_reader", "XyzReader"),
+    "XyzWriter": ("mofbuilder.io.xyz_writer", "XyzWriter"),
+    "PdbReader": ("mofbuilder.io.pdb_reader", "PdbReader"),
+    "PdbWriter": ("mofbuilder.io.pdb_writer", "PdbWriter"),
+    "GroReader": ("mofbuilder.io.gro_reader", "GroReader"),
+    "GroWriter": ("mofbuilder.io.gro_writer", "GroWriter"),
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name in _LAZY_ATTRS:
+        module_name, attr_name = _LAZY_ATTRS[name]
+        module = importlib.import_module(module_name)
+        attr = getattr(module, attr_name)
+        globals()[name] = attr
+        return attr
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(_LAZY_ATTRS))

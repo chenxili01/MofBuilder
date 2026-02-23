@@ -1,5 +1,11 @@
+"""Organic linker processing: load/fragment linkers and produce center/outer data for MOF building."""
+
+from __future__ import annotations
+
 import sys
 from pathlib import Path
+from typing import Any, List, Optional
+
 import numpy as np
 import networkx as nx
 import mpi4py.MPI as MPI
@@ -14,8 +20,45 @@ from ..io.pdb_writer import PdbWriter
 
 
 class FrameLinker:
+    """Process organic linkers (xyz/molecule): build graph, find center/outer fragments and X atoms for connection.
 
-    def __init__(self, comm=None, ostream=None, filepath=None):
+    Handles ditopic and multitopic linkers; produces linker_center_data, linker_outer_data,
+    and X data for placement in the net.
+
+    Attributes:
+        comm: MPI communicator.
+        rank: MPI rank of this process.
+        nodes: MPI size (number of processes).
+        ostream: Output stream for logging.
+        properties: Dict for optional properties.
+        filename: Path to linker file (xyz) or None when using molecule.
+        target_directory: Directory for output files.
+        new_xyzfilename: Output XYZ path.
+        linker_connectivity: Number of connection points (2 = ditopic, etc.).
+        pdbreader: PdbReader instance.
+        pdbwriter: PdbWriter instance.
+        _debug: If True, print extra debug messages.
+        linker_data: Raw linker atom data.
+        lines: Center fragment lines.
+        rows: Outer fragment lines.
+        save_files: If True, write output files.
+        molecule: VeloxChem (or compatible) molecule when set directly.
+        metals: List of metal atom indices in linker.
+        linker_center_data: Center fragment atom data (set by create).
+        linker_center_X_data: Center X-atom data.
+        linker_outer_data: Outer branch(es) atom data.
+        linker_outer_X_data: Outer X-atom data.
+        center_class: Center node class (e.g. for multitopic).
+        center_nodes: Center node identifiers.
+        fake_edge: If True, treat as zero-length edge (e.g. pillar).
+    """
+
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[Any] = None,
+        filepath: Optional[str] = None,
+    ) -> None:
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
@@ -43,7 +86,8 @@ class FrameLinker:
         self.center_nodes = None
         self.fake_edge = False
 
-    def check_dirs(self, passfilecheck=True):
+    def check_dirs(self, passfilecheck: bool = True) -> None:
+        """Create target_directory; optionally assert linker file exists. Set new_pdbfilename if save_files."""
         if not passfilecheck:
             assert_msg_critical(
                 Path(self.filename).exists(),

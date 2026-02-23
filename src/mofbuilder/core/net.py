@@ -1,3 +1,9 @@
+"""Net (topology) graph from CIF: vertex/edge extraction, unit cell, and connectivity."""
+
+from __future__ import annotations
+
+from typing import Any, List, Optional
+
 import numpy as np
 import networkx as nx
 from ..io.cif_reader import CifReader
@@ -7,17 +13,39 @@ from veloxchem.errorhandler import assert_msg_critical
 import mpi4py.MPI as MPI
 import sys
 
-#creat Net object
-#Net.G is the graph of the net
-#Net.cell_info is the cell parameters of the net
-#Net.unit_cell is the unit cell matrix of the net
-#Net.unit_cell_inv is the inverse of the unit cell matrix of the net
-
 
 class FrameNet:
-    '''creates the net graph from cif file'''
+    """Build the net graph (G) from a topology CIF: vertices V/CV, edges, cell_info, unit_cell, sorted_nodes/edges.
 
-    def __init__(self, comm=None, ostream=None, filepath=None):
+    Attributes:
+        comm: MPI communicator.
+        rank: MPI rank of this process.
+        nodes: MPI size (number of processes).
+        ostream: Output stream for logging.
+        G: NetworkX graph of the net (V/CV nodes, edges).
+        cifreader: CifReader instance.
+        cif_file: Path to topology CIF file.
+        edge_length_range: Optional [min, max] distance range for V-E pairing.
+        vvnode333: V vertex coordinates in 3x3x3 supercell (set by create_net).
+        ecnode333: Edge-center coordinates in 3x3x3 supercell (multitopic).
+        eenode333: E edge coordinates in 3x3x3 supercell.
+        cell_info: Cell parameters [a, b, c, alpha, beta, gamma].
+        unit_cell: 3x3 unit cell matrix.
+        unit_cell_inv: Inverse of unit_cell.
+        pair_vertex_edge: List of (v1, v2, e) fractional coordinate tuples.
+        max_degree: Maximum node degree in G.
+        sorted_nodes: List of node names sorted by connectivity.
+        sorted_edges: List of edge tuples sorted by connectivity.
+        linker_connectivity: Number of connection points per linker (2 = ditopic, etc.).
+        _debug: If True, print extra debug messages.
+    """
+
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[Any] = None,
+        filepath: Optional[str] = None,
+    ) -> None:
         if comm is None:
             comm = MPI.COMM_WORLD
 
@@ -58,17 +86,8 @@ class FrameNet:
         #debug
         self._debug = False
 
-
-# Utility functions for node naming and coordinate extraction
-
-# Supercell and unit cell utilities
-
     def _make_supercell_3x3x3(self, array_xyz):
-        """
-        Generates a 3x3x3 supercell by shifting the input coordinates.
-        array_xyz: (N, 3) or (3,) numpy array
-        Returns: (N*27, 3) numpy array
-        """
+        """Generate 3x3x3 supercell by shifting coordinates by [-1,0,1] in each dimension. Returns (N*27, 3) array."""
         array_xyz = np.atleast_2d(array_xyz)
         shifts = np.array([-1, 0, 1])
         mesh = np.stack(np.meshgrid(shifts, shifts, shifts), -1).reshape(-1, 3)
@@ -77,11 +96,7 @@ class FrameNet:
 
     # Unit cell extraction and coordinate conversion
     def _extract_unit_cell(self, cell_info):
-        """
-        Extracts the unit cell matrix from cell parameters.
-        cell_info: [a, b, c, alpha, beta, gamma]
-        Returns: (3, 3) numpy array
-        """
+        """Build 3x3 unit cell matrix from [a, b, c, alpha, beta, gamma] (angles in degrees)."""
         aL, bL, cL, alpha, beta, gamma = map(float, cell_info)
         ax, ay, az = aL, 0.0, 0.0
         bx = bL * np.cos(np.deg2rad(gamma))
@@ -95,29 +110,21 @@ class FrameNet:
         return unit_cell
 
     def _c2f_coords(self, coords, unit_cell):
-        """
-        Converts cartesian coordinates to fractional coordinates.
-        """
+        """Convert Cartesian coordinates to fractional using unit_cell inverse."""
         unit_cell_inv = np.linalg.inv(unit_cell)
         return np.dot(coords, unit_cell_inv.T)
 
     def _f2c_coords(self, fcoords, unit_cell):
-        """
-        Converts fractional coordinates to cartesian coordinates.
-        """
+        """Convert fractional coordinates to Cartesian using unit_cell."""
         return np.dot(fcoords, unit_cell.T)
 
     def _check_inside_unit_cell(self, point):
-        """
-        Checks if a point is inside the unit cell [0, 1).
-        """
+        """Return True if point (fractional) is in [0, 1) in all dimensions."""
         point = np.asarray(point)
         return np.all((point >= 0.0) & (point < 1.0))
 
     def _check_moded_fcoords(self, point):
-        """
-        Checks if the fractional coordinates are already modded to [0, 1).
-        """
+        """Return True if fractional coordinates are equivalent to their value mod 1 (in [0,1))."""
         point = np.asarray(point)
         return np.all(np.isclose(np.mod(point, 1), point))
 
@@ -135,10 +142,7 @@ class FrameNet:
     # Graph construction and edge finding
 
     def _find_pair_v_e(self, distance_range=None):
-        """
-        Finds pairs of vertex nodes and edge nodes based on distance.
-        Returns: list of pairs, count, and the constructed graph.
-        """
+        """Find V–E pairs by distance; add V nodes and edges to G and set pair_vertex_edge."""
         distance_range = self.edge_length_range if distance_range is None else distance_range
         unit_cell = self.unit_cell
         vvnode333 = self.vvnode333
@@ -187,10 +191,7 @@ class FrameNet:
         self.pair_vertex_edge = pair_vertex_edge
 
     def _find_pair_v_e_c(self):
-        """
-        Finds pairs of vertex nodes and center nodes for linkers in MOF.
-        Returns: list of pairs, count, and the constructed graph.
-        """
+        """Find vertex–edge-center pairs for multitopic linkers; extend G and pair_vertex_edge."""
         vvnode333 = self.vvnode333
         ecnode333 = self.ecnode333
         eenode333 = self.eenode333
@@ -383,9 +384,7 @@ class FrameNet:
         self.sorted_edges = sorted_edges
 
     def create_net(self, cif_file=None):
-        """
-        Main function to create the net graph from CIF data.
-        """
+        """Read CIF, extract V/E/EC atoms, build G with nodes/edges, set cell_info, unit_cell, sorted_nodes, sorted_edges, linker_connectivity."""
         self.cif_file = cif_file if cif_file is not None else self.cif_file
         self.cifreader.read_cif(self.cif_file)
         self.ostream.print_info(f"fetching Vertex from {self.cif_file}")

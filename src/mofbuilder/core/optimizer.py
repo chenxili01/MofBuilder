@@ -1,3 +1,5 @@
+"""Net and cell optimization: node rotations and unit-cell scaling to fit linkers."""
+
 import sys
 from pathlib import Path
 
@@ -27,6 +29,13 @@ from .superimpose import superimpose_rotation_only
 
 
 class NetOptimizer:
+    """Optimizes node rotations and cell parameters so linkers fit the net, then places edges.
+
+    Uses OptimizationDriver for two-stage rotation optimization and cell scaling.
+    Requires G, V_data, V_X_data, E_data, E_X_data, sorted_nodes, sorted_edges,
+    cell_info, and linker_frag_length (and optionally EC_data for multitopic). Sets
+    opt_rots, sc_unit_cell, sc_rot_node_X_pos, sG, optimized_pair, etc.
+    """
 
     def __init__(self, comm=None, ostream=None):
         self.comm = comm or MPI.COMM_WORLD
@@ -481,6 +490,7 @@ class NetOptimizer:
         return sG
 
     def _get_edge_lengths(self, G):
+        """Compute edge length (distance between node ccoords) for each edge. Returns (edge_lengths dict, set of lengths)."""
         edge_lengths = {}
         lengths = []
         for e in G.edges():
@@ -507,17 +517,15 @@ class NetOptimizer:
         return edge_lengths, set(lengths)
 
     def _apply_rot2atoms_pos(self, optimized_rotations, G, node_X_pos_dict):
-        """
-        Apply the optimized rotation matrices to the atom positions.
+        """Apply optimized rotation matrices to node X positions and compute edge pairings.
 
-        Parameters:
-            optimized_rotations (list): Optimized rotation matrices for each node.
-            G (networkx.Graph): Graph structure.
-            atom_positions (dict): Original positions of X atoms for each node.
+        Args:
+            optimized_rotations: Rotation matrix per node (by sorted_nodes index).
+            G: Net graph with node "ccoords".
+            node_X_pos_dict: Dict mapping node index to (N, 4) array [idx, x, y, z].
 
         Returns:
-            dict: Rotated positions for each node.
-            pair: Optimal pairings of X atoms between connected nodes.
+            Tuple (rotated_positions, optimized_pair): Rotated positions dict and edge (i,j) -> (x_idx_i, x_idx_j).
         """
         rotated_positions = node_X_pos_dict.copy()
         sorted_nodes = self.sorted_nodes
@@ -560,6 +568,7 @@ class NetOptimizer:
         return rotated_positions, optimized_pair
 
     def _generate_pos_dict(self, sG):
+        """Build dicts of node positions and X-atom positions per node index from sG and node/EC coords."""
         ec_x_ccoords = self.ec_x_ccoords
         ec_ccoords = self.ec_ccoords
         node_x_ccoords = self.node_x_ccoords
@@ -587,6 +596,7 @@ class NetOptimizer:
         return sc_node_pos_dict, sc_node_X_pos_dict
 
     def _apply_rot_trans2dict(self, sG, sc_node_pos_dict, sc_node_X_pos_dict):
+        """Apply per-pname rotation and translation to node and X positions in place."""
         sorted_nodes = self.sorted_nodes
         pname_set_dict = self.pname_set_dict
         opt_rots = self.opt_rots
@@ -606,6 +616,7 @@ class NetOptimizer:
         return sc_node_pos_dict, sc_node_X_pos_dict
 
     def _generate_pname_set(self, G, sorted_nodes, node_X_pos_dict):
+        """Build pname set and dict mapping pname to sorted node indices and initial rot_trans per pname."""
         pname_list = [pname(n) for n in sorted_nodes]
         pname_set = set(pname_list)
         pname_set_dict = {}
@@ -630,6 +641,7 @@ class NetOptimizer:
 
     def _update_node_ccoords(self, G, edge_lengths, start_node,
                              new_edge_length):
+        """Propagate node positions from start_node so edge lengths match new_edge_length."""
         updated_ccoords = {}
         original_ccoords = {}
         updated_ccoords[start_node] = G.nodes[start_node]["ccoords"]
@@ -653,6 +665,7 @@ class NetOptimizer:
         return updated_ccoords, original_ccoords
 
     def _update_ccoords_by_optimized_cell_params(self, G, optimized_params):
+        """Update node ccoords in G from fcoords using the optimized unit cell matrix."""
         sG = G.copy()
         a, b, c, alpha, beta, gamma = optimized_params
         T_unitcell = unit_cell_to_cartesian_matrix(a, b, c, alpha, beta, gamma)
@@ -665,6 +678,12 @@ class NetOptimizer:
 
 
 class OptimizationDriver:
+    """Driver for two-stage rotation optimization and cell-parameter optimization.
+
+    Stage 1: minimize distance from rotated X positions to neighbor COMs.
+    Stage 2: minimize pairwise distances between paired X atoms across edges.
+    Cell optimization minimizes fractional-coordinate change when scaling the cell.
+    """
 
     def __init__(self, comm=None, ostream=None):
         self.comm = comm or MPI.COMM_WORLD
@@ -917,7 +936,7 @@ class OptimizationDriver:
     def _scale_objective_function(self, params, old_cell_params,
                                   old_cartesian_coords, new_cartesian_coords,
                                   ratio_ba, ratio_ca):
-
+        """Sum of squared differences between old fractional coords and new coords in new cell (optionally fixed shape)."""
         a_old, b_old, c_old, alpha_old, beta_old, gamma_old = old_cell_params
         a_new, b_new, c_new, _, _, _ = params
         #constrain the angles to be the same as old cell
@@ -952,7 +971,7 @@ class OptimizationDriver:
 
     def _optimize_cell_params(self, cell_info, original_ccoords,
                               updated_ccoords):
-
+        """Minimize fractional coordinate change when scaling cell to fit updated_ccoords; returns (a, b, c, alpha, beta, gamma)."""
         assert_msg_critical("scipy" in sys.modules,
                             "scipy is required for optimize_cell_parameters.")
 
@@ -999,7 +1018,6 @@ class OptimizationDriver:
                                                          old_cell_params[0])
         return optimized_params
 
-    # use optimized_params to update all of nodes ccoords in G, according to the fccoords
     def _update_ccoords_by_optimized_cell_params(self, G, optimized_params):
         sG = G.copy()
         a, b, c, alpha, beta, gamma = optimized_params
@@ -1013,6 +1031,7 @@ class OptimizationDriver:
 
 
 def recenter_and_norm_vectors(vectors, extra_mass_center=None):
+    """Center vectors (optionally at extra_mass_center) and normalize each row. Returns (normalized_vectors, mass_center)."""
     vectors = np.array(vectors)
     if extra_mass_center is not None:
         mass_center = extra_mass_center
@@ -1024,7 +1043,7 @@ def recenter_and_norm_vectors(vectors, extra_mass_center=None):
 
 
 def get_connected_nodes_vectors(node, G):
-    # use adjacent nodes to get vectors
+    """Return list of neighbor ccoords and this node's ccoords from G."""
     vectors = []
     for i in list(G.neighbors(node)):
         vectors.append(G.nodes[i]["ccoords"])
@@ -1032,6 +1051,7 @@ def get_connected_nodes_vectors(node, G):
 
 
 def get_rot_trans_matrix(node, G, sorted_nodes, Xatoms_positions_dict):
+    """Compute rotation and translation to align node X vectors to neighbor directions (for initial guess)."""
     node_id = sorted_nodes.index(node)
     node_xvecs = Xatoms_positions_dict[node_id][:, 1:]
     vecsA, _ = recenter_and_norm_vectors(node_xvecs, extra_mass_center=None)
@@ -1042,9 +1062,7 @@ def get_rot_trans_matrix(node, G, sorted_nodes, Xatoms_positions_dict):
 
 
 def expand_set_rots(pname_set_dict, set_rotations, sorted_nodes):
-    """
-        Expand set rotations to all nodes based on the set dictionary.
-        """
+    """Expand one rotation per pname to a full list of rotations per sorted_nodes index."""
     set_rotations = set_rotations.reshape(len(pname_set_dict), 3, 3)
     rotations = np.empty((len(sorted_nodes), 3, 3))
     idx = 0

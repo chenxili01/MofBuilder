@@ -26,22 +26,13 @@ from ..utils.geometry import (unit_cell_to_cartesian_matrix,
                               Carte_points_generator)
 from .other import fetch_X_atoms_ind_array, find_pair_x_edge_fc, order_edge_array
 from .superimpose import superimpose_rotation_only
-'''
- then make the eG from the supercell superG, which only contains the EDGE and V nodes
-        then link the XOO atoms to the EDGE in the eG
-    #in following class Defects Builder
-    #following also has termination of the unsaturated nodes
-    #then write file with IO module
-'''
 
 
 class SupercellBuilder:
-    """
-    make supercell of the MOF structure based on the primitive cell graph sG
-    use edge to connect the nodes, and link the XOO atoms to the edges
-        for multitopic linker MOF, need to bundle the multiedge between two nodes first
-        for ditopic linker MOF, no need to bundle the multiedge
-        then make the supercell of the primitive cell graph sG
+    """Build supercell graph from primitive cell graph sG and optionally add virtual edges.
+
+    For ditopic linkers, expands sG by supercell and checks virtual edges. For multitopic,
+    bundles multiedges (CV nodes), then expands and updates bundle in supercell.
     """
 
     def __init__(self, comm=None, ostream=None):
@@ -68,9 +59,11 @@ class SupercellBuilder:
         self._debug = False
 
     def _is_ditopic_linker(self):
+        """Return True if linker is ditopic (connectivity 2)."""
         return self.linker_connectivity == 2
 
     def build_supercellGraph(self):
+        """Build superG from sG: expand by supercell, (for multitopic) bundle multiedges, optionally add virtual edges. Returns superG."""
         self.ostream.print_info("building supercell graph...")
         self.ostream.flush()
         self.superG_cell_info = [
@@ -484,8 +477,10 @@ class SupercellBuilder:
 
 
 class EdgeGraphBuilder:
-    """
-    make the edge graph eG from the supercell graph superG
+    """Build edge graph (eG) from supercell graph superG: V/EDGE nodes, XOO attachment, and optional cleaving.
+
+    Converts superG to eG (ditopic or multitopic), adds XOO from nodes to edges,
+    cleaves to custom_fbox/supercell range, and sets matched_vnode_xind and unsaturated lists.
     """
 
     def __init__(self, comm=None, ostream=None):
@@ -517,8 +512,7 @@ class EdgeGraphBuilder:
         self._debug = False
 
     def build_edgeG_from_superG(self):
-
-        # Build the edge graph (eG) from the supercell graph (superG)
+        """Build eG from superG, add XOO to edges, cleave to range, set unsaturated nodes/linkers."""
         if self.linker_connectivity == 2:
             eG, eG_index_name_dict = self._superG_to_eG_ditopic(self.superG)
         else:
@@ -1195,6 +1189,7 @@ class EdgeGraphBuilder:
 
 
 def remove_node_by_index(eG, remove_node_list, remove_edge_list):
+    """Remove from eG all nodes whose index is in remove_node_list and all EDGEs whose index is in remove_edge_list (by -index). Modifies eG in place."""
     for n in eG.nodes():
         if pname(n) != "EDGE":
             if eG.nodes[n]["index"] in remove_node_list:

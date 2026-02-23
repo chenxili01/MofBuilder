@@ -1,5 +1,11 @@
+"""MOF topology library: lookup and management of MOF families and template CIFs."""
+
+from __future__ import annotations
+
 import sys
 from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import networkx as nx
 import mpi4py.MPI as MPI
@@ -11,8 +17,36 @@ from veloxchem.environment import get_data_path
 
 
 class MofTopLibrary:
+    """Lookup and management of MOF families, metals, and topology template CIFs.
 
-    def __init__(self, comm=None, ostream=None, filepath=None):
+    Reads the MOF_topology_dict file to get node connectivity, allowed metals,
+    linker topic, and topology name. Supports listing families, selecting a family,
+    and submitting new templates.
+
+    Attributes:
+        comm: MPI communicator.
+        rank: MPI rank of this process.
+        nodes: MPI size (number of processes).
+        ostream: Output stream for logging.
+        data_path: Path to database directory (contains MOF_topology_dict).
+        mof_top_dict: Dict mapping MOF family name to node_connectivity, metal list, linker_topic, topology.
+        template_directory: Directory containing template CIF files.
+        mof_family: Currently selected MOF family name.
+        node_connectivity: Node connectivity for selected family.
+        node_metal_type: Node metal type (set when used).
+        linker_connectivity: Linker topic for selected family.
+        net_type: Net type (set when used).
+        net_filename: Template CIF filename for selected family.
+        selected_template_cif_file: Full path to the selected template CIF (set by select_mof_family).
+        _debug: If True, print extra debug messages.
+    """
+
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[Any] = None,
+        filepath: Optional[str] = None,
+    ) -> None:
         if comm is None:
             comm = MPI.COMM_WORLD
 
@@ -47,7 +81,12 @@ class MofTopLibrary:
 
         self._debug = False
 
-    def _read_mof_top_dict(self, data_path=None):
+    def _read_mof_top_dict(self, data_path: Optional[str] = None) -> None:
+        """Load MOF_topology_dict from data_path and populate self.mof_top_dict.
+
+        Args:
+            data_path: Directory containing MOF_topology_dict. Uses self.data_path if None.
+        """
         if data_path is None:
             data_path = self.data_path
         if Path(data_path, "MOF_topology_dict").exists():
@@ -78,8 +117,8 @@ class MofTopLibrary:
                 mof_top_dict[mof_name]["metal"].append(mof.split()[2])
         self.mof_top_dict = mof_top_dict
 
-    def list_mof_families(self):
-        # print mof_top_dict keys fit to screen
+    def list_mof_families(self) -> None:
+        """Print all available MOF family names from the topology dictionary to the output stream."""
         if self.mof_top_dict is None:
             self._read_mof_top_dict(self.data_path)
         print("-" * 80)
@@ -88,7 +127,12 @@ class MofTopLibrary:
         for mof_family in self.mof_top_dict.keys():
             print(f" - {mof_family}")
 
-    def list_available_metals(self, mof_family):
+    def list_available_metals(self, mof_family: str) -> None:
+        """Print available metal types for the given MOF family; prints a warning if family is unknown.
+
+        Args:
+            mof_family: MOF family name (e.g. "HKUST-1").
+        """
         mof_family = mof_family.upper()
         if self.mof_top_dict is None:
             self._read_mof_top_dict(self.data_path)
@@ -104,7 +148,15 @@ class MofTopLibrary:
 
         self.ostream.flush()
 
-    def select_mof_family(self, mof_family):
+    def select_mof_family(self, mof_family: str) -> None:
+        """Set the current MOF family and resolve template CIF path.
+
+        Sets node_connectivity, linker_connectivity, net_filename, and
+        selected_template_cif_file. Existence of the template CIF is checked.
+
+        Args:
+            mof_family: MOF family name (e.g. "UIO-66").
+        """
         self.mof_family = mof_family.upper()
         self.node_connectivity = self.mof_top_dict[mof_family][
             "node_connectivity"]
@@ -159,15 +211,29 @@ class MofTopLibrary:
 
     def submit_template(
         self,
-        template_cif,
-        mof_family,
-        template_mof_node_connectivity,
-        template_node_metal,
-        template_linker_topic,
-        overwrite=False,
-    ):
-        # add this item to mof_top_dict in data path
-        # check if template cif exists
+        template_cif: str,
+        mof_family: str,
+        template_mof_node_connectivity: int,
+        template_node_metal: str,
+        template_linker_topic: int,
+        overwrite: bool = False,
+    ) -> Optional[str]:
+        """Add or overwrite a MOF family in the topology dict and template_database.
+
+        Validates template_cif path and extension, then updates mof_top_dict and
+        rewrites the MOF_topology_dict file. Optionally overwrites existing family.
+
+        Args:
+            template_cif: Path to the template CIF file.
+            mof_family: MOF family name (e.g. "HKUST-1").
+            template_mof_node_connectivity: Node connectivity (int).
+            template_node_metal: Metal symbol (str).
+            template_linker_topic: Linker topic (int).
+            overwrite: If True, replace existing entry for mof_family.
+
+        Returns:
+            str: Path to the template CIF in template_database, or None if not written.
+        """
         mof_family = mof_family.upper()
         assert_msg_critical(
             Path(self.data_path, "template_database").is_dir(),
@@ -207,7 +273,7 @@ class MofTopLibrary:
                 self.ostream.print_warning(
                     f"{mof_family} already exists in the database, the template you submitted will not be used, or you can set overwrite=True to overwrite the existing template"
                 )
-                return
+                return None
 
         self.mof_top_dict[mof_family] = {
             "node_connectivity": template_mof_node_connectivity,
@@ -238,14 +304,22 @@ class MofTopLibrary:
         self.ostream.flush()
         return str(Path(self.data_path, "template_database", template_cif))
 
-    def fetch(self, mof_family=None):
-        mof_family = mof_family.upper()
+    def fetch(self, mof_family: Optional[str] = None) -> Optional[str]:
+        """Load topology dict, select the given MOF family, and return its template CIF path.
+
+        Args:
+            mof_family: MOF family name (e.g. "UIO-66"). If None, lists families and returns None.
+
+        Returns:
+            Path to selected_template_cif_file if family is valid; None otherwise.
+        """
+        mof_family = (mof_family or "").upper()
         self._read_mof_top_dict(self.data_path)
-        if mof_family is None:
+        if not mof_family:
             self.ostream.print_info("please select a MOF family from below:")
             self.ostream.flush()
             self.list_mof_families()
-            return
+            return None
         else:
             if mof_family not in self.mof_top_dict.keys():
                 self.ostream.print_warning(f"{mof_family} not in database")
@@ -253,7 +327,7 @@ class MofTopLibrary:
                     "please select a MOF family from below:")
                 self.ostream.flush()
                 self.list_mof_families()
-                return
+                return None
             else:
                 self.select_mof_family(mof_family)
                 return self.selected_template_cif_file

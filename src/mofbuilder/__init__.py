@@ -18,16 +18,41 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+from __future__ import annotations
+
+import importlib
+from typing import Any, Dict, Tuple
+
 __version__ = "0.1.0"
 __author__ = "MofBuilder Contributors"
 __email__ = "chenxili@kth.se"
 __license__ = "LGPL-3.0-or-later"
 
-# Import main modules for convenient access
-from . import analysis, core, io, utils, visualization, md
-from .core.builder import MetalOrganicFrameworkBuilder
-
 __all__ = [
     "MetalOrganicFrameworkBuilder", "core", "io", "utils", "analysis",
     "visualization", "md", "__version__"
 ]
+
+_LAZY_MODULES = {"analysis", "core", "io", "utils", "visualization", "md"}
+_LAZY_ATTRS: Dict[str, Tuple[str, str]] = {
+    "MetalOrganicFrameworkBuilder":
+    ("mofbuilder.core.builder", "MetalOrganicFrameworkBuilder"),
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name in _LAZY_MODULES:
+        module = importlib.import_module(f".{name}", __name__)
+        globals()[name] = module
+        return module
+    if name in _LAZY_ATTRS:
+        module_name, attr_name = _LAZY_ATTRS[name]
+        module = importlib.import_module(module_name)
+        attr = getattr(module, attr_name)
+        globals()[name] = attr
+        return attr
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | _LAZY_MODULES | set(_LAZY_ATTRS))

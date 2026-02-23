@@ -18,12 +18,36 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from .linkerforcefield import LinkerForceFieldGenerator, ForceFieldMapper
-from .gmxfilemerge import GromacsForcefieldMerger
-from .solvationbuilder import SolvationBuilder
-from .setup import OpenmmSetup
+from __future__ import annotations
+
+import importlib
+from typing import Any, Dict, Tuple
 
 __all__ = [
     "OpenmmSetup", "SolvationBuilder", "LinkerForceFieldGenerator",
     "GromacsForcefieldMerger", "ForceFieldMapper"
 ]
+
+_LAZY_ATTRS: Dict[str, Tuple[str, str]] = {
+    "OpenmmSetup": ("mofbuilder.md.setup", "OpenmmSetup"),
+    "SolvationBuilder": ("mofbuilder.md.solvationbuilder", "SolvationBuilder"),
+    "LinkerForceFieldGenerator":
+    ("mofbuilder.md.linkerforcefield", "LinkerForceFieldGenerator"),
+    "GromacsForcefieldMerger":
+    ("mofbuilder.md.gmxfilemerge", "GromacsForcefieldMerger"),
+    "ForceFieldMapper": ("mofbuilder.md.linkerforcefield", "ForceFieldMapper"),
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name in _LAZY_ATTRS:
+        module_name, attr_name = _LAZY_ATTRS[name]
+        module = importlib.import_module(module_name)
+        attr = getattr(module, attr_name)
+        globals()[name] = attr
+        return attr
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(_LAZY_ATTRS))

@@ -1,16 +1,29 @@
+"""Utility functions for MOF building: atom indexing, pairing, and safe copying."""
+
+from __future__ import annotations
+
 import re
+from typing import Any, List, Tuple, Union
+
 import numpy as np
 import sys
 from scipy.optimize import linear_sum_assignment
 from ..utils.geometry import fractional_to_cartesian
 
 
-# Function to fetch indices and coordinates of atoms with a specific label
-def fetch_X_atoms_ind_array(array, column, X):
-    # array: input array
-    # column: column index to check for label
-    # X: label to search for
+def fetch_X_atoms_ind_array(
+    array: np.ndarray, column: int, X: str
+) -> Tuple[List[int], np.ndarray]:
+    """Return indices and rows of atoms whose label (after stripping digits) equals X.
 
+    Args:
+        array: Input array; rows are atoms, column is checked for label.
+        column: Column index to check for the atom label.
+        X: Label to search for (e.g. "X" for connection atoms).
+
+    Returns:
+        Tuple of (indices, subarray): indices into array and the subarray of matching rows.
+    """
     ind = [
         k for k in range(len(array))
         if re.sub(r"\d", "", array[k, column]) == X
@@ -19,7 +32,22 @@ def fetch_X_atoms_ind_array(array, column, X):
     return ind, x_array
 
 
-def find_pair_x_edge_fc(x_matrix, edge_matrix, sc_unit_cell):
+def find_pair_x_edge_fc(
+    x_matrix: np.ndarray, edge_matrix: np.ndarray, sc_unit_cell: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Find optimal assignment between X atoms and edge points using Cartesian distances.
+
+    Converts fractional coordinates to Cartesian via sc_unit_cell, builds a distance
+    matrix, and uses linear sum assignment to pair each X to one edge point.
+
+    Args:
+        x_matrix: (N, 3+) array of X atom fractional coordinates (cols 2:5 used if larger).
+        edge_matrix: (M, 3+) array of edge point fractional coordinates.
+        sc_unit_cell: 3x3 supercell unit cell matrix for fractional_to_cartesian.
+
+    Returns:
+        Tuple (row_ind, col_ind): row indices (x) and column indices (edge) of the pairing.
+    """
     dist_matrix = np.zeros((len(x_matrix), len(edge_matrix)))
     x_matrix = fractional_to_cartesian(x_matrix, sc_unit_cell)
     edge_matrix = fractional_to_cartesian(edge_matrix, sc_unit_cell)
@@ -30,8 +58,22 @@ def find_pair_x_edge_fc(x_matrix, edge_matrix, sc_unit_cell):
     return row_ind, col_ind
 
 
-def order_edge_array(row_ind, col_ind, edges_array):
-    # according col_ind order to reorder the connected edge points
+def order_edge_array(
+    row_ind: np.ndarray, col_ind: np.ndarray, edges_array: np.ndarray
+) -> np.ndarray:
+    """Reorder edge points so they follow the assignment given by row_ind and col_ind.
+
+    Splits edges_array by columns, reorders by col_ind so that the i-th output block
+    corresponds to row_ind[i], then stacks in order of row_ind.
+
+    Args:
+        row_ind: Row indices from the assignment (length N).
+        col_ind: Column indices from the assignment (length N).
+        edges_array: Array of edge points (one block per column in the assignment).
+
+    Returns:
+        Reordered array of edge points.
+    """
     old_split = np.vsplit(edges_array, len(col_ind))
     old_order = []
     for i in range(len(col_ind)):
@@ -42,7 +84,15 @@ def order_edge_array(row_ind, col_ind, edges_array):
     return ordered_arr
 
 
-def safe_dict_copy(d):
+def safe_dict_copy(d: dict) -> dict:
+    """Recursively copy a dict; nested dicts and lists/arrays are copied, not referenced.
+
+    Args:
+        d: Dictionary to copy (may contain dict, list, numpy.ndarray, or scalars).
+
+    Returns:
+        New dictionary with the same structure and copied values.
+    """
     new_d = {}
     for k, v in d.items():
         if isinstance(v, dict):
@@ -56,7 +106,15 @@ def safe_dict_copy(d):
     return new_d
 
 
-def safe_copy(value):
+def safe_copy(value: Any) -> Union[dict, list, np.ndarray, Any]:
+    """Return a deep copy of value: dict (recursive), list, or ndarray; otherwise return as-is.
+
+    Args:
+        value: Value to copy (dict, list, numpy.ndarray, or other).
+
+    Returns:
+        Copy of value, or value itself if not dict/list/ndarray.
+    """
     if isinstance(value, dict):
         return safe_dict_copy(value)
     elif isinstance(value, np.ndarray):

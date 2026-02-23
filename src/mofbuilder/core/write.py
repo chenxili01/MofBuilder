@@ -1,3 +1,9 @@
+"""Write MOF framework to PDB, GRO, XYZ, and CIF from the edge graph (eG)."""
+
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import networkx as nx
 from veloxchem.outputstream import OutputStream
@@ -27,8 +33,39 @@ from .superimpose import superimpose_rotation_only
 
 
 class MofWriter:
+    """Convert edge graph (eG) to per-residue data and write PDB, GRO, XYZ, or CIF.
 
-    def __init__(self, comm=None, ostream=None):
+    Requires G, frame_cell_info, sc_unit_cell, xoo_dict (and optionally dummy_atom_node_dict).
+    convert_graph_to_data / convert_graph_to_fcoords_data build nodes_data, edges_data, terms_data;
+    get_merged_data / get_merged_fcoords_data merge them; write_* write to file.
+
+    Attributes:
+        comm: MPI communicator.
+        rank: MPI rank of this process.
+        nodes: MPI size (number of processes).
+        ostream: Output stream for logging.
+        filename: Base filename without extension for output files.
+        G: Edge graph to write (nodes and edges with f_points, noxoo_f_points, etc.).
+        frame_cell_info: Cell parameters [a, b, c, alpha, beta, gamma].
+        supercell_boundary: Optional [x_min, x_max, y_min, y_max, z_min, z_max] for fractional filter.
+        sc_unit_cell: 3x3 supercell unit cell matrix.
+        xoo_dict: Dict mapping X index to list of O indices (XOO) per node.
+        dummy_atom_node_dict: Optional dict of dummy atom counts per node for renaming.
+        residues_info: Dict of residue names and counts (e.g. 'EDGE', ';NODE').
+        merged_data: Merged Cartesian data (nodes + edges + terms).
+        merged_f_data: Merged fractional data.
+        nodes_data: List of node data arrays (set by convert_graph_to_data).
+        edges_data: List of edge data arrays.
+        terms_data: List of termination data arrays.
+        cG: Copy of G with 'data' attached to each node/edge.
+        _debug: If True, print extra debug messages.
+    """
+
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[Any] = None,
+    ) -> None:
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
@@ -50,10 +87,10 @@ class MofWriter:
         self.merged_f_data = None  #merged fractional data of nodes, edges
         self._debug = False  #debug mode
 
-    def _remove_xoo_from_node(self, G, xoo_dict):
-        """
-        remove the XOO atoms from the node after adding the terminations, add ['noxoo_f_points'] to the node in eG
-        """
+    def _remove_xoo_from_node(
+        self, G: nx.Graph, xoo_dict: Dict[int, List[int]]
+    ) -> nx.Graph:
+        """Remove XOO rows from each node's f_points and set noxoo_f_points on each node."""
         eG = G.copy()
 
         all_xoo_indices = []
@@ -70,8 +107,10 @@ class MofWriter:
                 eG.nodes[n]["noxoo_f_points"] = noxoo_f_points
         return eG
 
-    def convert_graph_to_data(self, G, sc_unit_cell):
-        #convert the graph to the data array and anlyze the residues
+    def convert_graph_to_data(
+        self, G: nx.Graph, sc_unit_cell: np.ndarray
+    ) -> None:
+        """Convert eG to nodes_data, edges_data, terms_data (Cartesian) and set cG with 'data' on each node/edge."""
         rG = self._remove_xoo_from_node(G, self.xoo_dict)
 
         def arr2data(arr, residue_name=None, residue_number=None, note=None):
@@ -166,9 +205,10 @@ class MofWriter:
         self.terms_data = terms_data
         self.cG = cG
 
-    def get_merged_data(self, dummy_atom_node_dict=None):
-        #merge the nodes, edges, terms data to a single array
-        #rename the dummy atom names if dummy_atom_node_dict is provided
+    def get_merged_data(
+        self, dummy_atom_node_dict: Optional[Dict[str, Any]] = None
+    ) -> np.ndarray:
+        """Merge nodes, edges, terms into one array; optionally rename dummy atoms. Sets merged_data and residues_info. Returns merged_data."""
         nodes_data = self.nodes_data
         edges_data = self.edges_data
         terms_data = self.terms_data
@@ -210,8 +250,10 @@ class MofWriter:
 
         return merged_data
 
-    def convert_graph_to_fcoords_data(self, G, supercell_boundary):
-        #convert the graph to the data array and anlyze the residues
+    def convert_graph_to_fcoords_data(
+        self, G: nx.Graph, supercell_boundary: List[float]
+    ) -> None:
+        """Convert eG to fractional node/edge data within supercell_boundary; set nodes_f_data, edges_f_data, cG."""
         rG = self._remove_xoo_from_node(G, self.xoo_dict)
 
         def arr2data(arr, residue_name=None, residue_number=None, note=None):
@@ -311,9 +353,8 @@ class MofWriter:
             edges_data) > 0 else np.empty((0, 11))
         self.cG = cG
 
-    def get_merged_fcoords_data(self):
-        #merge the nodes, edges to a single array
-        #rename the dummy atom names if dummy_atom_node_dict is provided
+    def get_merged_fcoords_data(self) -> np.ndarray:
+        """Merge nodes_f_data and edges_f_data into merged_f_data. Returns merged_f_data."""
         nodes_f_data = np.vstack(self.nodes_f_data) if len(
             self.nodes_f_data) > 0 else np.empty((0, 11))
         edges_f_data = np.vstack(self.edges_f_data) if len(
@@ -325,7 +366,8 @@ class MofWriter:
         self.merged_f_data = merged_f_data
         return merged_f_data
 
-    def only_get_merged_data(self):
+    def only_get_merged_data(self) -> tuple:
+        """Run convert_graph_to_data, get_merged_data, convert_graph_to_fcoords_data, get_merged_fcoords_data. Returns (merged_data, merged_f_data)."""
         self.convert_graph_to_data(self.G, self.sc_unit_cell)
         self.merged_data = self.get_merged_data(self.dummy_atom_node_dict)
 
@@ -333,7 +375,8 @@ class MofWriter:
         self.merged_f_data = self.get_merged_fcoords_data()
         return self.merged_data, self.merged_f_data
 
-    def write_pdb(self, skip_merge=False):
+    def write_pdb(self, skip_merge: bool = False) -> None:
+        """Write Cartesian merged_data to PDB (self.filename). If not skip_merge, run convert_graph_to_data and get_merged_data first."""
         if self.merged_data is None:
             skip_merge = False
 
@@ -359,7 +402,8 @@ class MofWriter:
             self.ostream.flush()
         pdb_writer.write(filepath=filename, header=header, lines=merged_data)
 
-    def write_xyz(self, skip_merge=False):
+    def write_xyz(self, skip_merge: bool = False) -> None:
+        """Write Cartesian merged_data to XYZ (self.filename). If not skip_merge, merge first."""
         if self.merged_data is None:
             skip_merge = False
 
@@ -378,7 +422,8 @@ class MofWriter:
             self.ostream.flush()
         xyz_writer.write(filepath=filename, header=header, lines=merged_data)
 
-    def write_gro(self, skip_merge=False):
+    def write_gro(self, skip_merge: bool = False) -> None:
+        """Write Cartesian merged_data to GRO (self.filename) with frame_cell_info as box. If not skip_merge, merge first."""
         if self.merged_data is None:
             skip_merge = False
         if skip_merge:
@@ -399,11 +444,13 @@ class MofWriter:
                          lines=merged_data,
                          box=self.frame_cell_info)
 
-    def write_cif(self,
-                  skip_merge=False,
-                  supercell_boundary=None,
-                  frame_cell_info=None):
-        #cif file use f_coords so no terminations needed and boundary box to filter
+    def write_cif(
+        self,
+        skip_merge: bool = False,
+        supercell_boundary: Optional[List[float]] = None,
+        frame_cell_info: Optional[List[float]] = None,
+    ) -> None:
+        """Write fractional merged_f_data to CIF (self.filename). Uses supercell_boundary and frame_cell_info; if not skip_merge, converts and merges first."""
         if frame_cell_info is None:
             frame_cell_info = self.frame_cell_info
         if supercell_boundary is None:
@@ -437,7 +484,12 @@ class MofWriter:
                          cell_info=frame_cell_info,
                          supercell_boundary=supercell_boundary)
 
-    def _rename_node_name(self, nodes_data, dummy_atom_node_dict):
+    def _rename_node_name(
+        self,
+        nodes_data: List[np.ndarray],
+        dummy_atom_node_dict: Optional[Dict[str, Any]],
+    ) -> np.ndarray:
+        """Rename dummy atom names in nodes_data using dummy_atom_node_dict; return stacked array with METAL, HHO, HO, O order."""
         if dummy_atom_node_dict is None:
             return np.vstack(nodes_data)
         nodes_num = len(nodes_data)

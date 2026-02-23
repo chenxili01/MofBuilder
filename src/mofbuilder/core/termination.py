@@ -1,5 +1,11 @@
+"""Termination groups for capping unsaturated nodes (e.g. XOO carboxylate)."""
+
+from __future__ import annotations
+
 import sys
 from pathlib import Path
+from typing import Any, Optional
+
 import numpy as np
 import networkx as nx
 import mpi4py.MPI as MPI
@@ -15,11 +21,34 @@ from ..io.pdb_writer import PdbWriter
 
 
 class FrameTermination:
-    """
-    Handles the termination of the simulation.
+    """Loads and holds termination group geometry (e.g. acetate) for capping unsaturated nodes.
+
+    Reads a PDB file containing X and Y atom types (e.g. X = connection atom,
+    Y = O-O center), recenters to Y, and exposes termination_data and X/Y subsets.
+
+    Attributes:
+        comm: MPI communicator.
+        rank: MPI rank of this process.
+        nodes: MPI size (number of processes).
+        ostream: Output stream for logging.
+        properties: Dictionary of optional properties.
+        filename: Path to termination PDB file.
+        X_atom_type: Atom type string for connection atom (default "X").
+        Y_atom_type: Atom type string for O-O center (default "Y").
+        pdbreader: PdbReader instance for reading PDB.
+        _debug: If True, print extra debug messages.
+        X_data: Subarray of termination_data for X atoms (set by create).
+        termination_data: Full atom data from PDB (set by read_termination_file).
+        termination_X_data: Rows of termination_data where last column equals X_atom_type (set by create).
+        termination_Y_data: Rows of termination_data where last column equals Y_atom_type (set by create).
     """
 
-    def __init__(self, comm=None, ostream=None, filepath=None):
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[Any] = None,
+        filepath: Optional[str] = None,
+    ) -> None:
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
@@ -35,7 +64,11 @@ class FrameTermination:
         self.X_data = None
         self.termination_data = None
 
-    def read_termination_file(self):
+    def read_termination_file(self) -> None:
+        """Read the termination PDB from self.filename and set self.termination_data.
+
+        Optionally prints debug info if _debug is True. Does nothing if filename is None.
+        """
         if self.filename is None:
             return None
         assert_msg_critical(
@@ -54,7 +87,8 @@ class FrameTermination:
             )
             self.ostream.flush()
 
-    def create(self):
+    def create(self) -> None:
+        """Load termination file and split data into termination_X_data and termination_Y_data by atom type."""
         self.read_termination_file()
         if self.termination_data is not None:
             self.termination_X_data = self.termination_data[
