@@ -11,12 +11,44 @@ import sys
 """
 atom_type, atom_label, atom_number, residue_name, residue_number, x, y, z, spin, charge, note
 """
-#this reader will read cif file and create a Topology object
+# This reader will read a cif file and create a Topology object
 
 
 class CifReader:
+    """
+    Class for reading CIF files, extracting symmetry and atomic site information,
+    and providing atom coordinates in the primitive cell.
 
-    def __init__(self, comm=None, ostream=None, filepath=None):
+    Attributes:
+        comm (MPI.Comm): MPI communicator.
+        rank (int): Rank of the process.
+        nodes (int): Total number of nodes/processes.
+        ostream (OutputStream): Output stream for logging.
+        filepath (str or Path): Path to the CIF file.
+        data (np.ndarray or None): Array with atom data.
+        _debug (bool): Toggle debug logging.
+        cell_info (list): Unpacked cell dimensions and angles.
+        symmetry_sector (list): Lines containing symmetry operations.
+        atom_site_sector (list): Lines defining atomic sites.
+        net_name (str): CIF network name.
+        spacegroup (str): Space group label from CIF.
+        hall_number (str): Hall number label from CIF.
+        V_con (str): Connected component value from CIF, if present.
+        EC_con (str): Edge connectivity value from CIF, if present.
+        ciffile_lines (list[str]): Filtered lines from the CIF file.
+        fcoords (np.ndarray): Fractional coordinates for atoms.
+        target_fcoords (np.ndarray): Specific fractional coordinates for requested atom type.
+    """
+
+    def __init__(self, comm: MPI.Comm = None, ostream: OutputStream = None, filepath: str = None):
+        """
+        Initialize a CifReader instance.
+
+        Args:
+            comm (MPI.Comm, optional): MPI communicator. Defaults to MPI.COMM_WORLD.
+            ostream (OutputStream, optional): Output stream for logging. If None, selected by rank.
+            filepath (str, optional): Path to the CIF file to be read.
+        """
         if comm is None:
             comm = MPI.COMM_WORLD
 
@@ -26,21 +58,26 @@ class CifReader:
             else:
                 ostream = OutputStream(None)
 
-        # mpi information
-        self.comm = comm
-        self.rank = self.comm.Get_rank()
-        self.nodes = self.comm.Get_size()
+        self.comm: MPI.Comm = comm
+        self.rank: int = self.comm.Get_rank()
+        self.nodes: int = self.comm.Get_size()
+        self.ostream: OutputStream = ostream
 
-        # output stream
-        self.ostream = ostream
+        self.filepath: str = filepath
+        self.data: np.ndarray | None = None
 
-        self.filepath = filepath
-        self.data = None
+        self._debug: bool = False
 
-        # debug
-        self._debug = False
+    def _extract_value_str_slice(self, s: list) -> int:
+        """
+        Extracts a signed integer coefficient from a symmetry operation string segment.
 
-    def _extract_value_str_slice(self, s):
+        Args:
+            s (list): List of string fragments containing symmetry operation.
+
+        Returns:
+            int: The signed integer value (e.g., +1, -1).
+        """
         if len(s) == 0:
             return 0
         sign = 1
@@ -54,26 +91,32 @@ class CifReader:
 
         return sign * int(mul_value)
 
-    def _extract_value_from_str(self, s):
-        s = re.sub(r" ", "", s)  # remove space
+    def _extract_value_from_str(self, s: str) -> tuple[int, int, int, float]:
+        """
+        Extracts x, y, z coefficients and constants from a symmetry operation string.
+
+        Args:
+            s (str): The symmetry operation component string.
+
+        Returns:
+            tuple[int, int, int, float]: (x_coeff, y_coeff, z_coeff, constant)
+        """
+        s = re.sub(r" ", "", s)
         s = re.sub(r"(?<=[+-])", ",", s[::-1])[::-1]
         if s[0] == ",":
             s = s[1:]
         s_list = list(s.split(","))
-        # find the slice of x
         x_slice = [s_list[i] for i in range(len(s_list)) if "x" in s_list[i]]
         y_slice = [s_list[i] for i in range(len(s_list)) if "y" in s_list[i]]
         z_slice = [s_list[i] for i in range(len(s_list)) if "z" in s_list[i]]
-        # find the only digit in the slice no x,y,z
         const_slice = [
-            s_list[i] for i in range(len(s_list)) if "x" not in s_list[i]
-            and "y" not in s_list[i] and "z" not in s_list[i]
+            s_list[i] for i in range(len(s_list))
+            if "x" not in s_list[i] and "y" not in s_list[i] and "z" not in s_list[i]
         ]
-        # extract the coefficient and constant from slice
-        # if * exist then use the value before *, if - exist then *-1
         x_coeff = self._extract_value_str_slice(x_slice)
         y_coeff = self._extract_value_str_slice(y_slice)
         z_coeff = self._extract_value_str_slice(z_slice)
+
         if len(const_slice) == 0:
             const = 0
         else:
@@ -82,7 +125,16 @@ class CifReader:
 
         return x_coeff, y_coeff, z_coeff, const
 
-    def _extract_transformation_matrix_from_symmetry_operator(self, expr_str):
+    def _extract_transformation_matrix_from_symmetry_operator(self, expr_str: str) -> np.ndarray:
+        """
+        Converts a symmetry operator string into a 4x4 transformation matrix.
+
+        Args:
+            expr_str (str): Symmetry operation as string, e.g., 'x, -y, z+1/2'.
+
+        Returns:
+            np.ndarray: 4x4 transformation matrix.
+        """
         expr_str = str(expr_str)
         expr_str = expr_str.strip("\n")
         expr_str = expr_str.replace(" ", "")
@@ -90,17 +142,24 @@ class CifReader:
         transformation_matrix = np.zeros((4, 4))
         transformation_matrix[3, 3] = 1
         for i in range(len(split_str)):
-            x_coeff, y_coeff, z_coeff, const = self._extract_value_from_str(
-                split_str[i])
+            x_coeff, y_coeff, z_coeff, const = self._extract_value_from_str(split_str[i])
             transformation_matrix[i] = [x_coeff, y_coeff, z_coeff, const]
 
         return transformation_matrix
 
-    def _extract_symmetry_operation_from_lines(self, symmetry_sector):
+    def _extract_symmetry_operation_from_lines(self, symmetry_sector: list[str]) -> list[str]:
+        """
+        Extracts symmetry operation strings from a sector of the CIF file.
+
+        Args:
+            symmetry_sector (list[str]): List of lines in the symmetry sector.
+
+        Returns:
+            list[str]: List of symmetry operation strings.
+        """
         symmetry_operation = []
         for i in range(len(symmetry_sector)):
-            # Regular expression to match terms with coefficients and variables
-            pattern = r"([+-]?\d*\.?\d*)\s*([xyz])"  # at least find a x/-x/y/-y/z/-z
+            pattern = r"([+-]?\d*\.?\d*)\s*([xyz])"
             match = re.search(pattern, symmetry_sector[i])
             if match:
                 string = remove_quotes(symmetry_sector[i].strip("\n"))
@@ -119,7 +178,13 @@ class CifReader:
 
         return symmetry_operation
 
-    def _fetch_spacegroup_from_cifinfo(self):
+    def _fetch_spacegroup_from_cifinfo(self) -> str:
+        """
+        Fetches the space group name (Hermann-Mauguin) from the CIF info.
+
+        Returns:
+            str: The space group name if found; otherwise, 'P1'.
+        """
         pattern = r"_symmetry_space_group_name_H-M\s+'([^']+)'"
         match = re.search(pattern, )
         if match:
@@ -127,7 +192,16 @@ class CifReader:
         else:
             return "P1"
 
-    def _valid_net_name_line(self, line):
+    def _valid_net_name_line(self, line: str) -> str:
+        """
+        Checks if a line specifies a network name and returns a valid network name.
+
+        Args:
+            line (str): Line from CIF file.
+
+        Returns:
+            str: The detected network name.
+        """
         if re.search(r"net", line):
             potential_net_name = line.split()[0].split("_")[1]
             if re.sub(r"[0-9]", "", potential_net_name) == "":
@@ -135,7 +209,16 @@ class CifReader:
             else:
                 return potential_net_name
 
-    def _valid_spacegroup_line(self, line):
+    def _valid_spacegroup_line(self, line: str) -> str:
+        """
+        Checks a line for a space group or potential network name.
+
+        Args:
+            line (str): Line from CIF file.
+
+        Returns:
+            str: The spacegroup name or network name, defaults to 'P1' if not found.
+        """
         if re.search(r"_symmetry_space_group_name_H-M", line):
             space_group = re.search(
                 r"_symmetry_space_group_name_H-M\s+'([^']+)'", line)[1]
@@ -145,17 +228,34 @@ class CifReader:
             return potential_net_name
         return "P1"
 
-    def _valid_hallnumber_line(self, line):
+    def _valid_hallnumber_line(self, line: str) -> str:
+        """
+        Checks a line for Hall number information.
+
+        Args:
+            line (str): Line from CIF file.
+
+        Returns:
+            str: The Hall number as found, or '1' if not found.
+        """
         if re.search(r"_symmetry_Int_Tables_number", line):
-            hall_number = re.search(r"_symmetry_Int_Tables_number\s+(\d+)",
-                                    line)[1]
+            hall_number = re.search(r"_symmetry_Int_Tables_number\s+(\d+)", line)[1]
             return hall_number
         elif re.search(r"hall_number:\s*(\d+)", line):
             hall_number = re.search(r"hall_number:\s*(\d+)", line)[1]
             return hall_number
         return "1"
 
-    def read_cif(self, cif_file=None):
+    def read_cif(self, cif_file: str = None) -> None:
+        """
+        Reads a CIF file, storing relevant crystal and atom site sections in the instance.
+
+        Args:
+            cif_file (str, optional): Path to the CIF file. If None, uses self.filepath.
+
+        Raises:
+            AssertionError: If the CIF file path does not exist.
+        """
         net_flag = False
         spacegroup_flag = False
         hallnumber_flag = False
@@ -170,7 +270,8 @@ class CifReader:
             self.ostream.print_info(f"Reading cif file {self.filepath}")
             self.ostream.flush()
 
-        def valid_line(line):
+        def valid_line(line: str) -> bool:
+            """Helper to test whether a line is meaningful (not comment or empty)."""
             return line.strip() != "" and not line.strip().startswith("#")
 
         with open(self.filepath, "r") as f:
@@ -214,19 +315,14 @@ class CifReader:
                 self.ostream.print_info(f"Found EC_con: {self.EC_con}")
             self.ostream.flush()
 
-        # nonempty_lines=lines
         keyword1 = r"loop_"
         keyword2 = r"x,\s*y,\s*z"
         keyword3 = r"-x"
-        # find the symmetry sector begin with x,y,z, beteen can have space or tab and comma,but just x start, not '-x'
-        # keyword2 = "x,\s*y,\s*z"
+        # loop_key marks locations of important 'loop_' and 'x, y, z' tags
 
-        loop_key = []
-        loop_key.append(0)
+        loop_key = [0]
         linenumber = 0
-        for i in range(
-                len(nonempty_lines)):  # search for keywords and get linenumber
-            # m is find keywor1 or (find keyword2 without keyword3)
+        for i in range(len(nonempty_lines)):
             m = find_keyword(keyword1, nonempty_lines[i]) or (
                 find_keyword(keyword2, nonempty_lines[i]) and
                 (not find_keyword(keyword3, nonempty_lines[i])))
@@ -240,9 +336,6 @@ class CifReader:
 
             if m:
                 loop_key.append(linenumber)
-            # if not nonempty_lines[i].strip():
-            #    loop_key.append(linenumber)
-
             else:
                 if a:
                     cell_length_a = remove_bracket(
@@ -277,40 +370,66 @@ class CifReader:
             cell_angle_gamma,
         ]
 
-        # find symmetry sectors and atom_site_sectors
         cif_sectors = []
         for i in range(len(loop_key) - 1):
             cif_sectors.append(nonempty_lines[loop_key[i]:loop_key[i + 1]])
-        for i in range(
-                len(cif_sectors)):  # find '\s*x,\s*y,\s*z' symmetry sector
+        for i in range(len(cif_sectors)):
             if re.search(keyword2, cif_sectors[i][0]):
                 symmetry_sector = cif_sectors[i]
 
             if len(cif_sectors[i]) > 1:
-                if re.search(r"_atom_site_label\s+",
-                             cif_sectors[i][1]):  # line0 is _loop
+                if re.search(r"_atom_site_label\s+", cif_sectors[i][1]):
                     atom_site_sector = cif_sectors[i]
         self.cell_info = cell_info
         self.symmetry_sector = symmetry_sector
         self.atom_site_sector = atom_site_sector
 
-    def _limit_value_0_1(self, new_array_metal_xyz):
-        # use np.mod to limit the value in [0,1]
+    def _limit_value_0_1(self, new_array_metal_xyz: np.ndarray) -> np.ndarray:
+        """
+        Ensures all entries are within [0,1) using modulo.
+
+        Args:
+            new_array_metal_xyz (np.ndarray): Input coordinates.
+
+        Returns:
+            np.ndarray: Coordinates wrapped to [0,1).
+        """
         new_array_metal_xyz = np.mod(new_array_metal_xyz, 1)
         return new_array_metal_xyz
 
-    def _wrap_fccords_to_0_1(self, fccords):
-        #to make all atoms are around com
+    def _wrap_fccords_to_0_1(self, fccords: np.ndarray) -> np.ndarray:
+        """
+        Center/wraps fractional coordinates to [0,1) and removes duplicated sites.
+
+        Args:
+            fccords (np.ndarray): Fractional coordinates.
+
+        Returns:
+            np.ndarray: Unique, wrapped fractional coordinates.
+        """
         fccords = np.unique(np.array(fccords, dtype=float), axis=0)
         fccords = self._limit_value_0_1(fccords)
         fccords += 0.5
         fccords = self._limit_value_0_1(fccords)
         fccords += -0.5
-        #remove duplicate fcoords
         fccords = np.unique(np.array(fccords, dtype=float), axis=0)
         return fccords
 
-    def _apply_sym_operator(self, symmetry_operations, array_metal_xyz):
+    def _apply_sym_operator(
+        self,
+        symmetry_operations: list[str],
+        array_metal_xyz: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Applies a list of symmetry operations to the coordinates and returns all unique sites.
+
+        Args:
+            symmetry_operations (list[str]): The symmetry operations in CIF string syntax.
+            array_metal_xyz (np.ndarray): Coordinates to transform.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: unique coordinates array and corresponding unique indices.
+        """
         array_metal_extend_xyz = np.hstack(
             (array_metal_xyz, np.ones((len(array_metal_xyz), 1))))
         cell_array_metal_xyz = np.empty((0, 3))
@@ -332,16 +451,26 @@ class CifReader:
 
         return unique_metal_array, unique_indices
 
-    def _extract_atoms_fcoords_from_lines(self, atom_site_sector):
+    def _extract_atoms_fcoords_from_lines(
+        self,
+        atom_site_sector: list[str]
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Extracts atom type, label, and fractional coordinates from the atom_site sector.
+
+        Args:
+            atom_site_sector (list[str]): Lines defining atomic sites in the CIF.
+
+        Returns:
+            tuple[np.ndarray, np.ndarray]: (array_atom: [atom_type, atom_label], array_xyz: [x, y, z])
+        """
         atom_site_lines = []
         keyword = r"_"
-        for line in atom_site_sector:  # search for keywords and get linenumber
+        for line in atom_site_sector:
             m = re.search(keyword, line)
             if m is None:
                 atom_site_lines.append(line)
 
-        #array_atom is atom_type and atom_label
-        #array_xyz is fractional coordinates
         array_atom = np.zeros((len(atom_site_lines), 2), dtype=object)
         array_xyz = np.zeros((len(atom_site_lines), 3))
 
@@ -361,9 +490,18 @@ class CifReader:
             self.ostream.flush()
         return array_atom, array_xyz
 
-    def get_type_atoms_fcoords_in_primitive_cell(self, target_type=None):
+    def get_type_atoms_fcoords_in_primitive_cell(
+        self,
+        target_type: str = None
+    ) -> tuple[list, np.ndarray, np.ndarray]:
         """
-        need to read cif file first using read_cif
+        Get all atoms of a particular type in the primitive cell, applying symmetry.
+
+        Args:
+            target_type (str, optional): Atom type to select (e.g., "V", "E"). If None, uses all.
+
+        Returns:
+            tuple[list, np.ndarray, np.ndarray]: (cell_info, atom data, requested atom fractional coordinates)
         """
         array_atom, array_xyz = self._extract_atoms_fcoords_from_lines(
             self.atom_site_sector)
@@ -392,7 +530,6 @@ class CifReader:
         self.fcoords = self._wrap_fccords_to_0_1(array_metal_xyz_final)
         self.target_fcoords = self._wrap_fccords_to_0_1(array_metal_xyz_final)
 
-        #make data
         self.data = []
         for i in range(len(self.fcoords)):
             atom_number = i + 1
@@ -422,6 +559,10 @@ class CifReader:
 
 
 if __name__ == "__main__":
+    """
+    Example driver for CifReader. Reads a test CIF file and prints
+    coordinates and cell information for two atom types, 'V' and 'E'.
+    """
     cif_file = "tests/testdata/test.cif"
     cif_reader = CifReader(filepath=cif_file)
     cif_reader._debug = True

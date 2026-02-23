@@ -1,12 +1,34 @@
 import numpy as np
-# util functions for Cartesian and fractional coordinates conversion
+from typing import Tuple, Dict, List, Any
 
 
-def unit_cell_to_cartesian_matrix(aL, bL, cL, alpha, beta, gamma):
+def unit_cell_to_cartesian_matrix(
+    aL: float, bL: float, cL: float, alpha: float, beta: float, gamma: float
+) -> np.ndarray:
+    """Convert unit cell parameters to a 3x3 Cartesian transformation matrix.
+
+    Args:
+        aL (float): Unit cell vector length a.
+        bL (float): Unit cell vector length b.
+        cL (float): Unit cell vector length c.
+        alpha (float): Angle (in degrees) between b and c.
+        beta (float): Angle (in degrees) between a and c.
+        gamma (float): Angle (in degrees) between a and b.
+
+    Returns:
+        np.ndarray: A 3x3 transformation matrix mapping fractional to Cartesian coordinates.
+
+    Note:
+        All angles must be provided in degrees.
+
+    Example:
+        >>> unit_cell_to_cartesian_matrix(10, 10, 10, 90, 90, 90)
+        array([[10.,  0.,  0.],
+               [ 0., 10.,  0.],
+               [ 0.,  0., 10.]])
+    """
     pi = np.pi
-    """Convert unit cell parameters to a Cartesian transformation matrix."""
-    aL, bL, cL, alpha, beta, gamma = list(
-        map(float, (aL, bL, cL, alpha, beta, gamma)))
+    aL, bL, cL, alpha, beta, gamma = map(float, (aL, bL, cL, alpha, beta, gamma))
     ax = aL
     ay = 0.0
     az = 0.0
@@ -15,36 +37,92 @@ def unit_cell_to_cartesian_matrix(aL, bL, cL, alpha, beta, gamma):
     bz = 0.0
     cx = cL * np.cos(beta * pi / 180.0)
     cy = (cL * bL * np.cos(alpha * pi / 180.0) - bx * cx) / by
-    cz = (cL**2.0 - cx**2.0 - cy**2.0)**0.5
+    cz = (cL ** 2.0 - cx ** 2.0 - cy ** 2.0) ** 0.5
     unit_cell = np.asarray([[ax, ay, az], [bx, by, bz], [cx, cy, cz]]).T
     return unit_cell
 
 
-def fractional_to_cartesian(fractional_coords, T):
+def fractional_to_cartesian(
+    fractional_coords: np.ndarray, T: np.ndarray
+) -> np.ndarray:
+    """Convert fractional coordinates to Cartesian coordinates.
+
+    Args:
+        fractional_coords (np.ndarray): Array of shape (n, 3) with fractional coordinates.
+        T (np.ndarray): 3x3 unit cell transformation matrix (from `unit_cell_to_cartesian_matrix`).
+
+    Returns:
+        np.ndarray: Array of shape (n, 3) of Cartesian coordinates.
+
+    Example:
+        >>> fc = np.array([[0.5, 0.5, 0.5]])
+        >>> T = unit_cell_to_cartesian_matrix(10, 10, 10, 90, 90, 90)
+        >>> fractional_to_cartesian(fc, T)
+        array([[5., 5., 5.]])
+    """
     T = T.astype(float)
     fractional_coords = fractional_coords.astype(float)
-    """Convert fractional coordinates to Cartesian using the transformation matrix."""
     return np.dot(T, fractional_coords.T).T
 
 
-def cartesian_to_fractional(cartesian_coords, unit_cell_inv):
+def cartesian_to_fractional(
+    cartesian_coords: np.ndarray, unit_cell_inv: np.ndarray
+) -> np.ndarray:
+    """Convert Cartesian coordinates to fractional coordinates.
+
+    Args:
+        cartesian_coords (np.ndarray): Array of shape (n, 3) with Cartesian coordinates.
+        unit_cell_inv (np.ndarray): 3x3 inverse transformation matrix of the unit cell.
+
+    Returns:
+        np.ndarray: Array of shape (n, 3) of fractional coordinates.
+
+    Example:
+        >>> cc = np.array([[5., 5., 5.]])
+        >>> T = unit_cell_to_cartesian_matrix(10, 10, 10, 90, 90, 90)
+        >>> cartesian_to_fractional(cc, np.linalg.inv(T))
+        array([[0.5, 0.5, 0.5]])
+    """
     cartesian_coords = cartesian_coords.astype(float)
     unit_cell_inv = unit_cell_inv.astype(float)
-    """Convert Cartesian coordinates to fractional coordinates using the inverse transformation matrix."""
     return np.dot(unit_cell_inv, cartesian_coords.T).T
 
 
-def locate_min_idx(a_array):
-    # print(a_array,np.min(a_array))
+def locate_min_idx(a_array: np.ndarray) -> Tuple[int, int]:
+    """Locate the index of the minimum value in a 2D array.
+
+    Args:
+        a_array (np.ndarray): A 2D numpy array.
+
+    Returns:
+        Tuple[int, int]: Row and column indices of the minimum value.
+
+    Example:
+        >>> a_array = np.array([[1, 2], [3, 0]])
+        >>> locate_min_idx(a_array)
+        (1, 1)
+    """
     idx = np.argmin(a_array)
     row_idx = idx // a_array.shape[1]
     col_idx = idx % a_array.shape[1]
     return row_idx, col_idx
 
 
-def reorthogonalize_matrix(matrix):
-    """
-    Ensure the matrix is a valid rotation matrix with determinant = 1.
+def reorthogonalize_matrix(matrix: np.ndarray) -> np.ndarray:
+    """Ensure the input matrix is a valid rotation matrix with determinant 1.
+
+    Args:
+        matrix (np.ndarray): Square matrix to orthogonalize.
+
+    Returns:
+        np.ndarray: Closest valid rotation matrix with determinant 1.
+
+    Example:
+        >>> mat = np.eye(3)
+        >>> reorthogonalize_matrix(mat)
+        array([[1., 0., 0.],
+               [0., 1., 0.],
+               [0., 0., 1.]])
     """
     U, _, Vt = np.linalg.svd(matrix)
     R = np.dot(U, Vt)
@@ -54,68 +132,89 @@ def reorthogonalize_matrix(matrix):
     return R
 
 
-def find_optimal_pairings(node_i_positions, node_j_positions):
-    """
-    Find the optimal one-to-one pairing between atoms in two nodes using the Hungarian algorithm.
+def find_optimal_pairings(
+    node_i_positions: np.ndarray, node_j_positions: np.ndarray
+) -> List[int]:
+    """Find the optimal one-to-one atom pairing between two nodes using a greedy distance approach.
+
+    Args:
+        node_i_positions (np.ndarray): Array of shape (n, 4) for node i's atoms [index, x, y, z].
+        node_j_positions (np.ndarray): Array of shape (m, 4) for node j's atoms [index, x, y, z].
+
+    Returns:
+        List[int]: Indices [i, j] for the best single match (greedy, not Hungarian/global; see note).
+
+    Note:
+        This function currently pairs only the two closest atoms, not the full assignment (Hungarian method).
+        For small clusters (single pair), this is sufficient; for larger clusters, a general assignment algorithm is preferred.
+
+    Example:
+        >>> pos_i = np.array([[0, 0.0, 0.0, 0.0], [1, 1.0, 0.0, 0.0]])
+        >>> pos_j = np.array([[3, 0.1, 0.0, 0.0], [2, 1.0, 1.0, 0.0]])
+        >>> find_optimal_pairings(pos_i, pos_j)
+        [0, 0]
     """
     num_i, num_j = len(node_i_positions), len(node_j_positions)
     cost_matrix = np.zeros((num_i, num_j))
     for i in range(num_i):
         for j in range(num_j):
-            cost_matrix[i, j] = np.linalg.norm(node_i_positions[i, 1:] -
-                                               node_j_positions[j, 1:])
-
-    # row_ind, col_ind = linear_sum_assignment(cost_matrix)
-    # print(cost_matrix.shape) #DEBUG
+            cost_matrix[i, j] = np.linalg.norm(
+                node_i_positions[i, 1:] - node_j_positions[j, 1:]
+            )
     row_ind, col_ind = locate_min_idx(cost_matrix)
-    # print(row_ind,col_ind,cost_matrix) #DEBUG
-
     return [row_ind, col_ind]
 
 
-def find_edge_pairings(sorted_nodes, sorted_edges, atom_positions):
-    """
-    Identify optimal pairings for each edge in the graph.
+def find_edge_pairings(
+    sorted_nodes: List[Any],
+    sorted_edges: List[Tuple[int, int]],
+    atom_positions: Dict[int, np.ndarray],
+) -> Dict[Tuple[int, int], List[int]]:
+    """Identify optimal atom pairings for each edge in a graph.
 
-    Parameters:
-        G (networkx.Graph): Graph structure with edges between nodes.
-        atom_positions (dict): Positions of X atoms for each node.
+    Args:
+        sorted_nodes (List[Any]): Vertices (node indices) used in the graph.
+        sorted_edges (List[Tuple[int, int]]): List of graph edges as tuples of node indices.
+        atom_positions (Dict[int, np.ndarray]): Mapping node index to positions array [[idx, x, y, z], ...].
 
     Returns:
-        dict: Mapping of edges to optimal atom pairs.
-            Example: {(0, 1): [(0, 3), (1, 2)], ...}
+        Dict[Tuple[int, int], List[int]]: Mapping from each edge to node-local indices in atom_positions.
+            For each (i, j), value is [i_idx, j_idx] for best pair.
+
+    Example:
+        >>> edges = [(0, 1)]
+        >>> atom_positions = {0: np.array([[0,0,0,0]]), 1: np.array([[0,1,0,0]])}
+        >>> find_edge_pairings([0,1], edges, atom_positions)
+        {(0, 1): [0, 0]}
     """
-
-    edge_pairings = {}
-
+    edge_pairings: Dict[Tuple[int, int], List[int]] = {}
     for i, j in sorted_edges:
-        node_i_positions = atom_positions[i]  # [index,x,y,z]
-        node_j_positions = atom_positions[j]  # [index,x,y,z]
-
-        # Find optimal pairings for this edge
-
+        node_i_positions = atom_positions[i]
+        node_j_positions = atom_positions[j]
         pairs = find_optimal_pairings(node_i_positions, node_j_positions)
-        # print(sorted_nodes[i],sorted_nodes[j],pairs) #DEBUG
-        edge_pairings[(i, j)] = pairs  # update_pairs(pairs,atom_positions,i,j)
-        # idx_0,idx_1 = pairs[0]
-        # x_idx_0 = atom_positions[i][idx_0][0]
-        # x_idx_1 = atom_positions[j][idx_1][0]
-    #
-    # edge_pairings[(i, j)] = update_pairs(pairs,atom_positions,i,j) #but only first pair match
-    # atom_positions[i] = np.delete(atom_positions[i], idx_0, axis=0)
-    # atom_positions[j] = np.delete(atom_positions[j], idx_1, axis=0)
-
+        edge_pairings[(i, j)] = pairs
     return edge_pairings
 
 
-def Carte_points_generator(xyz_num):
-    """Generate a 3D grid of points with integer coordinates.
-    
-    Parameters:
-        xyz_num (tuple): Number of divisions in x, y, and z directions.
-        
+def Carte_points_generator(xyz_num: Tuple[int, int, int]) -> np.ndarray:
+    """Generate a 3D grid of points with integer coordinates, inclusive in each direction.
+
+    Args:
+        xyz_num (Tuple[int, int, int]): Number of divisions in the x, y, and z directions.
+
     Returns:
-        ndarray: Array of points with shape (n, 3).
+        np.ndarray: Array of shape (n, 3) of all integer-lattice points in the grid.
+
+    Example:
+        >>> Carte_points_generator((1, 1, 1))
+        array([[0, 0, 0],
+               [0, 0, 1],
+               [0, 1, 0],
+               [0, 1, 1],
+               [1, 0, 0],
+               [1, 0, 1],
+               [1, 1, 0],
+               [1, 1, 1]])
     """
     x_num, y_num, z_num = xyz_num
     # Use meshgrid for efficient point generation

@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+from typing import Optional, Any, List, Sequence
 from veloxchem.outputstream import OutputStream
 from veloxchem.veloxchemlib import mpi_master
 import mpi4py.MPI as MPI
@@ -7,8 +8,43 @@ from veloxchem.errorhandler import assert_msg_critical
 
 
 class XyzWriter:
+    """Writer for XYZ coordinate files.
 
-    def __init__(self, comm=None, ostream=None, filepath=None, debug=False):
+    Provides functionality to write molecular structure data to XYZ files,
+    optionally with MPI parallel awareness and flexible stream/file handling.
+
+    Attributes:
+        comm (Any): MPI communicator used for parallel operations.
+        rank (int): MPI rank of the current process.
+        nodes (int): Total number of MPI nodes.
+        ostream (OutputStream): Output stream for logging/info.
+        filepath (Optional[str]): Default path to write the XYZ file if not provided per call.
+        _debug (bool): If True, debug information is printed.
+        file_dir (Optional[Path]): Directory of the current file to write (only set when writing).
+    
+    Methods:
+        write(filepath, header, lines):
+            Write the atom coordinates to an XYZ file.
+        get_xyzlines(header, lines):
+            Return formatted XYZ lines as a list of strings.
+    """
+
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[OutputStream] = None,
+        filepath: Optional[str] = None,
+        debug: bool = False,
+    ):
+        """
+        Initializes the XyzWriter instance.
+
+        Args:
+            comm (Optional[Any]): MPI communicator. Defaults to MPI.COMM_WORLD.
+            ostream (Optional[OutputStream]): VeloxChem OutputStream for info/debug output.
+            filepath (Optional[str]): Default path to the XYZ file.
+            debug (bool): Enable debug printing if True.
+        """
         if comm is None:
             comm = MPI.COMM_WORLD
 
@@ -18,86 +54,100 @@ class XyzWriter:
             else:
                 ostream = OutputStream(None)
 
-        # mpi information
         self.comm = comm
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
-
-        # output stream
         self.ostream = ostream
         self.filepath = filepath
         self._debug = debug
+        self.file_dir: Optional[Path] = None
 
-    def write(self, filepath=None, header='', lines=[]):
+    def write(
+        self,
+        filepath: Optional[str] = None,
+        header: str = '',
+        lines: Sequence[Sequence[Any]] = [],
+    ) -> None:
+        """Write atom coordinate lines to an XYZ file.
+
+        Args:
+            filepath (Optional[str]): Output XYZ file path. Uses instance default if not specified.
+            header (str): Optional header/comment line (is line #2 in XYZ format).
+            lines (Sequence[Sequence[Any]]): Each entry must have fields for
+                atom_type, atom_label, atom_number, residue_name, residue_number,
+                x, y, z, spin, charge, note.
+
+                Only atom_label, x, y, z are directly written to the XYZ file.
+        
+        Raises:
+            AssertionError: If filepath is not specified or invalid.
+
+        Note:
+            XYZ file will be written only by the master MPI rank.
+            If the file extension is not '.xyz', it is automatically added.
         """
-        line format:
-        atom_type, atom_label, atom_number, residue_name, residue_number, x, y, z, spin, charge, note
-        1         2    3      4            5              6  7  8 9    10 11
-        ATOM      1    C       MOL          1            1.000 2.000 3.000 1.00 0.00 C1
-        """
-        "data format[atom_type, atom_label, atom_number, residue_name, residue_number, value_x, value_y, value_z, spin, charge, note]"
-        filepath = Path(filepath) if filepath is not None else Path(
-            self.filepath)
-        assert_msg_critical(filepath is not None,
-                            "pdb filepath is not specified")
-        # check if the file directory exists and create it if it doesn't
-        self.file_dir = Path(filepath).parent
+        filepath_final = Path(filepath) if filepath is not None else Path(self.filepath)
+        assert_msg_critical(filepath_final is not None, "xyz filepath is not specified")
+
+        # Check if the file directory exists and create it if it doesn't
+        self.file_dir = Path(filepath_final).parent
         if self._debug:
             self.ostream.print_info(f"targeting directory: {self.file_dir}")
         self.file_dir.mkdir(parents=True, exist_ok=True)
 
-        if filepath.suffix != ".xyz":
-            filepath = filepath.with_suffix(".xyz")
+        if filepath_final.suffix != ".xyz":
+            filepath_final = filepath_final.with_suffix(".xyz")
 
-        newxyz = []
+        newxyz: List[str] = []
         newxyz.append(f"{len(lines)}\n")
-        newxyz.append(header)
+        newxyz.append(header if header.endswith('\n') else header + '\n')
 
-        with open(filepath, "w") as fp:
-            # Iterate over each line in the input file
-            for i in range(len(lines)):
-                values = lines[i]
-                atom_label = values[1]
-                atom_number = i + 1
-                x = float(values[5])
-                y = float(values[6])
-                z = float(values[7])
-                #xyz format line is
-                formatted_line = "%-5s%8.3f%8.3f%8.3f" % (
-                    atom_label,
-                    x,
-                    y,
-                    z,
-                )
-                newxyz.append(formatted_line + "\n")
-            fp.writelines(newxyz)
-
-    def get_xyzlines(self, header='', lines=[]):
-        """
-        line format:
-        atom_type, atom_label, atom_number, residue_name, residue_number, x, y, z, spin, charge, note
-        1         2    3      4            5              6  7  8 9    10 11
-        ATOM      1    C       MOL          1            1.000 2.000 3.000 1.00 0.00 C1
-        """
-        "data format[atom_type, atom_label, atom_number, residue_name, residue_number, value_x, value_y, value_z, spin, charge, note]"
-
-        newxyz = []
-        newxyz.append(f"{len(lines)}\n")
-        newxyz.append(header.strip('\n') + '\n')
-        # Iterate over each line in the input file
-        for i in range(len(lines)):
-            values = lines[i]
+        for i, values in enumerate(lines):
             atom_label = values[1]
-            atom_number = i + 1
+            # atom_number = i + 1  # Not used in XYZ format
             x = float(values[5])
             y = float(values[6])
             z = float(values[7])
-            #xyz format line is
             formatted_line = "%-5s%8.3f%8.3f%8.3f" % (
-                atom_label,
-                x,
-                y,
-                z,
+                atom_label, x, y, z
+            )
+            newxyz.append(formatted_line + "\n")
+
+        with open(filepath_final, "w") as fp:
+            fp.writelines(newxyz)
+
+    def get_xyzlines(
+        self,
+        header: str = '',
+        lines: Sequence[Sequence[Any]] = [],
+    ) -> List[str]:
+        """Return formatted XYZ contents as a list of strings.
+
+        Args:
+            header (str): Optional header/comment line for XYZ content.
+            lines (Sequence[Sequence[Any]]): List of per-atom info, each entry
+                having the fields:
+                atom_type, atom_label, atom_number, residue_name, residue_number,
+                x, y, z, spin, charge, note. Only atom_label, x, y, z are written.
+
+        Returns:
+            List[str]: Formatted XYZ contents as a list of strings.
+
+        Example:
+            xyz_lines = writer.get_xyzlines(header="Example molecule", lines=my_atomlist)
+            # '\n'.join(xyz_lines) is a complete XYZ file or block.
+        """
+        newxyz: List[str] = []
+        newxyz.append(f"{len(lines)}\n")
+        newxyz.append(header.strip('\n') + '\n')
+        for i, values in enumerate(lines):
+            atom_label = values[1]
+            # atom_number = i + 1  # Not used in XYZ format
+            x = float(values[5])
+            y = float(values[6])
+            z = float(values[7])
+            formatted_line = "%-5s%8.3f%8.3f%8.3f" % (
+                atom_label, x, y, z
             )
             newxyz.append(formatted_line + "\n")
         return newxyz

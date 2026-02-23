@@ -1,19 +1,55 @@
 import numpy as np
 from pathlib import Path
+from typing import Optional, Any, Tuple
 from .basic import nn
 from veloxchem.outputstream import OutputStream
 from veloxchem.veloxchemlib import mpi_master
 from veloxchem.errorhandler import assert_msg_critical
 import mpi4py.MPI as MPI
 import sys
+
 """
 atom_type, atom_label, atom_number, residue_name, residue_number, x, y, z, spin, charge, note
 """
 
 
 class PdbReader:
+    """Class for reading and processing atomic coordinates from PDB files.
 
-    def __init__(self, comm=None, ostream=None, filepath=None):
+    Attributes:
+        comm (MPI.Comm): MPI communicator.
+        rank (int): MPI rank of current process.
+        nodes (int): Total number of MPI processes.
+        ostream (OutputStream): Output stream for logging.
+        filepath (str | Path | None): Path to the PDB file.
+        com_target_type (str): Atom type used for center-of-mass calculation.
+        data (np.ndarray | None): Parsed atom data as array;
+            see row format below.
+        X_data (np.ndarray | None): Rows corresponding to atom type "X".
+        node_atoms (np.ndarray | None): Atom types and labels for processed nodes.
+        node_ccoords (np.ndarray | None): Coordinates for all node atoms, recentered.
+        node_x_ccoords (np.ndarray | None): Coordinates for atoms of type "X", recentered.
+        _debug (bool): Toggle debug-level logging.
+
+    Methods:
+        read_pdb: Reads the PDB file and extracts atom data.
+        expand_arr2data: Converts an array of atom records into the library's standard format.
+        process_node_pdb: Specialized recentering and extraction for node atoms.
+    """
+
+    def __init__(
+        self,
+        comm: Optional[Any] = None,
+        ostream: Optional[OutputStream] = None,
+        filepath: Optional[str] = None,
+    ):
+        """Initialize a PdbReader instance.
+
+        Args:
+            comm (MPI.Comm, optional): MPI communicator. Defaults to MPI.COMM_WORLD.
+            ostream (OutputStream, optional): Output stream for logging and info.
+            filepath (str, optional): Path to the PDB file.
+        """
         if comm is None:
             comm = MPI.COMM_WORLD
 
@@ -23,27 +59,50 @@ class PdbReader:
             else:
                 ostream = OutputStream(None)
 
-        # mpi information
         self.comm = comm
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
 
-        # output stream
         self.ostream = ostream
+        self.filepath: Optional[str] = filepath
+        self.com_target_type: str = "X"
+        self.data: Optional[np.ndarray] = None
 
-        self.filepath = filepath
-        self.com_target_type = "X"
-        self.data = None
+        self.X_data: Optional[np.ndarray] = None
+        self.node_atoms: Optional[np.ndarray] = None
+        self.node_ccoords: Optional[np.ndarray] = None
+        self.node_x_ccoords: Optional[np.ndarray] = None
 
-        # debug
-        self._debug = False
+        self._debug: bool = False
 
-    def read_pdb(self, filepath=None, recenter=True, com_type=None):
+    def read_pdb(
+        self,
+        filepath: Optional[str] = None,
+        recenter: bool = True,
+        com_type: Optional[str] = None,
+    ) -> None:
+        """Read a PDB file, extract atoms, and optionally recenter coordinates.
+
+        Populates self.data with shape (N, 11): [atom_type, atom_label, atom_number,
+        residue_name, residue_number, value_x, value_y, value_z, occupancy, b_factor, note].
+
+        Args:
+            filepath (str, optional): Path to the PDB file. Overrides instance filepath if given.
+            recenter (bool, optional): If True (default), recenter coordinates to center-of-mass.
+            com_type (str, optional): Atom type for COM; if None, uses all atoms.
+
+        Raises:
+            AssertionError: If file does not exist.
+
+        Note:
+            Only ATOM/HETATM records are parsed; format assumes canonical PDB column mapping.
+        """
         if filepath is not None:
             self.filepath = filepath
         assert_msg_critical(
             Path(self.filepath).exists(),
-            f"pdb file {self.filepath} not found")
+            f"pdb file {self.filepath} not found",
+        )
         if self._debug:
             self.ostream.print_info(f"Reading pdb file {self.filepath}")
 
@@ -52,52 +111,40 @@ class PdbReader:
             lines = fp.readlines()
 
         data = []
-        #count=1
         for line in lines:
             line = line.strip()
-            if len(line) > 0:  # skip blank line
+            if len(line) > 0:
                 if line.startswith("ATOM") or line.startswith("HETATM"):
-                    atom_number = int(
-                        line[6:11]) if line[6:11].strip() else 1  # atom serial
-                    atom_type = line[12:16].strip()  # atom name (e.g. "X1")
-                    residue_name = line[17:20].strip()  # residue name
-                    chain_id = line[21].strip() if line[21].strip(
-                    ) else "A"  # chain
-                    residue_number = int(line[22:26]) if line[22:26].strip(
-                    ) else 1  # residue number
+                    atom_number = int(line[6:11]) if line[6:11].strip() else 1
+                    atom_type = line[12:16].strip()
+                    residue_name = line[17:20].strip()
+                    chain_id = line[21].strip() if line[21].strip() else "A"
+                    residue_number = int(line[22:26]) if line[22:26].strip() else 1
                     value_x = float(line[30:38])
                     value_y = float(line[38:46])
                     value_z = float(line[46:54])
-                    occupancy = float(
-                        line[54:60]) if line[54:60].strip() else 0.0
-                    b_factor = float(
-                        line[60:66]) if line[60:66].strip() else 0.0
-                    atom_label = line[76:78].strip(
-                    )  # element symbol (e.g. "C")
-                    charge = line[78:80].strip(
-                    )  # formal charge (string like "2+")
-
-                    # custom mapping
+                    occupancy = float(line[54:60]) if line[54:60].strip() else 0.0
+                    b_factor = float(line[60:66]) if line[60:66].strip() else 0.0
+                    atom_label = line[76:78].strip()
+                    charge = line[78:80].strip()
                     note = nn(atom_type)
 
                     data.append([
-                        atom_type,  # assigned atom name, e.g. "CA"
-                        atom_label,  # element symbol, e.g. "C"
-                        atom_number,  # serial number
-                        residue_name,  # residue name
-                        residue_number,  # residue index
-                        value_x,
-                        value_y,
-                        value_z,
-                        occupancy,  # occupancy
-                        b_factor,  # B-factor
-                        note  # custom mapping
+                        atom_type,         # Assigned atom name, e.g., "CA"
+                        atom_label,        # Element symbol, e.g., "C"
+                        atom_number,       # Serial number
+                        residue_name,      # Residue name
+                        residue_number,    # Residue index
+                        value_x, value_y, value_z,
+                        occupancy,         # Occupancy
+                        b_factor,          # B-factor
+                        note               # Custom mapping
                     ])
 
         self.data = np.vstack(data)
 
-        #should set type of array elements
-        def type_data(arr):
+        def type_data(arr: np.ndarray) -> np.ndarray:
+            """Ensure proper dtype for numeric and string columns."""
             arr[:, 2] = arr[:, 2].astype(int)
             arr[:, 4] = arr[:, 4].astype(int)
             arr[:, 5:8] = arr[:, 5:8].astype(float)
@@ -108,8 +155,7 @@ class PdbReader:
         self.data = type_data(self.data)
 
         if recenter:
-            #if not define com_type, use all atoms to calculate com
-            #else use the specified atom type to calculate com
+            # Use all atoms for center calculation if com_type not specified or not present.
             if com_type is None:
                 com_type_ccoords = self.data[:, 5:8].astype(float)
             else:
@@ -127,10 +173,23 @@ class PdbReader:
                     f"Center of mass type {com_type} at {com}")
             self.data[:, 5:8] = self.data[:, 5:8].astype(float) - com
 
-        self.X_data = self.data[self.data[:, -1] == 'X']
+        self.X_data = self.data[self.data[:, -1] == "X"]
 
-    def expand_arr2data(self, arr):
-        #arr type is [atom_type,atom_label,x,y,z]
+    def expand_arr2data(
+        self, arr: Optional[np.ndarray]
+    ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray]]:
+        """Convert array of minimal records to standard data format.
+
+        Args:
+            arr (np.ndarray | list): Array/list of [atom_type, atom_label, x, y, z].
+
+        Returns:
+            Tuple[np.ndarray | None, np.ndarray | None]:
+                All parsed data (as for self.data), and extracted rows where note is 'X'.
+
+        Example:
+            data, x_data = pdb_reader.expand_arr2data([["Fe", "Fe", 0.0, 0.0, 0.0]])
+        """
         if arr is None or len(arr) == 0:
             return None, None
         if isinstance(arr, list):
@@ -157,8 +216,20 @@ class PdbReader:
         X_data = data[data[:, -1] == 'X']
         return data, X_data
 
-    def process_node_pdb(self):
-        # pdb only have cartesian coordinates
+    def process_node_pdb(self) -> None:
+        """Read the PDB and prepare node-centered atom sets.
+
+        Parses self.data, recenters coordinates for self.com_target_type
+        (default 'X'), and stores node atoms, coordinates, and "X" atoms.
+
+        Note:
+            Intended for node PDB files (metal nodes) in the MOF framework.
+
+        Populates:
+            - self.node_atoms: [atom_type, atom_label] for all atoms
+            - self.node_ccoords: centered coordinates for all atoms
+            - self.node_x_ccoords: centered coordinates for "X" atoms
+        """
         self.read_pdb()
         node_atoms = self.data[:, 0:2]
         node_ccoords = self.data[:, 5:8]
