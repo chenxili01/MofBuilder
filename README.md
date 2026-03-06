@@ -19,9 +19,6 @@ Core modules include:
 - **Builder**  
   Construct MOF structures from nodes, linkers, and topologies.
 
-- **Analysis**  
-  Tools for structural analysis, geometric descriptors, and molecular properties.
-
 - **Modelling**  
   Interfaces for molecular simulations and quantum chemistry calculations.
 
