@@ -1,5 +1,8 @@
-# MofBuilder
+# MOFBuilder
 
+A Python toolkit for constructing and preparing MOF structures.
+
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://chenxili01.github.io/MOFBuilder/)
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyPI version](https://badge.fury.io/py/mofbuilder.svg)](https://badge.fury.io/py/mofbuilder)
@@ -10,7 +13,7 @@ A Python library for **building and modelling Metal–Organic Framework (MOF) st
 
 ## Overview
 
-**MofBuilder** provides a modular and extensible framework for constructing and studying MOF systems, with integrated workflows for structure generation, analysis, and atomistic modelling.
+**MOFBuilder** provides a modular and extensible framework for constructing and studying MOF systems, with integrated workflows for structure generation, analysis, and atomistic modelling.
 
 The package is designed to interface with modern computational chemistry tools such as **VeloxChem**, **OpenMM**, **xTB**, and **RDKit**, enabling seamless workflows from **structure construction to molecular simulation**.
 
@@ -35,7 +38,7 @@ Core modules include:
 
 ## Installation
 
-MofBuilder depends on several scientific packages distributed via **conda**, including VeloxChem, RDKit, OpenMM, and xtb-python.
+MOFBuilder depends on several scientific packages distributed via **conda**, including VeloxChem, RDKit, OpenMM, and xtb-python.
 
 ### 1. Create environment
 
@@ -56,11 +59,11 @@ conda install -c veloxchem -c conda-forge veloxchem ipykernel rdkit openmm xtb-p
 conda install -c conda-forge openmm-ml
 ```
 
-### 4. Install MofBuilder from source
+### 4. Install MOFBuilder from source
 
 ```bash
-git clone https://github.com/chenxili01/MofBuilder.git
-cd MofBuilder
+git clone https://github.com/chenxili01/MOFBuilder.git
+cd MOFBuilder
 pip install -e .
 ```
 
@@ -71,9 +74,9 @@ pip install -e .
 Example workflow:
 
 ```python
-from mofbuilder import MetalOrganicFrameworkBuilder as MofBuilder
+from mofbuilder import MetalOrganicFrameworkBuilder as MOFBuilder
 # Build UiO-66 MOF
-mof = MofBuilder(mof_family="UiO-66")
+mof = MOFBuilder(mof_family="UiO-66")
 mof.linker_smiles = "O=C([O-])C(C=C1)=CC=C1C([O-])=O"
 mof.node_metal = "Zr"
 uio = mof.build()
@@ -99,7 +102,7 @@ output_prefix="UiO66_MD")
 
 Full documentation is available at:
 
-https://mofbuilder.readthedocs.io
+https://chenxili01.github.io/MOFBuilder/
 
 ---
 
@@ -113,15 +116,17 @@ See the [LICENSE](LICENSE) file for details.
 
 ## Citation
 
-If you use **MofBuilder** in your research, please cite:
+If you use **MOFBuilder** in your research, please cite:
 
 ```bibtex
 ```
 
 ---
 
-## Support
+- ## Links
 
-- **Issues:** https://github.com/chenxili01/MofBuilder/issues  
-- **Discussions:** https://github.com/chenxili01/MofBuilder/discussions  
-- **Documentation:** https://mofbuilder.readthedocs.io
+- **Documentation:** https://chenxili01.github.io/MOFBuilder/
+- **Source code:** https://github.com/chenxili01/MOFBuilder
+- **Issues:** https://github.com/chenxili01/MOFBuilder/issues
+- **Nodes/Net library for MOFBuilder:** https://github.com/chenxili01/MOFBuilder_library
+
