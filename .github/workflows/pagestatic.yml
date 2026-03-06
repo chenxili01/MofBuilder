@@ -1,91 +1,55 @@
-Skip to content
-chenxili01
-MOFBuilder
-Repository navigation
-Code
-Issues
-1
- (1)
-Pull requests
-Agents
-Actions
-Projects
-Wiki
-Security
-Insights
-Settings
-Deploy Sphinx Docs to GitHub Pages
-Deploy Sphinx Docs to GitHub Pages #6
-All jobs
-Run details
-Annotations
-1 error
-build
-failed now in 21s
-Search logs
-2s
-1s
-0s
-0s
-15s
-Downloading sphinxcontrib_qthelp-2.0.0-py3-none-any.whl (88 kB)
-Downloading sphinxcontrib_serializinghtml-2.0.0-py3-none-any.whl (92 kB)
-Downloading accessible_pygments-0.0.5-py3-none-any.whl (1.4 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 146.8 MB/s  0:00:00
-Downloading beautifulsoup4-4.14.3-py3-none-any.whl (107 kB)
-Downloading soupsieve-2.8.3-py3-none-any.whl (37 kB)
-Downloading typing_extensions-4.15.0-py3-none-any.whl (44 kB)
-Downloading pyyaml-6.0.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (806 kB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 806.6/806.6 kB 115.9 MB/s  0:00:00
-Downloading h5py-3.16.0-cp311-cp311-manylinux_2_28_x86_64.whl (5.0 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.0/5.0 MB 168.0 MB/s  0:00:00
-Downloading LoProp-0.3.5-py3-none-any.whl (31 kB)
-Downloading blocked_matrix_utils-1.0.9-py3-none-any.whl (11 kB)
-Downloading mpi4py-4.1.1-cp311-cp311-manylinux1_x86_64.manylinux_2_5_x86_64.whl (1.4 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 150.1 MB/s  0:00:00
-Downloading pybind11-3.0.2-py3-none-any.whl (310 kB)
-Downloading scipy-1.17.1-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.3 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.3/35.3 MB 214.8 MB/s  0:00:00
-Building wheels for collected packages: mofbuilder, veloxchem
-  Building editable for mofbuilder (pyproject.toml): started
-  Building editable for mofbuilder (pyproject.toml): finished with status 'done'
-  Created wheel for mofbuilder: filename=mofbuilder-0.1.0-0.editable-py3-none-any.whl size=6331 sha256=5d3133b4370264e2605b6d5ce565938f336b83cea5d02ad7195848bf61987c44
-  Stored in directory: /tmp/pip-ephem-wheel-cache-76dr7z05/wheels/4b/00/aa/84343568ef54a8aba45a33c2445d17dcab9af66d42ef0286f7
-  Building wheel for veloxchem (pyproject.toml): started
-  Building wheel for veloxchem (pyproject.toml): finished with status 'error'
-  error: subprocess-exited-with-error
-  
-  × Building wheel for veloxchem (pyproject.toml) did not run successfully.
-  │ exit code: 1
-  ╰─> [15 lines of output]
-      /tmp/pip-build-env-w43mtkc8/overlay/lib/python3.11/site-packages/setuptools/_distutils/dist.py:287: UserWarning: Unknown distribution option: 'tests_require'
-        warnings.warn(msg)
-      /tmp/pip-build-env-w43mtkc8/overlay/lib/python3.11/site-packages/setuptools/_distutils/dist.py:287: UserWarning: Unknown distribution option: 'test_suite'
-        warnings.warn(msg)
-      /tmp/pip-build-env-w43mtkc8/overlay/lib/python3.11/site-packages/setuptools/dist.py:332: InformationOnly: Normalizing '1.0rc1post1' to '1.0rc1.post1'
-        self.metadata.version = self._normalize_version(self.metadata.version)
-      running bdist_wheel
-      running build
-      running build_py
-      *** Generating Makefile.setup...
-      *** Checking operating system... Linux
-      *** Checking c++ compiler... None
-      *** Error: Unable to find c++ compiler!
-      ***        Please make sure that mpiicpc, mpicxx, or
-      ***        mpiCXX is in your PATH.
-      [end of output]
-  
-  note: This error originates from a subprocess, and is likely not a problem with pip.
-  ERROR: Failed building wheel for veloxchem
-Successfully built mofbuilder
-Failed to build veloxchem
-error: failed-wheel-build-for-install
+name: Deploy Sphinx Docs to GitHub Pages
 
-× Failed to build installable wheels for some pyproject.toml based projects
-╰─> veloxchem
-Error: Process completed with exit code 1.
-0s
-0s
-0s
-1s
-0s
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install docs dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r docs/requirements.txt
+
+      - name: Build HTML
+        run: |
+          sphinx-build -b html docs/source docs/_build/html
+          touch docs/_build/html/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_build/html
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
