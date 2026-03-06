@@ -45,8 +45,14 @@ autodoc_default_options = {
 }
 autodoc_typehints = "description"
 
-autodoc_mock_imports = ["veloxchem", "mpi4py", "openmm", "rdkit"]
-
+autodoc_mock_imports = [
+    "veloxchem",
+    "mpi4py",
+    "openmm",
+    "rdkit",
+    "xtb",
+    "py3Dmol",
+]
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = False
@@ -96,6 +102,7 @@ html_context = {
     "github_version": "main",
     "doc_path": "docs/source",
 }
+
 
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
