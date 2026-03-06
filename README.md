@@ -79,7 +79,7 @@ mof.node_metal = "Zr"
 uio = mof.build()
 
 #visualization
-uio.show(residue_indices=True,residue_name=True)
+uio.show(residue_indices=True)
 
 #output
 uio.write(format=["gro"], filename="uio66_original")
