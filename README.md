@@ -78,6 +78,9 @@ mof.linker_smiles = "O=C([O-])C(C=C1)=CC=C1C([O-])=O"
 mof.node_metal = "Zr"
 uio = mof.build()
 
+#visualization
+uio.show(residue_indices=True,residue_name=True)
+
 #output
 uio.write(format=["gro"], filename="uio66_original")
 
