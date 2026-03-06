@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
+  <title id="title">MOFBuilder workflow</title>
+  <desc id="desc">Workflow from topology and linker inputs to framework building and modelling or simulation preparation.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .box { fill: #ffffff; stroke: #0f172a; stroke-width: 1.4; rx: 14; }
+      .title, .label, .line {
+        font-family: "Atkinson Hyperlegible", "Segoe UI", "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+        text-rendering: optimizeLegibility;
+      }
+      .title { font-size: 30px; font-weight: 700; fill: #0b1220; letter-spacing: -0.01em; }
+      .label { font-size: 22px; font-weight: 650; fill: #0b1220; }
+      .line { font-size: 16px; font-weight: 450; fill: #1f2b3d; }
+      .arrow { stroke: #0f172a; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .group-a { fill: #e2e8f0; }
+      .group-b { fill: #dbeafe; }
+      .group-c { fill: #dcfce7; }
+    </style>
+    <marker id="arrowhead" markerWidth="11" markerHeight="8" refX="10" refY="4" orient="auto">
+      <polygon points="0 0, 11 4, 0 8" fill="#0f172a" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="440" />
+  <text class="title" x="40" y="58">MOFBuilder scientific workflow</text>
+
+  <rect class="box group-a" x="40" y="90" width="340" height="300" />
+  <text class="label" x="64" y="132">Inputs</text>
+  <text class="line" x="64" y="170">- Topology family: HKUST-1, UiO-66</text>
+  <text class="line" x="64" y="202">- Metal node selection</text>
+  <text class="line" x="64" y="234">- Linker input: XYZ / SMILES</text>
+  <text class="line" x="64" y="266">- Linker input: Molecule object</text>
+  <text class="line" x="64" y="298">- Optional terminations</text>
+  <text class="line" x="64" y="330">- Optional supercell setup</text>
+
+  <rect class="box group-b" x="430" y="90" width="340" height="300" />
+  <text class="label" x="454" y="132">Build + Optimize</text>
+  <text class="line" x="454" y="170">- Load topology net and blocks</text>
+  <text class="line" x="454" y="202">- Place nodes and linkers</text>
+  <text class="line" x="454" y="234">- Optimize rotations</text>
+  <text class="line" x="454" y="266">- Optimize unit cell</text>
+  <text class="line" x="454" y="298">- Build graph and supercell</text>
+
+  <rect class="box group-c" x="820" y="90" width="340" height="300" />
+  <text class="label" x="844" y="132">Outputs + Workflows</text>
+  <text class="line" x="844" y="170">- Export CIF / PDB / GRO / XYZ</text>
+  <text class="line" x="844" y="202">- Inspect framework graph</text>
+  <text class="line" x="844" y="234">- Prepare solvation</text>
+  <text class="line" x="844" y="266">- Prepare force field inputs</text>
+  <text class="line" x="844" y="298">- Run OpenMM MD pipeline</text>
+  <text class="line" x="844" y="330">- Continue modelling workflow</text>
+
+  <line class="arrow" x1="380" y1="242" x2="420" y2="242" />
+  <line class="arrow" x1="770" y1="242" x2="810" y2="242" />
+</svg>

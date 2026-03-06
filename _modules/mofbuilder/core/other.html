@@ -1,0 +1,420 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mofbuilder.core.other &mdash; MofBuilder 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MofBuilder
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual/index.html">User Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-from-source">Install from source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-development-dependencies">Install development dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-documentation-dependencies">Install documentation dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#build-the-manual">Build the manual</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/quickstart.html">Quickstart</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#basic-import">Basic import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#access-the-builder-entry-point">Access the builder entry point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#explore-subpackages">Explore subpackages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#module-mofbuilder">Top-Level Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.comm"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.comm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rank"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.ostream"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.ostream</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_family"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_family</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_metal"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_metal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node_dict"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.data_path"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.data_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_linker"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_linker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_terminations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_net"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_net</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_top_library"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_top_library</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_optimizer"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_optimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mofwriter"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mofwriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.defectgenerator"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.defectgenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_spacegroup"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_spacegroup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell_inv"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell_inv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_edges"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_pair_vertex_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_pair_vertex_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_xyzfile"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_xyzfile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_smiles"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_smiles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_charge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_charge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_multiplicity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_multiplicity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_frag_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_frag_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_fake_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_fake_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_name"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_Y_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_Y_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.constant_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.constant_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_optimized_rotations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_optimized_rotations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.skip_rotation_optimization"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.skip_rotation_optimization</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rotation_filename"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rotation_filename</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.supercell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_node_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_node_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_edge_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_edge_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder._debug"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder._debug</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_mof_families"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_mof_families()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_metals"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_metals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_terminations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_solvents"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_solvents()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.optimize_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.optimize_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.make_supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.make_supercell()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.build"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html">mofbuilder.analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.PorosityAnalyzer"><code class="docutils literal notranslate"><span class="pre">PorosityAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.GraphAnalyzer"><code class="docutils literal notranslate"><span class="pre">GraphAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.graph_analysis.html">mofbuilder.analysis.graph_analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.porosity.html">mofbuilder.analysis.porosity</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.core.html">mofbuilder.core</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.TerminationDefectGenerator"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.Framework"><code class="docutils literal notranslate"><span class="pre">Framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNet"><code class="docutils literal notranslate"><span class="pre">FrameNet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNode"><code class="docutils literal notranslate"><span class="pre">FrameNode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameLinker"><code class="docutils literal notranslate"><span class="pre">FrameLinker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameTermination"><code class="docutils literal notranslate"><span class="pre">FrameTermination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofTopLibrary"><code class="docutils literal notranslate"><span class="pre">MofTopLibrary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.NetOptimizer"><code class="docutils literal notranslate"><span class="pre">NetOptimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.SupercellBuilder"><code class="docutils literal notranslate"><span class="pre">SupercellBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.EdgeGraphBuilder"><code class="docutils literal notranslate"><span class="pre">EdgeGraphBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofWriter"><code class="docutils literal notranslate"><span class="pre">MofWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.builder.html">mofbuilder.core.builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.defects.html">mofbuilder.core.defects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.framework.html">mofbuilder.core.framework</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.linker.html">mofbuilder.core.linker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.moftoplibrary.html">mofbuilder.core.moftoplibrary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.net.html">mofbuilder.core.net</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.node.html">mofbuilder.core.node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.optimizer.html">mofbuilder.core.optimizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.other.html">mofbuilder.core.other</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.supercell.html">mofbuilder.core.supercell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.superimpose.html">mofbuilder.core.superimpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.termination.html">mofbuilder.core.termination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.write.html">mofbuilder.core.write</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.io.html">mofbuilder.io</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifReader"><code class="docutils literal notranslate"><span class="pre">CifReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifWriter"><code class="docutils literal notranslate"><span class="pre">CifWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzReader"><code class="docutils literal notranslate"><span class="pre">XyzReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzWriter"><code class="docutils literal notranslate"><span class="pre">XyzWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbReader"><code class="docutils literal notranslate"><span class="pre">PdbReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbWriter"><code class="docutils literal notranslate"><span class="pre">PdbWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroReader"><code class="docutils literal notranslate"><span class="pre">GroReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroWriter"><code class="docutils literal notranslate"><span class="pre">GroWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nn"><code class="docutils literal notranslate"><span class="pre">nn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nl"><code class="docutils literal notranslate"><span class="pre">nl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.basic.html">mofbuilder.io.basic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_reader.html">mofbuilder.io.cif_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_writer.html">mofbuilder.io.cif_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_reader.html">mofbuilder.io.gro_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_writer.html">mofbuilder.io.gro_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_reader.html">mofbuilder.io.pdb_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_writer.html">mofbuilder.io.pdb_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_reader.html">mofbuilder.io.xyz_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_writer.html">mofbuilder.io.xyz_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.md.html">mofbuilder.md</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.OpenmmSetup"><code class="docutils literal notranslate"><span class="pre">OpenmmSetup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.SolvationBuilder"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.LinkerForceFieldGenerator"><code class="docutils literal notranslate"><span class="pre">LinkerForceFieldGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.GromacsForcefieldMerger"><code class="docutils literal notranslate"><span class="pre">GromacsForcefieldMerger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.ForceFieldMapper"><code class="docutils literal notranslate"><span class="pre">ForceFieldMapper</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.gmxfilemerge.html">mofbuilder.md.gmxfilemerge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.linkerforcefield.html">mofbuilder.md.linkerforcefield</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.setup.html">mofbuilder.md.setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.solvationbuilder.html">mofbuilder.md.solvationbuilder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.utils.html">mofbuilder.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fetch_pdbfile"><code class="docutils literal notranslate"><span class="pre">fetch_pdbfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.unit_cell_to_cartesian_matrix"><code class="docutils literal notranslate"><span class="pre">unit_cell_to_cartesian_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fractional_to_cartesian"><code class="docutils literal notranslate"><span class="pre">fractional_to_cartesian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.cartesian_to_fractional"><code class="docutils literal notranslate"><span class="pre">cartesian_to_fractional()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.constants.html">mofbuilder.utils.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.environment.html">mofbuilder.utils.environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.fetch.html">mofbuilder.utils.fetch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.geometry.html">mofbuilder.utils.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.periodic_table.html">mofbuilder.utils.periodic_table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html">mofbuilder.visualization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html#mofbuilder.visualization.Viewer"><code class="docutils literal notranslate"><span class="pre">Viewer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.viewer.html">mofbuilder.visualization.viewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MofBuilder</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mofbuilder.core.other</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mofbuilder.core.other</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utility functions for MOF building: atom indexing, pairing, and safe copying.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">linear_sum_assignment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">fractional_to_cartesian</span>
+
+
+<div class="viewcode-block" id="fetch_X_atoms_ind_array">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.other.html#mofbuilder.core.other.fetch_X_atoms_ind_array">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_X_atoms_ind_array</span><span class="p">(</span>
+    <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">X</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return indices and rows of atoms whose label (after stripping digits) equals X.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        array: Input array; rows are atoms, column is checked for label.</span>
+<span class="sd">        column: Column index to check for the atom label.</span>
+<span class="sd">        X: Label to search for (e.g. &quot;X&quot; for connection atoms).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple of (indices, subarray): indices into array and the subarray of matching rows.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">array</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">column</span><span class="p">])</span> <span class="o">==</span> <span class="n">X</span>
+    <span class="p">]</span>
+    <span class="n">x_array</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ind</span><span class="p">,</span> <span class="n">x_array</span></div>
+
+
+
+<div class="viewcode-block" id="find_pair_x_edge_fc">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.other.html#mofbuilder.core.other.find_pair_x_edge_fc">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_pair_x_edge_fc</span><span class="p">(</span>
+    <span class="n">x_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">edge_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sc_unit_cell</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find optimal assignment between X atoms and edge points using Cartesian distances.</span>
+
+<span class="sd">    Converts fractional coordinates to Cartesian via sc_unit_cell, builds a distance</span>
+<span class="sd">    matrix, and uses linear sum assignment to pair each X to one edge point.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x_matrix: (N, 3+) array of X atom fractional coordinates (cols 2:5 used if larger).</span>
+<span class="sd">        edge_matrix: (M, 3+) array of edge point fractional coordinates.</span>
+<span class="sd">        sc_unit_cell: 3x3 supercell unit cell matrix for fractional_to_cartesian.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple (row_ind, col_ind): row indices (x) and column indices (edge) of the pairing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dist_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">x_matrix</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_matrix</span><span class="p">)))</span>
+    <span class="n">x_matrix</span> <span class="o">=</span> <span class="n">fractional_to_cartesian</span><span class="p">(</span><span class="n">x_matrix</span><span class="p">,</span> <span class="n">sc_unit_cell</span><span class="p">)</span>
+    <span class="n">edge_matrix</span> <span class="o">=</span> <span class="n">fractional_to_cartesian</span><span class="p">(</span><span class="n">edge_matrix</span><span class="p">,</span> <span class="n">sc_unit_cell</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_matrix</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edge_matrix</span><span class="p">)):</span>
+            <span class="n">dist_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">edge_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+    <span class="n">row_ind</span><span class="p">,</span> <span class="n">col_ind</span> <span class="o">=</span> <span class="n">linear_sum_assignment</span><span class="p">(</span><span class="n">dist_matrix</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">row_ind</span><span class="p">,</span> <span class="n">col_ind</span></div>
+
+
+
+<div class="viewcode-block" id="order_edge_array">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.other.html#mofbuilder.core.other.order_edge_array">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">order_edge_array</span><span class="p">(</span>
+    <span class="n">row_ind</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">col_ind</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">edges_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reorder edge points so they follow the assignment given by row_ind and col_ind.</span>
+
+<span class="sd">    Splits edges_array by columns, reorders by col_ind so that the i-th output block</span>
+<span class="sd">    corresponds to row_ind[i], then stacks in order of row_ind.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        row_ind: Row indices from the assignment (length N).</span>
+<span class="sd">        col_ind: Column indices from the assignment (length N).</span>
+<span class="sd">        edges_array: Array of edge points (one block per column in the assignment).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Reordered array of edge points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">old_split</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vsplit</span><span class="p">(</span><span class="n">edges_array</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_ind</span><span class="p">))</span>
+    <span class="n">old_order</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">col_ind</span><span class="p">)):</span>
+        <span class="n">old_order</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">row_ind</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_ind</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                          <span class="n">old_split</span><span class="p">[</span><span class="nb">sorted</span><span class="p">(</span><span class="n">col_ind</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">col_ind</span><span class="p">[</span><span class="n">i</span><span class="p">])]))</span>
+    <span class="n">new_order</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">old_order</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ordered_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">new_order</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_order</span><span class="p">))])</span>
+    <span class="k">return</span> <span class="n">ordered_arr</span></div>
+
+
+
+<div class="viewcode-block" id="safe_dict_copy">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.other.html#mofbuilder.core.other.safe_dict_copy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_dict_copy</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively copy a dict; nested dicts and lists/arrays are copied, not referenced.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        d: Dictionary to copy (may contain dict, list, numpy.ndarray, or scalars).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        New dictionary with the same structure and copied values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_d</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">new_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">safe_dict_copy</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">new_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">new_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="n">new_d</span></div>
+
+
+
+<div class="viewcode-block" id="safe_copy">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.other.html#mofbuilder.core.other.safe_copy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_copy</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a deep copy of value: dict (recursive), list, or ndarray; otherwise return as-is.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value: Value to copy (dict, list, numpy.ndarray, or other).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Copy of value, or value itself if not dict/list/ndarray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">safe_dict_copy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">value</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Chenxi Li.
+      <span class="lastupdated">Last updated on 2026-03-06.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

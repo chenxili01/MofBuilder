@@ -1,0 +1,24 @@
+﻿mofbuilder.analysis.PorosityAnalyzer
+====================================
+
+.. currentmodule:: mofbuilder.analysis
+
+.. autoclass:: PorosityAnalyzer
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PorosityAnalyzer.__init__
+      ~PorosityAnalyzer.calculate_porosity
+      ~PorosityAnalyzer.visualize_pores
+   
+   
+
+   
+   
+   

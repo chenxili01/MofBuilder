@@ -1,0 +1,868 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mofbuilder.io.cif_reader &mdash; MofBuilder 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MofBuilder
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual/index.html">User Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-from-source">Install from source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-development-dependencies">Install development dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-documentation-dependencies">Install documentation dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#build-the-manual">Build the manual</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/quickstart.html">Quickstart</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#basic-import">Basic import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#access-the-builder-entry-point">Access the builder entry point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#explore-subpackages">Explore subpackages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#module-mofbuilder">Top-Level Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.comm"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.comm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rank"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.ostream"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.ostream</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_family"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_family</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_metal"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_metal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node_dict"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.data_path"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.data_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_linker"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_linker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_terminations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_net"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_net</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_top_library"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_top_library</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_optimizer"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_optimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mofwriter"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mofwriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.defectgenerator"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.defectgenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_spacegroup"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_spacegroup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell_inv"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell_inv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_edges"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_pair_vertex_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_pair_vertex_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_xyzfile"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_xyzfile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_smiles"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_smiles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_charge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_charge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_multiplicity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_multiplicity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_frag_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_frag_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_fake_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_fake_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_name"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_Y_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_Y_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.constant_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.constant_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_optimized_rotations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_optimized_rotations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.skip_rotation_optimization"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.skip_rotation_optimization</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rotation_filename"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rotation_filename</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.supercell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_node_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_node_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_edge_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_edge_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder._debug"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder._debug</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_mof_families"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_mof_families()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_metals"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_metals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_terminations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_solvents"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_solvents()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.optimize_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.optimize_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.make_supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.make_supercell()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.build"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html">mofbuilder.analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.PorosityAnalyzer"><code class="docutils literal notranslate"><span class="pre">PorosityAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.GraphAnalyzer"><code class="docutils literal notranslate"><span class="pre">GraphAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.graph_analysis.html">mofbuilder.analysis.graph_analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.porosity.html">mofbuilder.analysis.porosity</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.core.html">mofbuilder.core</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.TerminationDefectGenerator"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.Framework"><code class="docutils literal notranslate"><span class="pre">Framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNet"><code class="docutils literal notranslate"><span class="pre">FrameNet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNode"><code class="docutils literal notranslate"><span class="pre">FrameNode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameLinker"><code class="docutils literal notranslate"><span class="pre">FrameLinker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameTermination"><code class="docutils literal notranslate"><span class="pre">FrameTermination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofTopLibrary"><code class="docutils literal notranslate"><span class="pre">MofTopLibrary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.NetOptimizer"><code class="docutils literal notranslate"><span class="pre">NetOptimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.SupercellBuilder"><code class="docutils literal notranslate"><span class="pre">SupercellBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.EdgeGraphBuilder"><code class="docutils literal notranslate"><span class="pre">EdgeGraphBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofWriter"><code class="docutils literal notranslate"><span class="pre">MofWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.builder.html">mofbuilder.core.builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.defects.html">mofbuilder.core.defects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.framework.html">mofbuilder.core.framework</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.linker.html">mofbuilder.core.linker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.moftoplibrary.html">mofbuilder.core.moftoplibrary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.net.html">mofbuilder.core.net</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.node.html">mofbuilder.core.node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.optimizer.html">mofbuilder.core.optimizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.other.html">mofbuilder.core.other</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.supercell.html">mofbuilder.core.supercell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.superimpose.html">mofbuilder.core.superimpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.termination.html">mofbuilder.core.termination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.write.html">mofbuilder.core.write</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.io.html">mofbuilder.io</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifReader"><code class="docutils literal notranslate"><span class="pre">CifReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifWriter"><code class="docutils literal notranslate"><span class="pre">CifWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzReader"><code class="docutils literal notranslate"><span class="pre">XyzReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzWriter"><code class="docutils literal notranslate"><span class="pre">XyzWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbReader"><code class="docutils literal notranslate"><span class="pre">PdbReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbWriter"><code class="docutils literal notranslate"><span class="pre">PdbWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroReader"><code class="docutils literal notranslate"><span class="pre">GroReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroWriter"><code class="docutils literal notranslate"><span class="pre">GroWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nn"><code class="docutils literal notranslate"><span class="pre">nn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nl"><code class="docutils literal notranslate"><span class="pre">nl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.basic.html">mofbuilder.io.basic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_reader.html">mofbuilder.io.cif_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_writer.html">mofbuilder.io.cif_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_reader.html">mofbuilder.io.gro_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_writer.html">mofbuilder.io.gro_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_reader.html">mofbuilder.io.pdb_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_writer.html">mofbuilder.io.pdb_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_reader.html">mofbuilder.io.xyz_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_writer.html">mofbuilder.io.xyz_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.md.html">mofbuilder.md</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.OpenmmSetup"><code class="docutils literal notranslate"><span class="pre">OpenmmSetup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.SolvationBuilder"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.LinkerForceFieldGenerator"><code class="docutils literal notranslate"><span class="pre">LinkerForceFieldGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.GromacsForcefieldMerger"><code class="docutils literal notranslate"><span class="pre">GromacsForcefieldMerger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.ForceFieldMapper"><code class="docutils literal notranslate"><span class="pre">ForceFieldMapper</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.gmxfilemerge.html">mofbuilder.md.gmxfilemerge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.linkerforcefield.html">mofbuilder.md.linkerforcefield</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.setup.html">mofbuilder.md.setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.solvationbuilder.html">mofbuilder.md.solvationbuilder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.utils.html">mofbuilder.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fetch_pdbfile"><code class="docutils literal notranslate"><span class="pre">fetch_pdbfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.unit_cell_to_cartesian_matrix"><code class="docutils literal notranslate"><span class="pre">unit_cell_to_cartesian_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fractional_to_cartesian"><code class="docutils literal notranslate"><span class="pre">fractional_to_cartesian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.cartesian_to_fractional"><code class="docutils literal notranslate"><span class="pre">cartesian_to_fractional()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.constants.html">mofbuilder.utils.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.environment.html">mofbuilder.utils.environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.fetch.html">mofbuilder.utils.fetch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.geometry.html">mofbuilder.utils.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.periodic_table.html">mofbuilder.utils.periodic_table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html">mofbuilder.visualization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html#mofbuilder.visualization.Viewer"><code class="docutils literal notranslate"><span class="pre">Viewer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.viewer.html">mofbuilder.visualization.viewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MofBuilder</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mofbuilder.io.cif_reader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mofbuilder.io.cif_reader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_fraction_to_decimal</span><span class="p">,</span> <span class="n">remove_bracket</span><span class="p">,</span> <span class="n">remove_quotes</span><span class="p">,</span> <span class="n">remove_tail_number</span><span class="p">,</span> <span class="n">extract_quote_lines</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_keyword</span><span class="p">,</span> <span class="n">extract_xyz_lines</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.outputstream</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputStream</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.veloxchemlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpi_master</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.errorhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_msg_critical</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mpi4py.MPI</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">MPI</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">atom_type, atom_label, atom_number, residue_name, residue_number, x, y, z, spin, charge, note</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># This reader will read a cif file and create a Topology object</span>
+
+
+<div class="viewcode-block" id="CifReader">
+<a class="viewcode-back" href="../../../generated/mofbuilder.io.cif_reader.html#mofbuilder.io.CifReader">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CifReader</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for reading CIF files, extracting symmetry and atomic site information,</span>
+<span class="sd">    and providing atom coordinates in the primitive cell.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        comm (MPI.Comm): MPI communicator.</span>
+<span class="sd">        rank (int): Rank of the process.</span>
+<span class="sd">        nodes (int): Total number of nodes/processes.</span>
+<span class="sd">        ostream (OutputStream): Output stream for logging.</span>
+<span class="sd">        filepath (str or Path): Path to the CIF file.</span>
+<span class="sd">        data (np.ndarray or None): Array with atom data.</span>
+<span class="sd">        _debug (bool): Toggle debug logging.</span>
+<span class="sd">        cell_info (list): Unpacked cell dimensions and angles.</span>
+<span class="sd">        symmetry_sector (list): Lines containing symmetry operations.</span>
+<span class="sd">        atom_site_sector (list): Lines defining atomic sites.</span>
+<span class="sd">        net_name (str): CIF network name.</span>
+<span class="sd">        spacegroup (str): Space group label from CIF.</span>
+<span class="sd">        hall_number (str): Hall number label from CIF.</span>
+<span class="sd">        V_con (str): Connected component value from CIF, if present.</span>
+<span class="sd">        EC_con (str): Edge connectivity value from CIF, if present.</span>
+<span class="sd">        ciffile_lines (list[str]): Filtered lines from the CIF file.</span>
+<span class="sd">        fcoords (np.ndarray): Fractional coordinates for atoms.</span>
+<span class="sd">        target_fcoords (np.ndarray): Specific fractional coordinates for requested atom type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comm</span><span class="p">:</span> <span class="n">MPI</span><span class="o">.</span><span class="n">Comm</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ostream</span><span class="p">:</span> <span class="n">OutputStream</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a CifReader instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            comm (MPI.Comm, optional): MPI communicator. Defaults to MPI.COMM_WORLD.</span>
+<span class="sd">            ostream (OutputStream, optional): Output stream for logging. If None, selected by rank.</span>
+<span class="sd">            filepath (str, optional): Path to the CIF file to be read.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">comm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+
+        <span class="k">if</span> <span class="n">ostream</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span> <span class="o">==</span> <span class="n">mpi_master</span><span class="p">():</span>
+                <span class="n">ostream</span> <span class="o">=</span> <span class="n">OutputStream</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ostream</span> <span class="o">=</span> <span class="n">OutputStream</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="p">:</span> <span class="n">MPI</span><span class="o">.</span><span class="n">Comm</span> <span class="o">=</span> <span class="n">comm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rank</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="p">:</span> <span class="n">OutputStream</span> <span class="o">=</span> <span class="n">ostream</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">filepath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_value_str_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts a signed integer coefficient from a symmetry operation string segment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            s (list): List of string fragments containing symmetry operation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The signed integer value (e.g., +1, -1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">mul_value</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">s_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s2">&quot;-&quot;</span> <span class="ow">in</span> <span class="n">s_list</span><span class="p">:</span>
+            <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">s_list</span><span class="p">:</span>
+            <span class="n">mul_value</span> <span class="o">=</span> <span class="n">s_list</span><span class="p">[</span><span class="n">s_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">sign</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">mul_value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_value_from_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts x, y, z coefficients and constants from a symmetry operation string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            s (str): The symmetry operation component string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[int, int, int, float]: (x_coeff, y_coeff, z_coeff, constant)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;=[+-])&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;,&quot;</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">s_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+        <span class="n">x_slice</span> <span class="o">=</span> <span class="p">[</span><span class="n">s_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s_list</span><span class="p">))</span> <span class="k">if</span> <span class="s2">&quot;x&quot;</span> <span class="ow">in</span> <span class="n">s_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">y_slice</span> <span class="o">=</span> <span class="p">[</span><span class="n">s_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s_list</span><span class="p">))</span> <span class="k">if</span> <span class="s2">&quot;y&quot;</span> <span class="ow">in</span> <span class="n">s_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">z_slice</span> <span class="o">=</span> <span class="p">[</span><span class="n">s_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s_list</span><span class="p">))</span> <span class="k">if</span> <span class="s2">&quot;z&quot;</span> <span class="ow">in</span> <span class="n">s_list</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+        <span class="n">const_slice</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">s_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s_list</span><span class="p">))</span>
+            <span class="k">if</span> <span class="s2">&quot;x&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="s2">&quot;y&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">and</span> <span class="s2">&quot;z&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="n">x_coeff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_value_str_slice</span><span class="p">(</span><span class="n">x_slice</span><span class="p">)</span>
+        <span class="n">y_coeff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_value_str_slice</span><span class="p">(</span><span class="n">y_slice</span><span class="p">)</span>
+        <span class="n">z_coeff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_value_str_slice</span><span class="p">(</span><span class="n">z_slice</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">const_slice</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">const</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">const</span> <span class="o">=</span> <span class="n">const_slice</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">const</span> <span class="o">=</span> <span class="n">convert_fraction_to_decimal</span><span class="p">(</span><span class="n">const</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x_coeff</span><span class="p">,</span> <span class="n">y_coeff</span><span class="p">,</span> <span class="n">z_coeff</span><span class="p">,</span> <span class="n">const</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_transformation_matrix_from_symmetry_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts a symmetry operator string into a 4x4 transformation matrix.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            expr_str (str): Symmetry operation as string, e.g., &#39;x, -y, z+1/2&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: 4x4 transformation matrix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expr_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">expr_str</span><span class="p">)</span>
+        <span class="n">expr_str</span> <span class="o">=</span> <span class="n">expr_str</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">expr_str</span> <span class="o">=</span> <span class="n">expr_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">split_str</span> <span class="o">=</span> <span class="n">expr_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="n">transformation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">transformation_matrix</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">split_str</span><span class="p">)):</span>
+            <span class="n">x_coeff</span><span class="p">,</span> <span class="n">y_coeff</span><span class="p">,</span> <span class="n">z_coeff</span><span class="p">,</span> <span class="n">const</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_value_from_str</span><span class="p">(</span><span class="n">split_str</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">transformation_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_coeff</span><span class="p">,</span> <span class="n">y_coeff</span><span class="p">,</span> <span class="n">z_coeff</span><span class="p">,</span> <span class="n">const</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">transformation_matrix</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_symmetry_operation_from_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symmetry_sector</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts symmetry operation strings from a sector of the CIF file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            symmetry_sector (list[str]): List of lines in the symmetry sector.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list[str]: List of symmetry operation strings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">symmetry_operation</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symmetry_sector</span><span class="p">)):</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;([+-]?\d*\.?\d*)\s*([xyz])&quot;</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">symmetry_sector</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">string</span> <span class="o">=</span> <span class="n">remove_quotes</span><span class="p">(</span><span class="n">symmetry_sector</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+                <span class="n">no_space_string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">symmetry_operation</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">no_space_string</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">symmetry_operation</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="s2">&quot;P1 cell&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="n">symmetry_operation</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x,y,z&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;apply </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">symmetry_operation</span><span class="p">)</span><span class="si">}</span><span class="s2">  symmetry operation&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">symmetry_operation</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_spacegroup_from_cifinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetches the space group name (Hermann-Mauguin) from the CIF info.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The space group name if found; otherwise, &#39;P1&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;_symmetry_space_group_name_H-M\s+&#39;([^&#39;]+)&#39;&quot;</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;P1&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_valid_net_name_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if a line specifies a network name and returns a valid network name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            line (str): Line from CIF file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The detected network name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;net&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+            <span class="n">potential_net_name</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[0-9]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">potential_net_name</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">potential_net_name</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_valid_spacegroup_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks a line for a space group or potential network name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            line (str): Line from CIF file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The spacegroup name or network name, defaults to &#39;P1&#39; if not found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_symmetry_space_group_name_H-M&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+            <span class="n">space_group</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                <span class="sa">r</span><span class="s2">&quot;_symmetry_space_group_name_H-M\s+&#39;([^&#39;]+)&#39;&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">space_group</span>
+        <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^data_&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">potential_net_name</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">potential_net_name</span>
+        <span class="k">return</span> <span class="s2">&quot;P1&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_valid_hallnumber_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks a line for Hall number information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            line (str): Line from CIF file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The Hall number as found, or &#39;1&#39; if not found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_symmetry_Int_Tables_number&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+            <span class="n">hall_number</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_symmetry_Int_Tables_number\s+(\d+)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">hall_number</span>
+        <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;hall_number:\s*(\d+)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+            <span class="n">hall_number</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;hall_number:\s*(\d+)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">hall_number</span>
+        <span class="k">return</span> <span class="s2">&quot;1&quot;</span>
+
+<div class="viewcode-block" id="CifReader.read_cif">
+<a class="viewcode-back" href="../../../generated/mofbuilder.io.cif_reader.html#mofbuilder.io.CifReader.read_cif">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cif_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a CIF file, storing relevant crystal and atom site sections in the instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cif_file (str, optional): Path to the CIF file. If None, uses self.filepath.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If the CIF file path does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">net_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">spacegroup_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">hallnumber_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">vcon_flag</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">cif_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">cif_file</span>
+        <span class="n">assert_msg_critical</span><span class="p">(</span>
+            <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span>
+            <span class="sa">f</span><span class="s2">&quot;cif file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reading cif file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">valid_line</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Helper to test whether a line is meaningful (not comment or empty).&quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">nonempty_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">valid_line</span><span class="p">(</span><span class="n">line</span><span class="p">)]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ciffile_lines</span> <span class="o">=</span> <span class="n">nonempty_lines</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">nonempty_lines</span><span class="p">[:</span><span class="mi">100</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">net_flag</span> <span class="o">&amp;</span> <span class="n">spacegroup_flag</span> <span class="o">&amp;</span> <span class="n">hallnumber_flag</span> <span class="o">&amp;</span> <span class="n">vcon_flag</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">net_flag</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;net&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">net_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_net_name_line</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">net_flag</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">spacegroup_flag</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">spacegroup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_spacegroup_line</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spacegroup</span> <span class="o">!=</span> <span class="s2">&quot;P1&quot;</span><span class="p">:</span>
+                    <span class="n">spacegroup_flag</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">hallnumber_flag</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hall_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_hallnumber_line</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hall_number</span> <span class="o">!=</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+                    <span class="n">hallnumber_flag</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">vcon_flag</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;V_con:\s*(\d+)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">V_con</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;V_con:\s*(\d+)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">vcon_flag</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">EC_con</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;EC_con:\s*(\d+)&quot;</span><span class="p">,</span>
+                                        <span class="n">line</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+                                            <span class="sa">r</span><span class="s2">&quot;EC_con:\s*(\d+)&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;net_name&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found net name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">net_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;spacegroup&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spacegroup: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spacegroup</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;V_con&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found V_con: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">V_con</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;EC_con&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found EC_con: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">EC_con</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="n">keyword1</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;loop_&quot;</span>
+        <span class="n">keyword2</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;x,\s*y,\s*z&quot;</span>
+        <span class="n">keyword3</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;-x&quot;</span>
+        <span class="c1"># loop_key marks locations of important &#39;loop_&#39; and &#39;x, y, z&#39; tags</span>
+
+        <span class="n">loop_key</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">linenumber</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nonempty_lines</span><span class="p">)):</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">find_keyword</span><span class="p">(</span><span class="n">keyword1</span><span class="p">,</span> <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">find_keyword</span><span class="p">(</span><span class="n">keyword2</span><span class="p">,</span> <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="ow">not</span> <span class="n">find_keyword</span><span class="p">(</span><span class="n">keyword3</span><span class="p">,</span> <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span>
+
+            <span class="n">a</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_cell_length_a&quot;</span><span class="p">,</span> <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_cell_length_b&quot;</span><span class="p">,</span> <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_cell_length_c&quot;</span><span class="p">,</span> <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">alpha</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_cell_angle_alpha&quot;</span><span class="p">,</span> <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_cell_angle_beta&quot;</span><span class="p">,</span> <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">gamma</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_cell_angle_gamma&quot;</span><span class="p">,</span> <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                <span class="n">loop_key</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linenumber</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">a</span><span class="p">:</span>
+                    <span class="n">cell_length_a</span> <span class="o">=</span> <span class="n">remove_bracket</span><span class="p">(</span>
+                        <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">b</span><span class="p">:</span>
+                    <span class="n">cell_length_b</span> <span class="o">=</span> <span class="n">remove_bracket</span><span class="p">(</span>
+                        <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">c</span><span class="p">:</span>
+                    <span class="n">cell_length_c</span> <span class="o">=</span> <span class="n">remove_bracket</span><span class="p">(</span>
+                        <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">alpha</span><span class="p">:</span>
+                    <span class="n">cell_angle_alpha</span> <span class="o">=</span> <span class="n">remove_bracket</span><span class="p">(</span>
+                        <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">beta</span><span class="p">:</span>
+                    <span class="n">cell_angle_beta</span> <span class="o">=</span> <span class="n">remove_bracket</span><span class="p">(</span>
+                        <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">gamma</span><span class="p">:</span>
+                    <span class="n">cell_angle_gamma</span> <span class="o">=</span> <span class="n">remove_bracket</span><span class="p">(</span>
+                        <span class="n">nonempty_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">linenumber</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">loop_key</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nonempty_lines</span><span class="p">))</span>
+        <span class="n">loop_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">loop_key</span><span class="p">))</span>
+        <span class="n">loop_key</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="n">cell_info</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">cell_length_a</span><span class="p">,</span>
+            <span class="n">cell_length_b</span><span class="p">,</span>
+            <span class="n">cell_length_c</span><span class="p">,</span>
+            <span class="n">cell_angle_alpha</span><span class="p">,</span>
+            <span class="n">cell_angle_beta</span><span class="p">,</span>
+            <span class="n">cell_angle_gamma</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">cif_sectors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">loop_key</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">cif_sectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nonempty_lines</span><span class="p">[</span><span class="n">loop_key</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">loop_key</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cif_sectors</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">keyword2</span><span class="p">,</span> <span class="n">cif_sectors</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">symmetry_sector</span> <span class="o">=</span> <span class="n">cif_sectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cif_sectors</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_atom_site_label\s+&quot;</span><span class="p">,</span> <span class="n">cif_sectors</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="n">atom_site_sector</span> <span class="o">=</span> <span class="n">cif_sectors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_info</span> <span class="o">=</span> <span class="n">cell_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symmetry_sector</span> <span class="o">=</span> <span class="n">symmetry_sector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom_site_sector</span> <span class="o">=</span> <span class="n">atom_site_sector</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_limit_value_0_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_array_metal_xyz</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensures all entries are within [0,1) using modulo.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_array_metal_xyz (np.ndarray): Input coordinates.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: Coordinates wrapped to [0,1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_array_metal_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">new_array_metal_xyz</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_array_metal_xyz</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_fccords_to_0_1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fccords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Center/wraps fractional coordinates to [0,1) and removes duplicated sites.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fccords (np.ndarray): Fractional coordinates.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: Unique, wrapped fractional coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fccords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fccords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">fccords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_limit_value_0_1</span><span class="p">(</span><span class="n">fccords</span><span class="p">)</span>
+        <span class="n">fccords</span> <span class="o">+=</span> <span class="mf">0.5</span>
+        <span class="n">fccords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_limit_value_0_1</span><span class="p">(</span><span class="n">fccords</span><span class="p">)</span>
+        <span class="n">fccords</span> <span class="o">+=</span> <span class="o">-</span><span class="mf">0.5</span>
+        <span class="n">fccords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">fccords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fccords</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_sym_operator</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">symmetry_operations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">array_metal_xyz</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies a list of symmetry operations to the coordinates and returns all unique sites.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            symmetry_operations (list[str]): The symmetry operations in CIF string syntax.</span>
+<span class="sd">            array_metal_xyz (np.ndarray): Coordinates to transform.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[np.ndarray, np.ndarray]: unique coordinates array and corresponding unique indices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">array_metal_extend_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">array_metal_xyz</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">array_metal_xyz</span><span class="p">),</span> <span class="mi">1</span><span class="p">))))</span>
+        <span class="n">cell_array_metal_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">sym_line_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symmetry_operations</span><span class="p">)):</span>
+            <span class="n">transfromation_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_transformation_matrix_from_symmetry_operator</span><span class="p">(</span>
+                <span class="n">symmetry_operations</span><span class="p">[</span><span class="n">sym_line_idx</span><span class="p">])</span>
+            <span class="n">new_extend_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">transfromation_matrix</span><span class="p">,</span>
+                                       <span class="n">array_metal_extend_xyz</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">new_xyz</span> <span class="o">=</span> <span class="n">new_extend_xyz</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">cell_array_metal_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">cell_array_metal_xyz</span><span class="p">,</span> <span class="n">new_xyz</span><span class="p">))</span>
+
+        <span class="n">round_cell_array_metal_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wrap_fccords_to_0_1</span><span class="p">(</span><span class="n">cell_array_metal_xyz</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">unique_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">round_cell_array_metal_xyz</span><span class="p">,</span>
+                                      <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                      <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">unique_indices</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">unique_metal_array</span> <span class="o">=</span> <span class="n">round_cell_array_metal_xyz</span><span class="p">[</span><span class="n">unique_indices</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">unique_metal_array</span><span class="p">,</span> <span class="n">unique_indices</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_atoms_fcoords_from_lines</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">atom_site_sector</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts atom type, label, and fractional coordinates from the atom_site sector.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            atom_site_sector (list[str]): Lines defining atomic sites in the CIF.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[np.ndarray, np.ndarray]: (array_atom: [atom_type, atom_label], array_xyz: [x, y, z])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">atom_site_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">keyword</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;_&quot;</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">atom_site_sector</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">atom_site_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="n">array_atom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">atom_site_lines</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+        <span class="n">array_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">atom_site_lines</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atom_site_lines</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]:</span>  <span class="c1"># only need atom type, atom label, x,y,z</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">array_atom</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">remove_tail_number</span><span class="p">(</span>
+                        <span class="n">atom_site_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="n">j</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">array_xyz</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">remove_bracket</span><span class="p">(</span>
+                        <span class="n">atom_site_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">array_atom</span><span class="p">)</span><span class="si">}</span><span class="s2"> atoms in atom_site_sector&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;array_atom </span><span class="si">{</span><span class="n">array_atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;array_xyz </span><span class="si">{</span><span class="n">array_xyz</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">array_atom</span><span class="p">,</span> <span class="n">array_xyz</span>
+
+<div class="viewcode-block" id="CifReader.get_type_atoms_fcoords_in_primitive_cell">
+<a class="viewcode-back" href="../../../generated/mofbuilder.io.cif_reader.html#mofbuilder.io.CifReader.get_type_atoms_fcoords_in_primitive_cell">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_type_atoms_fcoords_in_primitive_cell</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">target_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all atoms of a particular type in the primitive cell, applying symmetry.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            target_type (str, optional): Atom type to select (e.g., &quot;V&quot;, &quot;E&quot;). If None, uses all.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple[list, np.ndarray, np.ndarray]: (cell_info, atom data, requested atom fractional coordinates)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">array_atom</span><span class="p">,</span> <span class="n">array_xyz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_atoms_fcoords_from_lines</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atom_site_sector</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;target_type not specified, use </span><span class="si">{</span><span class="n">target_type</span><span class="si">}</span><span class="s2"> as default&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symmetry_sector</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># need to apply symmetry operations</span>
+            <span class="n">array_metal_xyz</span> <span class="o">=</span> <span class="n">array_xyz</span><span class="p">[</span><span class="n">array_atom</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">target_type</span><span class="p">]</span>
+            <span class="n">array_metal_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">array_metal_xyz</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="n">symmetry_sector_neat</span> <span class="o">=</span> <span class="n">extract_quote_lines</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symmetry_sector</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">symmetry_sector_neat</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># if no quote, then find x,y,z</span>
+                <span class="n">symmetry_sector_neat</span> <span class="o">=</span> <span class="n">extract_xyz_lines</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">symmetry_sector</span><span class="p">)</span>
+            <span class="n">symmetry_operations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_symmetry_operation_from_lines</span><span class="p">(</span>
+                <span class="n">symmetry_sector_neat</span><span class="p">)</span>
+            <span class="n">no_sym_array_metal_xyz</span><span class="p">,</span> <span class="n">no_sym_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_sym_operator</span><span class="p">(</span>
+                <span class="n">symmetry_operations</span><span class="p">,</span> <span class="n">array_metal_xyz</span><span class="p">)</span>
+            <span class="n">array_metal_xyz_final</span> <span class="o">=</span> <span class="n">no_sym_array_metal_xyz</span>
+            <span class="n">array_atom</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">array_atom</span><span class="p">,</span>
+                                 <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">symmetry_operations</span><span class="p">),</span> <span class="mi">1</span><span class="p">))[</span><span class="n">no_sym_indices</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">array_metal_xyz</span> <span class="o">=</span> <span class="n">array_xyz</span><span class="p">[</span><span class="n">array_atom</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">target_type</span><span class="p">]</span>
+            <span class="n">array_metal_xyz_final</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">array_metal_xyz</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fcoords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap_fccords_to_0_1</span><span class="p">(</span><span class="n">array_metal_xyz_final</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_fcoords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap_fccords_to_0_1</span><span class="p">(</span><span class="n">array_metal_xyz_final</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fcoords</span><span class="p">)):</span>
+            <span class="n">atom_number</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">atom_type</span> <span class="o">=</span> <span class="n">array_atom</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">atom_number</span><span class="p">)</span>
+            <span class="n">atom_label</span> <span class="o">=</span> <span class="n">array_atom</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">residue_name</span> <span class="o">=</span> <span class="s1">&#39;MOL&#39;</span>
+            <span class="n">residue_number</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcoords</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcoords</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcoords</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="n">spin</span> <span class="o">=</span> <span class="mf">1.00</span>
+            <span class="n">charge</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                <span class="n">atom_type</span><span class="p">,</span> <span class="n">atom_label</span><span class="p">,</span> <span class="n">atom_number</span><span class="p">,</span> <span class="n">residue_name</span><span class="p">,</span>
+                <span class="n">residue_number</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">spin</span><span class="p">,</span> <span class="n">charge</span><span class="p">,</span> <span class="n">note</span>
+            <span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fcoords</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target_type</span><span class="si">}</span><span class="s2"> atoms in primitive cell&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fcoords </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fcoords</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_fcoords</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Example driver for CifReader. Reads a test CIF file and prints</span>
+<span class="sd">    coordinates and cell information for two atom types, &#39;V&#39; and &#39;E&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cif_file</span> <span class="o">=</span> <span class="s2">&quot;tests/testdata/test.cif&quot;</span>
+    <span class="n">cif_reader</span> <span class="o">=</span> <span class="n">CifReader</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">cif_file</span><span class="p">)</span>
+    <span class="n">cif_reader</span><span class="o">.</span><span class="n">_debug</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">cif_reader</span><span class="o">.</span><span class="n">read_cif</span><span class="p">()</span>
+    <span class="n">cif_reader</span><span class="o">.</span><span class="n">get_type_atoms_fcoords_in_primitive_cell</span><span class="p">(</span><span class="n">target_type</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">target_fcoords</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">cell_info</span><span class="p">)</span>
+
+    <span class="n">cif_reader</span><span class="o">.</span><span class="n">get_type_atoms_fcoords_in_primitive_cell</span><span class="p">(</span><span class="n">target_type</span><span class="o">=</span><span class="s2">&quot;E&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">target_fcoords</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*&quot;</span> <span class="o">*</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">cif_reader</span><span class="o">.</span><span class="n">cell_info</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Chenxi Li.
+      <span class="lastupdated">Last updated on 2026-03-06.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

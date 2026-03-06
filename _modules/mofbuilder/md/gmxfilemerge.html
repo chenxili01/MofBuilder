@@ -1,0 +1,735 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mofbuilder.md.gmxfilemerge &mdash; MofBuilder 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MofBuilder
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual/index.html">User Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-from-source">Install from source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-development-dependencies">Install development dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-documentation-dependencies">Install documentation dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#build-the-manual">Build the manual</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/quickstart.html">Quickstart</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#basic-import">Basic import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#access-the-builder-entry-point">Access the builder entry point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#explore-subpackages">Explore subpackages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#module-mofbuilder">Top-Level Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.comm"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.comm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rank"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.ostream"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.ostream</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_family"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_family</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_metal"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_metal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node_dict"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.data_path"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.data_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_linker"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_linker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_terminations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_net"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_net</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_top_library"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_top_library</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_optimizer"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_optimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mofwriter"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mofwriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.defectgenerator"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.defectgenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_spacegroup"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_spacegroup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell_inv"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell_inv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_edges"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_pair_vertex_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_pair_vertex_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_xyzfile"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_xyzfile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_smiles"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_smiles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_charge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_charge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_multiplicity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_multiplicity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_frag_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_frag_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_fake_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_fake_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_name"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_Y_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_Y_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.constant_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.constant_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_optimized_rotations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_optimized_rotations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.skip_rotation_optimization"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.skip_rotation_optimization</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rotation_filename"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rotation_filename</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.supercell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_node_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_node_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_edge_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_edge_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder._debug"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder._debug</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_mof_families"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_mof_families()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_metals"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_metals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_terminations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_solvents"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_solvents()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.optimize_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.optimize_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.make_supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.make_supercell()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.build"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html">mofbuilder.analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.PorosityAnalyzer"><code class="docutils literal notranslate"><span class="pre">PorosityAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.GraphAnalyzer"><code class="docutils literal notranslate"><span class="pre">GraphAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.graph_analysis.html">mofbuilder.analysis.graph_analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.porosity.html">mofbuilder.analysis.porosity</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.core.html">mofbuilder.core</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.TerminationDefectGenerator"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.Framework"><code class="docutils literal notranslate"><span class="pre">Framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNet"><code class="docutils literal notranslate"><span class="pre">FrameNet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNode"><code class="docutils literal notranslate"><span class="pre">FrameNode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameLinker"><code class="docutils literal notranslate"><span class="pre">FrameLinker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameTermination"><code class="docutils literal notranslate"><span class="pre">FrameTermination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofTopLibrary"><code class="docutils literal notranslate"><span class="pre">MofTopLibrary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.NetOptimizer"><code class="docutils literal notranslate"><span class="pre">NetOptimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.SupercellBuilder"><code class="docutils literal notranslate"><span class="pre">SupercellBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.EdgeGraphBuilder"><code class="docutils literal notranslate"><span class="pre">EdgeGraphBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofWriter"><code class="docutils literal notranslate"><span class="pre">MofWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.builder.html">mofbuilder.core.builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.defects.html">mofbuilder.core.defects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.framework.html">mofbuilder.core.framework</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.linker.html">mofbuilder.core.linker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.moftoplibrary.html">mofbuilder.core.moftoplibrary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.net.html">mofbuilder.core.net</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.node.html">mofbuilder.core.node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.optimizer.html">mofbuilder.core.optimizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.other.html">mofbuilder.core.other</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.supercell.html">mofbuilder.core.supercell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.superimpose.html">mofbuilder.core.superimpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.termination.html">mofbuilder.core.termination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.write.html">mofbuilder.core.write</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.io.html">mofbuilder.io</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifReader"><code class="docutils literal notranslate"><span class="pre">CifReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifWriter"><code class="docutils literal notranslate"><span class="pre">CifWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzReader"><code class="docutils literal notranslate"><span class="pre">XyzReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzWriter"><code class="docutils literal notranslate"><span class="pre">XyzWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbReader"><code class="docutils literal notranslate"><span class="pre">PdbReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbWriter"><code class="docutils literal notranslate"><span class="pre">PdbWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroReader"><code class="docutils literal notranslate"><span class="pre">GroReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroWriter"><code class="docutils literal notranslate"><span class="pre">GroWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nn"><code class="docutils literal notranslate"><span class="pre">nn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nl"><code class="docutils literal notranslate"><span class="pre">nl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.basic.html">mofbuilder.io.basic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_reader.html">mofbuilder.io.cif_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_writer.html">mofbuilder.io.cif_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_reader.html">mofbuilder.io.gro_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_writer.html">mofbuilder.io.gro_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_reader.html">mofbuilder.io.pdb_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_writer.html">mofbuilder.io.pdb_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_reader.html">mofbuilder.io.xyz_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_writer.html">mofbuilder.io.xyz_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.md.html">mofbuilder.md</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.OpenmmSetup"><code class="docutils literal notranslate"><span class="pre">OpenmmSetup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.SolvationBuilder"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.LinkerForceFieldGenerator"><code class="docutils literal notranslate"><span class="pre">LinkerForceFieldGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.GromacsForcefieldMerger"><code class="docutils literal notranslate"><span class="pre">GromacsForcefieldMerger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.ForceFieldMapper"><code class="docutils literal notranslate"><span class="pre">ForceFieldMapper</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.gmxfilemerge.html">mofbuilder.md.gmxfilemerge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.linkerforcefield.html">mofbuilder.md.linkerforcefield</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.setup.html">mofbuilder.md.setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.solvationbuilder.html">mofbuilder.md.solvationbuilder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.utils.html">mofbuilder.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fetch_pdbfile"><code class="docutils literal notranslate"><span class="pre">fetch_pdbfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.unit_cell_to_cartesian_matrix"><code class="docutils literal notranslate"><span class="pre">unit_cell_to_cartesian_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fractional_to_cartesian"><code class="docutils literal notranslate"><span class="pre">fractional_to_cartesian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.cartesian_to_fractional"><code class="docutils literal notranslate"><span class="pre">cartesian_to_fractional()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.constants.html">mofbuilder.utils.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.environment.html">mofbuilder.utils.environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.fetch.html">mofbuilder.utils.fetch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.geometry.html">mofbuilder.utils.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.periodic_table.html">mofbuilder.utils.periodic_table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html">mofbuilder.visualization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html#mofbuilder.visualization.Viewer"><code class="docutils literal notranslate"><span class="pre">Viewer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.viewer.html">mofbuilder.visualization.viewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MofBuilder</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mofbuilder.md.gmxfilemerge</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mofbuilder.md.gmxfilemerge</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">operator</span><span class="w"> </span><span class="kn">import</span> <span class="n">index</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.outputstream</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputStream</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.molecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">Molecule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.scfrestdriver</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScfRestrictedDriver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.molecularbasis</span><span class="w"> </span><span class="kn">import</span> <span class="n">MolecularBasis</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.optimizationdriver</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptimizationDriver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.mmforcefieldgenerator</span><span class="w"> </span><span class="kn">import</span> <span class="n">MMForceFieldGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.veloxchemlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpi_master</span><span class="p">,</span> <span class="n">hartree_in_kcalpermol</span><span class="p">,</span> <span class="n">hartree_in_kjpermol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.errorhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_msg_critical</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mpi4py.MPI</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">MPI</span>
+
+
+<div class="viewcode-block" id="GromacsForcefieldMerger">
+<a class="viewcode-back" href="../../../generated/mofbuilder.md.gmxfilemerge.html#mofbuilder.md.GromacsForcefieldMerger">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GromacsForcefieldMerger</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main class responsible for assembling and merging GROMACS forcefield files for MOF simulations.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        comm (mpi4py.MPI.Comm): MPI communicator for parallel execution.</span>
+<span class="sd">        rank (int): Rank of the current MPI process.</span>
+<span class="sd">        nodes (int): Total number of MPI processes.</span>
+<span class="sd">        ostream (OutputStream): Output stream for logging.</span>
+<span class="sd">        database_dir (Optional[str]): Directory containing reference forcefield database.</span>
+<span class="sd">        target_dir (Optional[str]): Output directory for all generated files.</span>
+<span class="sd">        node_metal_type (Optional[str]): Type of metal node in the MOF.</span>
+<span class="sd">        dummy_atom_node (bool): Whether to use dummy atoms for the node (default: False).</span>
+<span class="sd">        termination_name (Optional[str]): Name of termination group for the structure.</span>
+<span class="sd">        linker_itp_dir (str): Directory holding linker .itp files.</span>
+<span class="sd">        linker_name (Optional[str]): Name of the linker molecule.</span>
+<span class="sd">        residues_info (Optional[Dict[str, int]]): Dictionary mapping residue names to copy number.</span>
+<span class="sd">        mof_name (Optional[str]): Name for the MOF/model (used for the top file).</span>
+<span class="sd">        other_residues (List[str]): List of additional residues that can be included.</span>
+<span class="sd">        solvents_name (Optional[Sequence[str]]): List or tuple of solvent names.</span>
+<span class="sd">        solvents_dict (Optional[Dict[str, Dict[str, Any]]]): Maps solvent names to their info, including Molecule object.</span>
+<span class="sd">        _debug (bool): If True, print extensive debug information.</span>
+<span class="sd">        top_path (Optional[Path]): The path to the generated .top file (written upon generation).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ostream</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OutputStream</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes a GromacsForcefieldMerger instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            comm (Optional[Any]): Optional MPI communicator.</span>
+<span class="sd">            ostream (Optional[OutputStream]): Optional custom output stream for logging.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">comm</span> <span class="ow">or</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span> <span class="o">=</span> <span class="n">ostream</span> <span class="ow">or</span> <span class="n">OutputStream</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="n">mpi_master</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Attributes related to input and output directories, model setup, and optional features.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dummy_atom_node</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">termination_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linker_itp_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linker_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residues_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mof_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">other_residues</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;O&#39;</span><span class="p">,</span> <span class="s1">&#39;HO&#39;</span><span class="p">,</span> <span class="s1">&#39;HHO&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Solvent related attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solvents_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solvents_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_copy_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy a file from `old_path` to `new_path` if it doesn&#39;t already exist at `new_path`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            old_path (str): Source file path.</span>
+<span class="sd">            new_path (str): Destination file path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dest</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dest</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="n">dest</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">dest</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File copied from </span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_backup_and_rename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the directory at target_path exists and is not empty, rename it by prefixing with &#39;#i_&#39; where i is the next available integer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            target_path (str): Folder to potentially back up/rename.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">target_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()):</span>  <span class="c1"># non-empty</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">new_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2"> existed and not empty, renaming </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2"> --&gt; </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
+            <span class="c1"># Recreate the original folder</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">target_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_itps_from_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collect .itp files for nodes, linkers, terminations, and solvents/ions/gas. </span>
+<span class="sd">        If some are missing (such as new solvents), they will be generated and added to the database.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data_path (Optional[str]): Path to forcefield database. Defaults to self.database_dir.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_dir</span>
+        <span class="n">target_itp_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span><span class="p">,</span> <span class="s1">&#39;MD_run/itps&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_backup_and_rename</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">target_itp_path</span><span class="p">))</span>
+        <span class="n">target_itp_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Copy node ITPs</span>
+        <span class="n">node_itp_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span><span class="si">}</span><span class="s2">_dummy&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_atom_node</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;looking for </span><span class="si">{</span><span class="n">node_itp_name</span><span class="si">}</span><span class="s2">.itp for node&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;nodes_itps&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.itp&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">stem</span> <span class="o">==</span> <span class="n">node_itp_name</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">stem</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">other_residues</span><span class="p">):</span>
+                <span class="n">dest_p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">target_itp_path</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_copy_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dest_p</span><span class="p">))</span>
+
+        <span class="c1"># Copy linker itp(s)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">linker_itp_dir</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linker_itp_dir</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">&#39;*.itp&#39;</span><span class="p">):</span>
+                <span class="n">itp_name</span> <span class="o">=</span> <span class="n">j</span><span class="o">.</span><span class="n">stem</span>
+                <span class="n">dest_p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">target_itp_path</span><span class="p">,</span> <span class="n">j</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">itp_name</span> <span class="o">==</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linker_name</span><span class="p">))</span><span class="o">.</span><span class="n">stem</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_copy_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dest_p</span><span class="p">))</span>
+
+        <span class="c1"># Copy termination itp</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;terminations_itps&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">&#39;*.itp&#39;</span><span class="p">):</span>
+            <span class="n">dest_p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">target_itp_path</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">stem</span> <span class="o">==</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">termination_name</span><span class="p">))</span><span class="o">.</span><span class="n">stem</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_copy_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dest_p</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;term.  </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">dest_p</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># Copy/generate solvent itp files</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solvents_name</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">solvents_name</span><span class="p">:</span>
+                <span class="n">src_p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;solvents_database&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sol</span><span class="si">}</span><span class="s1">.itp&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">src_p</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                    <span class="c1"># generate solvent itp if not found</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;solvent itp file </span><span class="si">{</span><span class="n">src_p</span><span class="si">}</span><span class="s2"> not found in database... will generate </span><span class="si">{</span><span class="n">sol</span><span class="si">}</span><span class="s2"> forcefield and add it to database!&quot;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                    <span class="n">sol_molecule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solvents_dict</span><span class="p">[</span><span class="n">sol</span><span class="p">][</span><span class="s1">&#39;molecule&#39;</span><span class="p">]</span>
+                    <span class="n">src_p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_solvent_itp</span><span class="p">(</span>
+                            <span class="n">sol</span><span class="p">,</span> <span class="n">sol_molecule</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;solvents_database&#39;</span><span class="p">)))</span>
+                    <span class="p">)</span>
+                <span class="n">dest_p</span> <span class="o">=</span> <span class="n">target_itp_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">sol</span><span class="si">}</span><span class="s1">.itp&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;copying solvent itp file </span><span class="si">{</span><span class="n">src_p</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">dest_p</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_copy_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">src_p</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">dest_p</span><span class="p">))</span>
+
+        <span class="c1"># Print files in itp directory if debug</span>
+        <span class="n">final_itp_files</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">target_itp_path</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.itp&quot;</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">str_itps</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">final_itp_files</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">target_itp_path</span><span class="p">)</span><span class="si">}</span><span class="s2"> directory have </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">final_itp_files</span><span class="p">)</span><span class="si">}</span><span class="s2"> files&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;include </span><span class="si">{</span><span class="n">str_itps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_solvent_itp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solvent_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">,</span> <span class="n">target_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a GROMACS .itp file for a given solvent molecule. Also performs structure optimization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            solvent_name (str): Name of the solvent.</span>
+<span class="sd">            molecule (Molecule): Molecule object for the solvent.</span>
+<span class="sd">            target_path (str): Directory where the .itp and intermediate files are saved.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Path to the generated .itp file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mol_scf_drv</span> <span class="o">=</span> <span class="n">ScfRestrictedDriver</span><span class="p">()</span>
+        <span class="n">mol_basis</span> <span class="o">=</span> <span class="n">MolecularBasis</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="s2">&quot;def2-svp&quot;</span><span class="p">)</span>
+        <span class="n">mol_scf_drv</span><span class="o">.</span><span class="n">conv_thresh</span> <span class="o">=</span> <span class="mf">1e-3</span>
+        <span class="n">mol_scf_drv</span><span class="o">.</span><span class="n">file_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">solvent_name</span><span class="si">}</span><span class="s2">_opt_scf&quot;</span>
+        <span class="n">mol_scf_drv</span><span class="o">.</span><span class="n">xcfun</span> <span class="o">=</span> <span class="s2">&quot;b3lyp&quot;</span>
+        <span class="n">mol_scf_drv</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">mute</span><span class="p">()</span>
+        <span class="n">mol_scf_results</span> <span class="o">=</span> <span class="n">mol_scf_drv</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">mol_basis</span><span class="p">)</span>
+        <span class="n">mol_opt_drv</span> <span class="o">=</span> <span class="n">OptimizationDriver</span><span class="p">(</span><span class="n">mol_scf_drv</span><span class="p">)</span>
+        <span class="n">mol_opt_drv</span><span class="o">.</span><span class="n">conv_energy</span> <span class="o">=</span> <span class="mf">1e-04</span>
+        <span class="n">mol_opt_drv</span><span class="o">.</span><span class="n">conv_drms</span> <span class="o">=</span> <span class="mf">1e-02</span>
+        <span class="n">mol_opt_drv</span><span class="o">.</span><span class="n">conv_dmax</span> <span class="o">=</span> <span class="mf">2e-02</span>
+        <span class="n">mol_opt_drv</span><span class="o">.</span><span class="n">conv_grms</span> <span class="o">=</span> <span class="mf">4e-03</span>
+        <span class="n">mol_opt_drv</span><span class="o">.</span><span class="n">conv_gmax</span> <span class="o">=</span> <span class="mf">8e-03</span>
+        <span class="c1"># mol_opt_drv.constraints = ... # Constraints could be added here if needed.</span>
+        <span class="n">mol_opt_drv</span><span class="o">.</span><span class="n">tmax</span> <span class="o">=</span> <span class="mf">0.02</span>
+        <span class="n">mol_opt_drv</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">mol_scf_drv</span><span class="o">.</span><span class="n">file_name</span>
+        <span class="n">mol_opt_drv</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">mute</span><span class="p">()</span>
+        <span class="n">opt_results</span> <span class="o">=</span> <span class="n">mol_opt_drv</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">mol_basis</span><span class="p">,</span> <span class="n">mol_scf_results</span><span class="p">)</span>
+        <span class="n">opt_mol</span> <span class="o">=</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">read_xyz_string</span><span class="p">(</span><span class="n">opt_results</span><span class="p">[</span><span class="s2">&quot;final_geometry&quot;</span><span class="p">])</span>
+        <span class="n">ffgen</span> <span class="o">=</span> <span class="n">MMForceFieldGenerator</span><span class="p">()</span>
+        <span class="n">ffgen</span><span class="o">.</span><span class="n">create_topology</span><span class="p">(</span><span class="n">opt_mol</span><span class="p">)</span>
+        <span class="n">ff_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">target_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">solvent_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="n">ffgen</span><span class="o">.</span><span class="n">write_gromacs_files</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ff_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">mol_name</span><span class="o">=</span><span class="n">solvent_name</span><span class="p">)</span>
+        <span class="c1"># Remove .gro and .top files generated</span>
+        <span class="n">gro_file</span> <span class="o">=</span> <span class="n">ff_name</span> <span class="o">+</span> <span class="s2">&quot;.gro&quot;</span>
+        <span class="n">top_file</span> <span class="o">=</span> <span class="n">ff_name</span> <span class="o">+</span> <span class="s2">&quot;.top&quot;</span>
+        <span class="n">Path</span><span class="p">(</span><span class="n">gro_file</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">Path</span><span class="p">(</span><span class="n">top_file</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ff_name</span> <span class="o">+</span> <span class="s2">&quot;.itp&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_itp_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itp_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts the atomtypes section (typically lines between [ atomtypes ] and [ moleculetype ]) from an .itp file.</span>
+<span class="sd">        Also removes this section from the .itp file in place.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            itp_file (str): Path to the .itp file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: The lines of the atomtypes section (with whitespace trimmed), or empty if not found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">itp_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="n">keyword1</span> <span class="o">=</span> <span class="s2">&quot;atomtypes&quot;</span>
+        <span class="n">keyword2</span> <span class="o">=</span> <span class="s2">&quot;moleculetype&quot;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">eachline</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>  <span class="c1"># search for keywords and get linenumber</span>
+            <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">keyword1</span><span class="p">,</span> <span class="n">eachline</span><span class="p">):</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">eachline</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span>
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">keyword2</span><span class="p">,</span> <span class="n">eachline</span><span class="p">):</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">eachline</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">target_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+        <span class="n">newstart</span> <span class="o">=</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">itp_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">newstart</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="n">target_lines</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_atomstypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itp_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Walks through all .itp files in a given directory and collects all atomtype lines,</span>
+<span class="sd">        except those from &quot;posre.itp&quot;.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            itp_path (str): Folder to search for .itp files.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: A list of atomtype lines collected from all .itp files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_secs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">itp_path</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*itp&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;posre.itp&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;found file: </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                <span class="n">sec_atomtypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_itp_extract</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+                <span class="n">all_secs</span> <span class="o">+=</span> <span class="n">sec_atomtypes</span>
+        <span class="k">return</span> <span class="n">all_secs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_unique_atomtypes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_secs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove duplicated atomtype lines, keeping only the first occurrence for each atomtype.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            all_secs (List[str]): List of all atomtype lines.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: List of unique atomtype lines.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">all_secs</span><span class="p">]</span>
+        <span class="n">overlap_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ty</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">types</span><span class="p">):</span>
+            <span class="n">search</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span> <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">ty</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">search</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">overlap_lines</span> <span class="o">+=</span> <span class="n">search</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">unique_atomtypes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">all_secs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">all_secs</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">overlap_lines</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">unique_atomtypes</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parsetop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses a GROMACS .top template file by splitting it into sections by the occurrence of &#39;]&#39;.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            inputfile (str): Path to the template .top file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[List[List[str]], List[str]]: </span>
+<span class="sd">                - middlelines: a list where each element is a section (list of lines) from the .top file</span>
+<span class="sd">                - sectorname: list of the name/header line of each section</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">inputfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">original_lines</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">original_lines</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lineNumber</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">keyword1</span> <span class="o">=</span> <span class="s2">&quot;]&quot;</span>
+        <span class="k">for</span> <span class="n">eachline</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>  <span class="c1"># search for keywords and get linenumber</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">keyword1</span><span class="p">,</span> <span class="n">eachline</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">number</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lineNumber</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># split by linenumber</span>
+            <span class="n">lineNumber</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">number</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">number</span><span class="p">))</span>
+        <span class="n">number</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">number</span><span class="p">))</span>
+        <span class="n">middlelines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sectorname</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">number</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">number</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">middlelines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">])</span>
+            <span class="n">sectorname</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="n">start</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">middlelines</span><span class="p">,</span> <span class="n">sectorname</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_top_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">itp_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">res_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assembles the final GROMACS .top file for the system from supplied .itp files and molecule counts.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            itp_path (str): Directory of .itp files to include.</span>
+<span class="sd">            data_path (Optional[str]): Path to forcefield database. Defaults to self.database_dir if None.</span>
+<span class="sd">            res_info (Optional[Dict[str, int]]): Dictionary with residue names and counts.</span>
+<span class="sd">            model_name (Optional[str]): Name for the system/model.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Path: The path to the written .top file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_secs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_atomstypes</span><span class="p">(</span><span class="n">itp_path</span><span class="p">)</span>
+        <span class="n">unique_atomtypes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_unique_atomtypes</span><span class="p">(</span><span class="n">all_secs</span><span class="p">)</span>
+        <span class="n">middlelines</span><span class="p">,</span> <span class="n">sectorname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsetop</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">data_path</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_dir</span><span class="p">,</span> <span class="s2">&quot;nodes_itps/template.top&quot;</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">top_res_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">res_info</span> <span class="o">=</span> <span class="n">res_info</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">resname</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">res_info</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">resname</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;;&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">res_info</span><span class="p">[</span><span class="n">resname</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%-5s%16d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">resname</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span> <span class="n">res_info</span><span class="p">[</span><span class="n">resname</span><span class="p">])</span>
+            <span class="n">top_res_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">top_res_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">top_itp_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">itp_path</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*itp&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;posre.itp&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;found file: </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> in path </span><span class="si">{</span><span class="n">itp_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;#include &quot;itps/&#39;</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;&quot;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="n">top_itp_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;line</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;MOF&quot;</span>
+        <span class="n">newtop</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">middlelines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span>
+            <span class="n">middlelines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span>
+            <span class="n">unique_atomtypes</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span>
+            <span class="n">top_itp_lines</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span>
+            <span class="n">middlelines</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span>
+            <span class="p">[</span><span class="s2">&quot;MOF&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span>
+            <span class="n">middlelines</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span>
+            <span class="p">[</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">top_res_lines</span>
+        <span class="p">)</span>
+        <span class="n">topname</span> <span class="o">=</span> <span class="n">model_name</span> <span class="o">+</span> <span class="s2">&quot;.top&quot;</span>
+        <span class="n">top_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span><span class="p">,</span> <span class="s2">&quot;MD_run&quot;</span><span class="p">,</span> <span class="n">topname</span><span class="p">)</span>
+        <span class="n">top_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">top_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">newtop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">topname</span><span class="si">}</span><span class="s2"> is generated&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">top_path</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_copy_mdps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copies all .mdp files (GROMACS MD parameter files) from the database to the target run directory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data_path (Optional[str]): Path to forcefield database. Uses self.database_dir if not provided.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Path: Path to the destination mdps directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_dir</span>
+        <span class="n">dest_mdp_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span><span class="p">,</span> <span class="s2">&quot;MD_run&quot;</span><span class="p">,</span> <span class="s2">&quot;mdps&quot;</span><span class="p">)</span>
+        <span class="n">dest_mdp_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">src_mdp_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s2">&quot;mdps&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">src_mdp_path</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.mdp&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_copy_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dest_mdp_path</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">dest_mdp_path</span>
+
+<div class="viewcode-block" id="GromacsForcefieldMerger.generate_MOF_gromacsfile">
+<a class="viewcode-back" href="../../../generated/mofbuilder.md.gmxfilemerge.html#mofbuilder.md.GromacsForcefieldMerger.generate_MOF_gromacsfile">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_MOF_gromacsfile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Public entry point: Generates all GROMACS forcefield files for the MOF system.</span>
+<span class="sd">        This includes .itp, .top, and .mdp files, copying or generating as needed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">database_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_dir</span>
+        <span class="n">itps_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span><span class="p">,</span> <span class="s1">&#39;MD_run/itps&#39;</span><span class="p">)</span>
+        <span class="n">res_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues_info</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mof_name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_itps_from_database</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_top_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">itps_path</span><span class="p">),</span> <span class="n">database_path</span><span class="p">,</span> <span class="n">res_info</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_copy_mdps</span><span class="p">()</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Example usage for testing. Adjust paths and parameters as needed.</span>
+    <span class="n">gmx_ff</span> <span class="o">=</span> <span class="n">GromacsForcefieldMerger</span><span class="p">()</span>
+    <span class="n">gmx_ff</span><span class="o">.</span><span class="n">database_dir</span> <span class="o">=</span> <span class="s1">&#39;tests/database&#39;</span>
+    <span class="n">gmx_ff</span><span class="o">.</span><span class="n">target_dir</span> <span class="o">=</span> <span class="s1">&#39;tests/out&#39;</span>
+    <span class="n">gmx_ff</span><span class="o">.</span><span class="n">node_metal_type</span> <span class="o">=</span> <span class="s1">&#39;Zr&#39;</span>
+    <span class="n">gmx_ff</span><span class="o">.</span><span class="n">dummy_atom_node</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">gmx_ff</span><span class="o">.</span><span class="n">termination_name</span> <span class="o">=</span> <span class="s1">&#39;acetate&#39;</span>
+    <span class="n">gmx_ff</span><span class="o">.</span><span class="n">linker_itp_dir</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">gmx_ff</span><span class="o">.</span><span class="n">linker_name</span> <span class="o">=</span> <span class="s1">&#39;Linker&#39;</span>
+    <span class="n">gmx_ff</span><span class="o">.</span><span class="n">residues_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;METAL&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+    <span class="n">gmx_ff</span><span class="o">.</span><span class="n">mof_name</span> <span class="o">=</span> <span class="s2">&quot;testmof&quot;</span>
+    <span class="n">gmx_ff</span><span class="o">.</span><span class="n">generate_MOF_gromacsfile</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Chenxi Li.
+      <span class="lastupdated">Last updated on 2026-03-06.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

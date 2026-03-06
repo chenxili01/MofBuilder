@@ -1,0 +1,841 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mofbuilder.core.MofWriter &#8212; MOFBuilder 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5ac31dca" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_generated/mofbuilder.core.MofWriter';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mofbuilder.io.CifReader" href="mofbuilder.io.CifReader.html" />
+    <link rel="prev" title="mofbuilder.core.TerminationDefectGenerator" href="mofbuilder.core.TerminationDefectGenerator.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+    <meta name="docbuild:last-update" content="2026-03-06"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MOFBuilder 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.MetalOrganicFrameworkBuilder.html">mofbuilder.MetalOrganicFrameworkBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.framework.Framework.html">mofbuilder.core.framework.Framework</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameNet.html">mofbuilder.core.FrameNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameNode.html">mofbuilder.core.FrameNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameLinker.html">mofbuilder.core.FrameLinker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameTermination.html">mofbuilder.core.FrameTermination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.MofTopLibrary.html">mofbuilder.core.MofTopLibrary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.NetOptimizer.html">mofbuilder.core.NetOptimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.SupercellBuilder.html">mofbuilder.core.SupercellBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.EdgeGraphBuilder.html">mofbuilder.core.EdgeGraphBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.TerminationDefectGenerator.html">mofbuilder.core.TerminationDefectGenerator</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mofbuilder.core.MofWriter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.CifReader.html">mofbuilder.io.CifReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.CifWriter.html">mofbuilder.io.CifWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.PdbReader.html">mofbuilder.io.PdbReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.PdbWriter.html">mofbuilder.io.PdbWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.GroReader.html">mofbuilder.io.GroReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.GroWriter.html">mofbuilder.io.GroWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.XyzReader.html">mofbuilder.io.XyzReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.XyzWriter.html">mofbuilder.io.XyzWriter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.OpenmmSetup.html">mofbuilder.md.OpenmmSetup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.SolvationBuilder.html">mofbuilder.md.SolvationBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.LinkerForceFieldGenerator.html">mofbuilder.md.LinkerForceFieldGenerator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.GromacsForcefieldMerger.html">mofbuilder.md.GromacsForcefieldMerger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.ForceFieldMapper.html">mofbuilder.md.ForceFieldMapper</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.visualization.Viewer.html">mofbuilder.visualization.Viewer</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.fetch_pdbfile.html">mofbuilder.utils.fetch_pdbfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.unit_cell_to_cartesian_matrix.html">mofbuilder.utils.unit_cell_to_cartesian_matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.fractional_to_cartesian.html">mofbuilder.utils.fractional_to_cartesian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.cartesian_to_fractional.html">mofbuilder.utils.cartesian_to_fractional</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api_reference.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mofbuilder.core.MofWriter</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mofbuilder-core-mofwriter">
+<h1>mofbuilder.core.MofWriter<a class="headerlink" href="#mofbuilder-core-mofwriter" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mofbuilder.core.</span></span><span class="sig-name descname"><span class="pre">MofWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ostream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Convert edge graph (eG) to per-residue data and write PDB, GRO, XYZ, or CIF.</p>
+<p>Requires G, frame_cell_info, sc_unit_cell, xoo_dict (and optionally dummy_atom_node_dict).
+convert_graph_to_data / convert_graph_to_fcoords_data build nodes_data, edges_data, terms_data;
+get_merged_data / get_merged_fcoords_data merge them; write_* write to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comm</strong> (<em>Optional</em><em>[</em><em>Any</em><em>]</em>)</p></li>
+<li><p><strong>ostream</strong> (<em>Optional</em><em>[</em><em>Any</em><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.comm">
+<span class="sig-name descname"><span class="pre">comm</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.comm" title="Link to this definition">#</a></dt>
+<dd><p>MPI communicator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.rank" title="Link to this definition">#</a></dt>
+<dd><p>MPI rank of this process.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.nodes">
+<span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.nodes" title="Link to this definition">#</a></dt>
+<dd><p>MPI size (number of processes).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.ostream">
+<span class="sig-name descname"><span class="pre">ostream</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.ostream" title="Link to this definition">#</a></dt>
+<dd><p>Output stream for logging.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.filename" title="Link to this definition">#</a></dt>
+<dd><p>Base filename without extension for output files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.G">
+<span class="sig-name descname"><span class="pre">G</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.G" title="Link to this definition">#</a></dt>
+<dd><p>Edge graph to write (nodes and edges with f_points, noxoo_f_points, etc.).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.frame_cell_info">
+<span class="sig-name descname"><span class="pre">frame_cell_info</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.frame_cell_info" title="Link to this definition">#</a></dt>
+<dd><p>Cell parameters [a, b, c, alpha, beta, gamma].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.supercell_boundary">
+<span class="sig-name descname"><span class="pre">supercell_boundary</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.supercell_boundary" title="Link to this definition">#</a></dt>
+<dd><p>Optional [x_min, x_max, y_min, y_max, z_min, z_max] for fractional filter.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.sc_unit_cell">
+<span class="sig-name descname"><span class="pre">sc_unit_cell</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.sc_unit_cell" title="Link to this definition">#</a></dt>
+<dd><p>3x3 supercell unit cell matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.xoo_dict">
+<span class="sig-name descname"><span class="pre">xoo_dict</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.xoo_dict" title="Link to this definition">#</a></dt>
+<dd><p>Dict mapping X index to list of O indices (XOO) per node.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.dummy_atom_node_dict">
+<span class="sig-name descname"><span class="pre">dummy_atom_node_dict</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.dummy_atom_node_dict" title="Link to this definition">#</a></dt>
+<dd><p>Optional dict of dummy atom counts per node for renaming.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.residues_info">
+<span class="sig-name descname"><span class="pre">residues_info</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.residues_info" title="Link to this definition">#</a></dt>
+<dd><p>Dict of residue names and counts (e.g. ‘EDGE’, ‘;NODE’).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.merged_data">
+<span class="sig-name descname"><span class="pre">merged_data</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.merged_data" title="Link to this definition">#</a></dt>
+<dd><p>Merged Cartesian data (nodes + edges + terms).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.merged_f_data">
+<span class="sig-name descname"><span class="pre">merged_f_data</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.merged_f_data" title="Link to this definition">#</a></dt>
+<dd><p>Merged fractional data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.nodes_data">
+<span class="sig-name descname"><span class="pre">nodes_data</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.nodes_data" title="Link to this definition">#</a></dt>
+<dd><p>List of node data arrays (set by convert_graph_to_data).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.edges_data">
+<span class="sig-name descname"><span class="pre">edges_data</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.edges_data" title="Link to this definition">#</a></dt>
+<dd><p>List of edge data arrays.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.terms_data">
+<span class="sig-name descname"><span class="pre">terms_data</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.terms_data" title="Link to this definition">#</a></dt>
+<dd><p>List of termination data arrays.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.cG">
+<span class="sig-name descname"><span class="pre">cG</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter.cG" title="Link to this definition">#</a></dt>
+<dd><p>Copy of G with ‘data’ attached to each node/edge.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter._debug">
+<span class="sig-name descname"><span class="pre">_debug</span></span><a class="headerlink" href="#mofbuilder.core.MofWriter._debug" title="Link to this definition">#</a></dt>
+<dd><p>If True, print extra debug messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ostream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter.__init__" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comm</strong> (<em>Any</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>ostream</strong> (<em>Any</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.MofWriter.__init__" title="mofbuilder.core.MofWriter.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([comm, ostream])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.core.MofWriter.convert_graph_to_data" title="mofbuilder.core.MofWriter.convert_graph_to_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_graph_to_data</span></code></a>(G, sc_unit_cell)</p></td>
+<td><p>Convert eG to nodes_data, edges_data, terms_data (Cartesian) and set cG with 'data' on each node/edge.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.MofWriter.convert_graph_to_fcoords_data" title="mofbuilder.core.MofWriter.convert_graph_to_fcoords_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_graph_to_fcoords_data</span></code></a>(G, ...)</p></td>
+<td><p>Convert eG to fractional node/edge data within supercell_boundary; set nodes_f_data, edges_f_data, cG.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.core.MofWriter.get_merged_data" title="mofbuilder.core.MofWriter.get_merged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_merged_data</span></code></a>([dummy_atom_node_dict])</p></td>
+<td><p>Merge nodes, edges, terms into one array; optionally rename dummy atoms.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.MofWriter.get_merged_fcoords_data" title="mofbuilder.core.MofWriter.get_merged_fcoords_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_merged_fcoords_data</span></code></a>()</p></td>
+<td><p>Merge nodes_f_data and edges_f_data into merged_f_data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.core.MofWriter.only_get_merged_data" title="mofbuilder.core.MofWriter.only_get_merged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">only_get_merged_data</span></code></a>()</p></td>
+<td><p>Run convert_graph_to_data, get_merged_data, convert_graph_to_fcoords_data, get_merged_fcoords_data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.MofWriter.write_cif" title="mofbuilder.core.MofWriter.write_cif"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_cif</span></code></a>([skip_merge, supercell_boundary, ...])</p></td>
+<td><p>Write fractional merged_f_data to CIF (self.filename).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.core.MofWriter.write_gro" title="mofbuilder.core.MofWriter.write_gro"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_gro</span></code></a>([skip_merge])</p></td>
+<td><p>Write Cartesian merged_data to GRO (self.filename) with frame_cell_info as box.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.MofWriter.write_pdb" title="mofbuilder.core.MofWriter.write_pdb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_pdb</span></code></a>([skip_merge])</p></td>
+<td><p>Write Cartesian merged_data to PDB (self.filename).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.core.MofWriter.write_xyz" title="mofbuilder.core.MofWriter.write_xyz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_xyz</span></code></a>([skip_merge])</p></td>
+<td><p>Write Cartesian merged_data to XYZ (self.filename).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.convert_graph_to_data">
+<span class="sig-name descname"><span class="pre">convert_graph_to_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_unit_cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter.convert_graph_to_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter.convert_graph_to_data" title="Link to this definition">#</a></dt>
+<dd><p>Convert eG to nodes_data, edges_data, terms_data (Cartesian) and set cG with ‘data’ on each node/edge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> (<em>Graph</em>)</p></li>
+<li><p><strong>sc_unit_cell</strong> (<em>ndarray</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.get_merged_data">
+<span class="sig-name descname"><span class="pre">get_merged_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dummy_atom_node_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter.get_merged_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter.get_merged_data" title="Link to this definition">#</a></dt>
+<dd><p>Merge nodes, edges, terms into one array; optionally rename dummy atoms. Sets merged_data and residues_info. Returns merged_data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dummy_atom_node_dict</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>] </em><em>| </em><em>None</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.convert_graph_to_fcoords_data">
+<span class="sig-name descname"><span class="pre">convert_graph_to_fcoords_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">supercell_boundary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter.convert_graph_to_fcoords_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter.convert_graph_to_fcoords_data" title="Link to this definition">#</a></dt>
+<dd><p>Convert eG to fractional node/edge data within supercell_boundary; set nodes_f_data, edges_f_data, cG.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> (<em>Graph</em>)</p></li>
+<li><p><strong>supercell_boundary</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.get_merged_fcoords_data">
+<span class="sig-name descname"><span class="pre">get_merged_fcoords_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter.get_merged_fcoords_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter.get_merged_fcoords_data" title="Link to this definition">#</a></dt>
+<dd><p>Merge nodes_f_data and edges_f_data into merged_f_data. Returns merged_f_data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.only_get_merged_data">
+<span class="sig-name descname"><span class="pre">only_get_merged_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter.only_get_merged_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter.only_get_merged_data" title="Link to this definition">#</a></dt>
+<dd><p>Run convert_graph_to_data, get_merged_data, convert_graph_to_fcoords_data, get_merged_fcoords_data. Returns (merged_data, merged_f_data).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.write_pdb">
+<span class="sig-name descname"><span class="pre">write_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_merge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter.write_pdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter.write_pdb" title="Link to this definition">#</a></dt>
+<dd><p>Write Cartesian merged_data to PDB (self.filename). If not skip_merge, run convert_graph_to_data and get_merged_data first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>skip_merge</strong> (<em>bool</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.write_xyz">
+<span class="sig-name descname"><span class="pre">write_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_merge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter.write_xyz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter.write_xyz" title="Link to this definition">#</a></dt>
+<dd><p>Write Cartesian merged_data to XYZ (self.filename). If not skip_merge, merge first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>skip_merge</strong> (<em>bool</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.write_gro">
+<span class="sig-name descname"><span class="pre">write_gro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_merge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter.write_gro"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter.write_gro" title="Link to this definition">#</a></dt>
+<dd><p>Write Cartesian merged_data to GRO (self.filename) with frame_cell_info as box. If not skip_merge, merge first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>skip_merge</strong> (<em>bool</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.MofWriter.write_cif">
+<span class="sig-name descname"><span class="pre">write_cif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_merge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">supercell_boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_cell_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/write.html#MofWriter.write_cif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.MofWriter.write_cif" title="Link to this definition">#</a></dt>
+<dd><p>Write fractional merged_f_data to CIF (self.filename). Uses supercell_boundary and frame_cell_info; if not skip_merge, converts and merges first.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>skip_merge</strong> (<em>bool</em>)</p></li>
+<li><p><strong>supercell_boundary</strong> (<em>List</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>frame_cell_info</strong> (<em>List</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mofbuilder.core.TerminationDefectGenerator.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mofbuilder.core.TerminationDefectGenerator</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mofbuilder.io.CifReader.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mofbuilder.io.CifReader</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter"><code class="docutils literal notranslate"><span class="pre">MofWriter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.comm"><code class="docutils literal notranslate"><span class="pre">MofWriter.comm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.rank"><code class="docutils literal notranslate"><span class="pre">MofWriter.rank</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.nodes"><code class="docutils literal notranslate"><span class="pre">MofWriter.nodes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.ostream"><code class="docutils literal notranslate"><span class="pre">MofWriter.ostream</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.filename"><code class="docutils literal notranslate"><span class="pre">MofWriter.filename</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.G"><code class="docutils literal notranslate"><span class="pre">MofWriter.G</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.frame_cell_info"><code class="docutils literal notranslate"><span class="pre">MofWriter.frame_cell_info</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.supercell_boundary"><code class="docutils literal notranslate"><span class="pre">MofWriter.supercell_boundary</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.sc_unit_cell"><code class="docutils literal notranslate"><span class="pre">MofWriter.sc_unit_cell</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.xoo_dict"><code class="docutils literal notranslate"><span class="pre">MofWriter.xoo_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.dummy_atom_node_dict"><code class="docutils literal notranslate"><span class="pre">MofWriter.dummy_atom_node_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.residues_info"><code class="docutils literal notranslate"><span class="pre">MofWriter.residues_info</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.merged_data"><code class="docutils literal notranslate"><span class="pre">MofWriter.merged_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.merged_f_data"><code class="docutils literal notranslate"><span class="pre">MofWriter.merged_f_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.nodes_data"><code class="docutils literal notranslate"><span class="pre">MofWriter.nodes_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.edges_data"><code class="docutils literal notranslate"><span class="pre">MofWriter.edges_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.terms_data"><code class="docutils literal notranslate"><span class="pre">MofWriter.terms_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.cG"><code class="docutils literal notranslate"><span class="pre">MofWriter.cG</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter._debug"><code class="docutils literal notranslate"><span class="pre">MofWriter._debug</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.__init__"><code class="docutils literal notranslate"><span class="pre">MofWriter.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.convert_graph_to_data"><code class="docutils literal notranslate"><span class="pre">MofWriter.convert_graph_to_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.get_merged_data"><code class="docutils literal notranslate"><span class="pre">MofWriter.get_merged_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.convert_graph_to_fcoords_data"><code class="docutils literal notranslate"><span class="pre">MofWriter.convert_graph_to_fcoords_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.get_merged_fcoords_data"><code class="docutils literal notranslate"><span class="pre">MofWriter.get_merged_fcoords_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.only_get_merged_data"><code class="docutils literal notranslate"><span class="pre">MofWriter.only_get_merged_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.write_pdb"><code class="docutils literal notranslate"><span class="pre">MofWriter.write_pdb()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.write_xyz"><code class="docutils literal notranslate"><span class="pre">MofWriter.write_xyz()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.write_gro"><code class="docutils literal notranslate"><span class="pre">MofWriter.write_gro()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.MofWriter.write_cif"><code class="docutils literal notranslate"><span class="pre">MofWriter.write_cif()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Chenxi Li.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

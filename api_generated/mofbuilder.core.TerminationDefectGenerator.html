@@ -1,0 +1,825 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mofbuilder.core.TerminationDefectGenerator &#8212; MOFBuilder 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5ac31dca" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_generated/mofbuilder.core.TerminationDefectGenerator';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mofbuilder.core.MofWriter" href="mofbuilder.core.MofWriter.html" />
+    <link rel="prev" title="mofbuilder.core.EdgeGraphBuilder" href="mofbuilder.core.EdgeGraphBuilder.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+    <meta name="docbuild:last-update" content="2026-03-06"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MOFBuilder 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.MetalOrganicFrameworkBuilder.html">mofbuilder.MetalOrganicFrameworkBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.framework.Framework.html">mofbuilder.core.framework.Framework</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameNet.html">mofbuilder.core.FrameNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameNode.html">mofbuilder.core.FrameNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameLinker.html">mofbuilder.core.FrameLinker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameTermination.html">mofbuilder.core.FrameTermination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.MofTopLibrary.html">mofbuilder.core.MofTopLibrary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.NetOptimizer.html">mofbuilder.core.NetOptimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.SupercellBuilder.html">mofbuilder.core.SupercellBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.EdgeGraphBuilder.html">mofbuilder.core.EdgeGraphBuilder</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mofbuilder.core.TerminationDefectGenerator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.MofWriter.html">mofbuilder.core.MofWriter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.CifReader.html">mofbuilder.io.CifReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.CifWriter.html">mofbuilder.io.CifWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.PdbReader.html">mofbuilder.io.PdbReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.PdbWriter.html">mofbuilder.io.PdbWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.GroReader.html">mofbuilder.io.GroReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.GroWriter.html">mofbuilder.io.GroWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.XyzReader.html">mofbuilder.io.XyzReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.XyzWriter.html">mofbuilder.io.XyzWriter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.OpenmmSetup.html">mofbuilder.md.OpenmmSetup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.SolvationBuilder.html">mofbuilder.md.SolvationBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.LinkerForceFieldGenerator.html">mofbuilder.md.LinkerForceFieldGenerator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.GromacsForcefieldMerger.html">mofbuilder.md.GromacsForcefieldMerger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.ForceFieldMapper.html">mofbuilder.md.ForceFieldMapper</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.visualization.Viewer.html">mofbuilder.visualization.Viewer</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.fetch_pdbfile.html">mofbuilder.utils.fetch_pdbfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.unit_cell_to_cartesian_matrix.html">mofbuilder.utils.unit_cell_to_cartesian_matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.fractional_to_cartesian.html">mofbuilder.utils.fractional_to_cartesian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.cartesian_to_fractional.html">mofbuilder.utils.cartesian_to_fractional</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api_reference.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mofbuilder.core.TerminationDefectGenerator</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mofbuilder-core-terminationdefectgenerator">
+<h1>mofbuilder.core.TerminationDefectGenerator<a class="headerlink" href="#mofbuilder-core-terminationdefectgenerator" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mofbuilder.core.</span></span><span class="sig-name descname"><span class="pre">TerminationDefectGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ostream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/defects.html#TerminationDefectGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generate defects by finding unsaturated nodes, removing nodes/linkers, and adding terminations.</p>
+<p>Can remove specified nodes/linkers (by index), optionally clean unsaturated linkers,
+add termination groups to unsaturated nodes (using termination_data), and replace
+nodes or linkers by superimposing new geometry onto the existing graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comm</strong> (<em>Optional</em><em>[</em><em>Any</em><em>]</em>)</p></li>
+<li><p><strong>ostream</strong> (<em>Optional</em><em>[</em><em>Any</em><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.comm">
+<span class="sig-name descname"><span class="pre">comm</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.comm" title="Link to this definition">#</a></dt>
+<dd><p>MPI communicator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.rank" title="Link to this definition">#</a></dt>
+<dd><p>MPI rank of this process.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.nodes">
+<span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.nodes" title="Link to this definition">#</a></dt>
+<dd><p>MPI size (number of processes).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.ostream">
+<span class="sig-name descname"><span class="pre">ostream</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.ostream" title="Link to this definition">#</a></dt>
+<dd><p>Output stream for logging.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.cleaved_eG">
+<span class="sig-name descname"><span class="pre">cleaved_eG</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.cleaved_eG" title="Link to this definition">#</a></dt>
+<dd><p>Edge graph (eG) after cleaving; set before use.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.node_connectivity">
+<span class="sig-name descname"><span class="pre">node_connectivity</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.node_connectivity" title="Link to this definition">#</a></dt>
+<dd><p>Expected number of real neighbors per node.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.linker_connectivity">
+<span class="sig-name descname"><span class="pre">linker_connectivity</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.linker_connectivity" title="Link to this definition">#</a></dt>
+<dd><p>Expected number of connections per linker (edge).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.eG_index_name_dict">
+<span class="sig-name descname"><span class="pre">eG_index_name_dict</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.eG_index_name_dict" title="Link to this definition">#</a></dt>
+<dd><p>Mapping from eG index to node/edge name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.sc_unit_cell">
+<span class="sig-name descname"><span class="pre">sc_unit_cell</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.sc_unit_cell" title="Link to this definition">#</a></dt>
+<dd><p>3x3 supercell unit cell matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.sc_unit_cell_inv">
+<span class="sig-name descname"><span class="pre">sc_unit_cell_inv</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.sc_unit_cell_inv" title="Link to this definition">#</a></dt>
+<dd><p>Inverse of sc_unit_cell.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.res_idx2rm">
+<span class="sig-name descname"><span class="pre">res_idx2rm</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.res_idx2rm" title="Link to this definition">#</a></dt>
+<dd><p>List of eG indices to remove (nodes/edges).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.xoo_dict">
+<span class="sig-name descname"><span class="pre">xoo_dict</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.xoo_dict" title="Link to this definition">#</a></dt>
+<dd><p>Dict mapping X index to list of O indices (XOO groups) in node.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.matched_vnode_xind">
+<span class="sig-name descname"><span class="pre">matched_vnode_xind</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.matched_vnode_xind" title="Link to this definition">#</a></dt>
+<dd><p>List of (node, xind, edge) for matched V-node X to edges.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.updated_matched_vnode_xind">
+<span class="sig-name descname"><span class="pre">updated_matched_vnode_xind</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.updated_matched_vnode_xind" title="Link to this definition">#</a></dt>
+<dd><p>Same after removal/termination.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.unsaturated_nodes">
+<span class="sig-name descname"><span class="pre">unsaturated_nodes</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.unsaturated_nodes" title="Link to this definition">#</a></dt>
+<dd><p>List of unsaturated node names.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.updated_unsaturated_nodes">
+<span class="sig-name descname"><span class="pre">updated_unsaturated_nodes</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.updated_unsaturated_nodes" title="Link to this definition">#</a></dt>
+<dd><p>Same after removal.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.unsaturated_linkers">
+<span class="sig-name descname"><span class="pre">unsaturated_linkers</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.unsaturated_linkers" title="Link to this definition">#</a></dt>
+<dd><p>List of unsaturated linker (EDGE) names.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.termination_data">
+<span class="sig-name descname"><span class="pre">termination_data</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.termination_data" title="Link to this definition">#</a></dt>
+<dd><p>Full termination atom array (XOO).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.termination_X_data">
+<span class="sig-name descname"><span class="pre">termination_X_data</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.termination_X_data" title="Link to this definition">#</a></dt>
+<dd><p>Termination X atoms.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.termination_Y_data">
+<span class="sig-name descname"><span class="pre">termination_Y_data</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.termination_Y_data" title="Link to this definition">#</a></dt>
+<dd><p>Termination Y atoms (e.g. O-O center).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.use_termination">
+<span class="sig-name descname"><span class="pre">use_termination</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.use_termination" title="Link to this definition">#</a></dt>
+<dd><p>If True, add terminations to unsaturated nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.clean_unsaturated_linkers">
+<span class="sig-name descname"><span class="pre">clean_unsaturated_linkers</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.clean_unsaturated_linkers" title="Link to this definition">#</a></dt>
+<dd><p>If True, remove unsaturated linkers from graph.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.update_node_termination">
+<span class="sig-name descname"><span class="pre">update_node_termination</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.update_node_termination" title="Link to this definition">#</a></dt>
+<dd><p>If True, update matched nodes after removal.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.nodes_idx2rp">
+<span class="sig-name descname"><span class="pre">nodes_idx2rp</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.nodes_idx2rp" title="Link to this definition">#</a></dt>
+<dd><p>Indices of nodes to replace.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.linkers_idx2rp">
+<span class="sig-name descname"><span class="pre">linkers_idx2rp</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.linkers_idx2rp" title="Link to this definition">#</a></dt>
+<dd><p>Indices of linkers to replace.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.new_node_data">
+<span class="sig-name descname"><span class="pre">new_node_data</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.new_node_data" title="Link to this definition">#</a></dt>
+<dd><p>New node atom data for replacement (set by caller).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.new_node_X_data">
+<span class="sig-name descname"><span class="pre">new_node_X_data</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.new_node_X_data" title="Link to this definition">#</a></dt>
+<dd><p>New node X-atom data for replacement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.new_linker_data">
+<span class="sig-name descname"><span class="pre">new_linker_data</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.new_linker_data" title="Link to this definition">#</a></dt>
+<dd><p>New linker atom data for replacement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.new_linker_X_data">
+<span class="sig-name descname"><span class="pre">new_linker_X_data</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.new_linker_X_data" title="Link to this definition">#</a></dt>
+<dd><p>New linker X-atom data for replacement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.defectG">
+<span class="sig-name descname"><span class="pre">defectG</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.defectG" title="Link to this definition">#</a></dt>
+<dd><p>eG after removing nodes/linkers (no terminations).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.termG">
+<span class="sig-name descname"><span class="pre">termG</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.termG" title="Link to this definition">#</a></dt>
+<dd><p>eG after adding terminations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.finalG">
+<span class="sig-name descname"><span class="pre">finalG</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.finalG" title="Link to this definition">#</a></dt>
+<dd><p>eG after removing XOO from nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator._debug">
+<span class="sig-name descname"><span class="pre">_debug</span></span><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator._debug" title="Link to this definition">#</a></dt>
+<dd><p>If True, print extra debug messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ostream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/defects.html#TerminationDefectGenerator.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.__init__" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comm</strong> (<em>Any</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>ostream</strong> (<em>Any</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.TerminationDefectGenerator.__init__" title="mofbuilder.core.TerminationDefectGenerator.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([comm, ostream])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.core.TerminationDefectGenerator.remove_items_or_terminate" title="mofbuilder.core.TerminationDefectGenerator.remove_items_or_terminate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_items_or_terminate</span></code></a>([res_idx2rm, ...])</p></td>
+<td><p>Remove nodes/linkers by index and optionally add terminations to unsaturated nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.TerminationDefectGenerator.replace_items" title="mofbuilder.core.TerminationDefectGenerator.replace_items"><code class="xref py py-obj docutils literal notranslate"><span class="pre">replace_items</span></code></a>(res_idx2rp, G)</p></td>
+<td><p>Replace specified nodes or linkers in G with new_node_data/new_linker_data by superimposition.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.remove_items_or_terminate">
+<span class="sig-name descname"><span class="pre">remove_items_or_terminate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res_idx2rm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleaved_eG</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/defects.html#TerminationDefectGenerator.remove_items_or_terminate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.remove_items_or_terminate" title="Link to this definition">#</a></dt>
+<dd><p>Remove nodes/linkers by index and optionally add terminations to unsaturated nodes.</p>
+<p>If res_idx2rm is empty, only finds unsaturated linkers and optionally adds
+terminations to unsaturated nodes. Otherwise removes the given nodes/linkers,
+optionally removes unsaturated linkers, then adds terminations to unsaturated
+nodes using termination_data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>res_idx2rm</strong> (<em>List</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>) – List of eG indices (nodes/edges) to remove.</p></li>
+<li><p><strong>cleaved_eG</strong> (<em>Graph</em><em> | </em><em>None</em>) – Edge graph (eG) to modify; a copy is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Defect graph after removal and termination (termG or defectG).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Graph</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.TerminationDefectGenerator.replace_items">
+<span class="sig-name descname"><span class="pre">replace_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res_idx2rp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/defects.html#TerminationDefectGenerator.replace_items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.TerminationDefectGenerator.replace_items" title="Link to this definition">#</a></dt>
+<dd><p>Replace specified nodes or linkers in G with new_node_data/new_linker_data by superimposition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>res_idx2rp</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – List of eG indices to replace (nodes or EDGE names).</p></li>
+<li><p><strong>G</strong> (<em>Graph</em>) – Edge graph to modify (copy is used).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Graph with replaced node/linker coordinates; unchanged if data not set.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Graph</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mofbuilder.core.EdgeGraphBuilder.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mofbuilder.core.EdgeGraphBuilder</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mofbuilder.core.MofWriter.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mofbuilder.core.MofWriter</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.comm"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.comm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.rank"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.rank</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.nodes"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.nodes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.ostream"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.ostream</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.cleaved_eG"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.cleaved_eG</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.node_connectivity"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.node_connectivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.linker_connectivity"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.linker_connectivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.eG_index_name_dict"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.eG_index_name_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.sc_unit_cell"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.sc_unit_cell</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.sc_unit_cell_inv"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.sc_unit_cell_inv</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.res_idx2rm"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.res_idx2rm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.xoo_dict"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.xoo_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.matched_vnode_xind"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.matched_vnode_xind</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.updated_matched_vnode_xind"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.updated_matched_vnode_xind</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.unsaturated_nodes"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.unsaturated_nodes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.updated_unsaturated_nodes"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.updated_unsaturated_nodes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.unsaturated_linkers"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.unsaturated_linkers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.termination_data"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.termination_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.termination_X_data"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.termination_X_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.termination_Y_data"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.termination_Y_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.use_termination"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.use_termination</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.clean_unsaturated_linkers"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.clean_unsaturated_linkers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.update_node_termination"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.update_node_termination</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.nodes_idx2rp"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.nodes_idx2rp</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.linkers_idx2rp"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.linkers_idx2rp</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.new_node_data"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.new_node_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.new_node_X_data"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.new_node_X_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.new_linker_data"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.new_linker_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.new_linker_X_data"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.new_linker_X_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.defectG"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.defectG</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.termG"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.termG</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.finalG"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.finalG</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator._debug"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator._debug</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.__init__"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.remove_items_or_terminate"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.remove_items_or_terminate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.TerminationDefectGenerator.replace_items"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator.replace_items()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Chenxi Li.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,605 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mofbuilder.md.setup &mdash; MofBuilder 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MofBuilder
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual/index.html">User Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-from-source">Install from source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-development-dependencies">Install development dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-documentation-dependencies">Install documentation dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#build-the-manual">Build the manual</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/quickstart.html">Quickstart</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#basic-import">Basic import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#access-the-builder-entry-point">Access the builder entry point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#explore-subpackages">Explore subpackages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#module-mofbuilder">Top-Level Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.comm"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.comm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rank"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.ostream"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.ostream</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_family"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_family</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_metal"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_metal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node_dict"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.data_path"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.data_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_linker"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_linker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_terminations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_net"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_net</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_top_library"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_top_library</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_optimizer"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_optimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mofwriter"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mofwriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.defectgenerator"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.defectgenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_spacegroup"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_spacegroup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell_inv"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell_inv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_edges"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_pair_vertex_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_pair_vertex_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_xyzfile"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_xyzfile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_smiles"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_smiles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_charge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_charge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_multiplicity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_multiplicity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_frag_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_frag_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_fake_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_fake_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_name"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_Y_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_Y_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.constant_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.constant_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_optimized_rotations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_optimized_rotations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.skip_rotation_optimization"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.skip_rotation_optimization</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rotation_filename"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rotation_filename</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.supercell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_node_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_node_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_edge_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_edge_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder._debug"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder._debug</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_mof_families"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_mof_families()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_metals"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_metals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_terminations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_solvents"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_solvents()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.optimize_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.optimize_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.make_supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.make_supercell()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.build"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html">mofbuilder.analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.PorosityAnalyzer"><code class="docutils literal notranslate"><span class="pre">PorosityAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.GraphAnalyzer"><code class="docutils literal notranslate"><span class="pre">GraphAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.graph_analysis.html">mofbuilder.analysis.graph_analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.porosity.html">mofbuilder.analysis.porosity</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.core.html">mofbuilder.core</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.TerminationDefectGenerator"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.Framework"><code class="docutils literal notranslate"><span class="pre">Framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNet"><code class="docutils literal notranslate"><span class="pre">FrameNet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNode"><code class="docutils literal notranslate"><span class="pre">FrameNode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameLinker"><code class="docutils literal notranslate"><span class="pre">FrameLinker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameTermination"><code class="docutils literal notranslate"><span class="pre">FrameTermination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofTopLibrary"><code class="docutils literal notranslate"><span class="pre">MofTopLibrary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.NetOptimizer"><code class="docutils literal notranslate"><span class="pre">NetOptimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.SupercellBuilder"><code class="docutils literal notranslate"><span class="pre">SupercellBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.EdgeGraphBuilder"><code class="docutils literal notranslate"><span class="pre">EdgeGraphBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofWriter"><code class="docutils literal notranslate"><span class="pre">MofWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.builder.html">mofbuilder.core.builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.defects.html">mofbuilder.core.defects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.framework.html">mofbuilder.core.framework</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.linker.html">mofbuilder.core.linker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.moftoplibrary.html">mofbuilder.core.moftoplibrary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.net.html">mofbuilder.core.net</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.node.html">mofbuilder.core.node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.optimizer.html">mofbuilder.core.optimizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.other.html">mofbuilder.core.other</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.supercell.html">mofbuilder.core.supercell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.superimpose.html">mofbuilder.core.superimpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.termination.html">mofbuilder.core.termination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.write.html">mofbuilder.core.write</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.io.html">mofbuilder.io</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifReader"><code class="docutils literal notranslate"><span class="pre">CifReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifWriter"><code class="docutils literal notranslate"><span class="pre">CifWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzReader"><code class="docutils literal notranslate"><span class="pre">XyzReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzWriter"><code class="docutils literal notranslate"><span class="pre">XyzWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbReader"><code class="docutils literal notranslate"><span class="pre">PdbReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbWriter"><code class="docutils literal notranslate"><span class="pre">PdbWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroReader"><code class="docutils literal notranslate"><span class="pre">GroReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroWriter"><code class="docutils literal notranslate"><span class="pre">GroWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nn"><code class="docutils literal notranslate"><span class="pre">nn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nl"><code class="docutils literal notranslate"><span class="pre">nl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.basic.html">mofbuilder.io.basic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_reader.html">mofbuilder.io.cif_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_writer.html">mofbuilder.io.cif_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_reader.html">mofbuilder.io.gro_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_writer.html">mofbuilder.io.gro_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_reader.html">mofbuilder.io.pdb_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_writer.html">mofbuilder.io.pdb_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_reader.html">mofbuilder.io.xyz_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_writer.html">mofbuilder.io.xyz_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.md.html">mofbuilder.md</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.OpenmmSetup"><code class="docutils literal notranslate"><span class="pre">OpenmmSetup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.SolvationBuilder"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.LinkerForceFieldGenerator"><code class="docutils literal notranslate"><span class="pre">LinkerForceFieldGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.GromacsForcefieldMerger"><code class="docutils literal notranslate"><span class="pre">GromacsForcefieldMerger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.ForceFieldMapper"><code class="docutils literal notranslate"><span class="pre">ForceFieldMapper</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.gmxfilemerge.html">mofbuilder.md.gmxfilemerge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.linkerforcefield.html">mofbuilder.md.linkerforcefield</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.setup.html">mofbuilder.md.setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.solvationbuilder.html">mofbuilder.md.solvationbuilder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.utils.html">mofbuilder.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fetch_pdbfile"><code class="docutils literal notranslate"><span class="pre">fetch_pdbfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.unit_cell_to_cartesian_matrix"><code class="docutils literal notranslate"><span class="pre">unit_cell_to_cartesian_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fractional_to_cartesian"><code class="docutils literal notranslate"><span class="pre">fractional_to_cartesian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.cartesian_to_fractional"><code class="docutils literal notranslate"><span class="pre">cartesian_to_fractional()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.constants.html">mofbuilder.utils.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.environment.html">mofbuilder.utils.environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.fetch.html">mofbuilder.utils.fetch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.geometry.html">mofbuilder.utils.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.periodic_table.html">mofbuilder.utils.periodic_table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html">mofbuilder.visualization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html#mofbuilder.visualization.Viewer"><code class="docutils literal notranslate"><span class="pre">Viewer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.viewer.html">mofbuilder.visualization.viewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MofBuilder</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mofbuilder.md.setup</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mofbuilder.md.setup</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">openmm.app</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GromacsGroFile</span><span class="p">,</span>
+    <span class="n">GromacsTopFile</span><span class="p">,</span>
+    <span class="n">PDBFile</span><span class="p">,</span>
+    <span class="n">PDBReporter</span><span class="p">,</span>
+    <span class="n">NoCutoff</span><span class="p">,</span>
+    <span class="n">Simulation</span><span class="p">,</span>
+    <span class="n">PME</span><span class="p">,</span>
+    <span class="n">HBonds</span><span class="p">,</span>
+    <span class="n">StateDataReporter</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openmm</span><span class="w"> </span><span class="kn">import</span> <span class="n">LangevinIntegrator</span><span class="p">,</span> <span class="n">MonteCarloBarostat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openmm.unit</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">atmosphere</span><span class="p">,</span>
+    <span class="n">picosecond</span><span class="p">,</span>
+    <span class="n">picoseconds</span><span class="p">,</span>
+    <span class="n">kelvin</span><span class="p">,</span>
+    <span class="n">femtoseconds</span><span class="p">,</span>
+    <span class="n">nanometer</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mpi4py.MPI</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">MPI</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.outputstream</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputStream</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.veloxchemlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpi_master</span>
+
+
+<div class="viewcode-block" id="OpenmmSetup">
+<a class="viewcode-back" href="../../../generated/mofbuilder.md.setup.html#mofbuilder.md.OpenmmSetup">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OpenmmSetup</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set up and execute GROMACS/OPENMM simulations for molecular dynamics.</span>
+
+<span class="sd">    Handles system initialization, energy minimization, equilibration in NVT/NPT ensembles,</span>
+<span class="sd">    and trajectory/log file writing, with parallel output support via MPI.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        comm (Any): MPI communicator.</span>
+<span class="sd">        rank (int): MPI process rank.</span>
+<span class="sd">        nodes (int): Number of MPI processes.</span>
+<span class="sd">        ostream (OutputStream): Output stream for printing/logging.</span>
+<span class="sd">        system_pbc (bool): Whether to use periodic boundary conditions.</span>
+<span class="sd">        gro_file (str): Path to GROMACS .gro coordinates file.</span>
+<span class="sd">        top_file (str): Path to GROMACS .top topology file.</span>
+<span class="sd">        temperature_K (float): Simulation temperature in Kelvin.</span>
+<span class="sd">        timestep_fs (float): Integration timestep in femtoseconds.</span>
+<span class="sd">        gro: Loaded GROMACS structure file (GromacsGroFile).</span>
+<span class="sd">        top: Loaded GROMACS topology file (GromacsTopFile).</span>
+<span class="sd">        positions: Atomic positions.</span>
+<span class="sd">        barostat_added (bool): Tracks if barostat has been added for NPT.</span>
+<span class="sd">        simulation: The OpenMM Simulation object (initialized on demand).</span>
+<span class="sd">        temperature (openmm.unit.Quantity): Temperature (set during pipeline).</span>
+<span class="sd">        timestep (openmm.unit.Quantity): Timestep (set during pipeline).</span>
+<span class="sd">        system: OpenMM System object (set during pipeline).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">gro_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">top_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">temperature_K</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+        <span class="n">timestep_fs</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">comm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ostream</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OutputStream</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the OpenmmSetup simulation context.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            gro_file (str): Path to input .gro coordinate file.</span>
+<span class="sd">            top_file (str): Path to input .top topology file.</span>
+<span class="sd">            temperature_K (float, optional): Simulation temperature in Kelvin. Defaults to 300.</span>
+<span class="sd">            timestep_fs (float, optional): Integration timestep (femtoseconds). Defaults to 1.</span>
+<span class="sd">            comm (Any, optional): MPI communicator. Defaults to MPI.COMM_WORLD.</span>
+<span class="sd">            ostream (OutputStream, optional): Output stream for logging.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">comm</span> <span class="ow">or</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span> <span class="o">=</span> <span class="n">ostream</span> <span class="ow">or</span> <span class="n">OutputStream</span><span class="p">(</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="n">mpi_master</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system_pbc</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># assume PBC for MD</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gro_file</span> <span class="o">=</span> <span class="n">gro_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_file</span> <span class="o">=</span> <span class="n">top_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature_K</span> <span class="o">=</span> <span class="n">temperature_K</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestep_fs</span> <span class="o">=</span> <span class="n">timestep_fs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[Simulation]</span>
+
+        <span class="c1"># Load GROMACS files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gro</span> <span class="o">=</span> <span class="n">GromacsGroFile</span><span class="p">(</span><span class="n">gro_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">=</span> <span class="n">GromacsTopFile</span><span class="p">(</span>
+            <span class="n">top_file</span><span class="p">,</span> <span class="n">periodicBoxVectors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gro</span><span class="o">.</span><span class="n">getPeriodicBoxVectors</span><span class="p">(),</span> <span class="n">includeDir</span><span class="o">=</span><span class="s2">&quot;.&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gro</span><span class="o">.</span><span class="n">positions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">barostat_added</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_steps_from_ps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ps_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a time in picoseconds to number of simulation steps.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ps_time (float): Duration (picoseconds).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Number of steps for current timestep.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">ps_time</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span><span class="n">picoseconds</span><span class="p">))</span>
+
+<div class="viewcode-block" id="OpenmmSetup.run_em">
+<a class="viewcode-back" href="../../../generated/mofbuilder.md.setup.html#mofbuilder.md.OpenmmSetup.run_em">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_em</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;em&quot;</span><span class="p">,</span> <span class="n">whole_traj_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs energy minimization using OpenMM and writes output.</span>
+
+<span class="sd">        Writes a minimized structure (PDB) to disk and logs potential/temperature.</span>
+<span class="sd">        Optionally appends coordinates to a trajectory PDB.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            output_prefix (str, optional): Prefix for output and log files.</span>
+<span class="sd">            whole_traj_file (Optional[str], optional): If provided, append structure to this PDB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting energy minimization...&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">integrator</span> <span class="o">=</span> <span class="n">LangevinIntegrator</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">picosecond</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">,</span> <span class="n">integrator</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">setPositions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">minimizeEnergy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">getState</span><span class="p">(</span>
+            <span class="n">getPositions</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">getPositions</span><span class="p">()</span>
+
+        <span class="c1"># Add log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">reporters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">StateDataReporter</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_prefix</span><span class="si">}</span><span class="s2">.log&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">potentialEnergy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># Save minimized structure</span>
+        <span class="n">em_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_prefix</span><span class="si">}</span><span class="s2">_minimized.pdb&quot;</span>
+        <span class="n">PDBFile</span><span class="o">.</span><span class="n">writeFile</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">em_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Energy minimization done.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Append to whole trajectory if requested</span>
+        <span class="k">if</span> <span class="n">whole_traj_file</span><span class="p">:</span>
+            <span class="n">PDBFile</span><span class="o">.</span><span class="n">writeFile</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">whole_traj_file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_md</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nvt&quot;</span><span class="p">,</span>
+        <span class="n">time_ps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">output_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;traj&quot;</span><span class="p">,</span>
+        <span class="n">record_interval_ps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">whole_traj_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Runs an MD segment in either NVT or NPT ensemble.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mode (str, optional): &#39;nvt&#39; or &#39;npt&#39;.</span>
+<span class="sd">            time_ps (float, optional): Duration to run (picoseconds).</span>
+<span class="sd">            output_prefix (str, optional): Output file prefix.</span>
+<span class="sd">            record_interval_ps (float, optional): Trajectory/log frame interval (picoseconds).</span>
+<span class="sd">            whole_traj_file (Optional[str], optional): If given, appends frames to this PDB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nsteps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_steps_from_ps</span><span class="p">(</span><span class="n">time_ps</span><span class="p">)</span>
+        <span class="n">steps_per_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_steps_from_ps</span><span class="p">(</span><span class="n">record_interval_ps</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;npt&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">barostat_added</span><span class="p">:</span>
+            <span class="n">barostat</span> <span class="o">=</span> <span class="n">MonteCarloBarostat</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">atmosphere</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">addForce</span><span class="p">(</span><span class="n">barostat</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">barostat_added</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">integrator</span> <span class="o">=</span> <span class="n">LangevinIntegrator</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">picosecond</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">,</span> <span class="n">integrator</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">setPositions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">)</span>
+
+        <span class="c1"># Set reporters</span>
+        <span class="k">if</span> <span class="n">whole_traj_file</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">reporters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">PDBReporter</span><span class="p">(</span><span class="n">whole_traj_file</span><span class="p">,</span> <span class="n">steps_per_frame</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">reporters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">PDBReporter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_prefix</span><span class="si">}</span><span class="s2">.pdb&quot;</span><span class="p">,</span> <span class="n">steps_per_frame</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">reporters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">StateDataReporter</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_prefix</span><span class="si">}</span><span class="s2">.log&quot;</span><span class="p">,</span>
+                <span class="n">steps_per_frame</span><span class="p">,</span>
+                <span class="n">step</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">potentialEnergy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">density</span><span class="o">=</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;npt&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running </span><span class="si">{</span><span class="n">mode</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">time_ps</span><span class="si">}</span><span class="s2"> ps ...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">nsteps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">getState</span><span class="p">(</span>
+            <span class="n">getPositions</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">getPositions</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mode</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2"> done.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OpenmmSetup.run_nvt">
+<a class="viewcode-back" href="../../../generated/mofbuilder.md.setup.html#mofbuilder.md.OpenmmSetup.run_nvt">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_nvt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">nvt_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">output_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nvt&quot;</span><span class="p">,</span>
+        <span class="n">record_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">whole_traj_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run an NVT (constant volume) MD segment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nvt_time (float, optional): Simulation time (ps).</span>
+<span class="sd">            output_prefix (str, optional): Output file prefix.</span>
+<span class="sd">            record_interval (float, optional): Frame/log interval (ps).</span>
+<span class="sd">            whole_traj_file (Optional[str], optional): Append all frames to this PDB if provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_md</span><span class="p">(</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;nvt&quot;</span><span class="p">,</span>
+            <span class="n">time_ps</span><span class="o">=</span><span class="n">nvt_time</span><span class="p">,</span>
+            <span class="n">output_prefix</span><span class="o">=</span><span class="n">output_prefix</span><span class="p">,</span>
+            <span class="n">record_interval_ps</span><span class="o">=</span><span class="n">record_interval</span><span class="p">,</span>
+            <span class="n">whole_traj_file</span><span class="o">=</span><span class="n">whole_traj_file</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OpenmmSetup.run_npt">
+<a class="viewcode-back" href="../../../generated/mofbuilder.md.setup.html#mofbuilder.md.OpenmmSetup.run_npt">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_npt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">npt_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">output_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;npt&quot;</span><span class="p">,</span>
+        <span class="n">record_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">whole_traj_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run an NPT (constant pressure) MD segment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            npt_time (float, optional): Simulation time (ps).</span>
+<span class="sd">            output_prefix (str, optional): Output file prefix.</span>
+<span class="sd">            record_interval (float, optional): Frame/log interval (ps).</span>
+<span class="sd">            whole_traj_file (Optional[str], optional): Append all frames to this PDB if provided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_md</span><span class="p">(</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;npt&quot;</span><span class="p">,</span>
+            <span class="n">time_ps</span><span class="o">=</span><span class="n">npt_time</span><span class="p">,</span>
+            <span class="n">output_prefix</span><span class="o">=</span><span class="n">output_prefix</span><span class="p">,</span>
+            <span class="n">record_interval_ps</span><span class="o">=</span><span class="n">record_interval</span><span class="p">,</span>
+            <span class="n">whole_traj_file</span><span class="o">=</span><span class="n">whole_traj_file</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OpenmmSetup.run_pipeline">
+<a class="viewcode-back" href="../../../generated/mofbuilder.md.setup.html#mofbuilder.md.OpenmmSetup.run_pipeline">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_pipeline</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">nvt_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">npt_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">output_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mdsim&quot;</span><span class="p">,</span>
+        <span class="n">record_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">whole_traj</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Executes an MD workflow: minimization, NVT, and/or NPT on demand.</span>
+
+<span class="sd">        The method prepares the system, then runs the requested steps in order.</span>
+<span class="sd">        If whole_traj is enabled, all coordinates are appended to a single trajectory PDB.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            steps (Optional[List[str]], optional): List of stages to run (e.g., [&#39;em&#39;, &#39;nvt&#39;, &#39;npt&#39;]).</span>
+<span class="sd">            nvt_time (float, optional): Time for NVT segment (ps).</span>
+<span class="sd">            npt_time (float, optional): Time for NPT segment (ps).</span>
+<span class="sd">            output_prefix (str, optional): Prefix for all outputs/logs.</span>
+<span class="sd">            record_interval (float, optional): Frame/log interval (ps).</span>
+<span class="sd">            whole_traj (bool, optional): If True, write all frames to a single PDB.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            The system and OpenMM integrator are initialized in this function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;em&quot;</span><span class="p">,</span> <span class="s2">&quot;nvt&quot;</span><span class="p">,</span> <span class="s2">&quot;npt&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_K</span> <span class="o">*</span> <span class="n">kelvin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestep_fs</span> <span class="o">*</span> <span class="n">femtoseconds</span>
+        <span class="n">whole_traj_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_prefix</span><span class="si">}</span><span class="s2">_whole.pdb&quot;</span> <span class="k">if</span> <span class="n">whole_traj</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">createSystem</span><span class="p">(</span>
+            <span class="n">nonbondedMethod</span><span class="o">=</span><span class="n">PME</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_pbc</span> <span class="k">else</span> <span class="n">NoCutoff</span><span class="p">,</span>
+            <span class="n">nonbondedCutoff</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>
+            <span class="n">constraints</span><span class="o">=</span><span class="n">HBonds</span><span class="p">,</span>
+            <span class="n">rigidWater</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;em&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_em</span><span class="p">(</span><span class="n">output_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_prefix</span><span class="si">}</span><span class="s2">_em&quot;</span><span class="p">,</span> <span class="n">whole_traj_file</span><span class="o">=</span><span class="n">whole_traj_file</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">step</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;nvt&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_nvt</span><span class="p">(</span>
+                    <span class="n">nvt_time</span><span class="o">=</span><span class="n">nvt_time</span><span class="p">,</span>
+                    <span class="n">output_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_prefix</span><span class="si">}</span><span class="s2">_nvt&quot;</span><span class="p">,</span>
+                    <span class="n">record_interval</span><span class="o">=</span><span class="n">record_interval</span><span class="p">,</span>
+                    <span class="n">whole_traj_file</span><span class="o">=</span><span class="n">whole_traj_file</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">step</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;npt&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">run_npt</span><span class="p">(</span>
+                    <span class="n">npt_time</span><span class="o">=</span><span class="n">npt_time</span><span class="p">,</span>
+                    <span class="n">output_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_prefix</span><span class="si">}</span><span class="s2">_npt&quot;</span><span class="p">,</span>
+                    <span class="n">record_interval</span><span class="o">=</span><span class="n">record_interval</span><span class="p">,</span>
+                    <span class="n">whole_traj_file</span><span class="o">=</span><span class="n">whole_traj_file</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown step: </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Chenxi Li.
+      <span class="lastupdated">Last updated on 2026-03-06.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

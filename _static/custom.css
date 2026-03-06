@@ -1,0 +1,19 @@
+/* Keep the article column readable for long scientific documentation pages. */
+.bd-main .bd-content .bd-article-container {
+  max-width: 82ch;
+}
+
+.bd-sidebar-primary {
+  border-right: 1px solid var(--pst-color-border);
+}
+
+.bd-content h1,
+.bd-content h2,
+.bd-content h3 {
+  letter-spacing: -0.01em;
+}
+
+.bd-content p,
+.bd-content li {
+  line-height: 1.65;
+}

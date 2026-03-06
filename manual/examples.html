@@ -1,0 +1,620 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Examples &#8212; MOFBuilder 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5ac31dca" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'manual/examples';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Module Guide" href="module_guide.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+    <meta name="docbuild:last-update" content="2026-03-06"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MOFBuilder 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_guide.html">Module Guide</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">User Manual</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Examples</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h1>
+<p>This page collects practical examples that map directly to the current
+<code class="docutils literal notranslate"><span class="pre">mofbuilder</span></code> API.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Examples that use <code class="docutils literal notranslate"><span class="pre">veloxchem</span></code>, <code class="docutils literal notranslate"><span class="pre">openmm</span></code>, or <code class="docutils literal notranslate"><span class="pre">rdkit</span></code> require those optional
+dependencies to be installed in your environment.</p>
+</div>
+<section id="example-1-build-and-export-a-mof-structure">
+<h2>Example 1: Build and export a MOF structure<a class="headerlink" href="#example-1-build-and-export-a-mof-structure" title="Link to this heading">#</a></h2>
+<p>This example builds an HKUST-1 framework from a linker molecule and writes
+standard structure files.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.molecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">Molecule</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mofbuilder</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetalOrganicFrameworkBuilder</span>
+
+<span class="c1"># 1) Build a linker molecule (can also come from XYZ or SDF workflows)</span>
+<span class="n">linker</span> <span class="o">=</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">read_smiles</span><span class="p">(</span><span class="s2">&quot;O=C([O-])c1ccc(cc1)C(=O)[O-]&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2) Configure the builder</span>
+<span class="n">builder</span> <span class="o">=</span> <span class="n">MetalOrganicFrameworkBuilder</span><span class="p">(</span><span class="n">mof_family</span><span class="o">=</span><span class="s2">&quot;HKUST-1&quot;</span><span class="p">)</span>
+<span class="n">builder</span><span class="o">.</span><span class="n">node_metal</span> <span class="o">=</span> <span class="s2">&quot;Cu&quot;</span>
+<span class="n">builder</span><span class="o">.</span><span class="n">linker_molecule</span> <span class="o">=</span> <span class="n">linker</span>
+<span class="n">builder</span><span class="o">.</span><span class="n">supercell</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># 3) Build and export</span>
+<span class="n">framework</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">framework</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;cif&quot;</span><span class="p">,</span> <span class="s2">&quot;xyz&quot;</span><span class="p">,</span> <span class="s2">&quot;gro&quot;</span><span class="p">],</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;output/hkust1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Expected outcome:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">output/hkust1.cif</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output/hkust1.xyz</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output/hkust1.gro</span></code></p></li>
+</ul>
+</section>
+<section id="example-2-solvate-and-prepare-an-md-workflow">
+<h2>Example 2: Solvate and prepare an MD workflow<a class="headerlink" href="#example-2-solvate-and-prepare-an-md-workflow" title="Link to this heading">#</a></h2>
+<p>After building a framework, you can create a solvated system and stage OpenMM
+inputs through MofBuilder’s MD pipeline.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1"># Use a bundled solvent model (TIP3P)</span>
+<span class="n">tip3p_xyz</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;database/solvents_database/TIP3P.xyz&quot;</span><span class="p">)</span>
+
+<span class="n">framework</span><span class="o">.</span><span class="n">target_directory</span> <span class="o">=</span> <span class="s2">&quot;output&quot;</span>
+<span class="n">framework</span><span class="o">.</span><span class="n">solvate</span><span class="p">(</span>
+    <span class="n">solvents_files</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">tip3p_xyz</span><span class="p">)],</span>
+    <span class="n">solvents_proportions</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
+    <span class="n">solvents_quantities</span><span class="o">=</span><span class="p">[</span><span class="mi">600</span><span class="p">],</span>
+    <span class="n">padding_angstrom</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">framework</span><span class="o">.</span><span class="n">md_prepare</span><span class="p">()</span>
+<span class="n">framework</span><span class="o">.</span><span class="n">md_driver</span><span class="o">.</span><span class="n">run_pipeline</span><span class="p">(</span>
+    <span class="n">steps</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;em&quot;</span><span class="p">,</span> <span class="s2">&quot;nvt&quot;</span><span class="p">],</span>
+    <span class="n">nvt_time</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">record_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">output_prefix</span><span class="o">=</span><span class="s2">&quot;output/hkust1_md&quot;</span><span class="p">,</span>
+    <span class="n">whole_traj</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>What this does:</p>
+<ul class="simple">
+<li><p>Packs solvent molecules around the framework.</p></li>
+<li><p>Generates merged topology/force-field files for MD.</p></li>
+<li><p>Runs energy minimization (<code class="docutils literal notranslate"><span class="pre">em</span></code>) and NVT equilibration (<code class="docutils literal notranslate"><span class="pre">nvt</span></code>).</p></li>
+</ul>
+</section>
+<section id="example-3-defective-mof-5-workflow-from-examples-fig2-defective-ipynb">
+<h2>Example 3: Defective MOF-5 workflow (from <code class="docutils literal notranslate"><span class="pre">examples/fig2_defective.ipynb</span></code>)<a class="headerlink" href="#example-3-defective-mof-5-workflow-from-examples-fig2-defective-ipynb" title="Link to this heading">#</a></h2>
+<p>This workflow mirrors the notebook pattern used to prepare Figure 2-style
+defect scenarios: build baseline structures, then apply targeted replacement
+and removal operations.</p>
+<section id="build-uncapped-and-capped-mof-5-supercells">
+<h3>3.1 Build uncapped and capped MOF-5 supercells<a class="headerlink" href="#build-uncapped-and-capped-mof-5-supercells" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mofbuilder</span><span class="w"> </span><span class="kn">import</span> <span class="n">MetalOrganicFrameworkBuilder</span> <span class="k">as</span> <span class="n">MofBuilder</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">veloxchem</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">vlx</span>
+
+<span class="n">smi_str</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bdc&quot;</span><span class="p">:</span> <span class="s2">&quot;O=C([O-])C(C=C1)=CC=C1C([O-])=O&quot;</span><span class="p">}</span>
+<span class="n">bdc</span> <span class="o">=</span> <span class="n">vlx</span><span class="o">.</span><span class="n">Molecule</span><span class="o">.</span><span class="n">read_smiles</span><span class="p">(</span><span class="n">smi_str</span><span class="p">[</span><span class="s2">&quot;bdc&quot;</span><span class="p">])</span>
+
+<span class="c1"># Uncapped MOF-5 (2x2x2)</span>
+<span class="n">mof</span> <span class="o">=</span> <span class="n">MofBuilder</span><span class="p">(</span><span class="n">mof_family</span><span class="o">=</span><span class="s2">&quot;MOF-5&quot;</span><span class="p">)</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">mute</span><span class="p">()</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">linker_molecule</span> <span class="o">=</span> <span class="n">bdc</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">node_metal</span> <span class="o">=</span> <span class="s2">&quot;Zn&quot;</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">termination</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">supercell</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">nocap</span> <span class="o">=</span> <span class="n">mof</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+
+<span class="c1"># Capped MOF-5 (2x2x2)</span>
+<span class="n">mof</span> <span class="o">=</span> <span class="n">MofBuilder</span><span class="p">(</span><span class="n">mof_family</span><span class="o">=</span><span class="s2">&quot;MOF-5&quot;</span><span class="p">)</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">mute</span><span class="p">()</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">linker_molecule</span> <span class="o">=</span> <span class="n">bdc</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">node_metal</span> <span class="o">=</span> <span class="s2">&quot;Zn&quot;</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">supercell</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">cap</span> <span class="o">=</span> <span class="n">mof</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="build-a-slab-like-capped-model">
+<h3>3.2 Build a slab-like capped model<a class="headerlink" href="#build-a-slab-like-capped-model" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mof</span> <span class="o">=</span> <span class="n">MofBuilder</span><span class="p">(</span><span class="n">mof_family</span><span class="o">=</span><span class="s2">&quot;MOF-5&quot;</span><span class="p">)</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">mute</span><span class="p">()</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">linker_molecule</span> <span class="o">=</span> <span class="n">bdc</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">node_metal</span> <span class="o">=</span> <span class="s2">&quot;Zn&quot;</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">supercell</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">mof</span><span class="o">.</span><span class="n">supercell_custom_fbox</span> <span class="o">=</span> <span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">slabcap</span> <span class="o">=</span> <span class="n">mof</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="replace-selected-linkers-and-remove-selected-components">
+<h3>3.3 Replace selected linkers and remove selected components<a class="headerlink" href="#replace-selected-linkers-and-remove-selected-components" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Replace selected linker positions with a functionalized linker</span>
+<span class="n">new_linker</span> <span class="o">=</span> <span class="n">vlx</span><span class="o">.</span><span class="n">Molecule</span><span class="o">.</span><span class="n">read_smiles</span><span class="p">(</span><span class="s2">&quot;O=C([O-])C(C=C1N)=C(N)C=C1C([O-])=O&quot;</span><span class="p">)</span>
+<span class="n">slabcap</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">mute</span><span class="p">()</span>
+<span class="n">rp_slab</span> <span class="o">=</span> <span class="n">slabcap</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+    <span class="n">replace_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">824</span><span class="p">,</span> <span class="mi">816</span><span class="p">,</span> <span class="mi">334</span><span class="p">,</span> <span class="mi">804</span><span class="p">,</span> <span class="mi">796</span><span class="p">,</span> <span class="mi">344</span><span class="p">],</span>
+    <span class="n">new_linker_molecule</span><span class="o">=</span><span class="n">new_linker</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Remove selected components to create defect variants</span>
+<span class="n">nocap</span><span class="o">.</span><span class="n">update_node_termination</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">nocap</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">mute</span><span class="p">()</span>
+<span class="n">rm_a</span> <span class="o">=</span> <span class="n">nocap</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span>
+    <span class="n">remove_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">333</span><span class="p">,</span> <span class="mi">223</span><span class="p">,</span> <span class="mi">231</span><span class="p">,</span> <span class="mi">117</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">189</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">73</span><span class="p">,</span> <span class="mi">183</span><span class="p">,</span> <span class="mi">295</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> <span class="mi">405</span><span class="p">,</span> <span class="mi">217</span><span class="p">,</span> <span class="mi">289</span><span class="p">,</span> <span class="mi">327</span><span class="p">,</span> <span class="mi">399</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">rm_b</span> <span class="o">=</span> <span class="n">nocap</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">remove_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">370</span><span class="p">,</span> <span class="mi">63</span><span class="p">,</span> <span class="mi">368</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>You can inspect any generated framework interactively with <code class="docutils literal notranslate"><span class="pre">show()</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rp_slab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">rm_a</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">residue_indices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">rm_b</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">residue_indices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="example-4-quick-cli-metadata-queries">
+<h2>Example 4: Quick CLI metadata queries<a class="headerlink" href="#example-4-quick-cli-metadata-queries" title="Link to this heading">#</a></h2>
+<p>The CLI is intentionally lightweight for querying packaged topology metadata.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mofbuilder<span class="w"> </span>--version
+mofbuilder<span class="w"> </span>data-path
+mofbuilder<span class="w"> </span>list-families
+mofbuilder<span class="w"> </span>list-metals<span class="w"> </span>--mof-family<span class="w"> </span>HKUST-1
+</pre></div>
+</div>
+<p>This is useful for validating installation and discovering available MOF family
+names before running a full build.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="quickstart.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Quickstart</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="module_guide.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Module Guide</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-1-build-and-export-a-mof-structure">Example 1: Build and export a MOF structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-2-solvate-and-prepare-an-md-workflow">Example 2: Solvate and prepare an MD workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-3-defective-mof-5-workflow-from-examples-fig2-defective-ipynb">Example 3: Defective MOF-5 workflow (from <code class="docutils literal notranslate"><span class="pre">examples/fig2_defective.ipynb</span></code>)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-uncapped-and-capped-mof-5-supercells">3.1 Build uncapped and capped MOF-5 supercells</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#build-a-slab-like-capped-model">3.2 Build a slab-like capped model</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#replace-selected-linkers-and-remove-selected-components">3.3 Replace selected linkers and remove selected components</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-4-quick-cli-metadata-queries">Example 4: Quick CLI metadata queries</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Chenxi Li.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

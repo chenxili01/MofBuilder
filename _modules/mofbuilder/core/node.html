@@ -1,0 +1,833 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mofbuilder.core.node &mdash; MofBuilder 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MofBuilder
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual/index.html">User Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-from-source">Install from source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-development-dependencies">Install development dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-documentation-dependencies">Install documentation dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#build-the-manual">Build the manual</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/quickstart.html">Quickstart</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#basic-import">Basic import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#access-the-builder-entry-point">Access the builder entry point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#explore-subpackages">Explore subpackages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#module-mofbuilder">Top-Level Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.comm"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.comm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rank"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.ostream"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.ostream</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_family"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_family</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_metal"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_metal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node_dict"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.data_path"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.data_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_linker"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_linker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_terminations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_net"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_net</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_top_library"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_top_library</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_optimizer"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_optimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mofwriter"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mofwriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.defectgenerator"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.defectgenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_spacegroup"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_spacegroup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell_inv"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell_inv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_edges"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_pair_vertex_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_pair_vertex_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_xyzfile"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_xyzfile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_smiles"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_smiles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_charge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_charge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_multiplicity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_multiplicity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_frag_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_frag_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_fake_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_fake_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_name"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_Y_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_Y_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.constant_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.constant_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_optimized_rotations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_optimized_rotations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.skip_rotation_optimization"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.skip_rotation_optimization</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rotation_filename"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rotation_filename</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.supercell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_node_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_node_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_edge_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_edge_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder._debug"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder._debug</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_mof_families"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_mof_families()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_metals"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_metals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_terminations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_solvents"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_solvents()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.optimize_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.optimize_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.make_supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.make_supercell()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.build"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html">mofbuilder.analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.PorosityAnalyzer"><code class="docutils literal notranslate"><span class="pre">PorosityAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.GraphAnalyzer"><code class="docutils literal notranslate"><span class="pre">GraphAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.graph_analysis.html">mofbuilder.analysis.graph_analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.porosity.html">mofbuilder.analysis.porosity</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.core.html">mofbuilder.core</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.TerminationDefectGenerator"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.Framework"><code class="docutils literal notranslate"><span class="pre">Framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNet"><code class="docutils literal notranslate"><span class="pre">FrameNet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNode"><code class="docutils literal notranslate"><span class="pre">FrameNode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameLinker"><code class="docutils literal notranslate"><span class="pre">FrameLinker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameTermination"><code class="docutils literal notranslate"><span class="pre">FrameTermination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofTopLibrary"><code class="docutils literal notranslate"><span class="pre">MofTopLibrary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.NetOptimizer"><code class="docutils literal notranslate"><span class="pre">NetOptimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.SupercellBuilder"><code class="docutils literal notranslate"><span class="pre">SupercellBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.EdgeGraphBuilder"><code class="docutils literal notranslate"><span class="pre">EdgeGraphBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofWriter"><code class="docutils literal notranslate"><span class="pre">MofWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.builder.html">mofbuilder.core.builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.defects.html">mofbuilder.core.defects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.framework.html">mofbuilder.core.framework</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.linker.html">mofbuilder.core.linker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.moftoplibrary.html">mofbuilder.core.moftoplibrary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.net.html">mofbuilder.core.net</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.node.html">mofbuilder.core.node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.optimizer.html">mofbuilder.core.optimizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.other.html">mofbuilder.core.other</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.supercell.html">mofbuilder.core.supercell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.superimpose.html">mofbuilder.core.superimpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.termination.html">mofbuilder.core.termination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.write.html">mofbuilder.core.write</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.io.html">mofbuilder.io</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifReader"><code class="docutils literal notranslate"><span class="pre">CifReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifWriter"><code class="docutils literal notranslate"><span class="pre">CifWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzReader"><code class="docutils literal notranslate"><span class="pre">XyzReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzWriter"><code class="docutils literal notranslate"><span class="pre">XyzWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbReader"><code class="docutils literal notranslate"><span class="pre">PdbReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbWriter"><code class="docutils literal notranslate"><span class="pre">PdbWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroReader"><code class="docutils literal notranslate"><span class="pre">GroReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroWriter"><code class="docutils literal notranslate"><span class="pre">GroWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nn"><code class="docutils literal notranslate"><span class="pre">nn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nl"><code class="docutils literal notranslate"><span class="pre">nl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.basic.html">mofbuilder.io.basic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_reader.html">mofbuilder.io.cif_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_writer.html">mofbuilder.io.cif_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_reader.html">mofbuilder.io.gro_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_writer.html">mofbuilder.io.gro_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_reader.html">mofbuilder.io.pdb_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_writer.html">mofbuilder.io.pdb_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_reader.html">mofbuilder.io.xyz_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_writer.html">mofbuilder.io.xyz_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.md.html">mofbuilder.md</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.OpenmmSetup"><code class="docutils literal notranslate"><span class="pre">OpenmmSetup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.SolvationBuilder"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.LinkerForceFieldGenerator"><code class="docutils literal notranslate"><span class="pre">LinkerForceFieldGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.GromacsForcefieldMerger"><code class="docutils literal notranslate"><span class="pre">GromacsForcefieldMerger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.ForceFieldMapper"><code class="docutils literal notranslate"><span class="pre">ForceFieldMapper</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.gmxfilemerge.html">mofbuilder.md.gmxfilemerge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.linkerforcefield.html">mofbuilder.md.linkerforcefield</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.setup.html">mofbuilder.md.setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.solvationbuilder.html">mofbuilder.md.solvationbuilder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.utils.html">mofbuilder.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fetch_pdbfile"><code class="docutils literal notranslate"><span class="pre">fetch_pdbfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.unit_cell_to_cartesian_matrix"><code class="docutils literal notranslate"><span class="pre">unit_cell_to_cartesian_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fractional_to_cartesian"><code class="docutils literal notranslate"><span class="pre">fractional_to_cartesian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.cartesian_to_fractional"><code class="docutils literal notranslate"><span class="pre">cartesian_to_fractional()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.constants.html">mofbuilder.utils.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.environment.html">mofbuilder.utils.environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.fetch.html">mofbuilder.utils.fetch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.geometry.html">mofbuilder.utils.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.periodic_table.html">mofbuilder.utils.periodic_table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html">mofbuilder.visualization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html#mofbuilder.visualization.Viewer"><code class="docutils literal notranslate"><span class="pre">Viewer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.viewer.html">mofbuilder.visualization.viewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MofBuilder</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mofbuilder.core.node</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mofbuilder.core.node</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Metal node processing: load node PDB, add dummy atoms, output graph and data for MOF building.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mpi4py.MPI</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">MPI</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.outputstream</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputStream</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.veloxchemlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpi_master</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.errorhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_msg_critical</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.molecule</span><span class="w"> </span><span class="kn">import</span> <span class="n">Molecule</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..io.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span><span class="p">,</span> <span class="n">nl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.superimpose</span><span class="w"> </span><span class="kn">import</span> <span class="n">superimpose</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..io.pdb_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">PdbReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..io.pdb_writer</span><span class="w"> </span><span class="kn">import</span> <span class="n">PdbWriter</span>
+
+
+<div class="viewcode-block" id="FrameNode">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.node.html#mofbuilder.core.FrameNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FrameNode</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load and process metal node PDB: recenter, build graph, optionally add dummy atoms (HHO, HO, O).</span>
+
+<span class="sd">    Node file should have unique atom names/indices. Produces node_data, nodeG/sG,</span>
+<span class="sd">    and (if dummy_node) new PDB and dummy_node_split_dict for use in the builder.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        comm: MPI communicator.</span>
+<span class="sd">        rank: MPI rank of this process.</span>
+<span class="sd">        nodes: MPI size (number of processes).</span>
+<span class="sd">        ostream: Output stream for logging.</span>
+<span class="sd">        properties: Dict for optional properties.</span>
+<span class="sd">        filename: Path to node PDB file.</span>
+<span class="sd">        target_dir: Directory for output files (when save_files).</span>
+<span class="sd">        new_pdbfilename: Output PDB path (with or without dummy atoms).</span>
+<span class="sd">        new_dummy_dictfilename: Path to dummy dict file (when dummy_node and save_files).</span>
+<span class="sd">        dummy_node: If True, add dummy atoms to node.</span>
+<span class="sd">        node_metal_type: Metal type string for the node.</span>
+<span class="sd">        node_com_type: Center-of-mass type for recentering (default &quot;X&quot;).</span>
+<span class="sd">        node_data: Atom data array from PDB (set by _nodepdb2xyz/create).</span>
+<span class="sd">        node_xyz_string: XYZ-format string of node (set by _nodepdb2xyz).</span>
+<span class="sd">        nodeG: NetworkX graph of node (set by _nodepdb2G).</span>
+<span class="sd">        pdbreader: PdbReader instance.</span>
+<span class="sd">        pdbwriter: PdbWriter instance.</span>
+<span class="sd">        sG: Graph after adding dummy atoms (set by create).</span>
+<span class="sd">        sG_subparts: Connected components of sG.</span>
+<span class="sd">        _debug: If True, print extra debug messages.</span>
+<span class="sd">        save_files: If True, write output files.</span>
+<span class="sd">        lines: Optional lines for output.</span>
+<span class="sd">        metal_valence: Valence for dummy template (when dummy_node).</span>
+<span class="sd">        dummy_pdbfile: Path to dummy template PDB.</span>
+<span class="sd">        dummy_node_split_dict: Dict of dummy atom counts and ordering (set by create).</span>
+<span class="sd">        dummy_node_split_dict_path: Path to save dummy_node_split_dict.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">comm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ostream</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">comm</span> <span class="ow">or</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">ostream</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ostream</span> <span class="o">=</span> <span class="n">OutputStream</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span>
+                                   <span class="n">mpi_master</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span> <span class="o">=</span> <span class="n">ostream</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filepath</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_pdbfilename</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_dummy_dictfilename</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_com_type</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_xyz_string</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodeG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdbreader</span> <span class="o">=</span> <span class="n">PdbReader</span><span class="p">(</span><span class="n">comm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="p">,</span> <span class="n">ostream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdbwriter</span> <span class="o">=</span> <span class="n">PdbWriter</span><span class="p">(</span><span class="n">comm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="p">,</span> <span class="n">ostream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sG</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sG_subparts</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_files</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># properties for dummy node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metal_valence</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dummy_pdbfile</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node_split_dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node_split_dict_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_data</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="FrameNode.check_dirs">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.node.html#mofbuilder.core.FrameNode.check_dirs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure node file exists; if save_files, create target_dir and set new_pdbfilename / new_dummy_dictfilename.&quot;&quot;&quot;</span>
+        <span class="n">assert_msg_critical</span><span class="p">(</span>
+            <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span>
+            <span class="sa">f</span><span class="s2">&quot;Node pdb file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2"> not found&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_files</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span> <span class="ow">or</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">new_pdbfilename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span> <span class="o">/</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">_dummy.pdb&quot;</span>
+                                                      <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node</span> <span class="k">else</span>
+                                                      <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">new_dummy_dictfilename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">_dummy_dict.txt&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node pdb file: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target directory: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New pdb file: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">new_pdbfilename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_nodepdb2xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdbreader</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdbreader</span><span class="o">.</span><span class="n">read_pdb</span><span class="p">(</span><span class="n">recenter</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">com_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_com_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdbreader</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">xyz_lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_data</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">xyz_lines</span> <span class="o">+=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">n</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">n</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">n</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_data</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_xyz_string</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xyz_lines</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Node xyz string generated with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_data</span><span class="p">)</span><span class="si">}</span><span class="s2"> atoms.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_xyz_string</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_nodepdb2G</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">node_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_data</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodeG</span>
+        <span class="n">metal</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span><span class="p">)</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">node_data</span><span class="p">)[:,</span> <span class="mi">5</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node_data</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ccoords</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">node_mol</span> <span class="o">=</span> <span class="n">Molecule</span><span class="o">.</span><span class="n">read_xyz_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_xyz_string</span><span class="p">)</span>
+        <span class="n">con_matrix</span> <span class="o">=</span> <span class="n">node_mol</span><span class="o">.</span><span class="n">get_connectivity_matrix</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">node_data</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_data</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">con_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">ni</span><span class="p">,</span> <span class="n">nj</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">node_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="n">nn</span><span class="p">(</span><span class="n">node_data</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">ni</span> <span class="o">==</span> <span class="n">nj</span> <span class="o">==</span> <span class="n">metal</span> <span class="ow">or</span> <span class="p">(</span><span class="n">ni</span> <span class="o">==</span> <span class="n">metal</span> <span class="ow">and</span> <span class="n">nj</span> <span class="ow">in</span> <span class="p">[</span>
+                            <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span>
+                    <span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">nj</span> <span class="o">==</span> <span class="n">metal</span> <span class="ow">and</span> <span class="n">ni</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">]):</span>
+                        <span class="k">continue</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">node_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_data</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodeG</span> <span class="o">=</span> <span class="n">G</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metal</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node</span><span class="p">:</span>
+            <span class="c1">#just metal atom</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="s2">&quot;No dummy atoms to add.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Zr&quot;</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">]]),</span>
+            <span class="s2">&quot;Hf&quot;</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.70710678</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.70710678</span><span class="p">]]),</span>
+            <span class="s2">&quot;Al&quot;</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.74</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.74</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.74</span><span class="p">],</span>
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.74</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.74</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>
+                                                             <span class="o">-</span><span class="mf">0.74</span><span class="p">]]),</span>
+            <span class="s2">&quot;Fe&quot;</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.86</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.86</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.86</span><span class="p">],</span>
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.86</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.86</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span>
+                                                             <span class="o">-</span><span class="mf">0.86</span><span class="p">]]),</span>
+            <span class="s2">&quot;Cr&quot;</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.82</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.82</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.82</span><span class="p">],</span>
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.82</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.82</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.82</span><span class="p">]])</span>
+        <span class="p">}</span>
+        <span class="n">assert_msg_critical</span><span class="p">(</span>
+            <span class="n">metal</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Error: metal type </span><span class="si">{</span><span class="n">metal</span><span class="si">}</span><span class="s2"> not supported for dummy atom addition. Supported metals are </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">templates</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">templates</span><span class="p">[</span><span class="n">metal</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_order_ccoords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_ccoords</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">target_metal_coords</span><span class="p">):</span>
+        <span class="n">d_ccoords</span> <span class="o">-=</span> <span class="n">target_metal_coords</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">superimpose</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">d_ccoords</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">rot</span><span class="p">)</span> <span class="o">+</span> <span class="n">target_metal_coords</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_dummy_atoms_nodepdb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">metal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span>
+        <span class="k">if</span> <span class="n">metal</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;Zr&quot;</span><span class="p">,</span> <span class="s2">&quot;Hf&quot;</span><span class="p">,</span> <span class="s2">&quot;Ti&quot;</span><span class="p">,</span> <span class="s2">&quot;Ce&quot;</span><span class="p">,</span> <span class="s2">&quot;Th&quot;</span><span class="p">,</span> <span class="s2">&quot;U&quot;</span><span class="p">,</span> <span class="s2">&quot;Nb&quot;</span><span class="p">,</span> <span class="s2">&quot;Ta&quot;</span><span class="p">,</span> <span class="s2">&quot;Mo&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;Re&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;V&quot;</span>
+        <span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metal_valence</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="k">elif</span> <span class="n">metal</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;Al&quot;</span><span class="p">,</span> <span class="s2">&quot;Fe&quot;</span><span class="p">,</span> <span class="s2">&quot;Cr&quot;</span><span class="p">,</span> <span class="s2">&quot;Sc&quot;</span><span class="p">,</span> <span class="s2">&quot;In&quot;</span><span class="p">,</span> <span class="s2">&quot;Ga&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;La&quot;</span><span class="p">,</span> <span class="s2">&quot;Pr&quot;</span><span class="p">,</span> <span class="s2">&quot;Nd&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Sm&quot;</span><span class="p">,</span> <span class="s2">&quot;Eu&quot;</span><span class="p">,</span> <span class="s2">&quot;Gd&quot;</span><span class="p">,</span> <span class="s2">&quot;Tb&quot;</span><span class="p">,</span> <span class="s2">&quot;Dy&quot;</span><span class="p">,</span> <span class="s2">&quot;Ho&quot;</span><span class="p">,</span> <span class="s2">&quot;Er&quot;</span><span class="p">,</span> <span class="s2">&quot;Tm&quot;</span><span class="p">,</span> <span class="s2">&quot;Yb&quot;</span><span class="p">,</span> <span class="s2">&quot;Lu&quot;</span>
+        <span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metal_valence</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">elif</span> <span class="n">metal</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;Zn&quot;</span><span class="p">,</span> <span class="s2">&quot;Cu&quot;</span><span class="p">,</span> <span class="s2">&quot;Co&quot;</span><span class="p">,</span> <span class="s2">&quot;Ni&quot;</span><span class="p">,</span> <span class="s2">&quot;Mn&quot;</span><span class="p">,</span> <span class="s2">&quot;Cd&quot;</span><span class="p">,</span> <span class="s2">&quot;Mg&quot;</span><span class="p">,</span> <span class="s2">&quot;Ca&quot;</span><span class="p">,</span> <span class="s2">&quot;Sr&quot;</span><span class="p">,</span> <span class="s2">&quot;Ba&quot;</span>
+        <span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metal_valence</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dummy_pdbfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_dummy.pdb&quot;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_template</span><span class="p">(</span><span class="n">metal</span><span class="p">)</span>
+        <span class="n">sG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodeG</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Original node graph has </span><span class="si">{</span><span class="n">sG</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2"> nodes and </span><span class="si">{</span><span class="n">sG</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span><span class="si">}</span><span class="s2"> edges.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sG</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ind_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">nl</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="n">nodes</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">ind_max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="n">hydrogen_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="k">if</span> <span class="n">nn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span><span class="p">]</span>
+        <span class="n">oxygen_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="k">if</span> <span class="n">nn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;O&quot;</span><span class="p">]</span>
+        <span class="n">metal_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span> <span class="k">if</span> <span class="n">nn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="n">metal</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">metal_nodes</span><span class="p">)</span><span class="si">}</span><span class="s2"> metal nodes, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">oxygen_nodes</span><span class="p">)</span><span class="si">}</span><span class="s2"> oxygen nodes, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">hydrogen_nodes</span><span class="p">)</span><span class="si">}</span><span class="s2"> hydrogen nodes.&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># Add missing edges between metal and nearest oxygens</span>
+        <span class="k">for</span> <span class="n">metal_n</span> <span class="ow">in</span> <span class="n">metal_nodes</span><span class="p">:</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="p">[(</span><span class="n">oxy_n</span><span class="p">,</span>
+                      <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">metal_n</span><span class="p">][</span><span class="s1">&#39;ccoords&#39;</span><span class="p">]</span> <span class="o">-</span>
+                                     <span class="n">sG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">oxy_n</span><span class="p">][</span><span class="s1">&#39;ccoords&#39;</span><span class="p">]))</span>
+                     <span class="k">for</span> <span class="n">oxy_n</span> <span class="ow">in</span> <span class="n">oxygen_nodes</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">oxy_node</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span>
+                    <span class="n">dists</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])[:</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">metal_valence</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">oxy_node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sG</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="n">metal_n</span><span class="p">]:</span>
+                    <span class="n">sG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">metal_n</span><span class="p">,</span> <span class="n">oxy_node</span><span class="p">)</span>
+        <span class="c1">#for dummy atoms</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">ind_max</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">mn</span> <span class="ow">in</span> <span class="n">metal_nodes</span><span class="p">:</span>
+                <span class="n">neighbor_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sG</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="n">mn</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">neighbor_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">metal_valence</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
+                        <span class="n">nn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;O&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">neighbor_nodes</span><span class="p">):</span>
+                    <span class="n">beginning_cc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">sG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">mn</span><span class="p">][</span><span class="s2">&quot;ccoords&quot;</span><span class="p">],</span> <span class="mi">4</span><span class="p">)</span>
+                    <span class="n">d_ccoords</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">nO</span> <span class="ow">in</span> <span class="n">neighbor_nodes</span><span class="p">:</span>
+                        <span class="n">sO</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">sG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">nO</span><span class="p">][</span><span class="s2">&quot;ccoords&quot;</span><span class="p">],</span> <span class="mi">4</span><span class="p">)</span>
+                        <span class="n">cnorm_vec</span> <span class="o">=</span> <span class="p">(</span><span class="n">sO</span> <span class="o">-</span> <span class="n">beginning_cc</span>
+                                     <span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sO</span> <span class="o">-</span> <span class="n">beginning_cc</span><span class="p">)</span>
+                        <span class="n">d_ccoords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">beginning_cc</span> <span class="o">+</span> <span class="n">cnorm_vec</span><span class="p">)</span>
+                        <span class="n">sG</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">mn</span><span class="p">,</span> <span class="n">nO</span><span class="p">)</span>
+                    <span class="n">ordered_ccoords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order_ccoords</span><span class="p">(</span>
+                        <span class="n">d_ccoords</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">beginning_cc</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d_ccoords</span><span class="p">)):</span>
+                        <span class="n">d_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;D</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="n">sG</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">d_name</span><span class="p">,</span>
+                                    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;D&quot;</span><span class="p">,</span>
+                                    <span class="n">ccoords</span><span class="o">=</span><span class="n">ordered_ccoords</span><span class="p">[</span><span class="n">row</span><span class="p">])</span>
+                        <span class="n">sG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">mn</span><span class="p">,</span> <span class="n">d_name</span><span class="p">)</span>
+                        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#clean all metal bonds if no dummy atoms</span>
+            <span class="k">for</span> <span class="n">mn</span> <span class="ow">in</span> <span class="n">metal_nodes</span><span class="p">:</span>
+                <span class="n">neighbor_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sG</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="n">mn</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">neighbor_nodes</span><span class="p">:</span>
+                    <span class="n">sG</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">mn</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+        <span class="c1"># Ensure hydrogens are connected to nearest oxygen</span>
+        <span class="k">for</span> <span class="n">hn</span> <span class="ow">in</span> <span class="n">hydrogen_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">sG</span><span class="p">,</span> <span class="n">hn</span><span class="p">)):</span>
+                <span class="n">nearest_o</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">oxygen_nodes</span><span class="p">,</span>
+                                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">on</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">sG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">hn</span><span class="p">][</span>
+                                    <span class="s2">&quot;ccoords&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">on</span><span class="p">][</span><span class="s2">&quot;ccoords&quot;</span><span class="p">]))</span>
+                <span class="n">sG</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">hn</span><span class="p">,</span> <span class="n">nearest_o</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sG</span> <span class="o">=</span> <span class="n">sG</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sG_subparts</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">sG</span><span class="p">),</span>
+                                  <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span>
+                                  <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_lines_of_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subgraph</span><span class="p">,</span> <span class="n">subgraph_nodes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node</span><span class="p">:</span>
+            <span class="c1">#just metal atom</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">not_metal_nodes</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">nn</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
+                <span class="k">return</span> <span class="n">l</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+            <span class="n">rows</span> <span class="o">=</span> <span class="p">[[</span>
+                <span class="n">n</span><span class="p">,</span> <span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="o">*</span><span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;ccoords&quot;</span><span class="p">]</span>
+            <span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">subgraph_nodes</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">not_metal_nodes</span><span class="p">(</span><span class="n">subgraph_nodes</span><span class="p">):</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+            <span class="k">return</span> <span class="n">rows</span>
+
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[[</span>
+            <span class="n">sn</span><span class="p">,</span> <span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">sn</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="o">*</span><span class="n">subgraph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">sn</span><span class="p">][</span><span class="s2">&quot;ccoords&quot;</span><span class="p">]</span>
+        <span class="p">]</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">subgraph_nodes</span><span class="p">]</span>
+        <span class="n">has_dummy</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">nn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;D&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">subgraph_nodes</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">reverse</span><span class="o">=</span><span class="ow">not</span> <span class="n">has_dummy</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rows</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_bonds_from_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subgraph</span><span class="p">):</span>
+        <span class="n">bonds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span> <span class="ow">in</span> <span class="n">subgraph</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+            <span class="n">bond_type</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span> <span class="k">if</span> <span class="n">nn</span><span class="p">(</span><span class="n">atom1</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="ow">or</span> <span class="n">nn</span><span class="p">(</span><span class="n">atom2</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span> <span class="k">else</span> <span class="s2">&quot;S&quot;</span>
+            <span class="n">bonds</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">bond_type</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">bonds</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_dummy_node_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_files</span><span class="p">:</span>
+            <span class="n">dummy_pdbfile_full_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_pdbfile</span>
+        <span class="n">metal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span>
+        <span class="n">sG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sG</span>
+
+        <span class="n">all_atom_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_atom_bonds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_atom_lines_head</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_atom_bonds_head</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_atom_lines_tail</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_atom_bonds_tail</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">subnodes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subpart_nodes</span><span class="p">:</span>
+            <span class="n">subgraph</span> <span class="o">=</span> <span class="n">sG</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">subnodes</span><span class="p">)</span>
+            <span class="n">sorted_nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">subnodes</span><span class="p">)</span>
+            <span class="c1">#extend Dummy or metal node firstly</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span> <span class="ow">in</span> <span class="p">[</span><span class="n">nn</span><span class="p">(</span><span class="n">sn</span><span class="p">)</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">subnodes</span><span class="p">]:</span>
+                <span class="n">all_atom_lines_head</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lines_of_atoms</span><span class="p">(</span><span class="n">subgraph</span><span class="p">,</span> <span class="n">sorted_nodes</span><span class="p">))</span>
+                <span class="n">all_atom_bonds_head</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_bonds_from_subgraph</span><span class="p">(</span><span class="n">subgraph</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">all_atom_lines_tail</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lines_of_atoms</span><span class="p">(</span><span class="n">subgraph</span><span class="p">,</span> <span class="n">sorted_nodes</span><span class="p">))</span>
+                <span class="n">all_atom_bonds_tail</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_bonds_from_subgraph</span><span class="p">(</span><span class="n">subgraph</span><span class="p">))</span>
+
+            <span class="n">all_atom_bonds</span> <span class="o">=</span> <span class="n">all_atom_bonds_head</span> <span class="o">+</span> <span class="n">all_atom_bonds_tail</span>
+            <span class="n">all_atom_lines</span> <span class="o">=</span> <span class="n">all_atom_lines_head</span> <span class="o">+</span> <span class="n">all_atom_lines_tail</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Generated by MOFbuilder</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;REMARK Dummy atoms added to </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_pdbfile</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;REMARK Metal type: </span><span class="si">{</span><span class="n">metal</span><span class="si">}</span><span class="s2">, Valence: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metal_valence</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;REMARK Total atoms: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_atom_lines</span><span class="p">)</span><span class="si">}</span><span class="s2">, Total bonds: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_atom_bonds</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_files</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pdbwriter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dummy_pdbfile_full_path</span><span class="p">,</span>
+                                 <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+                                 <span class="n">lines</span><span class="o">=</span><span class="n">all_atom_lines</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">all_atom_lines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bonds</span> <span class="o">=</span> <span class="n">all_atom_bonds</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_dummy_node_split_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#head: without dummy atoms</span>
+        <span class="c1">#tail: with dummy atoms and metal atoms</span>
+        <span class="n">nodes_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;O&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;HO&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;HHO&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;METAL&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;others&#39;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">&#39;OOX&#39;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_OOX</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1">#two oxygens and one X connected atoms</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_O</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1">#two oxygens connected atoms</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_HO</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1">#one oxygen and one hydrogen connected atoms</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_HHO</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="c1">#one oxygen and two hydrogen connected atoms</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">list</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">is_METAL</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+            <span class="n">nnlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">nn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">nnlist</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+
+        <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sG_subparts</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">nn</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sub</span><span class="p">]</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;X&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+                <span class="n">head</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">sub</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">is_O</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                    <span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;O&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">is_HO</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                    <span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;HO&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">is_HHO</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                    <span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;HHO&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">is_METAL</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                    <span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;METAL&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;others&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tail</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">sub</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">is_OOX</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                    <span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;OOX&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">subpart_nodes</span> <span class="o">=</span> <span class="n">head</span> <span class="o">+</span> <span class="n">tail</span>
+
+        <span class="n">dummy_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;METAL&#39;</span><span class="p">])</span>
+        <span class="n">hho_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;HHO&#39;</span><span class="p">])</span>
+        <span class="n">ho_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;HO&#39;</span><span class="p">])</span>
+        <span class="n">o_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;O&#39;</span><span class="p">])</span>
+        <span class="n">dummy_res_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_dict</span><span class="p">[</span><span class="s2">&quot;METAL&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ooc_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;OOX&#39;</span><span class="p">])</span>
+        <span class="n">node_split_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;HHO_count&quot;</span><span class="p">:</span> <span class="n">hho_count</span><span class="p">,</span>
+            <span class="s2">&quot;HO_count&quot;</span><span class="p">:</span> <span class="n">ho_count</span><span class="p">,</span>
+            <span class="s2">&quot;O_count&quot;</span><span class="p">:</span> <span class="n">o_count</span><span class="p">,</span>
+            <span class="s2">&quot;METAL_count&quot;</span><span class="p">:</span> <span class="n">dummy_count</span><span class="p">,</span>
+            <span class="s2">&quot;dummy_res_len&quot;</span><span class="p">:</span> <span class="n">dummy_res_len</span><span class="p">,</span>
+            <span class="s2">&quot;OOC_count&quot;</span><span class="p">:</span> <span class="n">ooc_count</span><span class="p">,</span>
+            <span class="s2">&quot;inres_count&quot;</span><span class="p">:</span> <span class="n">hho_count</span> <span class="o">+</span> <span class="n">ho_count</span> <span class="o">+</span> <span class="n">o_count</span> <span class="o">+</span> <span class="n">dummy_count</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node_split_dict</span> <span class="o">=</span> <span class="n">node_split_dict</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_files</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node_split_dict_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">&quot;_dummy_dict.txt&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_dummy_node_split_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_files</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Writing dummy node split dictionary to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_node_split_dict_path</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_node_split_dict_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node_split_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">:</span><span class="s2">20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">&lt;4</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Dummy </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span><span class="si">}</span><span class="s2"> node split dictionary saved to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_node_split_dict_path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_copy_node_pdb2target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_files</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="n">target_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Copying node pdb file to target directory: </span><span class="si">{</span><span class="n">target_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">target_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
+            <span class="n">dst</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node pdb file copied to </span><span class="si">{</span><span class="n">target_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FrameNode.create">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.node.html#mofbuilder.core.FrameNode.create">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_dirs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodepdb2xyz</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodepdb2G</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdbwriter</span><span class="o">.</span><span class="n">_debug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_node</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_dummy_atoms_nodepdb</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generate_dummy_node_split_dict</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="s2">&quot;Adding dummy atoms to node...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_dummy_node_pdb</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_dummy_node_split_dict</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Final node graph has </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sG</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2"> nodes and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sG</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span><span class="si">}</span><span class="s2"> edges.&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="s2">&quot;No dummy atoms to add.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_dummy_atoms_nodepdb</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generate_dummy_node_split_dict</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="s2">&quot;Adding dummy atoms to node...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_dummy_node_pdb</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_dummy_node_split_dict</span><span class="p">()</span>
+            <span class="c1">#self._copy_node_pdb2target()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_X_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdbreader</span><span class="o">.</span><span class="n">expand_arr2data</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_files</span><span class="p">:</span>
+            <span class="c1">#read the new pdb file to get self.node_data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pdbreader</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_pdbfilename</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Node processing completed. New pdb file at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">new_pdbfilename</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Node created from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2"> with metal type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">node_metal_type</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">node_test</span> <span class="o">=</span> <span class="n">FrameNode</span><span class="p">()</span>
+    <span class="n">node_test</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;tests/testdata/testnode.pdb&quot;</span>
+    <span class="n">node_test</span><span class="o">.</span><span class="n">target_dir</span> <span class="o">=</span> <span class="s2">&quot;tests/testoutput&quot;</span>
+    <span class="n">node_test</span><span class="o">.</span><span class="n">node_metal_type</span> <span class="o">=</span> <span class="s2">&quot;Zr&quot;</span>
+    <span class="n">node_test</span><span class="o">.</span><span class="n">dummy_node</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">node_test</span><span class="o">.</span><span class="n">_debug</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">node_test</span><span class="o">.</span><span class="n">save_files</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">node_test</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Chenxi Li.
+      <span class="lastupdated">Last updated on 2026-03-06.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

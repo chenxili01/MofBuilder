@@ -1,0 +1,1030 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mofbuilder.md.SolvationBuilder &#8212; MOFBuilder 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5ac31dca" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_generated/mofbuilder.md.SolvationBuilder';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mofbuilder.md.LinkerForceFieldGenerator" href="mofbuilder.md.LinkerForceFieldGenerator.html" />
+    <link rel="prev" title="mofbuilder.md.OpenmmSetup" href="mofbuilder.md.OpenmmSetup.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+    <meta name="docbuild:last-update" content="2026-03-06"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MOFBuilder 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.MetalOrganicFrameworkBuilder.html">mofbuilder.MetalOrganicFrameworkBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.framework.Framework.html">mofbuilder.core.framework.Framework</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameNet.html">mofbuilder.core.FrameNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameNode.html">mofbuilder.core.FrameNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameLinker.html">mofbuilder.core.FrameLinker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameTermination.html">mofbuilder.core.FrameTermination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.MofTopLibrary.html">mofbuilder.core.MofTopLibrary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.NetOptimizer.html">mofbuilder.core.NetOptimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.SupercellBuilder.html">mofbuilder.core.SupercellBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.EdgeGraphBuilder.html">mofbuilder.core.EdgeGraphBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.TerminationDefectGenerator.html">mofbuilder.core.TerminationDefectGenerator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.MofWriter.html">mofbuilder.core.MofWriter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.CifReader.html">mofbuilder.io.CifReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.CifWriter.html">mofbuilder.io.CifWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.PdbReader.html">mofbuilder.io.PdbReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.PdbWriter.html">mofbuilder.io.PdbWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.GroReader.html">mofbuilder.io.GroReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.GroWriter.html">mofbuilder.io.GroWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.XyzReader.html">mofbuilder.io.XyzReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.XyzWriter.html">mofbuilder.io.XyzWriter</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.OpenmmSetup.html">mofbuilder.md.OpenmmSetup</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mofbuilder.md.SolvationBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.LinkerForceFieldGenerator.html">mofbuilder.md.LinkerForceFieldGenerator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.GromacsForcefieldMerger.html">mofbuilder.md.GromacsForcefieldMerger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.ForceFieldMapper.html">mofbuilder.md.ForceFieldMapper</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.visualization.Viewer.html">mofbuilder.visualization.Viewer</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.fetch_pdbfile.html">mofbuilder.utils.fetch_pdbfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.unit_cell_to_cartesian_matrix.html">mofbuilder.utils.unit_cell_to_cartesian_matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.fractional_to_cartesian.html">mofbuilder.utils.fractional_to_cartesian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.cartesian_to_fractional.html">mofbuilder.utils.cartesian_to_fractional</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api_reference.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mofbuilder.md.SolvationBuilder</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mofbuilder-md-solvationbuilder">
+<h1>mofbuilder.md.SolvationBuilder<a class="headerlink" href="#mofbuilder-md-solvationbuilder" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mofbuilder.md.</span></span><span class="sig-name descname"><span class="pre">SolvationBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ostream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/md/solvationbuilder.html#SolvationBuilder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.md.SolvationBuilder" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Builder for the creation of solvated molecular structures in a periodic box.</p>
+<p>This class provides methods to pack solvent molecules around a solute inside
+a simulation box, avoiding atomistic overlaps and managing multi-solvent systems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comm</strong> (<em>Any</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>ostream</strong> (<em>veloxchem.outputstream.OutputStream</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.comm">
+<span class="sig-name descname"><span class="pre">comm</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.comm" title="Link to this definition">#</a></dt>
+<dd><p>MPI Communicator used for parallel operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MPI.Comm</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.rank" title="Link to this definition">#</a></dt>
+<dd><p>Rank of the current process in the communicator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.nodes">
+<span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.nodes" title="Link to this definition">#</a></dt>
+<dd><p>Number of processes in the communicator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.ostream">
+<span class="sig-name descname"><span class="pre">ostream</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.ostream" title="Link to this definition">#</a></dt>
+<dd><p>Output stream for logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>OutputStream</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.buffer">
+<span class="sig-name descname"><span class="pre">buffer</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.buffer" title="Link to this definition">#</a></dt>
+<dd><p>Minimum distance between atoms of different residues (Å).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.box_size">
+<span class="sig-name descname"><span class="pre">box_size</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.box_size" title="Link to this definition">#</a></dt>
+<dd><p>Simulation box size (Å).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray|list|None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.trial_rounds">
+<span class="sig-name descname"><span class="pre">trial_rounds</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.trial_rounds" title="Link to this definition">#</a></dt>
+<dd><p>Number of solvation trials to attempt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.max_fill_rounds">
+<span class="sig-name descname"><span class="pre">max_fill_rounds</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.max_fill_rounds" title="Link to this definition">#</a></dt>
+<dd><p>Maximum number of cavity-filling iterations per trial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.scalar">
+<span class="sig-name descname"><span class="pre">scalar</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.scalar" title="Link to this definition">#</a></dt>
+<dd><p>Factor to alter number of random solvent candidates per round.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.solute_file">
+<span class="sig-name descname"><span class="pre">solute_file</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.solute_file" title="Link to this definition">#</a></dt>
+<dd><p>Filename of solute structure (xyz).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str|None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.solute_data">
+<span class="sig-name descname"><span class="pre">solute_data</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.solute_data" title="Link to this definition">#</a></dt>
+<dd><p>Pre-loaded solute data array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray|None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.solvents_names">
+<span class="sig-name descname"><span class="pre">solvents_names</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.solvents_names" title="Link to this definition">#</a></dt>
+<dd><p>List of solvent names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.solvents_files">
+<span class="sig-name descname"><span class="pre">solvents_files</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.solvents_files" title="Link to this definition">#</a></dt>
+<dd><p>List of solvent structure xyz filenames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.solvents_proportions">
+<span class="sig-name descname"><span class="pre">solvents_proportions</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.solvents_proportions" title="Link to this definition">#</a></dt>
+<dd><p>List of solvent proportions (sum to 1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.solvents_quantities">
+<span class="sig-name descname"><span class="pre">solvents_quantities</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.solvents_quantities" title="Link to this definition">#</a></dt>
+<dd><p>List of solvent molecule counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.best_solvents_dict">
+<span class="sig-name descname"><span class="pre">best_solvents_dict</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.best_solvents_dict" title="Link to this definition">#</a></dt>
+<dd><p>Holds best-performing solvent data after solvation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict|None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.custom_solvent_data">
+<span class="sig-name descname"><span class="pre">custom_solvent_data</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.custom_solvent_data" title="Link to this definition">#</a></dt>
+<dd><p>Data for user-supplied solvents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.preferred_region_box">
+<span class="sig-name descname"><span class="pre">preferred_region_box</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.preferred_region_box" title="Link to this definition">#</a></dt>
+<dd><p>Sub-box coordinates for focused packing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list|None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.target_directory">
+<span class="sig-name descname"><span class="pre">target_directory</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.target_directory" title="Link to this definition">#</a></dt>
+<dd><p>Directory for output files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str|Path|None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder._debug">
+<span class="sig-name descname"><span class="pre">_debug</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder._debug" title="Link to this definition">#</a></dt>
+<dd><p>Toggle debug logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.original_solvents_dict">
+<span class="sig-name descname"><span class="pre">original_solvents_dict</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.original_solvents_dict" title="Link to this definition">#</a></dt>
+<dd><p>Holds original solvents input dict (set in solvate()).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.solute_dict">
+<span class="sig-name descname"><span class="pre">solute_dict</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.solute_dict" title="Link to this definition">#</a></dt>
+<dd><p>Solute information (labels/coords/n_atoms).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.rc_solute_coords">
+<span class="sig-name descname"><span class="pre">rc_solute_coords</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.rc_solute_coords" title="Link to this definition">#</a></dt>
+<dd><p>Solute coords recentered inside box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.safe_box">
+<span class="sig-name descname"><span class="pre">safe_box</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.safe_box" title="Link to this definition">#</a></dt>
+<dd><p>Internal safe box definition used during packing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.solvents_datalines">
+<span class="sig-name descname"><span class="pre">solvents_datalines</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.solvents_datalines" title="Link to this definition">#</a></dt>
+<dd><p>Data lines for solvents in output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.system_datalines">
+<span class="sig-name descname"><span class="pre">system_datalines</span></span><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.system_datalines" title="Link to this definition">#</a></dt>
+<dd><p>Solute+solvent combined output datalines.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ostream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/md/solvationbuilder.html#SolvationBuilder.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize the SolvationBuilder object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comm</strong> (<em>MPI.Comm</em><em>, </em><em>optional</em>) – MPI communicator.</p></li>
+<li><p><strong>ostream</strong> (<em>OutputStream</em><em>, </em><em>optional</em>) – Output stream for logging.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.md.SolvationBuilder.__init__" title="mofbuilder.md.SolvationBuilder.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([comm, ostream])</p></td>
+<td><p>Initialize the SolvationBuilder object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.md.SolvationBuilder.add_custom_solvent" title="mofbuilder.md.SolvationBuilder.add_custom_solvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_custom_solvent</span></code></a>(solvent_file, density, ...)</p></td>
+<td><p>Add custom solvent definition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.md.SolvationBuilder.grid_points_template" title="mofbuilder.md.SolvationBuilder.grid_points_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">grid_points_template</span></code></a>(solvents_dict, box_size)</p></td>
+<td><p>Generate a cubic lattice of grid points within the simulation box for use as candidate centers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.md.SolvationBuilder.load_solute_info" title="mofbuilder.md.SolvationBuilder.load_solute_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_solute_info</span></code></a>([solute_file, solute_data])</p></td>
+<td><p>Load solute label/coord data from xyz file or pre-loaded array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.md.SolvationBuilder.molecule_radii" title="mofbuilder.md.SolvationBuilder.molecule_radii"><code class="xref py py-obj docutils literal notranslate"><span class="pre">molecule_radii</span></code></a>(coords)</p></td>
+<td><p>Estimate molecule radius by half-max distance from origin.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.md.SolvationBuilder.mols_radii" title="mofbuilder.md.SolvationBuilder.mols_radii"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mols_radii</span></code></a>(solvents_dict)</p></td>
+<td><p>Return representative max radius from all solvents above 0.1 proportion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.md.SolvationBuilder.remove_overlaps_kdtree" title="mofbuilder.md.SolvationBuilder.remove_overlaps_kdtree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_overlaps_kdtree</span></code></a>(existing_coords, ...)</p></td>
+<td><p>Check for overlaps between candidate atoms and existing atoms/residues.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.md.SolvationBuilder.solvate" title="mofbuilder.md.SolvationBuilder.solvate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solvate</span></code></a>()</p></td>
+<td><p>Perform the primary packing/solvation operation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.md.SolvationBuilder.write_output" title="mofbuilder.md.SolvationBuilder.write_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_output</span></code></a>([output_file, format])</p></td>
+<td><p>Write the solvated system to file(s) in various formats.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.remove_overlaps_kdtree">
+<span class="sig-name descname"><span class="pre">remove_overlaps_kdtree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">existing_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate_residues</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/md/solvationbuilder.html#SolvationBuilder.remove_overlaps_kdtree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.remove_overlaps_kdtree" title="Link to this definition">#</a></dt>
+<dd><p>Check for overlaps between candidate atoms and existing atoms/residues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>existing_coords</strong> (<em>np.ndarray</em>) – Atomic coordinates (existing).</p></li>
+<li><p><strong>candidate_coords</strong> (<em>np.ndarray</em>) – Atomic coordinates (candidates).</p></li>
+<li><p><strong>candidate_residues</strong> (<em>np.ndarray</em>) – Residue indices (candidates).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(keep_mask, drop_mask), Booleans for keeping/dropping atoms.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.add_custom_solvent">
+<span class="sig-name descname"><span class="pre">add_custom_solvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solvent_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molar_mass</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/md/solvationbuilder.html#SolvationBuilder.add_custom_solvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.add_custom_solvent" title="Link to this definition">#</a></dt>
+<dd><p>Add custom solvent definition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solvent_file</strong> (<em>str</em><em> or </em><em>List</em><em>[</em><em>str</em><em>]</em>) – File name(s) of the solvent xyz structure(s).</p></li>
+<li><p><strong>density</strong> (<em>float</em><em> or </em><em>List</em><em>[</em><em>float</em><em>]</em>) – Density/densities in g/cm³.</p></li>
+<li><p><strong>molar_mass</strong> (<em>float</em><em> or </em><em>List</em><em>[</em><em>float</em><em>]</em>) – Molecular mass(es) in g/mol.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.molecule_radii">
+<span class="sig-name descname"><span class="pre">molecule_radii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/md/solvationbuilder.html#SolvationBuilder.molecule_radii"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.molecule_radii" title="Link to this definition">#</a></dt>
+<dd><p>Estimate molecule radius by half-max distance from origin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coords</strong> (<em>np.ndarray</em>) – Coordinates relative to center.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Estimated radius (Å).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.mols_radii">
+<span class="sig-name descname"><span class="pre">mols_radii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solvents_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/md/solvationbuilder.html#SolvationBuilder.mols_radii"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.mols_radii" title="Link to this definition">#</a></dt>
+<dd><p>Return representative max radius from all solvents above 0.1 proportion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>solvents_dict</strong> (<em>dict</em>) – Solvent info dictionary.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Maximum solvent molecular radius (Å).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.load_solute_info">
+<span class="sig-name descname"><span class="pre">load_solute_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solute_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solute_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/md/solvationbuilder.html#SolvationBuilder.load_solute_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.load_solute_info" title="Link to this definition">#</a></dt>
+<dd><p>Load solute label/coord data from xyz file or pre-loaded array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solute_file</strong> (<em>str</em><em>, </em><em>optional</em>) – File path of solute xyz.</p></li>
+<li><p><strong>solute_data</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – Pre-provided solute data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict with keys ‘labels’, ‘coords’, and ‘n_atoms’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.grid_points_template">
+<span class="sig-name descname"><span class="pre">grid_points_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solvents_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/md/solvationbuilder.html#SolvationBuilder.grid_points_template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.grid_points_template" title="Link to this definition">#</a></dt>
+<dd><p>Generate a cubic lattice of grid points within the simulation box for use as candidate centers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solvents_dict</strong> (<em>dict</em>) – Dictionary of solvent properties.</p></li>
+<li><p><strong>box_size</strong> (<em>np.ndarray</em><em> | </em><em>list</em>) – Box size (length 3).</p></li>
+<li><p><strong>grid_spacing</strong> (<em>float</em><em>, </em><em>optional</em>) – Grid spacing (Å).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Grid points shape (N, 3).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.solvate">
+<span class="sig-name descname"><span class="pre">solvate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/md/solvationbuilder.html#SolvationBuilder.solvate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.solvate" title="Link to this definition">#</a></dt>
+<dd><p>Perform the primary packing/solvation operation.</p>
+<p>Places all solvent molecules into the simulation box around the solute, avoiding overlaps and
+preserving the desired ratios/densities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>best_solvents_dict, with info on final solvent placements/atoms/etc.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.md.SolvationBuilder.write_output">
+<span class="sig-name descname"><span class="pre">write_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'solvated_structure'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/md/solvationbuilder.html#SolvationBuilder.write_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.md.SolvationBuilder.write_output" title="Link to this definition">#</a></dt>
+<dd><p>Write the solvated system to file(s) in various formats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_file</strong> (<em>str</em><em>, </em><em>optional</em>) – Base target name (suffix added per format).</p></li>
+<li><p><strong>format</strong> (<em>str</em><em> | </em><em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – Output format(s): xyz, pdb, gro.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mofbuilder.md.OpenmmSetup.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mofbuilder.md.OpenmmSetup</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mofbuilder.md.LinkerForceFieldGenerator.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mofbuilder.md.LinkerForceFieldGenerator</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.comm"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.comm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.rank"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.rank</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.nodes"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.nodes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.ostream"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.ostream</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.buffer"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.buffer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.box_size"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.box_size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.trial_rounds"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.trial_rounds</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.max_fill_rounds"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.max_fill_rounds</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.scalar"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.scalar</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.solute_file"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.solute_file</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.solute_data"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.solute_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.solvents_names"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.solvents_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.solvents_files"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.solvents_files</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.solvents_proportions"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.solvents_proportions</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.solvents_quantities"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.solvents_quantities</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.best_solvents_dict"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.best_solvents_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.custom_solvent_data"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.custom_solvent_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.preferred_region_box"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.preferred_region_box</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.target_directory"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.target_directory</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder._debug"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder._debug</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.original_solvents_dict"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.original_solvents_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.solute_dict"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.solute_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.rc_solute_coords"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.rc_solute_coords</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.safe_box"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.safe_box</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.solvents_datalines"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.solvents_datalines</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.system_datalines"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.system_datalines</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.__init__"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.remove_overlaps_kdtree"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.remove_overlaps_kdtree()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.add_custom_solvent"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.add_custom_solvent()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.molecule_radii"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.molecule_radii()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.mols_radii"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.mols_radii()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.load_solute_info"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.load_solute_info()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.grid_points_template"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.grid_points_template()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.solvate"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.solvate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.md.SolvationBuilder.write_output"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder.write_output()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Chenxi Li.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

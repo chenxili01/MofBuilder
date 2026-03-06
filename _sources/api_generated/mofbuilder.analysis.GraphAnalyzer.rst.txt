@@ -1,0 +1,25 @@
+﻿mofbuilder.analysis.GraphAnalyzer
+=================================
+
+.. currentmodule:: mofbuilder.analysis
+
+.. autoclass:: GraphAnalyzer
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~GraphAnalyzer.__init__
+      ~GraphAnalyzer.find_cycles
+      ~GraphAnalyzer.node_degree_distribution
+      ~GraphAnalyzer.shortest_path
+   
+   
+
+   
+   
+   

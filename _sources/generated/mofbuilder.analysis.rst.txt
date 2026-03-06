@@ -1,0 +1,14 @@
+﻿mofbuilder.analysis
+===================
+
+.. automodule:: mofbuilder.analysis
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   graph_analysis
+   porosity

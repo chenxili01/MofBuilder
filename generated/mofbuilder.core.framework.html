@@ -1,0 +1,746 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mofbuilder.core.framework &mdash; MofBuilder 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mofbuilder.core.linker" href="mofbuilder.core.linker.html" />
+    <link rel="prev" title="mofbuilder.core.defects" href="mofbuilder.core.defects.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            MofBuilder
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../manual/index.html">User Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../manual/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../manual/installation.html#install-from-source">Install from source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/installation.html#install-development-dependencies">Install development dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/installation.html#install-documentation-dependencies">Install documentation dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/installation.html#build-the-manual">Build the manual</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../manual/quickstart.html">Quickstart</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../manual/quickstart.html#basic-import">Basic import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/quickstart.html#access-the-builder-entry-point">Access the builder entry point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manual/quickstart.html#explore-subpackages">Explore subpackages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api_reference.html#module-mofbuilder">Top-Level Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.comm"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.comm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rank"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.ostream"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.ostream</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_family"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_family</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_metal"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_metal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node_dict"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.data_path"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.data_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_linker"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_linker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_terminations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_net"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_net</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_top_library"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_top_library</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_optimizer"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_optimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mofwriter"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mofwriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.defectgenerator"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.defectgenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_spacegroup"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_spacegroup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell_inv"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell_inv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_edges"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_pair_vertex_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_pair_vertex_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_xyzfile"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_xyzfile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_smiles"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_smiles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_charge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_charge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_multiplicity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_multiplicity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_frag_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_frag_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_fake_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_fake_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_name"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_Y_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_Y_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.constant_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.constant_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_optimized_rotations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_optimized_rotations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.skip_rotation_optimization"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.skip_rotation_optimization</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rotation_filename"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rotation_filename</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.supercell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_node_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_node_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_edge_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_edge_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder._debug"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder._debug</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_mof_families"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_mof_families()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_metals"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_metals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_terminations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_solvents"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_solvents()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.optimize_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.optimize_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.make_supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.make_supercell()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.build"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api_reference.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mofbuilder.analysis.html">mofbuilder.analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.analysis.html#mofbuilder.analysis.PorosityAnalyzer"><code class="docutils literal notranslate"><span class="pre">PorosityAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.analysis.html#mofbuilder.analysis.GraphAnalyzer"><code class="docutils literal notranslate"><span class="pre">GraphAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.analysis.graph_analysis.html">mofbuilder.analysis.graph_analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.analysis.porosity.html">mofbuilder.analysis.porosity</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="mofbuilder.core.html">mofbuilder.core</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.TerminationDefectGenerator"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.Framework"><code class="docutils literal notranslate"><span class="pre">Framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.FrameNet"><code class="docutils literal notranslate"><span class="pre">FrameNet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.FrameNode"><code class="docutils literal notranslate"><span class="pre">FrameNode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.FrameLinker"><code class="docutils literal notranslate"><span class="pre">FrameLinker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.FrameTermination"><code class="docutils literal notranslate"><span class="pre">FrameTermination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.MofTopLibrary"><code class="docutils literal notranslate"><span class="pre">MofTopLibrary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.NetOptimizer"><code class="docutils literal notranslate"><span class="pre">NetOptimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.SupercellBuilder"><code class="docutils literal notranslate"><span class="pre">SupercellBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.EdgeGraphBuilder"><code class="docutils literal notranslate"><span class="pre">EdgeGraphBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.html#mofbuilder.core.MofWriter"><code class="docutils literal notranslate"><span class="pre">MofWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.builder.html">mofbuilder.core.builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.defects.html">mofbuilder.core.defects</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">mofbuilder.core.framework</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.linker.html">mofbuilder.core.linker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.moftoplibrary.html">mofbuilder.core.moftoplibrary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.net.html">mofbuilder.core.net</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.node.html">mofbuilder.core.node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.optimizer.html">mofbuilder.core.optimizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.other.html">mofbuilder.core.other</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.supercell.html">mofbuilder.core.supercell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.superimpose.html">mofbuilder.core.superimpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.termination.html">mofbuilder.core.termination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.core.write.html">mofbuilder.core.write</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mofbuilder.io.html">mofbuilder.io</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.html#mofbuilder.io.CifReader"><code class="docutils literal notranslate"><span class="pre">CifReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.html#mofbuilder.io.CifWriter"><code class="docutils literal notranslate"><span class="pre">CifWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.html#mofbuilder.io.XyzReader"><code class="docutils literal notranslate"><span class="pre">XyzReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.html#mofbuilder.io.XyzWriter"><code class="docutils literal notranslate"><span class="pre">XyzWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.html#mofbuilder.io.PdbReader"><code class="docutils literal notranslate"><span class="pre">PdbReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.html#mofbuilder.io.PdbWriter"><code class="docutils literal notranslate"><span class="pre">PdbWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.html#mofbuilder.io.GroReader"><code class="docutils literal notranslate"><span class="pre">GroReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.html#mofbuilder.io.GroWriter"><code class="docutils literal notranslate"><span class="pre">GroWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.html#mofbuilder.io.nn"><code class="docutils literal notranslate"><span class="pre">nn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.html#mofbuilder.io.nl"><code class="docutils literal notranslate"><span class="pre">nl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.basic.html">mofbuilder.io.basic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.cif_reader.html">mofbuilder.io.cif_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.cif_writer.html">mofbuilder.io.cif_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.gro_reader.html">mofbuilder.io.gro_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.gro_writer.html">mofbuilder.io.gro_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.pdb_reader.html">mofbuilder.io.pdb_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.pdb_writer.html">mofbuilder.io.pdb_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.xyz_reader.html">mofbuilder.io.xyz_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.io.xyz_writer.html">mofbuilder.io.xyz_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mofbuilder.md.html">mofbuilder.md</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.md.html#mofbuilder.md.OpenmmSetup"><code class="docutils literal notranslate"><span class="pre">OpenmmSetup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.md.html#mofbuilder.md.SolvationBuilder"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.md.html#mofbuilder.md.LinkerForceFieldGenerator"><code class="docutils literal notranslate"><span class="pre">LinkerForceFieldGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.md.html#mofbuilder.md.GromacsForcefieldMerger"><code class="docutils literal notranslate"><span class="pre">GromacsForcefieldMerger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.md.html#mofbuilder.md.ForceFieldMapper"><code class="docutils literal notranslate"><span class="pre">ForceFieldMapper</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.md.gmxfilemerge.html">mofbuilder.md.gmxfilemerge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.md.linkerforcefield.html">mofbuilder.md.linkerforcefield</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.md.setup.html">mofbuilder.md.setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.md.solvationbuilder.html">mofbuilder.md.solvationbuilder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mofbuilder.utils.html">mofbuilder.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.utils.html#mofbuilder.utils.fetch_pdbfile"><code class="docutils literal notranslate"><span class="pre">fetch_pdbfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.utils.html#mofbuilder.utils.unit_cell_to_cartesian_matrix"><code class="docutils literal notranslate"><span class="pre">unit_cell_to_cartesian_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.utils.html#mofbuilder.utils.fractional_to_cartesian"><code class="docutils literal notranslate"><span class="pre">fractional_to_cartesian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.utils.html#mofbuilder.utils.cartesian_to_fractional"><code class="docutils literal notranslate"><span class="pre">cartesian_to_fractional()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.utils.constants.html">mofbuilder.utils.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.utils.environment.html">mofbuilder.utils.environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.utils.fetch.html">mofbuilder.utils.fetch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.utils.geometry.html">mofbuilder.utils.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.utils.periodic_table.html">mofbuilder.utils.periodic_table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mofbuilder.visualization.html">mofbuilder.visualization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.visualization.html#mofbuilder.visualization.Viewer"><code class="docutils literal notranslate"><span class="pre">Viewer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="mofbuilder.visualization.viewer.html">mofbuilder.visualization.viewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MofBuilder</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api_reference.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="mofbuilder.core.html">mofbuilder.core</a></li>
+      <li class="breadcrumb-item active">mofbuilder.core.framework</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/mofbuilder.core.framework.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mofbuilder.core.framework">
+<span id="mofbuilder-core-framework"></span><h1>mofbuilder.core.framework<a class="headerlink" href="#module-mofbuilder.core.framework" title="Link to this heading"></a></h1>
+<p>Built MOF framework: write output, solvation, force field, and defect replacement.</p>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.framework.Framework" title="mofbuilder.core.framework.Framework"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Framework</span></code></a>([comm, ostream])</p></td>
+<td><p>Holds the built MOF: graph, cell, merged data, and options for writing, solvation, and MD.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mofbuilder.core.framework.</span></span><span class="sig-name descname"><span class="pre">Framework</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ostream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holds the built MOF: graph, cell, merged data, and options for writing, solvation, and MD.</p>
+<p>Set by MetalOrganicFrameworkBuilder.build(). Provides write() for file output,
+replace() for defects, and access to solvationbuilder and linker FF settings.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.comm">
+<span class="sig-name descname"><span class="pre">comm</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.comm" title="Link to this definition"></a></dt>
+<dd><p>MPI communicator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.rank" title="Link to this definition"></a></dt>
+<dd><p>MPI rank of this process.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.nodes">
+<span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.nodes" title="Link to this definition"></a></dt>
+<dd><p>MPI size (number of processes).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.ostream">
+<span class="sig-name descname"><span class="pre">ostream</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.ostream" title="Link to this definition"></a></dt>
+<dd><p>Output stream for logging.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.mofwriter">
+<span class="sig-name descname"><span class="pre">mofwriter</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.mofwriter" title="Link to this definition"></a></dt>
+<dd><p>MofWriter instance for writing PDB/GRO/XYZ/CIF.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.framework_data">
+<span class="sig-name descname"><span class="pre">framework_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.framework_data" title="Link to this definition"></a></dt>
+<dd><p>Merged Cartesian data for the whole framework (set in write()).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.framework_fcoords_data">
+<span class="sig-name descname"><span class="pre">framework_fcoords_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.framework_fcoords_data" title="Link to this definition"></a></dt>
+<dd><p>Merged fractional data (set in write()).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvationbuilder">
+<span class="sig-name descname"><span class="pre">solvationbuilder</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvationbuilder" title="Link to this definition"></a></dt>
+<dd><p>SolvationBuilder instance for adding solvents.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvents">
+<span class="sig-name descname"><span class="pre">solvents</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvents" title="Link to this definition"></a></dt>
+<dd><p>List of solvent names or xyz files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvents_molecules">
+<span class="sig-name descname"><span class="pre">solvents_molecules</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvents_molecules" title="Link to this definition"></a></dt>
+<dd><p>List of solvent molecules.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvents_proportions">
+<span class="sig-name descname"><span class="pre">solvents_proportions</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvents_proportions" title="Link to this definition"></a></dt>
+<dd><p>List of solvent proportions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvents_quantities">
+<span class="sig-name descname"><span class="pre">solvents_quantities</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvents_quantities" title="Link to this definition"></a></dt>
+<dd><p>List of solvent quantities.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvated_gro_file">
+<span class="sig-name descname"><span class="pre">solvated_gro_file</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvated_gro_file" title="Link to this definition"></a></dt>
+<dd><p>Path to solvated GRO file (set after solvation).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.target_directory">
+<span class="sig-name descname"><span class="pre">target_directory</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.target_directory" title="Link to this definition"></a></dt>
+<dd><p>Output directory for files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.data_path">
+<span class="sig-name descname"><span class="pre">data_path</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.data_path" title="Link to this definition"></a></dt>
+<dd><p>Path to database directory.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.save_files">
+<span class="sig-name descname"><span class="pre">save_files</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.save_files" title="Link to this definition"></a></dt>
+<dd><p>If True, save intermediate/output files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_ff_name">
+<span class="sig-name descname"><span class="pre">linker_ff_name</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_ff_name" title="Link to this definition"></a></dt>
+<dd><p>Name for linker force field (default “Linker”).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_charge">
+<span class="sig-name descname"><span class="pre">linker_charge</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_charge" title="Link to this definition"></a></dt>
+<dd><p>Linker charge for FF generation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_multiplicity">
+<span class="sig-name descname"><span class="pre">linker_multiplicity</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_multiplicity" title="Link to this definition"></a></dt>
+<dd><p>Linker multiplicity.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_reconnect_drv">
+<span class="sig-name descname"><span class="pre">linker_reconnect_drv</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_reconnect_drv" title="Link to this definition"></a></dt>
+<dd><p>Driver for reconnection (e.g. ‘xtb’).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_reconnect_opt">
+<span class="sig-name descname"><span class="pre">linker_reconnect_opt</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_reconnect_opt" title="Link to this definition"></a></dt>
+<dd><p>Whether to run reconnection optimization.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.reconnected_linker_molecule">
+<span class="sig-name descname"><span class="pre">reconnected_linker_molecule</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.reconnected_linker_molecule" title="Link to this definition"></a></dt>
+<dd><p>Molecule after reconnection (set by FF step).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.provided_linker_itpfile">
+<span class="sig-name descname"><span class="pre">provided_linker_itpfile</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.provided_linker_itpfile" title="Link to this definition"></a></dt>
+<dd><p>Optional path to pre-made linker .itp file.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.filename" title="Link to this definition"></a></dt>
+<dd><p>Base filename for output (set in write()).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.resp_charges">
+<span class="sig-name descname"><span class="pre">resp_charges</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.resp_charges" title="Link to this definition"></a></dt>
+<dd><p>Whether to use RESP charges for linker.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework._debug">
+<span class="sig-name descname"><span class="pre">_debug</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework._debug" title="Link to this definition"></a></dt>
+<dd><p>If True, print extra debug messages.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.mof_family">
+<span class="sig-name descname"><span class="pre">mof_family</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.mof_family" title="Link to this definition"></a></dt>
+<dd><p>MOF family name (set by builder).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.node_metal">
+<span class="sig-name descname"><span class="pre">node_metal</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.node_metal" title="Link to this definition"></a></dt>
+<dd><p>Metal type string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.dummy_atom_node">
+<span class="sig-name descname"><span class="pre">dummy_atom_node</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.dummy_atom_node" title="Link to this definition"></a></dt>
+<dd><p>Whether nodes include dummy atoms.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.net_spacegroup">
+<span class="sig-name descname"><span class="pre">net_spacegroup</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.net_spacegroup" title="Link to this definition"></a></dt>
+<dd><p>Space group of the net.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.net_cell_info">
+<span class="sig-name descname"><span class="pre">net_cell_info</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.net_cell_info" title="Link to this definition"></a></dt>
+<dd><p>Cell parameters [a, b, c, alpha, beta, gamma].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.net_unit_cell">
+<span class="sig-name descname"><span class="pre">net_unit_cell</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.net_unit_cell" title="Link to this definition"></a></dt>
+<dd><p>3x3 unit cell matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.node_connectivity">
+<span class="sig-name descname"><span class="pre">node_connectivity</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.node_connectivity" title="Link to this definition"></a></dt>
+<dd><p>Node connectivity.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_connectivity">
+<span class="sig-name descname"><span class="pre">linker_connectivity</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_connectivity" title="Link to this definition"></a></dt>
+<dd><p>Linker connectivity (topic).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_fragment_length">
+<span class="sig-name descname"><span class="pre">linker_fragment_length</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_fragment_length" title="Link to this definition"></a></dt>
+<dd><p>Length of linker fragment.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.node_data">
+<span class="sig-name descname"><span class="pre">node_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.node_data" title="Link to this definition"></a></dt>
+<dd><p>Node atom data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.dummy_atom_node_dict">
+<span class="sig-name descname"><span class="pre">dummy_atom_node_dict</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.dummy_atom_node_dict" title="Link to this definition"></a></dt>
+<dd><p>Dict of dummy atom counts per node.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.termination_data">
+<span class="sig-name descname"><span class="pre">termination_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.termination_data" title="Link to this definition"></a></dt>
+<dd><p>Termination atom data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.termination_X_data">
+<span class="sig-name descname"><span class="pre">termination_X_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.termination_X_data" title="Link to this definition"></a></dt>
+<dd><p>Termination X atoms.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.termination_Y_data">
+<span class="sig-name descname"><span class="pre">termination_Y_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.termination_Y_data" title="Link to this definition"></a></dt>
+<dd><p>Termination Y atoms.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.frame_unit_cell">
+<span class="sig-name descname"><span class="pre">frame_unit_cell</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.frame_unit_cell" title="Link to this definition"></a></dt>
+<dd><p>3x3 frame unit cell matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.frame_cell_info">
+<span class="sig-name descname"><span class="pre">frame_cell_info</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.frame_cell_info" title="Link to this definition"></a></dt>
+<dd><p>Frame cell parameters.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.graph">
+<span class="sig-name descname"><span class="pre">graph</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.graph" title="Link to this definition"></a></dt>
+<dd><p>Edge graph (eG) after building.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.cleaved_graph">
+<span class="sig-name descname"><span class="pre">cleaved_graph</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.cleaved_graph" title="Link to this definition"></a></dt>
+<dd><p>Graph after cleaving/defects.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.graph_index_name_dict">
+<span class="sig-name descname"><span class="pre">graph_index_name_dict</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.graph_index_name_dict" title="Link to this definition"></a></dt>
+<dd><p>Mapping from index to node/edge name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.graph_matched_vnode_xind">
+<span class="sig-name descname"><span class="pre">graph_matched_vnode_xind</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.graph_matched_vnode_xind" title="Link to this definition"></a></dt>
+<dd><p>Matched (node, xind, edge) list.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.supercell_info">
+<span class="sig-name descname"><span class="pre">supercell_info</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.supercell_info" title="Link to this definition"></a></dt>
+<dd><p>Supercell dimensions info.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.supercell">
+<span class="sig-name descname"><span class="pre">supercell</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.supercell" title="Link to this definition"></a></dt>
+<dd><p>Supercell (nx, ny, nz).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.termination">
+<span class="sig-name descname"><span class="pre">termination</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.termination" title="Link to this definition"></a></dt>
+<dd><p>Whether to use terminations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.termination_name">
+<span class="sig-name descname"><span class="pre">termination_name</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.termination_name" title="Link to this definition"></a></dt>
+<dd><p>Name of termination group.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.add_virtual_edge">
+<span class="sig-name descname"><span class="pre">add_virtual_edge</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.add_virtual_edge" title="Link to this definition"></a></dt>
+<dd><p>Whether to add virtual edges for bridge nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.virtual_edge_max_neighbor">
+<span class="sig-name descname"><span class="pre">virtual_edge_max_neighbor</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.virtual_edge_max_neighbor" title="Link to this definition"></a></dt>
+<dd><p>Max neighbors for virtual edge.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.sc_unit_cell">
+<span class="sig-name descname"><span class="pre">sc_unit_cell</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.sc_unit_cell" title="Link to this definition"></a></dt>
+<dd><p>3x3 supercell unit cell matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.sc_unit_cell_inv">
+<span class="sig-name descname"><span class="pre">sc_unit_cell_inv</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.sc_unit_cell_inv" title="Link to this definition"></a></dt>
+<dd><p>Inverse of sc_unit_cell.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.periodicity">
+<span class="sig-name descname"><span class="pre">periodicity</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.periodicity" title="Link to this definition"></a></dt>
+<dd><p>Whether framework is periodic.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_fake_edge">
+<span class="sig-name descname"><span class="pre">linker_fake_edge</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_fake_edge" title="Link to this definition"></a></dt>
+<dd><p>Whether linker is fake (zero-length) edge.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.clean_unsaturated_linkers">
+<span class="sig-name descname"><span class="pre">clean_unsaturated_linkers</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.clean_unsaturated_linkers" title="Link to this definition"></a></dt>
+<dd><p>Whether to remove unsaturated linkers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.update_node_termination">
+<span class="sig-name descname"><span class="pre">update_node_termination</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.update_node_termination" title="Link to this definition"></a></dt>
+<dd><p>Whether to update node terminations after removal.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.unsaturated_linkers">
+<span class="sig-name descname"><span class="pre">unsaturated_linkers</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.unsaturated_linkers" title="Link to this definition"></a></dt>
+<dd><p>List of unsaturated linker names.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.unsaturated_nodes">
+<span class="sig-name descname"><span class="pre">unsaturated_nodes</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.unsaturated_nodes" title="Link to this definition"></a></dt>
+<dd><p>List of unsaturated node names.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.matched_vnode_xind">
+<span class="sig-name descname"><span class="pre">matched_vnode_xind</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.matched_vnode_xind" title="Link to this definition"></a></dt>
+<dd><p>Matched (node, xind, edge) list.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.xoo_dict">
+<span class="sig-name descname"><span class="pre">xoo_dict</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.xoo_dict" title="Link to this definition"></a></dt>
+<dd><p>Dict mapping X index to O indices (XOO) per node.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.residues_info">
+<span class="sig-name descname"><span class="pre">residues_info</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.residues_info" title="Link to this definition"></a></dt>
+<dd><p>Dict of residue names and counts.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvents_dict">
+<span class="sig-name descname"><span class="pre">solvents_dict</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvents_dict" title="Link to this definition"></a></dt>
+<dd><p>Dict of solvent info after solvation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.mlp_type">
+<span class="sig-name descname"><span class="pre">mlp_type</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.mlp_type" title="Link to this definition"></a></dt>
+<dd><p>MLP type for energy minimization (e.g. ‘mace’).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.mlp_model_path">
+<span class="sig-name descname"><span class="pre">mlp_model_path</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.mlp_model_path" title="Link to this definition"></a></dt>
+<dd><p>Path to MLP model file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.replace">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">replace_indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_node_pdbfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_linker_pdbfile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_linker_molecule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mofbuilder.core.framework.Framework" title="mofbuilder.core.framework.Framework"><span class="pre">Framework</span></a></span></span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.replace" title="Link to this definition"></a></dt>
+<dd><p>Replace nodes or linkers at given indices with new geometry; update cleaved_graph and merged data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remove_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.remove" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.get_merged_data">
+<span class="sig-name descname"><span class="pre">get_merged_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extra_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.get_merged_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.get_merged_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodicity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlp_em</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlp_maxIterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.write" title="Link to this definition"></a></dt>
+<dd><p>Write framework to file(s). format: list of ‘pdb’|’gro’|’xyz’|’cif’; optional MLP energy minimization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvate">
+<span class="sig-name descname"><span class="pre">solvate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solvents_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvents_proportions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvents_quantities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_angstrom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.solvate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.generate_linker_forcefield">
+<span class="sig-name descname"><span class="pre">generate_linker_forcefield</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.generate_linker_forcefield"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.generate_linker_forcefield" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.md_prepare">
+<span class="sig-name descname"><span class="pre">md_prepare</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.md_prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.md_prepare" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.show">
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residue_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residue_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.show"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.show" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mofbuilder.core.defects.html" class="btn btn-neutral float-left" title="mofbuilder.core.defects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mofbuilder.core.linker.html" class="btn btn-neutral float-right" title="mofbuilder.core.linker" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Chenxi Li.
+      <span class="lastupdated">Last updated on 2026-03-06.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

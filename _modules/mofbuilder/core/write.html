@@ -1,0 +1,860 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mofbuilder.core.write &mdash; MofBuilder 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            MofBuilder
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../manual/index.html">User Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/installation.html">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-from-source">Install from source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-development-dependencies">Install development dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#install-documentation-dependencies">Install documentation dependencies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/installation.html#build-the-manual">Build the manual</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../manual/quickstart.html">Quickstart</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#basic-import">Basic import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#access-the-builder-entry-point">Access the builder entry point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../manual/quickstart.html#explore-subpackages">Explore subpackages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#module-mofbuilder">Top-Level Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.comm"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.comm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rank"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rank</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.ostream"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.ostream</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_family"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_family</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_metal"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_metal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node_dict"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.dummy_atom_node_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.data_path"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.data_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_linker"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_linker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_terminations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_net"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_net</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_top_library"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mof_top_library</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_optimizer"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_optimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.mofwriter"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.mofwriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.defectgenerator"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.defectgenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_spacegroup"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_spacegroup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell_inv"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_unit_cell_inv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_connectivity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_connectivity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_nodes"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_nodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_edges"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_sorted_edges</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.net_pair_vertex_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.net_pair_vertex_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_xyzfile"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_xyzfile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_smiles"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_smiles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_charge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_charge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_multiplicity"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_multiplicity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_center_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_outer_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_frag_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_frag_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_fake_edge"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.linker_fake_edge</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.node_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.node_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_name"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_molecule"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_molecule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_X_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_X_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_Y_data"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.termination_Y_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.constant_length"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.constant_length</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_optimized_rotations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_optimized_rotations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.skip_rotation_optimization"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.skip_rotation_optimization</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.rotation_filename"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.rotation_filename</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_unit_cell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_unit_cell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_cell_info"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.frame_cell_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.supercell</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_node_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_node_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_edge_list"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.remove_edge_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder._debug"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder._debug</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_mof_families"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_mof_families()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_metals"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_metals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_terminations"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_terminations()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_solvents"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.list_available_solvents()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.load_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.load_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.optimize_framework"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.optimize_framework()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.make_supercell"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.make_supercell()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api_reference.html#mofbuilder.MetalOrganicFrameworkBuilder.build"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder.build()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_reference.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html">mofbuilder.analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.PorosityAnalyzer"><code class="docutils literal notranslate"><span class="pre">PorosityAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.html#mofbuilder.analysis.GraphAnalyzer"><code class="docutils literal notranslate"><span class="pre">GraphAnalyzer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.graph_analysis.html">mofbuilder.analysis.graph_analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.analysis.porosity.html">mofbuilder.analysis.porosity</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.core.html">mofbuilder.core</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.TerminationDefectGenerator"><code class="docutils literal notranslate"><span class="pre">TerminationDefectGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.Framework"><code class="docutils literal notranslate"><span class="pre">Framework</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MetalOrganicFrameworkBuilder"><code class="docutils literal notranslate"><span class="pre">MetalOrganicFrameworkBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNet"><code class="docutils literal notranslate"><span class="pre">FrameNet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameNode"><code class="docutils literal notranslate"><span class="pre">FrameNode</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameLinker"><code class="docutils literal notranslate"><span class="pre">FrameLinker</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.FrameTermination"><code class="docutils literal notranslate"><span class="pre">FrameTermination</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofTopLibrary"><code class="docutils literal notranslate"><span class="pre">MofTopLibrary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.NetOptimizer"><code class="docutils literal notranslate"><span class="pre">NetOptimizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.SupercellBuilder"><code class="docutils literal notranslate"><span class="pre">SupercellBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.EdgeGraphBuilder"><code class="docutils literal notranslate"><span class="pre">EdgeGraphBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.html#mofbuilder.core.MofWriter"><code class="docutils literal notranslate"><span class="pre">MofWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.builder.html">mofbuilder.core.builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.defects.html">mofbuilder.core.defects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.framework.html">mofbuilder.core.framework</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.linker.html">mofbuilder.core.linker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.moftoplibrary.html">mofbuilder.core.moftoplibrary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.net.html">mofbuilder.core.net</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.node.html">mofbuilder.core.node</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.optimizer.html">mofbuilder.core.optimizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.other.html">mofbuilder.core.other</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.supercell.html">mofbuilder.core.supercell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.superimpose.html">mofbuilder.core.superimpose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.termination.html">mofbuilder.core.termination</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.core.write.html">mofbuilder.core.write</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.io.html">mofbuilder.io</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifReader"><code class="docutils literal notranslate"><span class="pre">CifReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.CifWriter"><code class="docutils literal notranslate"><span class="pre">CifWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzReader"><code class="docutils literal notranslate"><span class="pre">XyzReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.XyzWriter"><code class="docutils literal notranslate"><span class="pre">XyzWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbReader"><code class="docutils literal notranslate"><span class="pre">PdbReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.PdbWriter"><code class="docutils literal notranslate"><span class="pre">PdbWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroReader"><code class="docutils literal notranslate"><span class="pre">GroReader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.GroWriter"><code class="docutils literal notranslate"><span class="pre">GroWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nn"><code class="docutils literal notranslate"><span class="pre">nn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.html#mofbuilder.io.nl"><code class="docutils literal notranslate"><span class="pre">nl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.basic.html">mofbuilder.io.basic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_reader.html">mofbuilder.io.cif_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.cif_writer.html">mofbuilder.io.cif_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_reader.html">mofbuilder.io.gro_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.gro_writer.html">mofbuilder.io.gro_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_reader.html">mofbuilder.io.pdb_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.pdb_writer.html">mofbuilder.io.pdb_writer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_reader.html">mofbuilder.io.xyz_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.io.xyz_writer.html">mofbuilder.io.xyz_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.md.html">mofbuilder.md</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.OpenmmSetup"><code class="docutils literal notranslate"><span class="pre">OpenmmSetup</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.SolvationBuilder"><code class="docutils literal notranslate"><span class="pre">SolvationBuilder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.LinkerForceFieldGenerator"><code class="docutils literal notranslate"><span class="pre">LinkerForceFieldGenerator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.GromacsForcefieldMerger"><code class="docutils literal notranslate"><span class="pre">GromacsForcefieldMerger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.html#mofbuilder.md.ForceFieldMapper"><code class="docutils literal notranslate"><span class="pre">ForceFieldMapper</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.gmxfilemerge.html">mofbuilder.md.gmxfilemerge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.linkerforcefield.html">mofbuilder.md.linkerforcefield</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.setup.html">mofbuilder.md.setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.md.solvationbuilder.html">mofbuilder.md.solvationbuilder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.utils.html">mofbuilder.utils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fetch_pdbfile"><code class="docutils literal notranslate"><span class="pre">fetch_pdbfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.unit_cell_to_cartesian_matrix"><code class="docutils literal notranslate"><span class="pre">unit_cell_to_cartesian_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.fractional_to_cartesian"><code class="docutils literal notranslate"><span class="pre">fractional_to_cartesian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.html#mofbuilder.utils.cartesian_to_fractional"><code class="docutils literal notranslate"><span class="pre">cartesian_to_fractional()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.constants.html">mofbuilder.utils.constants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.environment.html">mofbuilder.utils.environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.fetch.html">mofbuilder.utils.fetch</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.geometry.html">mofbuilder.utils.geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.utils.periodic_table.html">mofbuilder.utils.periodic_table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html">mofbuilder.visualization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.html#mofbuilder.visualization.Viewer"><code class="docutils literal notranslate"><span class="pre">Viewer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../generated/mofbuilder.visualization.viewer.html">mofbuilder.visualization.viewer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MofBuilder</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mofbuilder.core.write</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mofbuilder.core.write</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Write MOF framework to PDB, GRO, XYZ, and CIF from the edge graph (eG).&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.outputstream</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputStream</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.veloxchemlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpi_master</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.errorhandler</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_msg_critical</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">veloxchem.environment</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_data_path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mpi4py.MPI</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">MPI</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">unit_cell_to_cartesian_matrix</span><span class="p">,</span>
+    <span class="n">fractional_to_cartesian</span><span class="p">,</span>
+    <span class="n">find_edge_pairings</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..io.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">pname</span><span class="p">,</span> <span class="n">is_list_A_in_B</span><span class="p">,</span> <span class="n">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..io.pdb_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">PdbReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..io.pdb_writer</span><span class="w"> </span><span class="kn">import</span> <span class="n">PdbWriter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..io.gro_writer</span><span class="w"> </span><span class="kn">import</span> <span class="n">GroWriter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..io.xyz_writer</span><span class="w"> </span><span class="kn">import</span> <span class="n">XyzWriter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..io.cif_writer</span><span class="w"> </span><span class="kn">import</span> <span class="n">CifWriter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">cartesian_to_fractional</span><span class="p">,</span> <span class="n">fractional_to_cartesian</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.superimpose</span><span class="w"> </span><span class="kn">import</span> <span class="n">superimpose_rotation_only</span>
+
+
+<div class="viewcode-block" id="MofWriter">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.write.html#mofbuilder.core.MofWriter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MofWriter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert edge graph (eG) to per-residue data and write PDB, GRO, XYZ, or CIF.</span>
+
+<span class="sd">    Requires G, frame_cell_info, sc_unit_cell, xoo_dict (and optionally dummy_atom_node_dict).</span>
+<span class="sd">    convert_graph_to_data / convert_graph_to_fcoords_data build nodes_data, edges_data, terms_data;</span>
+<span class="sd">    get_merged_data / get_merged_fcoords_data merge them; write_* write to file.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        comm: MPI communicator.</span>
+<span class="sd">        rank: MPI rank of this process.</span>
+<span class="sd">        nodes: MPI size (number of processes).</span>
+<span class="sd">        ostream: Output stream for logging.</span>
+<span class="sd">        filename: Base filename without extension for output files.</span>
+<span class="sd">        G: Edge graph to write (nodes and edges with f_points, noxoo_f_points, etc.).</span>
+<span class="sd">        frame_cell_info: Cell parameters [a, b, c, alpha, beta, gamma].</span>
+<span class="sd">        supercell_boundary: Optional [x_min, x_max, y_min, y_max, z_min, z_max] for fractional filter.</span>
+<span class="sd">        sc_unit_cell: 3x3 supercell unit cell matrix.</span>
+<span class="sd">        xoo_dict: Dict mapping X index to list of O indices (XOO) per node.</span>
+<span class="sd">        dummy_atom_node_dict: Optional dict of dummy atom counts per node for renaming.</span>
+<span class="sd">        residues_info: Dict of residue names and counts (e.g. &#39;EDGE&#39;, &#39;;NODE&#39;).</span>
+<span class="sd">        merged_data: Merged Cartesian data (nodes + edges + terms).</span>
+<span class="sd">        merged_f_data: Merged fractional data.</span>
+<span class="sd">        nodes_data: List of node data arrays (set by convert_graph_to_data).</span>
+<span class="sd">        edges_data: List of edge data arrays.</span>
+<span class="sd">        terms_data: List of termination data arrays.</span>
+<span class="sd">        cG: Copy of G with &#39;data&#39; attached to each node/edge.</span>
+<span class="sd">        _debug: If True, print extra debug messages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">comm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ostream</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comm</span> <span class="o">=</span> <span class="n">comm</span> <span class="ow">or</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span> <span class="o">=</span> <span class="n">ostream</span> <span class="ow">or</span> <span class="n">OutputStream</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span>
+                                               <span class="n">mpi_master</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1">#write the eG to the file</span>
+        <span class="c1">#need to be set before use</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#base filename without extension</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_cell_info</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#a list of 6 elements, a,b,c,alpha,beta,gamma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">supercell_boundary</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#a list of 6 elements, x_min,x_max,y_min,y_max,z_min,z_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sc_unit_cell</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#3x3 matrix of the supercell unit cell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xoo_dict</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#dict of xoo atom indices in the edge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dummy_atom_node_dict</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#dict of dummy atom counts in the node</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">residues_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#merged data of nodes, edges, terms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merged_f_data</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#merged fractional data of nodes, edges</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#debug mode</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_xoo_from_node</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">,</span> <span class="n">xoo_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove XOO rows from each node&#39;s f_points and set noxoo_f_points on each node.&quot;&quot;&quot;</span>
+        <span class="n">eG</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">all_xoo_indices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">x_ind</span><span class="p">,</span> <span class="n">oo_ind</span> <span class="ow">in</span> <span class="n">xoo_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">all_xoo_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x_ind</span><span class="p">)</span>
+            <span class="n">all_xoo_indices</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">oo_ind</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">eG</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">pname</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;EDGE&quot;</span><span class="p">:</span>
+                <span class="n">all_f_points</span> <span class="o">=</span> <span class="n">eG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;f_points&quot;</span><span class="p">]</span>
+                <span class="n">noxoo_f_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">all_f_points</span><span class="p">,</span>
+                                           <span class="n">all_xoo_indices</span><span class="p">,</span>
+                                           <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">eG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;noxoo_f_points&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">noxoo_f_points</span>
+        <span class="k">return</span> <span class="n">eG</span>
+
+<div class="viewcode-block" id="MofWriter.convert_graph_to_data">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.write.html#mofbuilder.core.MofWriter.convert_graph_to_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_graph_to_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">,</span> <span class="n">sc_unit_cell</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert eG to nodes_data, edges_data, terms_data (Cartesian) and set cG with &#39;data&#39; on each node/edge.&quot;&quot;&quot;</span>
+        <span class="n">rG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_xoo_from_node</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xoo_dict</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">arr2data</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">residue_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residue_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="c1">#arr type is [atom_type,atom_label,x,y,z]</span>
+            <span class="k">if</span> <span class="n">arr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)):</span>
+                <span class="n">atom_type</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">atom_label</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">atom_label</span> <span class="o">==</span> <span class="s2">&quot;Fr&quot;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">value_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="n">value_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+                <span class="n">value_z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+                <span class="n">atom_number</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">residue_name</span> <span class="o">=</span> <span class="s2">&quot;MOL&quot;</span> <span class="k">if</span> <span class="n">residue_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">residue_name</span>
+                <span class="n">residue_number</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">residue_number</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">residue_number</span>
+                <span class="n">charge</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="n">spin</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">atom_type</span><span class="p">)</span> <span class="k">if</span> <span class="n">note</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">note</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">atom_type</span><span class="p">,</span> <span class="n">atom_label</span><span class="p">,</span> <span class="n">atom_number</span><span class="p">,</span> <span class="n">residue_name</span><span class="p">,</span>
+                    <span class="n">residue_number</span><span class="p">,</span> <span class="n">value_x</span><span class="p">,</span> <span class="n">value_y</span><span class="p">,</span> <span class="n">value_z</span><span class="p">,</span> <span class="n">spin</span><span class="p">,</span> <span class="n">charge</span><span class="p">,</span>
+                    <span class="n">note</span>
+                <span class="p">])</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">data</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_node_data</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">sc_unit_cell</span><span class="p">):</span>
+            <span class="n">node_f_points</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;noxoo_f_points&quot;</span><span class="p">]</span>
+            <span class="n">res_name</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">res_idx</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;index&quot;</span><span class="p">]</span>
+            <span class="n">node_f_coords</span> <span class="o">=</span> <span class="n">node_f_points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># fractional coordinates</span>
+            <span class="n">c_coords</span> <span class="o">=</span> <span class="n">fractional_to_cartesian</span><span class="p">(</span>
+                <span class="n">node_f_coords</span><span class="p">,</span> <span class="n">sc_unit_cell</span><span class="p">)</span>  <span class="c1"># Cartesian coordinates</span>
+            <span class="n">node_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">node_f_points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">c_coords</span><span class="p">))</span>
+            <span class="n">node_data</span> <span class="o">=</span> <span class="n">arr2data</span><span class="p">(</span><span class="n">node_arr</span><span class="p">,</span>
+                                 <span class="n">residue_name</span><span class="o">=</span><span class="n">res_name</span><span class="p">,</span>
+                                 <span class="n">residue_number</span><span class="o">=</span><span class="n">res_idx</span><span class="p">,</span>
+                                 <span class="n">note</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">node_data</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_edge_data</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">sc_unit_cell</span><span class="p">):</span>
+            <span class="n">edge_f_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;f_points&quot;</span><span class="p">],</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;xoo_f_points&quot;</span><span class="p">]))</span>
+            <span class="n">res_name</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">res_idx</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;index&quot;</span><span class="p">]</span>
+            <span class="n">edge_f_coords</span> <span class="o">=</span> <span class="n">edge_f_points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># fractional coordinates</span>
+            <span class="n">c_coords</span> <span class="o">=</span> <span class="n">fractional_to_cartesian</span><span class="p">(</span>
+                <span class="n">edge_f_coords</span><span class="p">,</span> <span class="n">sc_unit_cell</span><span class="p">)</span>  <span class="c1"># Cartesian coordinates</span>
+            <span class="n">edge_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">edge_f_points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">c_coords</span><span class="p">))</span>
+            <span class="n">edge_data</span> <span class="o">=</span> <span class="n">arr2data</span><span class="p">(</span><span class="n">edge_arr</span><span class="p">,</span>
+                                 <span class="n">residue_name</span><span class="o">=</span><span class="n">res_name</span><span class="p">,</span>
+                                 <span class="n">residue_number</span><span class="o">=</span><span class="n">res_idx</span><span class="p">,</span>
+                                 <span class="n">note</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">edge_data</span>
+
+        <span class="n">cG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_xoo_from_node</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xoo_dict</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">term_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">nodes_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">terms_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">edges_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">pname</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;EDGE&quot;</span><span class="p">:</span>
+                <span class="n">node_data</span> <span class="o">=</span> <span class="n">get_node_data</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">rG</span><span class="p">,</span> <span class="n">sc_unit_cell</span><span class="p">)</span>
+                <span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_data</span>
+                <span class="n">nodes_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_data</span><span class="p">)</span>
+                <span class="c1">#check if the node have terminations</span>
+                <span class="k">if</span> <span class="s2">&quot;term_c_points&quot;</span> <span class="ow">in</span> <span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">term_ind_key</span><span class="p">,</span> <span class="n">c_positions</span> <span class="ow">in</span> <span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span>
+                            <span class="s2">&quot;term_c_points&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">term_name</span> <span class="o">=</span> <span class="s2">&quot;T&quot;</span> <span class="o">+</span> <span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span>
+                            <span class="s2">&quot;name&quot;</span><span class="p">]</span>  <span class="c1">#TODO: set term name</span>
+                        <span class="n">term_count</span> <span class="o">-=</span> <span class="mi">1</span>
+                        <span class="n">term_data</span> <span class="o">=</span> <span class="n">arr2data</span><span class="p">(</span><span class="n">c_positions</span><span class="p">,</span>
+                                             <span class="n">residue_name</span><span class="o">=</span><span class="n">term_name</span><span class="p">,</span>
+                                             <span class="n">residue_number</span><span class="o">=</span><span class="n">term_count</span><span class="p">,</span>
+                                             <span class="n">note</span><span class="o">=</span><span class="n">term_ind_key</span><span class="p">)</span>
+                        <span class="n">terms_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">term_data</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">pname</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;EDGE&quot;</span><span class="p">:</span>
+                <span class="n">edge_data</span> <span class="o">=</span> <span class="n">get_edge_data</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">cG</span><span class="p">,</span> <span class="n">sc_unit_cell</span><span class="p">)</span>
+                <span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_data</span>
+                <span class="n">edges_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes_data</span> <span class="o">=</span> <span class="n">nodes_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges_data</span> <span class="o">=</span> <span class="n">edges_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terms_data</span> <span class="o">=</span> <span class="n">terms_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cG</span> <span class="o">=</span> <span class="n">cG</span></div>
+
+
+<div class="viewcode-block" id="MofWriter.get_merged_data">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.write.html#mofbuilder.core.MofWriter.get_merged_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_merged_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dummy_atom_node_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Merge nodes, edges, terms into one array; optionally rename dummy atoms. Sets merged_data and residues_info. Returns merged_data.&quot;&quot;&quot;</span>
+        <span class="n">nodes_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes_data</span>
+        <span class="n">edges_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_data</span>
+        <span class="n">terms_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">terms_data</span>
+        <span class="k">if</span> <span class="n">dummy_atom_node_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nodes_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename_node_name</span><span class="p">(</span><span class="n">nodes_data</span><span class="p">,</span>
+                                                <span class="n">dummy_atom_node_dict</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nodes_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">nodes_data</span><span class="p">)</span>
+        <span class="n">edges_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">edges_data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">edges_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+        <span class="n">terms_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">terms_data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">terms_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+
+        <span class="n">merged_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">nodes_data</span><span class="p">,</span> <span class="n">edges_data</span><span class="p">,</span> <span class="n">terms_data</span>
+             <span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">terms_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">nodes_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span> <span class="o">=</span> <span class="n">merged_data</span>
+
+        <span class="c1">#get residue names and counts, include dummy_atom_node_dict if provided</span>
+
+        <span class="n">nodes_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes_data</span><span class="p">)</span>
+        <span class="n">edges_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edges_data</span><span class="p">)</span>
+        <span class="n">terms_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">terms_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dummy_atom_node_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">residues_info</span><span class="p">[</span>
+                <span class="s1">&#39;METAL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes_number</span> <span class="o">*</span> <span class="n">dummy_atom_node_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s1">&#39;METAL_count&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">residues_info</span><span class="p">[</span>
+                <span class="s1">&#39;HHO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes_number</span> <span class="o">*</span> <span class="n">dummy_atom_node_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s1">&#39;HHO_count&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">residues_info</span><span class="p">[</span><span class="s1">&#39;HO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes_number</span> <span class="o">*</span> <span class="n">dummy_atom_node_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s1">&#39;HO_count&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">residues_info</span><span class="p">[</span><span class="s1">&#39;O&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes_number</span> <span class="o">*</span> <span class="n">dummy_atom_node_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s1">&#39;O_count&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residues_info</span><span class="p">[</span><span class="s1">&#39;;NODE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes_number</span>  <span class="c1">#ingnore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residues_info</span><span class="p">[</span><span class="s1">&#39;EDGE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residues_info</span><span class="p">[</span><span class="s1">&#39;TNODE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">terms_number</span>
+
+        <span class="k">return</span> <span class="n">merged_data</span></div>
+
+
+<div class="viewcode-block" id="MofWriter.convert_graph_to_fcoords_data">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.write.html#mofbuilder.core.MofWriter.convert_graph_to_fcoords_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_graph_to_fcoords_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">G</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">,</span> <span class="n">supercell_boundary</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert eG to fractional node/edge data within supercell_boundary; set nodes_f_data, edges_f_data, cG.&quot;&quot;&quot;</span>
+        <span class="n">rG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_xoo_from_node</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xoo_dict</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">arr2data</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">residue_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residue_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="c1">#arr type is [atom_type,atom_label,x,y,z]</span>
+            <span class="k">if</span> <span class="n">arr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)):</span>
+                <span class="n">atom_type</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">atom_label</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">value_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+                <span class="n">value_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+                <span class="n">value_z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+                <span class="n">atom_number</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">residue_name</span> <span class="o">=</span> <span class="s2">&quot;MOL&quot;</span> <span class="k">if</span> <span class="n">residue_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">residue_name</span>
+                <span class="n">residue_number</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">residue_number</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">residue_number</span>
+                <span class="n">charge</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="n">spin</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="n">nn</span><span class="p">(</span><span class="n">atom_type</span><span class="p">)</span> <span class="k">if</span> <span class="n">note</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">note</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span>
+                    <span class="n">atom_type</span><span class="p">,</span> <span class="n">atom_label</span><span class="p">,</span> <span class="n">atom_number</span><span class="p">,</span> <span class="n">residue_name</span><span class="p">,</span>
+                    <span class="n">residue_number</span><span class="p">,</span> <span class="n">value_x</span><span class="p">,</span> <span class="n">value_y</span><span class="p">,</span> <span class="n">value_z</span><span class="p">,</span> <span class="n">spin</span><span class="p">,</span> <span class="n">charge</span><span class="p">,</span>
+                    <span class="n">note</span>
+                <span class="p">])</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">data</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_node_fcoords_data</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+            <span class="n">node_f_points</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span>
+                <span class="s2">&quot;noxoo_f_points&quot;</span><span class="p">]</span>  <span class="c1"># fractional coordinates</span>
+            <span class="n">res_name</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">res_idx</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;index&quot;</span><span class="p">]</span>
+            <span class="n">node_data</span> <span class="o">=</span> <span class="n">arr2data</span><span class="p">(</span><span class="n">node_f_points</span><span class="p">,</span>
+                                 <span class="n">residue_name</span><span class="o">=</span><span class="n">res_name</span><span class="p">,</span>
+                                 <span class="n">residue_number</span><span class="o">=</span><span class="n">res_idx</span><span class="p">,</span>
+                                 <span class="n">note</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">node_data</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_edge_fcoords_data</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
+            <span class="n">edge_f_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;f_points&quot;</span><span class="p">],</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;xoo_f_points&quot;</span><span class="p">]))</span>
+            <span class="n">res_name</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="n">res_idx</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;index&quot;</span><span class="p">]</span>
+            <span class="n">edge_data</span> <span class="o">=</span> <span class="n">arr2data</span><span class="p">(</span><span class="n">edge_f_points</span><span class="p">,</span>
+                                 <span class="n">residue_name</span><span class="o">=</span><span class="n">res_name</span><span class="p">,</span>
+                                 <span class="n">residue_number</span><span class="o">=</span><span class="n">res_idx</span><span class="p">,</span>
+                                 <span class="n">note</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">edge_data</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">check_supercell_box_range</span><span class="p">(</span><span class="n">f_coords</span><span class="p">,</span> <span class="n">box</span><span class="p">):</span>
+            <span class="c1">#box is a list of 6 elements [x_min,x_max,y_min,y_max,z_min,z_max]</span>
+            <span class="k">if</span> <span class="n">f_coords</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># ditopic linker saved two connected nodes fcoords</span>
+                <span class="n">f_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">f_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">f_coords</span><span class="p">)</span>
+            <span class="n">box_xmax</span><span class="p">,</span> <span class="n">box_ymax</span><span class="p">,</span> <span class="n">box_zmax</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="n">box</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="n">box</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">z</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">z</span> <span class="o">&gt;=</span> <span class="n">box</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;f_coords: </span><span class="si">{</span><span class="n">f_coords</span><span class="si">}</span><span class="s2">, box: </span><span class="si">{</span><span class="n">box</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">cG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_xoo_from_node</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xoo_dict</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">term_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">nodes_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">terms_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">edges_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">pname</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;EDGE&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">check_supercell_box_range</span><span class="p">(</span><span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;fcoords&quot;</span><span class="p">],</span>
+                                                 <span class="n">supercell_boundary</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">node_f_data</span> <span class="o">=</span> <span class="n">get_node_fcoords_data</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">rG</span><span class="p">)</span>
+                <span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;f_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_f_data</span>
+                <span class="n">nodes_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_f_data</span><span class="p">)</span>
+                <span class="c1">#check if the node have terminations</span>
+
+            <span class="k">elif</span> <span class="n">pname</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;EDGE&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">check_supercell_box_range</span><span class="p">(</span><span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;fcoords&quot;</span><span class="p">],</span>
+                                                 <span class="n">supercell_boundary</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">edge_f_data</span> <span class="o">=</span> <span class="n">get_edge_fcoords_data</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">cG</span><span class="p">)</span>
+                <span class="n">cG</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="p">][</span><span class="s2">&quot;f_data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_f_data</span>
+                <span class="n">edges_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_f_data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes_f_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">nodes_data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">nodes_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges_f_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">edges_data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">edges_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cG</span> <span class="o">=</span> <span class="n">cG</span></div>
+
+
+<div class="viewcode-block" id="MofWriter.get_merged_fcoords_data">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.write.html#mofbuilder.core.MofWriter.get_merged_fcoords_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_merged_fcoords_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Merge nodes_f_data and edges_f_data into merged_f_data. Returns merged_f_data.&quot;&quot;&quot;</span>
+        <span class="n">nodes_f_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes_f_data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes_f_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+        <span class="n">edges_f_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edges_f_data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edges_f_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+
+        <span class="n">merged_f_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">nodes_f_data</span><span class="p">,</span>
+             <span class="n">edges_f_data</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges_f_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">nodes_f_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merged_f_data</span> <span class="o">=</span> <span class="n">merged_f_data</span>
+        <span class="k">return</span> <span class="n">merged_f_data</span></div>
+
+
+<div class="viewcode-block" id="MofWriter.only_get_merged_data">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.write.html#mofbuilder.core.MofWriter.only_get_merged_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">only_get_merged_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run convert_graph_to_data, get_merged_data, convert_graph_to_fcoords_data, get_merged_fcoords_data. Returns (merged_data, merged_f_data).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">convert_graph_to_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sc_unit_cell</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_merged_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_atom_node_dict</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">convert_graph_to_fcoords_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">supercell_boundary</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merged_f_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_merged_fcoords_data</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_f_data</span></div>
+
+
+<div class="viewcode-block" id="MofWriter.write_pdb">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.write.html#mofbuilder.core.MofWriter.write_pdb">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_merge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write Cartesian merged_data to PDB (self.filename). If not skip_merge, run convert_graph_to_data and get_merged_data first.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">skip_merge</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">skip_merge</span><span class="p">:</span>
+            <span class="n">merged_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convert_graph_to_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sc_unit_cell</span><span class="p">)</span>
+            <span class="n">merged_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_merged_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_atom_node_dict</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span> <span class="o">=</span> <span class="n">merged_data</span>
+
+        <span class="n">pdb_writer</span> <span class="o">=</span> <span class="n">PdbWriter</span><span class="p">(</span><span class="n">comm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="p">,</span> <span class="n">ostream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;REMARK   Generated by MOFbuilder</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="c1">#add crystal cell info to header</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_cell_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_cell_info</span>
+            <span class="n">space_group</span> <span class="o">=</span> <span class="s2">&quot;P 1&quot;</span>
+            <span class="n">z_value</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">cryst_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;CRYST1</span><span class="si">{</span><span class="n">a</span><span class="si">:</span><span class="s2">9.3f</span><span class="si">}{</span><span class="n">b</span><span class="si">:</span><span class="s2">9.3f</span><span class="si">}{</span><span class="n">c</span><span class="si">:</span><span class="s2">9.3f</span><span class="si">}{</span><span class="n">alpha</span><span class="si">:</span><span class="s2">7.2f</span><span class="si">}{</span><span class="n">beta</span><span class="si">:</span><span class="s2">7.2f</span><span class="si">}{</span><span class="n">gamma</span><span class="si">:</span><span class="s2">7.2f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">space_group</span><span class="si">:</span><span class="s2">&lt;11s</span><span class="si">}{</span><span class="n">z_value</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">header</span> <span class="o">+=</span> <span class="n">cryst_line</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;writing pdb file to: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">pdb_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="n">merged_data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MofWriter.write_xyz">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.write.html#mofbuilder.core.MofWriter.write_xyz">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_merge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write Cartesian merged_data to XYZ (self.filename). If not skip_merge, merge first.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">skip_merge</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">skip_merge</span><span class="p">:</span>
+            <span class="n">merged_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convert_graph_to_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sc_unit_cell</span><span class="p">)</span>
+            <span class="n">merged_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_merged_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_atom_node_dict</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span> <span class="o">=</span> <span class="n">merged_data</span>
+
+        <span class="n">xyz_writer</span> <span class="o">=</span> <span class="n">XyzWriter</span><span class="p">(</span><span class="n">comm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="p">,</span> <span class="n">ostream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;Generated by MOFbuilder</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;writing xyz file to: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">xyz_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="n">merged_data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MofWriter.write_gro">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.write.html#mofbuilder.core.MofWriter.write_gro">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_gro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_merge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write Cartesian merged_data to GRO (self.filename) with frame_cell_info as box. If not skip_merge, merge first.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">skip_merge</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">skip_merge</span><span class="p">:</span>
+            <span class="n">merged_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convert_graph_to_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sc_unit_cell</span><span class="p">)</span>
+            <span class="n">merged_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_merged_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_atom_node_dict</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">merged_data</span> <span class="o">=</span> <span class="n">merged_data</span>
+
+        <span class="n">gro_writer</span> <span class="o">=</span> <span class="n">GroWriter</span><span class="p">(</span><span class="n">comm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="p">,</span> <span class="n">ostream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;Generated by MOFbuilder</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;writing gro file to: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">gro_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+                         <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+                         <span class="n">lines</span><span class="o">=</span><span class="n">merged_data</span><span class="p">,</span>
+                         <span class="n">box</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_cell_info</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MofWriter.write_cif">
+<a class="viewcode-back" href="../../../generated/mofbuilder.core.write.html#mofbuilder.core.MofWriter.write_cif">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_cif</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">skip_merge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">supercell_boundary</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">frame_cell_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write fractional merged_f_data to CIF (self.filename). Uses supercell_boundary and frame_cell_info; if not skip_merge, converts and merges first.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">frame_cell_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">frame_cell_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_cell_info</span>
+        <span class="k">if</span> <span class="n">supercell_boundary</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">supercell_boundary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">supercell_boundary</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_f_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">skip_merge</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">skip_merge</span><span class="p">:</span>
+            <span class="n">merged_f_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_f_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">convert_graph_to_fcoords_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span> <span class="n">supercell_boundary</span><span class="p">)</span>
+            <span class="n">merged_f_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_merged_fcoords_data</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">merged_f_data</span> <span class="o">=</span> <span class="n">merged_f_data</span>
+
+        <span class="n">assert_msg_critical</span><span class="p">(</span><span class="n">frame_cell_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="s2">&quot;frame_cell_info is not provided for cif writing&quot;</span><span class="p">)</span>
+        <span class="n">assert_msg_critical</span><span class="p">(</span>
+            <span class="n">supercell_boundary</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;supercell_boundary is not provided for cif writing&quot;</span><span class="p">)</span>
+
+        <span class="n">cif_writer</span> <span class="o">=</span> <span class="n">CifWriter</span><span class="p">(</span><span class="n">comm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comm</span><span class="p">,</span> <span class="n">ostream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;Generated by MOFbuilder</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;writing cif file to: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;Generated by MOFbuilder</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">cif_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+                         <span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+                         <span class="n">lines</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">merged_f_data</span><span class="p">,</span>
+                         <span class="n">cell_info</span><span class="o">=</span><span class="n">frame_cell_info</span><span class="p">,</span>
+                         <span class="n">supercell_boundary</span><span class="o">=</span><span class="n">supercell_boundary</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rename_node_name</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">nodes_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">dummy_atom_node_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rename dummy atom names in nodes_data using dummy_atom_node_dict; return stacked array with METAL, HHO, HO, O order.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dummy_atom_node_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">nodes_data</span><span class="p">)</span>
+        <span class="n">nodes_num</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_data</span><span class="p">)</span>
+        <span class="n">metal_count</span> <span class="o">=</span> <span class="n">dummy_atom_node_dict</span><span class="p">[</span><span class="s2">&quot;METAL_count&quot;</span><span class="p">]</span>
+        <span class="n">dummy_res_len</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dummy_atom_node_dict</span><span class="p">[</span><span class="s2">&quot;dummy_res_len&quot;</span><span class="p">])</span>
+        <span class="n">hho_count</span> <span class="o">=</span> <span class="n">dummy_atom_node_dict</span><span class="p">[</span><span class="s2">&quot;HHO_count&quot;</span><span class="p">]</span>
+        <span class="n">ho_count</span> <span class="o">=</span> <span class="n">dummy_atom_node_dict</span><span class="p">[</span><span class="s2">&quot;HO_count&quot;</span><span class="p">]</span>
+        <span class="n">o_count</span> <span class="o">=</span> <span class="n">dummy_atom_node_dict</span><span class="p">[</span><span class="s2">&quot;O_count&quot;</span><span class="p">]</span>
+        <span class="c1">#number for slice</span>
+        <span class="n">metal_num</span> <span class="o">=</span> <span class="n">metal_count</span> <span class="o">*</span> <span class="n">dummy_res_len</span>
+        <span class="n">hho_num</span> <span class="o">=</span> <span class="n">hho_count</span> <span class="o">*</span> <span class="mi">3</span>
+        <span class="n">ho_num</span> <span class="o">=</span> <span class="n">ho_count</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="n">o_num</span> <span class="o">=</span> <span class="n">o_count</span> <span class="o">*</span> <span class="mi">1</span>
+
+        <span class="c1"># generate new_name_list for all dummy atoms in order</span>
+        <span class="c1"># For each residue, repeat the name for the number of atoms in that residue, incrementing the residue index</span>
+        <span class="c1"># Build tuples of (name, count) for each residue type</span>
+        <span class="n">residue_specs</span> <span class="o">=</span> <span class="p">([(</span><span class="s2">&quot;METAL&quot;</span><span class="p">,</span> <span class="n">dummy_res_len</span><span class="p">)]</span> <span class="o">*</span> <span class="n">metal_count</span> <span class="o">+</span>
+                         <span class="p">[(</span><span class="s2">&quot;HHO&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span> <span class="o">*</span> <span class="n">hho_count</span> <span class="o">+</span> <span class="p">[(</span><span class="s2">&quot;HO&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">*</span> <span class="n">ho_count</span> <span class="o">+</span>
+                         <span class="p">[(</span><span class="s2">&quot;O&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">*</span> <span class="n">o_count</span><span class="p">)</span>
+
+        <span class="c1"># Use list comprehension with enumerate for fast generation</span>
+        <span class="n">new_name_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">residue_specs</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">nodes_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">nodes_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;dummy node split dict: </span><span class="si">{</span><span class="n">dummy_atom_node_dict</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">print_info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;new_name_list: </span><span class="si">{</span><span class="n">new_name_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ostream</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="n">name_col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">new_name_list</span><span class="p">,</span> <span class="n">nodes_num</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1">#hstack the new_name_col to the stacked array, replacing the original name column</span>
+        <span class="n">rename_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">nodes_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">name_col</span><span class="p">,</span> <span class="n">nodes_data</span><span class="p">[:,</span>
+                                                                          <span class="mi">4</span><span class="p">:]))</span>
+        <span class="c1">#reshape the rename_data to a list of arrays for each node</span>
+        <span class="c1">#reorder the atoms in each node to METAL, HHO, HO, O</span>
+        <span class="n">rename_data</span> <span class="o">=</span> <span class="n">rename_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nodes_num</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
+        <span class="n">metals_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="n">rename_data</span><span class="p">[:,</span> <span class="p">:</span><span class="n">metal_num</span><span class="p">,</span> <span class="p">:])</span> <span class="k">if</span> <span class="n">metal_num</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+        <span class="n">hhos_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="n">rename_data</span><span class="p">[:,</span> <span class="n">metal_num</span><span class="p">:</span><span class="n">metal_num</span> <span class="o">+</span>
+                        <span class="n">hho_num</span><span class="p">,</span> <span class="p">:])</span> <span class="k">if</span> <span class="n">hho_num</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+        <span class="n">hos_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="n">rename_data</span><span class="p">[:,</span> <span class="n">metal_num</span> <span class="o">+</span> <span class="n">hho_num</span><span class="p">:</span><span class="n">metal_num</span> <span class="o">+</span> <span class="n">hho_num</span> <span class="o">+</span>
+                        <span class="n">ho_num</span><span class="p">,</span> <span class="p">:])</span> <span class="k">if</span> <span class="n">ho_num</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+        <span class="n">os_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="n">rename_data</span><span class="p">[:,</span> <span class="n">metal_num</span> <span class="o">+</span> <span class="n">hho_num</span> <span class="o">+</span>
+                        <span class="n">ho_num</span><span class="p">:,</span> <span class="p">:])</span> <span class="k">if</span> <span class="n">o_num</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+        <span class="n">ordered_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">metals_data</span><span class="p">,</span> <span class="n">hhos_data</span><span class="p">,</span> <span class="n">hos_data</span><span class="p">,</span> <span class="n">os_data</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">ordered_data</span></div>
+
+
+
+<span class="c1">#################below are from display.py######################</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Chenxi Li.
+      <span class="lastupdated">Last updated on 2026-03-06.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

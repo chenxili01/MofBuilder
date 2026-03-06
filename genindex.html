@@ -1,0 +1,1898 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; MOFBuilder 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5ac31dca" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+    <meta name="docbuild:last-update" content="2026-03-06"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MOFBuilder 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="manual/index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="manual/index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ | <a href="#X"><strong>X</strong></a>
+ | <a href="#Y"><strong>Y</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.EdgeGraphBuilder.html#mofbuilder.core.EdgeGraphBuilder.__init__">__init__() (mofbuilder.core.EdgeGraphBuilder method)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.__init__">(mofbuilder.core.FrameLinker method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.__init__">(mofbuilder.core.FrameNet method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.__init__">(mofbuilder.core.FrameNode method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.__init__">(mofbuilder.core.FrameTermination method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.__init__">(mofbuilder.core.framework.Framework method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.__init__">(mofbuilder.core.MofTopLibrary method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.__init__">(mofbuilder.core.MofWriter method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.NetOptimizer.html#mofbuilder.core.NetOptimizer.__init__">(mofbuilder.core.NetOptimizer method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.SupercellBuilder.html#mofbuilder.core.SupercellBuilder.__init__">(mofbuilder.core.SupercellBuilder method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.__init__">(mofbuilder.core.TerminationDefectGenerator method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.__init__">(mofbuilder.io.CifReader method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.__init__">(mofbuilder.io.CifWriter method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroReader.html#mofbuilder.io.GroReader.__init__">(mofbuilder.io.GroReader method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroWriter.html#mofbuilder.io.GroWriter.__init__">(mofbuilder.io.GroWriter method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.__init__">(mofbuilder.io.PdbReader method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbWriter.html#mofbuilder.io.PdbWriter.__init__">(mofbuilder.io.PdbWriter method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzReader.html#mofbuilder.io.XyzReader.__init__">(mofbuilder.io.XyzReader method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter.__init__">(mofbuilder.io.XyzWriter method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.__init__">(mofbuilder.md.ForceFieldMapper method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.__init__">(mofbuilder.md.GromacsForcefieldMerger method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.__init__">(mofbuilder.md.LinkerForceFieldGenerator method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.__init__">(mofbuilder.md.OpenmmSetup method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.__init__">(mofbuilder.md.SolvationBuilder method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.__init__">(mofbuilder.MetalOrganicFrameworkBuilder method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.visualization.Viewer.html#id0">(mofbuilder.visualization.Viewer method)</a>, <a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer.__init__">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker._debug">_debug (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet._debug">(mofbuilder.core.FrameNet attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode._debug">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination._debug">(mofbuilder.core.FrameTermination attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework._debug">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary._debug">(mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter._debug">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator._debug">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader._debug">(mofbuilder.io.CifReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter._debug">(mofbuilder.io.CifWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroReader.html#mofbuilder.io.GroReader._debug">(mofbuilder.io.GroReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroWriter.html#mofbuilder.io.GroWriter._debug">(mofbuilder.io.GroWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader._debug">(mofbuilder.io.PdbReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbWriter.html#mofbuilder.io.PdbWriter._debug">(mofbuilder.io.PdbWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzReader.html#mofbuilder.io.XyzReader._debug">(mofbuilder.io.XyzReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter._debug">(mofbuilder.io.XyzWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper._debug">(mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger._debug">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator._debug">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder._debug">(mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder._debug">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator._dft_optimize">_dft_optimize() (mofbuilder.md.LinkerForceFieldGenerator method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator._find_isomorphism_and_mapping">_find_isomorphism_and_mapping() (mofbuilder.md.LinkerForceFieldGenerator method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper._get_mapping_between_two_molecules">_get_mapping_between_two_molecules() (mofbuilder.md.ForceFieldMapper method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper._map_forcefield_sections">_map_forcefield_sections() (mofbuilder.md.ForceFieldMapper method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper._parse_itp_file">_parse_itp_file() (mofbuilder.md.ForceFieldMapper method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator._reconnect">_reconnect() (mofbuilder.md.LinkerForceFieldGenerator method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator._reconnect_linker_molecule">_reconnect_linker_molecule() (mofbuilder.md.LinkerForceFieldGenerator method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer._reverse_eG_dict">_reverse_eG_dict() (mofbuilder.visualization.Viewer method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator._xtb_optimize">_xtb_optimize() (mofbuilder.md.LinkerForceFieldGenerator method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.add_custom_solvent">add_custom_solvent() (mofbuilder.md.SolvationBuilder method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.add_virtual_edge">add_virtual_edge (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.atom_site_sector">atom_site_sector (mofbuilder.io.CifReader attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.barostat_added">barostat_added (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.best_solvents_dict">best_solvents_dict (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.box_size">box_size (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.buffer">buffer (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.build">build() (mofbuilder.MetalOrganicFrameworkBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.EdgeGraphBuilder.html#mofbuilder.core.EdgeGraphBuilder.build_edgeG_from_superG">build_edgeG_from_superG() (mofbuilder.core.EdgeGraphBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.SupercellBuilder.html#mofbuilder.core.SupercellBuilder.build_supercellGraph">build_supercellGraph() (mofbuilder.core.SupercellBuilder method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.utils.cartesian_to_fractional.html#mofbuilder.utils.cartesian_to_fractional">cartesian_to_fractional() (in module mofbuilder.utils)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.cell_info">cell_info (mofbuilder.core.FrameNet attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.cell_info">(mofbuilder.io.CifReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.cell_info">(mofbuilder.io.CifWriter attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.center_class">center_class (mofbuilder.core.FrameLinker attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.center_nodes">center_nodes (mofbuilder.core.FrameLinker attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.cG">cG (mofbuilder.core.MofWriter attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.check_dirs">check_dirs() (mofbuilder.core.FrameLinker method)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.check_dirs">(mofbuilder.core.FrameNode method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.cif_file">cif_file (mofbuilder.core.FrameNet attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.ciffile_lines">ciffile_lines (mofbuilder.io.CifReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader">CifReader (class in mofbuilder.io)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.cifreader">cifreader (mofbuilder.core.FrameNet attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter">CifWriter (class in mofbuilder.io)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.clean_unsaturated_linkers">clean_unsaturated_linkers (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.clean_unsaturated_linkers">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.cleaved_eG">cleaved_eG (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.cleaved_graph">cleaved_graph (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.com_target_type">com_target_type (mofbuilder.io.PdbReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.comm">comm (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.comm">(mofbuilder.core.FrameNet attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.comm">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.comm">(mofbuilder.core.FrameTermination attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.comm">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.comm">(mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.comm">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.comm">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.comm">(mofbuilder.io.CifReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.comm">(mofbuilder.io.CifWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroReader.html#mofbuilder.io.GroReader.comm">(mofbuilder.io.GroReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroWriter.html#mofbuilder.io.GroWriter.comm">(mofbuilder.io.GroWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.comm">(mofbuilder.io.PdbReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbWriter.html#mofbuilder.io.PdbWriter.comm">(mofbuilder.io.PdbWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzReader.html#mofbuilder.io.XyzReader.comm">(mofbuilder.io.XyzReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter.comm">(mofbuilder.io.XyzWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.comm">(mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.comm">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.comm">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.comm">(mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.comm">(mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.comm">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer.comm">(mofbuilder.visualization.Viewer attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.constant_length">constant_length (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.convert_graph_to_data">convert_graph_to_data() (mofbuilder.core.MofWriter method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.convert_graph_to_fcoords_data">convert_graph_to_fcoords_data() (mofbuilder.core.MofWriter method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.create">create() (mofbuilder.core.FrameLinker method)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.create">(mofbuilder.core.FrameNode method)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.create">(mofbuilder.core.FrameTermination method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.create_net">create_net() (mofbuilder.core.FrameNet method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.create_pdb">create_pdb() (mofbuilder.core.FrameLinker method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.custom_solvent_data">custom_solvent_data (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.data">data (mofbuilder.io.CifReader attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.io.GroReader.html#mofbuilder.io.GroReader.data">(mofbuilder.io.GroReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.data">(mofbuilder.io.PdbReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzReader.html#mofbuilder.io.XyzReader.data">(mofbuilder.io.XyzReader attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.data_path">data_path (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.data_path">(mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.data_path">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.database_dir">database_dir (mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.defectG">defectG (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.defectgenerator">defectgenerator (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.dest_linker_molecule">dest_linker_molecule (mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.dest_molecule">dest_molecule (mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.dest_molecule_connectivity_matrix">dest_molecule_connectivity_matrix (mofbuilder.md.ForceFieldMapper attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.dest_molecule_connectivity_matrix">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.dest_molecule_forcefield_itpfile">dest_molecule_forcefield_itpfile (mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.dummy_atom_node">dummy_atom_node (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.dummy_atom_node">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.dummy_atom_node_dict">dummy_atom_node_dict (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.dummy_atom_node_dict">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.dummy_atom_node_dict">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.dummy_node">dummy_node (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.dummy_node_split_dict">dummy_node_split_dict (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.dummy_node_split_dict_path">dummy_node_split_dict_path (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.dummy_pdbfile">dummy_pdbfile (mofbuilder.core.FrameNode attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.EC_con">EC_con (mofbuilder.io.CifReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.ecnode333">ecnode333 (mofbuilder.core.FrameNet attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.edge_length_range">edge_length_range (mofbuilder.core.FrameNet attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.EdgeGraphBuilder.html#mofbuilder.core.EdgeGraphBuilder">EdgeGraphBuilder (class in mofbuilder.core)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.edges_data">edges_data (mofbuilder.core.MofWriter attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.eenode333">eenode333 (mofbuilder.core.FrameNet attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer.eG_dict">eG_dict (mofbuilder.visualization.Viewer attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.eG_index_name_dict">eG_index_name_dict (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer.eG_name_idx_dict">eG_name_idx_dict (mofbuilder.visualization.Viewer attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.PdbReader.html#id1">expand_arr2data() (mofbuilder.io.PdbReader method)</a>, <a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.expand_arr2data">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.fake_edge">fake_edge (mofbuilder.core.FrameLinker attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.fcoords">fcoords (mofbuilder.io.CifReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.fetch">fetch() (mofbuilder.core.MofTopLibrary method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.utils.fetch_pdbfile.html#mofbuilder.utils.fetch_pdbfile">fetch_pdbfile() (in module mofbuilder.utils)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.file_dir">file_dir (mofbuilder.io.CifWriter attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.io.GroWriter.html#mofbuilder.io.GroWriter.file_dir">(mofbuilder.io.GroWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbWriter.html#mofbuilder.io.PdbWriter.file_dir">(mofbuilder.io.PdbWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter.file_dir">(mofbuilder.io.XyzWriter attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.filename">filename (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.filename">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.filename">(mofbuilder.core.FrameTermination attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.filename">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.filename">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.filepath">filepath (mofbuilder.io.CifReader attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.filepath">(mofbuilder.io.CifWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroReader.html#mofbuilder.io.GroReader.filepath">(mofbuilder.io.GroReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroWriter.html#mofbuilder.io.GroWriter.filepath">(mofbuilder.io.GroWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.filepath">(mofbuilder.io.PdbReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbWriter.html#mofbuilder.io.PdbWriter.filepath">(mofbuilder.io.PdbWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzReader.html#mofbuilder.io.XyzReader.filepath">(mofbuilder.io.XyzReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter.filepath">(mofbuilder.io.XyzWriter attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.finalG">finalG (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.find_closest_center_node">find_closest_center_node() (mofbuilder.core.FrameLinker static method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper">ForceFieldMapper (class in mofbuilder.md)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.utils.fractional_to_cartesian.html#mofbuilder.utils.fractional_to_cartesian">fractional_to_cartesian() (in module mofbuilder.utils)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.frame_cell_info">frame_cell_info (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.frame_cell_info">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_cell_info">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_linker">frame_linker (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_net">frame_net (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_nodes">frame_nodes (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_terminations">frame_terminations (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.frame_unit_cell">frame_unit_cell (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.frame_unit_cell">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker">FrameLinker (class in mofbuilder.core)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet">FrameNet (class in mofbuilder.core)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode">FrameNode (class in mofbuilder.core)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination">FrameTermination (class in mofbuilder.core)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework">Framework (class in mofbuilder.core.framework)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.framework">framework (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.framework_data">framework_data (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.framework_fcoords_data">framework_fcoords_data (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.free_opt_linker_mol">free_opt_linker_mol (mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.G">G (mofbuilder.core.FrameNet attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.G">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.generate_linker_forcefield">generate_linker_forcefield() (mofbuilder.core.framework.Framework method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.generate_MOF_gromacsfile">generate_MOF_gromacsfile() (mofbuilder.md.GromacsForcefieldMerger method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#id0">generate_reconnected_molecule_forcefield() (mofbuilder.md.LinkerForceFieldGenerator method)</a>, <a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.generate_reconnected_molecule_forcefield">[1]</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.get_merged_data">get_merged_data() (mofbuilder.core.framework.Framework method)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.get_merged_data">(mofbuilder.core.MofWriter method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.get_merged_fcoords_data">get_merged_fcoords_data() (mofbuilder.core.MofWriter method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.get_type_atoms_fcoords_in_primitive_cell">get_type_atoms_fcoords_in_primitive_cell() (mofbuilder.io.CifReader method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.io.XyzWriter.html#id1">get_xyzlines() (mofbuilder.io.XyzWriter method)</a>, <a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter.get_xyzlines">[1]</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.graph">graph (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.graph_index_name_dict">graph_index_name_dict (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.graph_matched_vnode_xind">graph_matched_vnode_xind (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.grid_points_template">grid_points_template() (mofbuilder.md.SolvationBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.gro">gro (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.gro_file">gro_file (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger">GromacsForcefieldMerger (class in mofbuilder.md)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.GroReader.html#mofbuilder.io.GroReader">GroReader (class in mofbuilder.io)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.GroWriter.html#mofbuilder.io.GroWriter">GroWriter (class in mofbuilder.io)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.hall_number">hall_number (mofbuilder.io.CifReader attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.lines">lines (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.lines">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.visualization.Viewer.html#id1">lines_show() (mofbuilder.visualization.Viewer method)</a>, <a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer.lines_show">[1]</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.linker_center_data">linker_center_data (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_data">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.linker_center_X_data">linker_center_X_data (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_center_X_data">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.linker_charge">linker_charge (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.linker_charge">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_charge">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.linker_connectivity">linker_connectivity (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.linker_connectivity">(mofbuilder.core.FrameNet attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.linker_connectivity">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.linker_connectivity">(mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.linker_connectivity">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_connectivity">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.linker_data">linker_data (mofbuilder.core.FrameLinker attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.linker_fake_edge">linker_fake_edge (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.linker_fake_edge">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_fake_edge">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.linker_ff_name">linker_ff_name (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.linker_ff_name">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_frag_length">linker_frag_length (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.linker_fragment_length">linker_fragment_length (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.linker_itp_dir">linker_itp_dir (mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.linker_itp_path">linker_itp_path (mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_molecule">linker_molecule (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.linker_multiplicity">linker_multiplicity (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.linker_multiplicity">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_multiplicity">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.linker_name">linker_name (mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.linker_optimization">linker_optimization (mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.linker_outer_data">linker_outer_data (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_data">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.linker_outer_X_data">linker_outer_X_data (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_outer_X_data">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.linker_reconnect_drv">linker_reconnect_drv (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.linker_reconnect_opt">linker_reconnect_opt (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.linker_residue_name">linker_residue_name (mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_smiles">linker_smiles (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.linker_xyzfile">linker_xyzfile (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator">LinkerForceFieldGenerator (class in mofbuilder.md)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.linkers_idx2rp">linkers_idx2rp (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.list_available_metals">list_available_metals() (mofbuilder.core.MofTopLibrary method)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_metals">(mofbuilder.MetalOrganicFrameworkBuilder method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_mof_families">list_available_mof_families() (mofbuilder.MetalOrganicFrameworkBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_solvents">list_available_solvents() (mofbuilder.MetalOrganicFrameworkBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.list_available_terminations">list_available_terminations() (mofbuilder.MetalOrganicFrameworkBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.list_mof_families">list_mof_families() (mofbuilder.core.MofTopLibrary method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.load_framework">load_framework() (mofbuilder.MetalOrganicFrameworkBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.load_optimized_rotations">load_optimized_rotations (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.load_solute_info">load_solute_info() (mofbuilder.md.SolvationBuilder method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.make_supercell">make_supercell() (mofbuilder.MetalOrganicFrameworkBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#id1">map_existing_forcefield() (mofbuilder.md.LinkerForceFieldGenerator method)</a>, <a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.map_existing_forcefield">[1]</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.matched_vnode_xind">matched_vnode_xind (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.matched_vnode_xind">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.max_degree">max_degree (mofbuilder.core.FrameNet attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.max_fill_rounds">max_fill_rounds (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.md_prepare">md_prepare() (mofbuilder.core.framework.Framework method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.merged_data">merged_data (mofbuilder.core.MofWriter attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.merged_f_data">merged_f_data (mofbuilder.core.MofWriter attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer.merged_lines">merged_lines (mofbuilder.visualization.Viewer attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.metal_valence">metal_valence (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder">MetalOrganicFrameworkBuilder (class in mofbuilder)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.metals">metals (mofbuilder.core.FrameLinker attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.mlp_model_path">mlp_model_path (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.mlp_type">mlp_type (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.mof_family">mof_family (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.mof_family">(mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_family">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.mof_name">mof_name (mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.mof_top_dict">mof_top_dict (mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.mof_top_library">mof_top_library (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary">MofTopLibrary (class in mofbuilder.core)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter">MofWriter (class in mofbuilder.core)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.mofwriter">mofwriter (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.mofwriter">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.molecule">molecule (mofbuilder.core.FrameLinker attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.molecule_radii">molecule_radii() (mofbuilder.md.SolvationBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.mols_radii">mols_radii() (mofbuilder.md.SolvationBuilder method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.net_cell_info">net_cell_info (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.net_cell_info">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.net_filename">net_filename (mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.net_name">net_name (mofbuilder.io.CifReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.net_optimizer">net_optimizer (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.net_pair_vertex_edge">net_pair_vertex_edge (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_edges">net_sorted_edges (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.net_sorted_nodes">net_sorted_nodes (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.net_spacegroup">net_spacegroup (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.net_spacegroup">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.net_type">net_type (mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.net_unit_cell">net_unit_cell (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.net_unit_cell_inv">net_unit_cell_inv (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.NetOptimizer.html#mofbuilder.core.NetOptimizer">NetOptimizer (class in mofbuilder.core)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.new_dummy_dictfilename">new_dummy_dictfilename (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.new_linker_data">new_linker_data (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.new_linker_X_data">new_linker_X_data (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.new_node_data">new_node_data (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.new_node_X_data">new_node_X_data (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.new_pdbfilename">new_pdbfilename (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.new_xyzfilename">new_xyzfilename (mofbuilder.core.FrameLinker attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.node_atoms">node_atoms (mofbuilder.io.PdbReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.node_ccoords">node_ccoords (mofbuilder.io.PdbReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.node_com_type">node_com_type (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.node_connectivity">node_connectivity (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.node_connectivity">(mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.node_connectivity">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.node_connectivity">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.node_data">node_data (mofbuilder.core.FrameNode attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.node_data">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.node_data">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.node_metal">node_metal (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.node_metal">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.node_metal_type">node_metal_type (mofbuilder.core.FrameNode attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.node_metal_type">(mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.node_metal_type">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.node_x_ccoords">node_x_ccoords (mofbuilder.io.PdbReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.node_X_data">node_X_data (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.node_xyz_string">node_xyz_string (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.nodeG">nodeG (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.nodes">nodes (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.nodes">(mofbuilder.core.FrameNet attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.nodes">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.nodes">(mofbuilder.core.FrameTermination attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.nodes">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.nodes">(mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.nodes">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.nodes">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.nodes">(mofbuilder.io.CifReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.nodes">(mofbuilder.io.CifWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroReader.html#mofbuilder.io.GroReader.nodes">(mofbuilder.io.GroReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroWriter.html#mofbuilder.io.GroWriter.nodes">(mofbuilder.io.GroWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.nodes">(mofbuilder.io.PdbReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbWriter.html#mofbuilder.io.PdbWriter.nodes">(mofbuilder.io.PdbWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzReader.html#mofbuilder.io.XyzReader.nodes">(mofbuilder.io.XyzReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter.nodes">(mofbuilder.io.XyzWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.nodes">(mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.nodes">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.nodes">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.nodes">(mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.nodes">(mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.nodes">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer.nodes">(mofbuilder.visualization.Viewer attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.nodes_data">nodes_data (mofbuilder.core.MofWriter attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.nodes_idx2rp">nodes_idx2rp (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.only_get_merged_data">only_get_merged_data() (mofbuilder.core.MofWriter method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup">OpenmmSetup (class in mofbuilder.md)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.optimize_drv">optimize_drv (mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.optimize_framework">optimize_framework() (mofbuilder.MetalOrganicFrameworkBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.NetOptimizer.html#mofbuilder.core.NetOptimizer.optimized_cell_info">optimized_cell_info (mofbuilder.core.NetOptimizer attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.original_solvents_dict">original_solvents_dict (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.ostream">ostream (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.ostream">(mofbuilder.core.FrameNet attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.ostream">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.ostream">(mofbuilder.core.FrameTermination attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.ostream">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.ostream">(mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.ostream">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.ostream">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.ostream">(mofbuilder.io.CifReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.ostream">(mofbuilder.io.CifWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroReader.html#mofbuilder.io.GroReader.ostream">(mofbuilder.io.GroReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroWriter.html#mofbuilder.io.GroWriter.ostream">(mofbuilder.io.GroWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.ostream">(mofbuilder.io.PdbReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbWriter.html#mofbuilder.io.PdbWriter.ostream">(mofbuilder.io.PdbWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzReader.html#mofbuilder.io.XyzReader.ostream">(mofbuilder.io.XyzReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter.ostream">(mofbuilder.io.XyzWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.ostream">(mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.ostream">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.ostream">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.ostream">(mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.ostream">(mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.ostream">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer.ostream">(mofbuilder.visualization.Viewer attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.other_residues">other_residues (mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.pair_vertex_edge">pair_vertex_edge (mofbuilder.core.FrameNet attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader">PdbReader (class in mofbuilder.io)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.pdbreader">pdbreader (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.pdbreader">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.pdbreader">(mofbuilder.core.FrameTermination attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.io.PdbWriter.html#mofbuilder.io.PdbWriter">PdbWriter (class in mofbuilder.io)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.pdbwriter">pdbwriter (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.pdbwriter">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.periodicity">periodicity (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.NetOptimizer.html#mofbuilder.core.NetOptimizer.place_edge_in_net">place_edge_in_net() (mofbuilder.core.NetOptimizer method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.positions">positions (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.preferred_region_box">preferred_region_box (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.process_linker_molecule">process_linker_molecule() (mofbuilder.core.FrameLinker method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.PdbReader.html#id2">process_node_pdb() (mofbuilder.io.PdbReader method)</a>, <a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.process_node_pdb">[1]</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.properties">properties (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.properties">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.properties">(mofbuilder.core.FrameTermination attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.provided_linker_itpfile">provided_linker_itpfile (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.rank">rank (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.rank">(mofbuilder.core.FrameNet attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.rank">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.rank">(mofbuilder.core.FrameTermination attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.rank">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.rank">(mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.rank">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.rank">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.rank">(mofbuilder.io.CifReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.rank">(mofbuilder.io.CifWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroReader.html#mofbuilder.io.GroReader.rank">(mofbuilder.io.GroReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroWriter.html#mofbuilder.io.GroWriter.rank">(mofbuilder.io.GroWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.rank">(mofbuilder.io.PdbReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbWriter.html#mofbuilder.io.PdbWriter.rank">(mofbuilder.io.PdbWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzReader.html#mofbuilder.io.XyzReader.rank">(mofbuilder.io.XyzReader attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter.rank">(mofbuilder.io.XyzWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.rank">(mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.rank">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.rank">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.rank">(mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.rank">(mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.rank">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer.rank">(mofbuilder.visualization.Viewer attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.rc_solute_coords">rc_solute_coords (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.read_cif">read_cif() (mofbuilder.io.CifReader method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.io.GroReader.html#id0">read_gro() (mofbuilder.io.GroReader method)</a>, <a href="api_generated/mofbuilder.io.GroReader.html#mofbuilder.io.GroReader.read_gro">[1]</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.PdbReader.html#id0">read_pdb() (mofbuilder.io.PdbReader method)</a>, <a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.read_pdb">[1]</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.read_termination_file">read_termination_file() (mofbuilder.core.FrameTermination method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.XyzReader.html#id0">read_xyz() (mofbuilder.io.XyzReader method)</a>, <a href="api_generated/mofbuilder.io.XyzReader.html#mofbuilder.io.XyzReader.read_xyz">[1]</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.reconnected_linker_molecule">reconnected_linker_molecule (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.remove">remove() (mofbuilder.core.framework.Framework method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_edge_list">remove_edge_list (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.remove_items_or_terminate">remove_items_or_terminate() (mofbuilder.core.TerminationDefectGenerator method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.remove_node_list">remove_node_list (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.remove_overlaps_kdtree">remove_overlaps_kdtree() (mofbuilder.md.SolvationBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.replace">replace() (mofbuilder.core.framework.Framework method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.replace_items">replace_items() (mofbuilder.core.TerminationDefectGenerator method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.res_idx2rm">res_idx2rm (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.residues_info">residues_info (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.residues_info">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.residues_info">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.resp_charges">resp_charges (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.resp_charges">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.NetOptimizer.html#mofbuilder.core.NetOptimizer.rotation_and_cell_optimization">rotation_and_cell_optimization() (mofbuilder.core.NetOptimizer method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.rotation_filename">rotation_filename (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.rows">rows (mofbuilder.core.FrameLinker attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.run_em">run_em() (mofbuilder.md.OpenmmSetup method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.run_npt">run_npt() (mofbuilder.md.OpenmmSetup method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.run_nvt">run_nvt() (mofbuilder.md.OpenmmSetup method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.run_pipeline">run_pipeline() (mofbuilder.md.OpenmmSetup method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.safe_box">safe_box (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.save_files">save_files (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.save_files">(mofbuilder.core.FrameNode attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.save_files">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.save_files">(mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.save_files">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.sc_unit_cell">sc_unit_cell (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.sc_unit_cell">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.sc_unit_cell">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.sc_unit_cell_inv">sc_unit_cell_inv (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.sc_unit_cell_inv">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.scalar">scalar (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.select_mof_family">select_mof_family() (mofbuilder.core.MofTopLibrary method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.selected_template_cif_file">selected_template_cif_file (mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.sG">sG (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.sG_subparts">sG_subparts (mofbuilder.core.FrameNode attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.show">show() (mofbuilder.core.framework.Framework method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.simulation">simulation (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.skip_rotation_optimization">skip_rotation_optimization (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.solute_data">solute_data (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.solute_dict">solute_dict (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.solute_file">solute_file (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.solvate">solvate() (mofbuilder.core.framework.Framework method)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.solvate">(mofbuilder.md.SolvationBuilder method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.solvated_gro_file">solvated_gro_file (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder">SolvationBuilder (class in mofbuilder.md)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.solvationbuilder">solvationbuilder (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.solvents">solvents (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.solvents_datalines">solvents_datalines (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.solvents_dict">solvents_dict (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.solvents_dict">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.solvents_files">solvents_files (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.solvents_molecules">solvents_molecules (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.solvents_name">solvents_name (mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.solvents_names">solvents_names (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.solvents_proportions">solvents_proportions (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.solvents_proportions">(mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.solvents_quantities">solvents_quantities (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.solvents_quantities">(mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.sorted_edges">sorted_edges (mofbuilder.core.FrameNet attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.sorted_nodes">sorted_nodes (mofbuilder.core.FrameNet attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.spacegroup">spacegroup (mofbuilder.io.CifReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.src_linker_forcefield_itpfile">src_linker_forcefield_itpfile (mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.src_linker_molecule">src_linker_molecule (mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.src_molecule">src_molecule (mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.src_molecule_forcefield_itpfile">src_molecule_forcefield_itpfile (mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.submit_template">submit_template() (mofbuilder.core.MofTopLibrary method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.supercell">supercell (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.supercell">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.supercell_boundary">supercell_boundary (mofbuilder.core.MofWriter attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.supercell_boundary">(mofbuilder.io.CifWriter attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.supercell_info">supercell_info (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.SupercellBuilder.html#mofbuilder.core.SupercellBuilder">SupercellBuilder (class in mofbuilder.core)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.symmetry_sector">symmetry_sector (mofbuilder.io.CifReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.system">system (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.system_datalines">system_datalines (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.system_pbc">system_pbc (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameNode.html#mofbuilder.core.FrameNode.target_dir">target_dir (mofbuilder.core.FrameNode attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.target_dir">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameLinker.html#mofbuilder.core.FrameLinker.target_directory">target_directory (mofbuilder.core.FrameLinker attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.target_directory">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.target_directory">(mofbuilder.md.ForceFieldMapper attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.LinkerForceFieldGenerator.html#mofbuilder.md.LinkerForceFieldGenerator.target_directory">(mofbuilder.md.LinkerForceFieldGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.target_directory">(mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.target_fcoords">target_fcoords (mofbuilder.io.CifReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.temperature">temperature (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.temperature_K">temperature_K (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofTopLibrary.html#mofbuilder.core.MofTopLibrary.template_directory">template_directory (mofbuilder.core.MofTopLibrary attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.termG">termG (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.termination">termination (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.termination">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.termination_data">termination_data (mofbuilder.core.FrameTermination attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.termination_data">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.termination_data">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_data">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_molecule">termination_molecule (mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.termination_name">termination_name (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.termination_name">(mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_name">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.termination_X_data">termination_X_data (mofbuilder.core.FrameTermination attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.termination_X_data">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.termination_X_data">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_X_data">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.termination_Y_data">termination_Y_data (mofbuilder.core.FrameTermination attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.termination_Y_data">(mofbuilder.core.framework.Framework attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.termination_Y_data">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.MetalOrganicFrameworkBuilder.html#mofbuilder.MetalOrganicFrameworkBuilder.termination_Y_data">(mofbuilder.MetalOrganicFrameworkBuilder attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator">TerminationDefectGenerator (class in mofbuilder.core)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.terms_data">terms_data (mofbuilder.core.MofWriter attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.timestep">timestep (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.timestep_fs">timestep_fs (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.top">top (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.OpenmmSetup.html#mofbuilder.md.OpenmmSetup.top_file">top_file (mofbuilder.md.OpenmmSetup attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.GromacsForcefieldMerger.html#mofbuilder.md.GromacsForcefieldMerger.top_path">top_path (mofbuilder.md.GromacsForcefieldMerger attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.trial_rounds">trial_rounds (mofbuilder.md.SolvationBuilder attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.unit_cell">unit_cell (mofbuilder.core.FrameNet attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.unit_cell">(mofbuilder.io.CifWriter attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.unit_cell_inv">unit_cell_inv (mofbuilder.core.FrameNet attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.utils.unit_cell_to_cartesian_matrix.html#mofbuilder.utils.unit_cell_to_cartesian_matrix">unit_cell_to_cartesian_matrix() (in module mofbuilder.utils)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.unsaturated_linkers">unsaturated_linkers (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.unsaturated_linkers">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.unsaturated_nodes">unsaturated_nodes (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.unsaturated_nodes">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.update_node_termination">update_node_termination (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.update_node_termination">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.updated_matched_vnode_xind">updated_matched_vnode_xind (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.updated_unsaturated_nodes">updated_unsaturated_nodes (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.use_termination">use_termination (mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.io.CifReader.html#mofbuilder.io.CifReader.V_con">V_con (mofbuilder.io.CifReader attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.visualization.Viewer.html#mofbuilder.visualization.Viewer">Viewer (class in mofbuilder.visualization)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.virtual_edge_max_neighbor">virtual_edge_max_neighbor (mofbuilder.core.framework.Framework attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameNet.html#mofbuilder.core.FrameNet.vvnode333">vvnode333 (mofbuilder.core.FrameNet attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.write">write() (mofbuilder.core.framework.Framework method)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.io.CifWriter.html#id0">(mofbuilder.io.CifWriter method)</a>, <a href="api_generated/mofbuilder.io.CifWriter.html#mofbuilder.io.CifWriter.write">[1]</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.GroWriter.html#id0">(mofbuilder.io.GroWriter method)</a>, <a href="api_generated/mofbuilder.io.GroWriter.html#mofbuilder.io.GroWriter.write">[1]</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.PdbWriter.html#id0">(mofbuilder.io.PdbWriter method)</a>, <a href="api_generated/mofbuilder.io.PdbWriter.html#mofbuilder.io.PdbWriter.write">[1]</a>
+</li>
+        <li><a href="api_generated/mofbuilder.io.XyzWriter.html#id0">(mofbuilder.io.XyzWriter method)</a>, <a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter.write">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.write_cif">write_cif() (mofbuilder.core.MofWriter method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.write_gro">write_gro() (mofbuilder.core.MofWriter method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.ForceFieldMapper.html#id0">write_mapped_itp_file() (mofbuilder.md.ForceFieldMapper method)</a>, <a href="api_generated/mofbuilder.md.ForceFieldMapper.html#mofbuilder.md.ForceFieldMapper.write_mapped_itp_file">[1]</a>
+</li>
+      <li><a href="api_generated/mofbuilder.md.SolvationBuilder.html#mofbuilder.md.SolvationBuilder.write_output">write_output() (mofbuilder.md.SolvationBuilder method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.write_pdb">write_pdb() (mofbuilder.core.MofWriter method)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.write_xyz">write_xyz() (mofbuilder.core.MofWriter method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.X_atom_type">X_atom_type (mofbuilder.core.FrameTermination attribute)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.X_data">X_data (mofbuilder.core.FrameTermination attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.io.PdbReader.html#mofbuilder.io.PdbReader.X_data">(mofbuilder.io.PdbReader attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api_generated/mofbuilder.core.framework.Framework.html#mofbuilder.core.framework.Framework.xoo_dict">xoo_dict (mofbuilder.core.framework.Framework attribute)</a>
+
+      <ul>
+        <li><a href="api_generated/mofbuilder.core.MofWriter.html#mofbuilder.core.MofWriter.xoo_dict">(mofbuilder.core.MofWriter attribute)</a>
+</li>
+        <li><a href="api_generated/mofbuilder.core.TerminationDefectGenerator.html#mofbuilder.core.TerminationDefectGenerator.xoo_dict">(mofbuilder.core.TerminationDefectGenerator attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.io.XyzReader.html#mofbuilder.io.XyzReader">XyzReader (class in mofbuilder.io)</a>
+</li>
+      <li><a href="api_generated/mofbuilder.io.XyzWriter.html#mofbuilder.io.XyzWriter">XyzWriter (class in mofbuilder.io)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Y">Y</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_generated/mofbuilder.core.FrameTermination.html#mofbuilder.core.FrameTermination.Y_atom_type">Y_atom_type (mofbuilder.core.FrameTermination attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Chenxi Li.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

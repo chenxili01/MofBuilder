@@ -1,0 +1,1104 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mofbuilder.core.framework.Framework &#8212; MOFBuilder 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5ac31dca" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_generated/mofbuilder.core.framework.Framework';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mofbuilder.core.FrameNet" href="mofbuilder.core.FrameNet.html" />
+    <link rel="prev" title="mofbuilder.MetalOrganicFrameworkBuilder" href="mofbuilder.MetalOrganicFrameworkBuilder.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+    <meta name="docbuild:last-update" content="2026-03-06"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">MOFBuilder 0.1.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../manual/index.html">
+    User Manual
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api_reference.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/chenxili01/MofBuilder" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.MetalOrganicFrameworkBuilder.html">mofbuilder.MetalOrganicFrameworkBuilder</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mofbuilder.core.framework.Framework</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameNet.html">mofbuilder.core.FrameNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameNode.html">mofbuilder.core.FrameNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameLinker.html">mofbuilder.core.FrameLinker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.FrameTermination.html">mofbuilder.core.FrameTermination</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.MofTopLibrary.html">mofbuilder.core.MofTopLibrary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.NetOptimizer.html">mofbuilder.core.NetOptimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.SupercellBuilder.html">mofbuilder.core.SupercellBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.EdgeGraphBuilder.html">mofbuilder.core.EdgeGraphBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.TerminationDefectGenerator.html">mofbuilder.core.TerminationDefectGenerator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.core.MofWriter.html">mofbuilder.core.MofWriter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.CifReader.html">mofbuilder.io.CifReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.CifWriter.html">mofbuilder.io.CifWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.PdbReader.html">mofbuilder.io.PdbReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.PdbWriter.html">mofbuilder.io.PdbWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.GroReader.html">mofbuilder.io.GroReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.GroWriter.html">mofbuilder.io.GroWriter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.XyzReader.html">mofbuilder.io.XyzReader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.io.XyzWriter.html">mofbuilder.io.XyzWriter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.OpenmmSetup.html">mofbuilder.md.OpenmmSetup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.SolvationBuilder.html">mofbuilder.md.SolvationBuilder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.LinkerForceFieldGenerator.html">mofbuilder.md.LinkerForceFieldGenerator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.GromacsForcefieldMerger.html">mofbuilder.md.GromacsForcefieldMerger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.md.ForceFieldMapper.html">mofbuilder.md.ForceFieldMapper</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.visualization.Viewer.html">mofbuilder.visualization.Viewer</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.fetch_pdbfile.html">mofbuilder.utils.fetch_pdbfile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.unit_cell_to_cartesian_matrix.html">mofbuilder.utils.unit_cell_to_cartesian_matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.fractional_to_cartesian.html">mofbuilder.utils.fractional_to_cartesian</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mofbuilder.utils.cartesian_to_fractional.html">mofbuilder.utils.cartesian_to_fractional</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api_reference.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mofbuilder.core.framework.Framework</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mofbuilder-core-framework-framework">
+<h1>mofbuilder.core.framework.Framework<a class="headerlink" href="#mofbuilder-core-framework-framework" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mofbuilder.core.framework.</span></span><span class="sig-name descname"><span class="pre">Framework</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ostream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holds the built MOF: graph, cell, merged data, and options for writing, solvation, and MD.</p>
+<p>Set by MetalOrganicFrameworkBuilder.build(). Provides write() for file output,
+replace() for defects, and access to solvationbuilder and linker FF settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comm</strong> (<em>Optional</em><em>[</em><em>Any</em><em>]</em>)</p></li>
+<li><p><strong>ostream</strong> (<em>Optional</em><em>[</em><em>Any</em><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.comm">
+<span class="sig-name descname"><span class="pre">comm</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.comm" title="Link to this definition">#</a></dt>
+<dd><p>MPI communicator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.rank" title="Link to this definition">#</a></dt>
+<dd><p>MPI rank of this process.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.nodes">
+<span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.nodes" title="Link to this definition">#</a></dt>
+<dd><p>MPI size (number of processes).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.ostream">
+<span class="sig-name descname"><span class="pre">ostream</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.ostream" title="Link to this definition">#</a></dt>
+<dd><p>Output stream for logging.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.mofwriter">
+<span class="sig-name descname"><span class="pre">mofwriter</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.mofwriter" title="Link to this definition">#</a></dt>
+<dd><p>MofWriter instance for writing PDB/GRO/XYZ/CIF.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.framework_data">
+<span class="sig-name descname"><span class="pre">framework_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.framework_data" title="Link to this definition">#</a></dt>
+<dd><p>Merged Cartesian data for the whole framework (set in write()).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.framework_fcoords_data">
+<span class="sig-name descname"><span class="pre">framework_fcoords_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.framework_fcoords_data" title="Link to this definition">#</a></dt>
+<dd><p>Merged fractional data (set in write()).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvationbuilder">
+<span class="sig-name descname"><span class="pre">solvationbuilder</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvationbuilder" title="Link to this definition">#</a></dt>
+<dd><p>SolvationBuilder instance for adding solvents.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvents">
+<span class="sig-name descname"><span class="pre">solvents</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvents" title="Link to this definition">#</a></dt>
+<dd><p>List of solvent names or xyz files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvents_molecules">
+<span class="sig-name descname"><span class="pre">solvents_molecules</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvents_molecules" title="Link to this definition">#</a></dt>
+<dd><p>List of solvent molecules.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvents_proportions">
+<span class="sig-name descname"><span class="pre">solvents_proportions</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvents_proportions" title="Link to this definition">#</a></dt>
+<dd><p>List of solvent proportions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvents_quantities">
+<span class="sig-name descname"><span class="pre">solvents_quantities</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvents_quantities" title="Link to this definition">#</a></dt>
+<dd><p>List of solvent quantities.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvated_gro_file">
+<span class="sig-name descname"><span class="pre">solvated_gro_file</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvated_gro_file" title="Link to this definition">#</a></dt>
+<dd><p>Path to solvated GRO file (set after solvation).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.target_directory">
+<span class="sig-name descname"><span class="pre">target_directory</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.target_directory" title="Link to this definition">#</a></dt>
+<dd><p>Output directory for files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.data_path">
+<span class="sig-name descname"><span class="pre">data_path</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.data_path" title="Link to this definition">#</a></dt>
+<dd><p>Path to database directory.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.save_files">
+<span class="sig-name descname"><span class="pre">save_files</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.save_files" title="Link to this definition">#</a></dt>
+<dd><p>If True, save intermediate/output files.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_ff_name">
+<span class="sig-name descname"><span class="pre">linker_ff_name</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_ff_name" title="Link to this definition">#</a></dt>
+<dd><p>Name for linker force field (default “Linker”).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_charge">
+<span class="sig-name descname"><span class="pre">linker_charge</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_charge" title="Link to this definition">#</a></dt>
+<dd><p>Linker charge for FF generation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_multiplicity">
+<span class="sig-name descname"><span class="pre">linker_multiplicity</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_multiplicity" title="Link to this definition">#</a></dt>
+<dd><p>Linker multiplicity.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_reconnect_drv">
+<span class="sig-name descname"><span class="pre">linker_reconnect_drv</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_reconnect_drv" title="Link to this definition">#</a></dt>
+<dd><p>Driver for reconnection (e.g. ‘xtb’).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_reconnect_opt">
+<span class="sig-name descname"><span class="pre">linker_reconnect_opt</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_reconnect_opt" title="Link to this definition">#</a></dt>
+<dd><p>Whether to run reconnection optimization.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.reconnected_linker_molecule">
+<span class="sig-name descname"><span class="pre">reconnected_linker_molecule</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.reconnected_linker_molecule" title="Link to this definition">#</a></dt>
+<dd><p>Molecule after reconnection (set by FF step).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.provided_linker_itpfile">
+<span class="sig-name descname"><span class="pre">provided_linker_itpfile</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.provided_linker_itpfile" title="Link to this definition">#</a></dt>
+<dd><p>Optional path to pre-made linker .itp file.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.filename" title="Link to this definition">#</a></dt>
+<dd><p>Base filename for output (set in write()).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.resp_charges">
+<span class="sig-name descname"><span class="pre">resp_charges</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.resp_charges" title="Link to this definition">#</a></dt>
+<dd><p>Whether to use RESP charges for linker.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework._debug">
+<span class="sig-name descname"><span class="pre">_debug</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework._debug" title="Link to this definition">#</a></dt>
+<dd><p>If True, print extra debug messages.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.mof_family">
+<span class="sig-name descname"><span class="pre">mof_family</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.mof_family" title="Link to this definition">#</a></dt>
+<dd><p>MOF family name (set by builder).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.node_metal">
+<span class="sig-name descname"><span class="pre">node_metal</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.node_metal" title="Link to this definition">#</a></dt>
+<dd><p>Metal type string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.dummy_atom_node">
+<span class="sig-name descname"><span class="pre">dummy_atom_node</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.dummy_atom_node" title="Link to this definition">#</a></dt>
+<dd><p>Whether nodes include dummy atoms.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.net_spacegroup">
+<span class="sig-name descname"><span class="pre">net_spacegroup</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.net_spacegroup" title="Link to this definition">#</a></dt>
+<dd><p>Space group of the net.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.net_cell_info">
+<span class="sig-name descname"><span class="pre">net_cell_info</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.net_cell_info" title="Link to this definition">#</a></dt>
+<dd><p>Cell parameters [a, b, c, alpha, beta, gamma].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.net_unit_cell">
+<span class="sig-name descname"><span class="pre">net_unit_cell</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.net_unit_cell" title="Link to this definition">#</a></dt>
+<dd><p>3x3 unit cell matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.node_connectivity">
+<span class="sig-name descname"><span class="pre">node_connectivity</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.node_connectivity" title="Link to this definition">#</a></dt>
+<dd><p>Node connectivity.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_connectivity">
+<span class="sig-name descname"><span class="pre">linker_connectivity</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_connectivity" title="Link to this definition">#</a></dt>
+<dd><p>Linker connectivity (topic).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_fragment_length">
+<span class="sig-name descname"><span class="pre">linker_fragment_length</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_fragment_length" title="Link to this definition">#</a></dt>
+<dd><p>Length of linker fragment.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.node_data">
+<span class="sig-name descname"><span class="pre">node_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.node_data" title="Link to this definition">#</a></dt>
+<dd><p>Node atom data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.dummy_atom_node_dict">
+<span class="sig-name descname"><span class="pre">dummy_atom_node_dict</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.dummy_atom_node_dict" title="Link to this definition">#</a></dt>
+<dd><p>Dict of dummy atom counts per node.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.termination_data">
+<span class="sig-name descname"><span class="pre">termination_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.termination_data" title="Link to this definition">#</a></dt>
+<dd><p>Termination atom data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.termination_X_data">
+<span class="sig-name descname"><span class="pre">termination_X_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.termination_X_data" title="Link to this definition">#</a></dt>
+<dd><p>Termination X atoms.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.termination_Y_data">
+<span class="sig-name descname"><span class="pre">termination_Y_data</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.termination_Y_data" title="Link to this definition">#</a></dt>
+<dd><p>Termination Y atoms.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.frame_unit_cell">
+<span class="sig-name descname"><span class="pre">frame_unit_cell</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.frame_unit_cell" title="Link to this definition">#</a></dt>
+<dd><p>3x3 frame unit cell matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.frame_cell_info">
+<span class="sig-name descname"><span class="pre">frame_cell_info</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.frame_cell_info" title="Link to this definition">#</a></dt>
+<dd><p>Frame cell parameters.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.graph">
+<span class="sig-name descname"><span class="pre">graph</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.graph" title="Link to this definition">#</a></dt>
+<dd><p>Edge graph (eG) after building.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.cleaved_graph">
+<span class="sig-name descname"><span class="pre">cleaved_graph</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.cleaved_graph" title="Link to this definition">#</a></dt>
+<dd><p>Graph after cleaving/defects.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.graph_index_name_dict">
+<span class="sig-name descname"><span class="pre">graph_index_name_dict</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.graph_index_name_dict" title="Link to this definition">#</a></dt>
+<dd><p>Mapping from index to node/edge name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.graph_matched_vnode_xind">
+<span class="sig-name descname"><span class="pre">graph_matched_vnode_xind</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.graph_matched_vnode_xind" title="Link to this definition">#</a></dt>
+<dd><p>Matched (node, xind, edge) list.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.supercell_info">
+<span class="sig-name descname"><span class="pre">supercell_info</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.supercell_info" title="Link to this definition">#</a></dt>
+<dd><p>Supercell dimensions info.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.supercell">
+<span class="sig-name descname"><span class="pre">supercell</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.supercell" title="Link to this definition">#</a></dt>
+<dd><p>Supercell (nx, ny, nz).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.termination">
+<span class="sig-name descname"><span class="pre">termination</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.termination" title="Link to this definition">#</a></dt>
+<dd><p>Whether to use terminations.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.termination_name">
+<span class="sig-name descname"><span class="pre">termination_name</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.termination_name" title="Link to this definition">#</a></dt>
+<dd><p>Name of termination group.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.add_virtual_edge">
+<span class="sig-name descname"><span class="pre">add_virtual_edge</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.add_virtual_edge" title="Link to this definition">#</a></dt>
+<dd><p>Whether to add virtual edges for bridge nodes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.virtual_edge_max_neighbor">
+<span class="sig-name descname"><span class="pre">virtual_edge_max_neighbor</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.virtual_edge_max_neighbor" title="Link to this definition">#</a></dt>
+<dd><p>Max neighbors for virtual edge.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.sc_unit_cell">
+<span class="sig-name descname"><span class="pre">sc_unit_cell</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.sc_unit_cell" title="Link to this definition">#</a></dt>
+<dd><p>3x3 supercell unit cell matrix.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.sc_unit_cell_inv">
+<span class="sig-name descname"><span class="pre">sc_unit_cell_inv</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.sc_unit_cell_inv" title="Link to this definition">#</a></dt>
+<dd><p>Inverse of sc_unit_cell.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.periodicity">
+<span class="sig-name descname"><span class="pre">periodicity</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.periodicity" title="Link to this definition">#</a></dt>
+<dd><p>Whether framework is periodic.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.linker_fake_edge">
+<span class="sig-name descname"><span class="pre">linker_fake_edge</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.linker_fake_edge" title="Link to this definition">#</a></dt>
+<dd><p>Whether linker is fake (zero-length) edge.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.clean_unsaturated_linkers">
+<span class="sig-name descname"><span class="pre">clean_unsaturated_linkers</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.clean_unsaturated_linkers" title="Link to this definition">#</a></dt>
+<dd><p>Whether to remove unsaturated linkers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.update_node_termination">
+<span class="sig-name descname"><span class="pre">update_node_termination</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.update_node_termination" title="Link to this definition">#</a></dt>
+<dd><p>Whether to update node terminations after removal.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.unsaturated_linkers">
+<span class="sig-name descname"><span class="pre">unsaturated_linkers</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.unsaturated_linkers" title="Link to this definition">#</a></dt>
+<dd><p>List of unsaturated linker names.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.unsaturated_nodes">
+<span class="sig-name descname"><span class="pre">unsaturated_nodes</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.unsaturated_nodes" title="Link to this definition">#</a></dt>
+<dd><p>List of unsaturated node names.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.matched_vnode_xind">
+<span class="sig-name descname"><span class="pre">matched_vnode_xind</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.matched_vnode_xind" title="Link to this definition">#</a></dt>
+<dd><p>Matched (node, xind, edge) list.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.xoo_dict">
+<span class="sig-name descname"><span class="pre">xoo_dict</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.xoo_dict" title="Link to this definition">#</a></dt>
+<dd><p>Dict mapping X index to O indices (XOO) per node.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.residues_info">
+<span class="sig-name descname"><span class="pre">residues_info</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.residues_info" title="Link to this definition">#</a></dt>
+<dd><p>Dict of residue names and counts.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvents_dict">
+<span class="sig-name descname"><span class="pre">solvents_dict</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvents_dict" title="Link to this definition">#</a></dt>
+<dd><p>Dict of solvent info after solvation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.mlp_type">
+<span class="sig-name descname"><span class="pre">mlp_type</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.mlp_type" title="Link to this definition">#</a></dt>
+<dd><p>MLP type for energy minimization (e.g. ‘mace’).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.mlp_model_path">
+<span class="sig-name descname"><span class="pre">mlp_model_path</span></span><a class="headerlink" href="#mofbuilder.core.framework.Framework.mlp_model_path" title="Link to this definition">#</a></dt>
+<dd><p>Path to MLP model file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ostream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.__init__" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>comm</strong> (<em>Any</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>ostream</strong> (<em>Any</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.framework.Framework.__init__" title="mofbuilder.core.framework.Framework.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([comm, ostream])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.core.framework.Framework.generate_linker_forcefield" title="mofbuilder.core.framework.Framework.generate_linker_forcefield"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_linker_forcefield</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.framework.Framework.get_merged_data" title="mofbuilder.core.framework.Framework.get_merged_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_merged_data</span></code></a>([extra_graph])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.core.framework.Framework.md_prepare" title="mofbuilder.core.framework.Framework.md_prepare"><code class="xref py py-obj docutils literal notranslate"><span class="pre">md_prepare</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.framework.Framework.remove" title="mofbuilder.core.framework.Framework.remove"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove</span></code></a>([remove_indices])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.core.framework.Framework.replace" title="mofbuilder.core.framework.Framework.replace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">replace</span></code></a>([replace_indices, new_node_pdbfile, ...])</p></td>
+<td><p>Replace nodes or linkers at given indices with new geometry; update cleaved_graph and merged data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.framework.Framework.show" title="mofbuilder.core.framework.Framework.show"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show</span></code></a>([w, h, residue_indices, residue_name])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mofbuilder.core.framework.Framework.solvate" title="mofbuilder.core.framework.Framework.solvate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solvate</span></code></a>([solvents_files, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mofbuilder.core.framework.Framework.write" title="mofbuilder.core.framework.Framework.write"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write</span></code></a>([format, filename, periodicity, ...])</p></td>
+<td><p>Write framework to file(s).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.replace">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">replace_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_node_pdbfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_linker_pdbfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_linker_molecule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.replace" title="Link to this definition">#</a></dt>
+<dd><p>Replace nodes or linkers at given indices with new geometry; update cleaved_graph and merged data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>replace_indices</strong> (<em>List</em><em>[</em><em>int</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>new_node_pdbfile</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>new_linker_pdbfile</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>new_linker_molecule</strong> (<em>Any</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#mofbuilder.core.framework.Framework" title="mofbuilder.core.framework.Framework"><em>Framework</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remove_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.remove" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.get_merged_data">
+<span class="sig-name descname"><span class="pre">get_merged_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extra_graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.get_merged_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.get_merged_data" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodicity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlp_em</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlp_maxIterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.write" title="Link to this definition">#</a></dt>
+<dd><p>Write framework to file(s). format: list of ‘pdb’|’gro’|’xyz’|’cif’; optional MLP energy minimization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>format</strong> (<em>List</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>periodicity</strong> (<em>bool</em>)</p></li>
+<li><p><strong>mlp_em</strong> (<em>bool</em>)</p></li>
+<li><p><strong>mlp_maxIterations</strong> (<em>int</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.solvate">
+<span class="sig-name descname"><span class="pre">solvate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solvents_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvents_proportions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solvents_quantities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_angstrom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.solvate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.solvate" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.generate_linker_forcefield">
+<span class="sig-name descname"><span class="pre">generate_linker_forcefield</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.generate_linker_forcefield"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.generate_linker_forcefield" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.md_prepare">
+<span class="sig-name descname"><span class="pre">md_prepare</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.md_prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.md_prepare" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mofbuilder.core.framework.Framework.show">
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residue_indices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residue_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mofbuilder/core/framework.html#Framework.show"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mofbuilder.core.framework.Framework.show" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mofbuilder.MetalOrganicFrameworkBuilder.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mofbuilder.MetalOrganicFrameworkBuilder</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mofbuilder.core.FrameNet.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mofbuilder.core.FrameNet</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework"><code class="docutils literal notranslate"><span class="pre">Framework</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.comm"><code class="docutils literal notranslate"><span class="pre">Framework.comm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.rank"><code class="docutils literal notranslate"><span class="pre">Framework.rank</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.nodes"><code class="docutils literal notranslate"><span class="pre">Framework.nodes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.ostream"><code class="docutils literal notranslate"><span class="pre">Framework.ostream</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.mofwriter"><code class="docutils literal notranslate"><span class="pre">Framework.mofwriter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.framework_data"><code class="docutils literal notranslate"><span class="pre">Framework.framework_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.framework_fcoords_data"><code class="docutils literal notranslate"><span class="pre">Framework.framework_fcoords_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.solvationbuilder"><code class="docutils literal notranslate"><span class="pre">Framework.solvationbuilder</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.solvents"><code class="docutils literal notranslate"><span class="pre">Framework.solvents</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.solvents_molecules"><code class="docutils literal notranslate"><span class="pre">Framework.solvents_molecules</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.solvents_proportions"><code class="docutils literal notranslate"><span class="pre">Framework.solvents_proportions</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.solvents_quantities"><code class="docutils literal notranslate"><span class="pre">Framework.solvents_quantities</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.solvated_gro_file"><code class="docutils literal notranslate"><span class="pre">Framework.solvated_gro_file</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.target_directory"><code class="docutils literal notranslate"><span class="pre">Framework.target_directory</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.data_path"><code class="docutils literal notranslate"><span class="pre">Framework.data_path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.save_files"><code class="docutils literal notranslate"><span class="pre">Framework.save_files</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.linker_ff_name"><code class="docutils literal notranslate"><span class="pre">Framework.linker_ff_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.linker_charge"><code class="docutils literal notranslate"><span class="pre">Framework.linker_charge</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.linker_multiplicity"><code class="docutils literal notranslate"><span class="pre">Framework.linker_multiplicity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.linker_reconnect_drv"><code class="docutils literal notranslate"><span class="pre">Framework.linker_reconnect_drv</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.linker_reconnect_opt"><code class="docutils literal notranslate"><span class="pre">Framework.linker_reconnect_opt</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.reconnected_linker_molecule"><code class="docutils literal notranslate"><span class="pre">Framework.reconnected_linker_molecule</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.provided_linker_itpfile"><code class="docutils literal notranslate"><span class="pre">Framework.provided_linker_itpfile</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.filename"><code class="docutils literal notranslate"><span class="pre">Framework.filename</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.resp_charges"><code class="docutils literal notranslate"><span class="pre">Framework.resp_charges</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework._debug"><code class="docutils literal notranslate"><span class="pre">Framework._debug</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.mof_family"><code class="docutils literal notranslate"><span class="pre">Framework.mof_family</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.node_metal"><code class="docutils literal notranslate"><span class="pre">Framework.node_metal</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.dummy_atom_node"><code class="docutils literal notranslate"><span class="pre">Framework.dummy_atom_node</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.net_spacegroup"><code class="docutils literal notranslate"><span class="pre">Framework.net_spacegroup</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.net_cell_info"><code class="docutils literal notranslate"><span class="pre">Framework.net_cell_info</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.net_unit_cell"><code class="docutils literal notranslate"><span class="pre">Framework.net_unit_cell</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.node_connectivity"><code class="docutils literal notranslate"><span class="pre">Framework.node_connectivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.linker_connectivity"><code class="docutils literal notranslate"><span class="pre">Framework.linker_connectivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.linker_fragment_length"><code class="docutils literal notranslate"><span class="pre">Framework.linker_fragment_length</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.node_data"><code class="docutils literal notranslate"><span class="pre">Framework.node_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.dummy_atom_node_dict"><code class="docutils literal notranslate"><span class="pre">Framework.dummy_atom_node_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.termination_data"><code class="docutils literal notranslate"><span class="pre">Framework.termination_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.termination_X_data"><code class="docutils literal notranslate"><span class="pre">Framework.termination_X_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.termination_Y_data"><code class="docutils literal notranslate"><span class="pre">Framework.termination_Y_data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.frame_unit_cell"><code class="docutils literal notranslate"><span class="pre">Framework.frame_unit_cell</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.frame_cell_info"><code class="docutils literal notranslate"><span class="pre">Framework.frame_cell_info</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.graph"><code class="docutils literal notranslate"><span class="pre">Framework.graph</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.cleaved_graph"><code class="docutils literal notranslate"><span class="pre">Framework.cleaved_graph</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.graph_index_name_dict"><code class="docutils literal notranslate"><span class="pre">Framework.graph_index_name_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.graph_matched_vnode_xind"><code class="docutils literal notranslate"><span class="pre">Framework.graph_matched_vnode_xind</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.supercell_info"><code class="docutils literal notranslate"><span class="pre">Framework.supercell_info</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.supercell"><code class="docutils literal notranslate"><span class="pre">Framework.supercell</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.termination"><code class="docutils literal notranslate"><span class="pre">Framework.termination</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.termination_name"><code class="docutils literal notranslate"><span class="pre">Framework.termination_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.add_virtual_edge"><code class="docutils literal notranslate"><span class="pre">Framework.add_virtual_edge</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.virtual_edge_max_neighbor"><code class="docutils literal notranslate"><span class="pre">Framework.virtual_edge_max_neighbor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.sc_unit_cell"><code class="docutils literal notranslate"><span class="pre">Framework.sc_unit_cell</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.sc_unit_cell_inv"><code class="docutils literal notranslate"><span class="pre">Framework.sc_unit_cell_inv</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.periodicity"><code class="docutils literal notranslate"><span class="pre">Framework.periodicity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.linker_fake_edge"><code class="docutils literal notranslate"><span class="pre">Framework.linker_fake_edge</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.clean_unsaturated_linkers"><code class="docutils literal notranslate"><span class="pre">Framework.clean_unsaturated_linkers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.update_node_termination"><code class="docutils literal notranslate"><span class="pre">Framework.update_node_termination</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.unsaturated_linkers"><code class="docutils literal notranslate"><span class="pre">Framework.unsaturated_linkers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.unsaturated_nodes"><code class="docutils literal notranslate"><span class="pre">Framework.unsaturated_nodes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.matched_vnode_xind"><code class="docutils literal notranslate"><span class="pre">Framework.matched_vnode_xind</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.xoo_dict"><code class="docutils literal notranslate"><span class="pre">Framework.xoo_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.residues_info"><code class="docutils literal notranslate"><span class="pre">Framework.residues_info</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.solvents_dict"><code class="docutils literal notranslate"><span class="pre">Framework.solvents_dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.mlp_type"><code class="docutils literal notranslate"><span class="pre">Framework.mlp_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.mlp_model_path"><code class="docutils literal notranslate"><span class="pre">Framework.mlp_model_path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.__init__"><code class="docutils literal notranslate"><span class="pre">Framework.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.replace"><code class="docutils literal notranslate"><span class="pre">Framework.replace()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.remove"><code class="docutils literal notranslate"><span class="pre">Framework.remove()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.get_merged_data"><code class="docutils literal notranslate"><span class="pre">Framework.get_merged_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.write"><code class="docutils literal notranslate"><span class="pre">Framework.write()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.solvate"><code class="docutils literal notranslate"><span class="pre">Framework.solvate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.generate_linker_forcefield"><code class="docutils literal notranslate"><span class="pre">Framework.generate_linker_forcefield()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.md_prepare"><code class="docutils literal notranslate"><span class="pre">Framework.md_prepare()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mofbuilder.core.framework.Framework.show"><code class="docutils literal notranslate"><span class="pre">Framework.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Chenxi Li.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
