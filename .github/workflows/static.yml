@@ -2,7 +2,7 @@ name: Try to Deploy Sphinx Docs to GitHub Pages
 
 on:
   push:
-    branches: ["main", "document"]
+    branches: ["master","main", "document"]
   workflow_dispatch:
 
 permissions:
