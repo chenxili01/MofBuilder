@@ -598,45 +598,105 @@ Use this exact field set for every checkpoint subsection.
 
 ### Checkpoint P5.0 — before coding
 
-- Date:
-- Thread / branch:
-- Status: pending
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: contract generated
 - Goal: preserve role ids through `superG`, `eG`, and `cleaved_eG`
-- Phase gate checked against `PLANS.md`:
-- Files changed:
-- Tests added:
-- Tests run:
-- Decisions:
-- Conflicts / blockers:
-- Handoff / next checkpoint:
+- Phase gate checked against `PLANS.md`: yes; Phase 5 remains limited to `src/mofbuilder/core/supercell.py`, `tests/test_core_supercell.py`, and planner logging in `WORKLOG.md` / `STATUS.md`, with writer, defects, framework, MD, builder, optimizer, metadata, topology-parsing, and role-schema redesign work out of scope.
+- Files changed: `WORKLOG.md`, `STATUS.md`
+- Tests added: none
+- Tests run: none
+- Decisions: recorded the Phase 5 Phase Contract under `P5.0`; kept the execution boundary at role propagation through `superG`, `eG`, and `cleaved_eG` only; preserved single-role `superG` / `eG` behavior, `matched_vnode_xind` semantics, and the lock against writer/defect/MD changes in this phase.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: `P5.1` — implementation
+
+**Phase Contract**
+
+- Phase name: `Phase 5 — Role Propagation Through Supercell and Edge Graph`
+
+**Goal**
+- Keep node-role and edge-role identity alive after supercell expansion and `eG` generation.
+
+**Scope**
+- Propagate role annotations into `superG`, `eG`, and `cleaved_eG`.
+- Remove assumptions that one global `xoo_dict` shape/order is valid for every node role.
+- Keep `matched_vnode_xind` semantics, but make them robust to role-specific node layouts.
+
+**Allowed Files**
+- `src/mofbuilder/core/supercell.py`
+- `tests/test_core_supercell.py`
+- `WORKLOG.md` for required phase logging only
+- `STATUS.md` for phase/checkpoint/status updates only
+
+**Forbidden Files**
+- All files outside the allowed list are out of scope for Phase 5.
+- Explicitly forbidden: `src/mofbuilder/core/builder.py`, `src/mofbuilder/core/optimizer.py`, `src/mofbuilder/utils/geometry.py`, `src/mofbuilder/core/moftoplibrary.py`, `src/mofbuilder/core/net.py`, `src/mofbuilder/io/cif_reader.py`, `src/mofbuilder/core/node.py`, `src/mofbuilder/core/linker.py`, `src/mofbuilder/core/termination.py`, `src/mofbuilder/core/write.py`, `src/mofbuilder/core/defects.py`, `src/mofbuilder/core/framework.py`, `src/mofbuilder/md/`, `database/`, `PLANS.md`, `ARCHITECTURE.md`, `AGENTS.md`, and `CODEX_CONTEXT.md`.
+
+**Architecture Invariants**
+- Preserve the locked pipeline: `MofTopLibrary.fetch(...)` -> `FrameNet.create_net(...)` -> `MetalOrganicFrameworkBuilder.load_framework()` -> `MetalOrganicFrameworkBuilder.optimize_framework()` -> `MetalOrganicFrameworkBuilder.make_supercell()` -> `MetalOrganicFrameworkBuilder.build()`.
+- Preserve graph states `G`, `sG`, `superG`, `eG`, and `cleaved_eG`.
+- Do not rename these methods, reorder pipeline steps, merge pipeline stages, introduce new top-level pipeline stages, or move responsibilities between modules.
+- Keep responsibilities fixed: `FrameNet` owns topology graph construction and topology role annotation; `MofTopLibrary` owns topology family metadata; `MetalOrganicFrameworkBuilder` owns fragment normalization and runtime role registries; `Optimizer` owns node/linker placement; `Supercell` owns supercell expansion; `Writer / Framework` own merged structure output; `Defects` own defect operations; `MD modules` own simulation preparation.
+- Preserve the graph-centered architecture, staged build pipeline, topology-driven connectivity, and the rule that atomic coordinates are derived from optimized graph state.
+- Keep single-role builds as the fast path and avoid introducing significant overhead when only one role exists.
+- Preserve current `superG` / `eG` behavior for single-role builds and keep writer/defect/framework/MD responsibilities untouched in this phase.
+
+**Role Model Invariants**
+- Role identifiers are the only topology classification mechanism.
+- `node_role_id` must live on `FrameNet.G.nodes[n]["node_role_id"]`.
+- `edge_role_id` must live on `FrameNet.G.edges[e]["edge_role_id"]`.
+- Role identifiers must never be recomputed by downstream modules, replaced by local role maps, or inferred from chemistry.
+- Fragment registries must remain `node_role_registry` and `edge_role_registry`.
+- Supercell and edge-graph code must propagate graph-stored role ids and consume builder-owned registries rather than inventing new writer-local, defect-local, or supercell-local role stores.
+- `matched_vnode_xind` semantics must be preserved while becoming robust to role-specific node layouts.
+- Single-role normalization remains the backward-compatible base case: Phase 5 must continue to work when builder inputs normalize to one-entry `node:default` / `edge:default` registries.
+
+**Required Tests**
+- `scripts/run_tests.sh tests/test_core_supercell.py`
+- Regression tests proving single-role `superG` / `eG` behavior is unchanged.
+- One minimal heterogeneous-role test proving role labels survive into `eG` and `cleaved_eG`.
+
+**Success Criteria**
+- Role metadata survives supercell and edge-graph construction.
+- Single-role behavior is unchanged.
+- `superG`, `eG`, and `cleaved_eG` retain the role identity needed by downstream phases.
+- The code no longer assumes one global `xoo_dict` shape/order is valid for every node role.
+- `matched_vnode_xind` semantics remain intact while supporting role-specific node layouts.
+- No writer, defects, framework, MD, builder, optimizer, metadata, or topology-parsing changes are required to complete Phase 5.
+
+**Stop Rule**
+- Stop immediately if Phase 5 work requires editing any forbidden file or changing module responsibilities.
+- Stop immediately if satisfying the phase requires redesigning writer output formats, redesigning defect APIs, generalizing MD or force-field code, or repairing earlier-phase normalization or schema issues inside this phase.
+- Stop immediately if the locked pipeline, graph-state names, public APIs, or single-role `superG` / `eG` behavior would need to change.
+- If any schema, runtime, or invariant conflict is discovered, record it first in `WORKLOG.md` and `STATUS.md`, then stop before revising `PLANS.md`.
 
 ### Checkpoint P5.1 — implementation
 
-- Date:
-- Thread / branch:
-- Status: pending
-- Goal:
-- Phase gate checked against `PLANS.md`:
-- Files changed:
-- Tests added:
-- Tests run:
-- Decisions:
-- Conflicts / blockers:
-- Handoff / next checkpoint:
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete
+- Goal: propagate role ids through `superG`, `eG`, and `cleaved_eG` while making XOO matching robust to role-specific node layouts
+- Phase gate checked against `PLANS.md`: yes; implementation stayed inside `src/mofbuilder/core/supercell.py`, `tests/test_core_supercell.py`, `WORKLOG.md`, and `STATUS.md` only.
+- Files changed: `src/mofbuilder/core/supercell.py`, `tests/test_core_supercell.py`, `WORKLOG.md`, `STATUS.md`
+- Tests added: `test_single_role_supercell_and_edgegraph_keep_role_metadata`, `test_edgegraph_preserves_roles_through_cleave_with_role_specific_xoo_layouts`
+- Tests run: `scripts/run_tests.sh tests/test_core_supercell.py` (passed: 5 tests)
+- Decisions: preserved graph-stored role ids by copying node and edge attributes into translated `superG` nodes/edges instead of rebuilding narrow attribute dicts; propagated `node_role_id` onto vnode entries and `edge_role_id` onto EDGE entries in `eG`; replaced the global vnode-layout assumption in XOO matching with internal per-vnode XOO lookups while keeping the legacy single-role `xoo_dict` shape for later phases; fixed the existing `remove_node_by_index()` mutation-during-iteration bug uncovered by the required Phase 5 test path.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: `P5.2` — handoff
 
 ### Checkpoint P5.2 — handoff
 
-- Date:
-- Thread / branch:
-- Status: pending
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete
 - Goal: confirm downstream phases can consume propagated role metadata
-- Phase gate checked against `PLANS.md`:
-- Files changed:
-- Tests added:
-- Tests run:
-- Decisions:
-- Conflicts / blockers:
-- Handoff / next checkpoint:
+- Phase gate checked against `PLANS.md`: yes; Phase 5 remained limited to supercell/test/log files and did not modify builder, optimizer, writer, defects, framework, MD, metadata, topology-parsing, or database modules.
+- Files changed: `src/mofbuilder/core/supercell.py`, `tests/test_core_supercell.py`, `WORKLOG.md`, `STATUS.md`
+- Tests added: `test_single_role_supercell_and_edgegraph_keep_role_metadata`, `test_edgegraph_preserves_roles_through_cleave_with_role_specific_xoo_layouts`
+- Tests run: `scripts/run_tests.sh tests/test_core_supercell.py` (passed: 5 tests)
+- Decisions: Phase 5 now keeps role metadata attached through translated `superG` nodes/edges, preserves role identity on `eG` and `cleaved_eG` nodes that represent topology vertices and linkers, and makes `matched_vnode_xind` robust to vnode-specific XOO layouts without forcing a writer/defect-facing `xoo_dict` redesign in this phase.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: Phase 5 handoff complete; next checkpoint is `P6.0` in a new thread after reviewer acceptance.
 
 ## Phase 6 — Role-Aware Writer and Defect Metadata
 

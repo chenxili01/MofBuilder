@@ -6,14 +6,14 @@ latest active checkpoint in `WORKLOG.md`.
 ## Current State
 
 - Roadmap: `PLANS.md` is frozen
-- Phase: Phase 4 — Role-Aware Optimizer Inputs
-- Checkpoint: `P4.2` — final review-fix closure complete
+- Phase: Phase 5 — Role Propagation Through Supercell and Edge Graph
+- Checkpoint: `P5.2` — handoff complete
 - Status: complete
 - Active thread / branch: `codex_record`
-- Next step: await reviewer acceptance for Phase 4 handoff; if accepted, start `P5.0` in a new thread
-- Last completed checkpoint: `P4.2`
+- Next step: await reviewer acceptance for Phase 5 handoff; if accepted, start `P6.0` in a new thread
+- Last completed checkpoint: `P5.2`
 - Blocking conflict: none
-- Verification: `scripts/run_tests.sh tests/test_core_builder.py` passed (4 tests, 4 existing `PytestUnknownMarkWarning` warnings for `pytest.mark.core`)
+- Verification: `scripts/run_tests.sh tests/test_core_supercell.py` passed (5 tests)
 - Last update: 2026-03-13
 
 ## Rules

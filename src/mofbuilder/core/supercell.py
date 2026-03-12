@@ -132,6 +132,10 @@ class SupercellBuilder:
             superG = supG.copy()
         return superG
 
+    def _translate_f_points(self, f_points, translation):
+        return np.hstack((f_points[:, 0:2],
+                          f_points[:, 2:5].astype(float) + translation))
+
     def _bundle_multiedge(self, sG):
         multiedge_bundlings = []
         for n in sG.nodes:
@@ -150,24 +154,26 @@ class SupercellBuilder:
         superG = nx.Graph()
         for n in sG.nodes():
             if sG.nodes[n]["type"] != "V":  # get rid of SV, sv will be pnode+i
-                superG.add_node(
-                    n,
+                node_attrs = dict(sG.nodes[n])
+                node_attrs.update(
                     f_points=sG.nodes[n]["f_points"],
                     fcoords=sG.nodes[n]["fcoords"],
                     type="SV",
                     note=sG.nodes[n]["note"],
                 )
+                superG.add_node(n, **node_attrs)
 
                 continue
 
             # add the node to superG, if lname(n) is np.array([0,0,0])
-            superG.add_node(
-                pname(n) + "_" + str(lname(n)),
+            node_attrs = dict(sG.nodes[n])
+            node_attrs.update(
                 f_points=sG.nodes[n]["f_points"],
                 fcoords=sG.nodes[n]["fcoords"],
                 type="V",
                 note=sG.nodes[n]["note"],
             )
+            superG.add_node(pname(n) + "_" + str(lname(n)), **node_attrs)
 
             diffs = (np.mod(sG.nodes[n]["fcoords"], 1) -
                      sG.nodes[n]["fcoords"] + np.asarray(supercell))
@@ -188,16 +194,16 @@ class SupercellBuilder:
                     )
                     self.ostream.flush()
                     continue
-                superG.add_node(
-                    (pname(n) + "_" + str(lname(n) + diff_e)),
-                    f_points=np.hstack((
-                        sG.nodes[n]["f_points"][:, 0:2],
-                        sG.nodes[n]["f_points"][:, 2:5].astype(float) + diff_e,
-                    )),  # NOTE:modified because of extra column of atom type
+                node_attrs = dict(sG.nodes[n])
+                node_attrs.update(
+                    f_points=self._translate_f_points(sG.nodes[n]["f_points"],
+                                                     diff_e),
                     fcoords=sG.nodes[n]["fcoords"] + diff_e,
                     type="SV",
                     note=sG.nodes[n]["note"],
                 )
+                superG.add_node((pname(n) + "_" + str(lname(n) + diff_e)),
+                                **node_attrs)
 
         return superG
 
@@ -222,60 +228,47 @@ class SupercellBuilder:
                 # check if node e[0]+'_'+str(diff_e) and e[1]+'_'+str(diff_e) in superG
                 if (s_edge[0] in superG.nodes()) and (s_edge[1]
                                                       in superG.nodes()):
-                    superG.add_edge(
-                        s_edge[0],
-                        s_edge[1],
-                        f_points=np.hstack((
-                            sG.edges[e]["f_points"][:, 0:2],
-                            sG.edges[e]["f_points"][:, 2:5].astype(float) + i,
-                        )),
+                    edge_attrs = dict(sG.edges[e])
+                    edge_attrs.update(
+                        f_points=self._translate_f_points(
+                            sG.edges[e]["f_points"], i),
                         fcoords=sG.edges[e]["fcoords"] + i,
                         type=sG.edges[e]["type"],
                     )
+                    superG.add_edge(s_edge[0], s_edge[1], **edge_attrs)
 
                 elif (s_edge[0] in superG.nodes()) or (s_edge[1]
                                                        in superG.nodes()):
                     if s_edge[0] in superG.nodes():
-                        superG.add_node(
-                            s_edge[1],
-                            f_points=np.hstack((
-                                sG.nodes[e[1]]["f_points"][:, 0:2],
-                                sG.nodes[e[1]]["f_points"][:,
-                                                           2:5].astype(float) +
-                                i,
-                            )),
+                        node_attrs = dict(sG.nodes[e[1]])
+                        node_attrs.update(
+                            f_points=self._translate_f_points(
+                                sG.nodes[e[1]]["f_points"], i),
                             fcoords=sG.nodes[e[1]]["fcoords"] + i,
                             type="DSV",
                             note=sG.nodes[e[1]]["note"],
                         )
+                        superG.add_node(s_edge[1], **node_attrs)
 
                     else:
-                        superG.add_node(
-                            s_edge[0],
-                            f_points=np.hstack((
-                                sG.nodes[e[0]]["f_points"][:, 0:2],
-                                sG.nodes[e[0]]["f_points"][:,
-                                                           2:5].astype(float) +
-                                i,
-                            )),
+                        node_attrs = dict(sG.nodes[e[0]])
+                        node_attrs.update(
+                            f_points=self._translate_f_points(
+                                sG.nodes[e[0]]["f_points"], i),
                             fcoords=sG.nodes[e[0]]["fcoords"] + i,
                             type="DSV",
                             note=sG.nodes[e[0]]["note"],
                         )
+                        superG.add_node(s_edge[0], **node_attrs)
 
-                    superG.add_edge(
-                        s_edge[0],
-                        s_edge[1],
-                        f_points=np.hstack(
-                            (
-                                sG.edges[e]["f_points"][:, 0:2],
-                                sG.edges[e]["f_points"][:, 2:5].astype(float) +
-                                i,
-                            )
-                        ),  # NOTE:modified because of extra column of atom type
+                    edge_attrs = dict(sG.edges[e])
+                    edge_attrs.update(
+                        f_points=self._translate_f_points(
+                            sG.edges[e]["f_points"], i),
                         fcoords=sG.edges[e]["fcoords"] + i,
                         type="DSE",
                     )
+                    superG.add_edge(s_edge[0], s_edge[1], **edge_attrs)
 
                 else:
                     if self._debug:
@@ -331,44 +324,40 @@ class SupercellBuilder:
             prim_ecname = pname(ec_node) + "_" + str(np.array([0.0, 0.0, 0.0]))
             if ec_node not in superG.nodes():
                 trans = lname(ec_node)
-                superG.add_node(
-                    ec_node,
-                    f_points=np.hstack(
-                        (superG.nodes[prim_ecname]["f_points"][:, 0:2],
-                         superG.nodes[prim_ecname]["f_points"][:, 2:5].astype(
-                             float) + trans)),
+                node_attrs = dict(superG.nodes[prim_ecname])
+                node_attrs.update(
+                    f_points=self._translate_f_points(
+                        superG.nodes[prim_ecname]["f_points"], trans),
                     fcoords=superG.nodes[prim_ecname]["fcoords"] + trans,
                     type="SV",
                     note=superG.nodes[prim_ecname]["note"],
                 )
+                superG.add_node(ec_node, **node_attrs)
             for j in range(len(con_nodes)):
                 cn = con_nodes[j]
                 prim_cnname = super_multiedge_bundlings[prim_ecname][
                     j]  # find prim_ecname in super_multiedge_bundlings and then get the corresponding prim_cnname
                 trans = lname(cn) - lname(prim_cnname)
                 if cn not in superG.nodes():
-                    superG.add_node(
-                        cn,
-                        f_points=np.hstack(
-                            (superG.nodes[prim_cnname]["f_points"][:, 0:2],
-                             superG.nodes[prim_cnname]["f_points"]
-                             [:, 2:5].astype(float) + trans)),
+                    node_attrs = dict(superG.nodes[prim_cnname])
+                    node_attrs.update(
+                        f_points=self._translate_f_points(
+                            superG.nodes[prim_cnname]["f_points"], trans),
                         fcoords=superG.nodes[prim_cnname]["fcoords"] + trans,
                         type="SV",
                         note=superG.nodes[prim_cnname]["note"],
                     )
-                superG.add_edge(
-                    ec_node,
-                    cn,
-                    f_points=np.hstack(
-                        (superG.edges[prim_ecname,
-                                      prim_cnname]["f_points"][:, 0:2],
-                         superG.edges[prim_ecname, prim_cnname]["f_points"]
-                         [:, 2:5].astype(float) + trans)),
+                    superG.add_node(cn, **node_attrs)
+                edge_attrs = dict(superG.edges[prim_ecname, prim_cnname])
+                edge_attrs.update(
+                    f_points=self._translate_f_points(
+                        superG.edges[prim_ecname, prim_cnname]["f_points"],
+                        trans),
                     fcoords=superG.edges[prim_ecname, prim_cnname]["fcoords"] +
                     trans,
                     type="DSE",
                 )
+                superG.add_edge(ec_node, cn, **edge_attrs)
 
         return superG
 
@@ -580,6 +569,7 @@ class EdgeGraphBuilder:
                     f_points=node_data.get("f_points"),
                     fcoords=node_data.get("fcoords"),
                     type=node_data.get("type", "V"),
+                    node_role_id=node_data.get("node_role_id"),
                     name="NODE",
                     note="V",
                     index=2 * node_count + 1,  # odd indices for NODEs
@@ -604,6 +594,13 @@ class EdgeGraphBuilder:
 
                 merged_edges = np.vstack(fp_list) if fp_list else np.empty(
                     (0, 0))
+                edge_role_ids = {
+                    superG.edges[n, nb].get("edge_role_id")
+                    for nb in neighbors
+                    if superG.edges[n, nb].get("edge_role_id") is not None
+                }
+                edge_role_id = next(iter(edge_role_ids
+                                         )) if len(edge_role_ids) == 1 else None
 
                 # Pair X atoms between the CV center and neighbor edges, converting matched X -> x
                 ec_merged_edges = self._make_paired_Xto_x(
@@ -617,6 +614,7 @@ class EdgeGraphBuilder:
                     f_points=ec_merged_edges,
                     fcoords=node_data.get("fcoords"),
                     type="Edge",
+                    edge_role_id=edge_role_id,
                     name="EDGE",
                     note="E",
                     index=2 * edge_count,  # even indices for EDGEs
@@ -673,6 +671,7 @@ class EdgeGraphBuilder:
                 f_points=ndata.get("f_points"),
                 fcoords=ndata.get("fcoords"),
                 type=ndata.get("type", "V"),
+                node_role_id=ndata.get("node_role_id"),
                 note=ndata.get("note"),
                 name="NODE",
                 index=2 * node_count + 1,
@@ -706,6 +705,7 @@ class EdgeGraphBuilder:
                     f_points=edge_data.get("f_points"),
                     fcoords=edge_data.get("fcoords"),
                     type="Edge",
+                    edge_role_id=edge_data.get("edge_role_id"),
                     name="EDGE",
                     note="E",
                     index=2 * edge_count,  # even indices for EDGEs
@@ -825,33 +825,45 @@ class EdgeGraphBuilder:
                      sorted([oind[m] for m in nearest_dict[key]])])
         return xoo_ind_list
 
-    def _get_xoo_dict_of_node(self, eG, sc_unit_cell):
-        # quick check the order of xoo in every node are same, select n0 and n1, if xoo_ind_node0 == xoo_ind_node1, then xoo_dict is the same
-        # return xoo dict of every node, key is x index, value is o index
-        n0 = [i for i in eG.nodes() if pname(i) != "EDGE"][0]
-        n1 = [i for i in eG.nodes() if pname(i) != "EDGE"][1]
-        xoo_ind_node0 = self._xoo_pair_ind_node(
-            eG.nodes[n0]["f_points"],
-            sc_unit_cell)  # pick node one and get xoo_ind pair
-        xoo_ind_node1 = self._xoo_pair_ind_node(
-            eG.nodes[n1]["f_points"],
-            sc_unit_cell)  # pick node two and get xoo_ind pair
-        if xoo_ind_node0 == xoo_ind_node1:
-            xoo_dict = {}
-            for xoo in xoo_ind_node0:
-                xoo_dict[xoo[0]] = xoo[1]
-        else:
-            self.ostream.print_warning(
-                "the order of xoo in every node are not same, please check the input"
-            )
-            self.ostream.print_info(f"xoo_ind_node0: {xoo_ind_node0}")
-            self.ostream.print_info(f"xoo_ind_node1: {xoo_ind_node1}")
-            self.ostream.flush()
+    def _convert_xoo_pairs_to_dict(self, xoo_pairs):
+        xoo_dict = {}
+        for x_index, o_indices in xoo_pairs:
+            xoo_dict[x_index] = o_indices
+        return xoo_dict
 
+    def _get_xoo_dicts_of_nodes(self, eG, sc_unit_cell):
+        vnode_names = [i for i in eG.nodes() if pname(i) != "EDGE"]
+        node_xoo_dict = {}
+        for vnode in vnode_names:
+            node_xoo_dict[vnode] = self._convert_xoo_pairs_to_dict(
+                self._xoo_pair_ind_node(eG.nodes[vnode]["f_points"],
+                                        sc_unit_cell))
+
+        if not vnode_names:
+            return {}, {}
+
+        reference_vnode = vnode_names[0]
+        reference_xoo_dict = node_xoo_dict[reference_vnode]
+        if self._debug:
+            mismatched_vnodes = [
+                vnode for vnode in vnode_names[1:]
+                if node_xoo_dict[vnode] != reference_xoo_dict
+            ]
+            if mismatched_vnodes:
+                self.ostream.print_info(
+                    f"using per-node XOO lookup for heterogeneous vnode layouts: {reference_vnode}, {mismatched_vnodes}"
+                )
+                self.ostream.flush()
+
+        return reference_xoo_dict, node_xoo_dict
+
+    def _get_xoo_dict_of_node(self, eG, sc_unit_cell):
+        xoo_dict, _ = self._get_xoo_dicts_of_nodes(eG, sc_unit_cell)
         return xoo_dict
 
     def _addxoo2edge_multitopic(self, eG, sc_unit_cell):
-        xoo_dict = self._get_xoo_dict_of_node(eG, sc_unit_cell)
+        xoo_dict, node_xoo_dict = self._get_xoo_dicts_of_nodes(
+            eG, sc_unit_cell)
         matched_vnode_X = []
         unsaturated_linker = []
         # for every X atom in the EDGE node, search for the paired(nearest) X atom in the connected V node
@@ -922,7 +934,8 @@ class EdgeGraphBuilder:
                 nearest_vnode = all_Xs_vnodes_ind[n_j][0]
                 nearest_X_ind_in_vnode = all_Xs_vnodes_ind[n_j][1]
                 matched_vnode_X.append(all_Xs_vnodes_ind[n_j])
-                corresponding_o_indices = xoo_dict[nearest_X_ind_in_vnode]
+                corresponding_o_indices = node_xoo_dict.get(
+                    nearest_vnode, {}).get(nearest_X_ind_in_vnode, [])
                 xoo_ind_in_vnode = [[nearest_X_ind_in_vnode] +
                                     corresponding_o_indices]
                 xoo_fpoints_in_vnode = [
@@ -953,7 +966,8 @@ class EdgeGraphBuilder:
         Returns:
             eG, unsaturated_linker, matched_vnode_X, xoo_dict
         """
-        xoo_dict = self._get_xoo_dict_of_node(eG, sc_unit_cell)
+        xoo_dict, node_xoo_dict = self._get_xoo_dicts_of_nodes(
+            eG, sc_unit_cell)
         matched_vnode_X = []
         unsaturated_linker = []
 
@@ -1050,8 +1064,8 @@ class EdgeGraphBuilder:
                 matched_vnode_X.append(all_Xs_vnodes_ind[n_j])
 
                 # Find corresponding O indices from xoo_dict
-                corresponding_o_indices = xoo_dict.get(nearest_X_ind_in_vnode,
-                                                       [])
+                corresponding_o_indices = node_xoo_dict.get(
+                    nearest_vnode, {}).get(nearest_X_ind_in_vnode, [])
                 xoo_inds = [nearest_X_ind_in_vnode] + corresponding_o_indices
 
                 # Extract xoo f_points from the vnode and append
@@ -1190,7 +1204,7 @@ class EdgeGraphBuilder:
 
 def remove_node_by_index(eG, remove_node_list, remove_edge_list):
     """Remove from eG all nodes whose index is in remove_node_list and all EDGEs whose index is in remove_edge_list (by -index). Modifies eG in place."""
-    for n in eG.nodes():
+    for n in list(eG.nodes()):
         if pname(n) != "EDGE":
             if eG.nodes[n]["index"] in remove_node_list:
                 eG.remove_node(n)
