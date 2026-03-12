@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -41,6 +42,9 @@ class MofTopLibrary:
         _debug: If True, print extra debug messages.
     """
 
+    ROLE_METADATA_FILENAME = "MOF_topology_role_metadata.json"
+    ROLE_METADATA_SCHEMA = "mof_topology_role_metadata/v1"
+
     def __init__(
         self,
         comm: Optional[Any] = None,
@@ -78,17 +82,135 @@ class MofTopLibrary:
         self.node_metal_type = None
         self.linker_connectivity = None
         self.net_type = None
+        self.role_metadata = None
 
         self._debug = False
 
+    def _normalize_role_entries(
+        self,
+        family_name: str,
+        raw_entries: Any,
+        *,
+        entry_kind: str,
+        connectivity_key: str,
+    ) -> List[Dict[str, Any]]:
+        """Normalize node/edge role metadata into a stable passive shape."""
+        if raw_entries is None:
+            return []
+        if not isinstance(raw_entries, list):
+            raise ValueError(
+                f"{family_name} {entry_kind} metadata must be a list in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_entries: List[Dict[str, Any]] = []
+        seen_role_ids = set()
+        for raw_entry in raw_entries:
+            if not isinstance(raw_entry, dict):
+                raise ValueError(
+                    f"{family_name} {entry_kind} metadata entries must be mappings"
+                )
+
+            role_id = str(raw_entry["role_id"])
+            if role_id in seen_role_ids:
+                raise ValueError(
+                    f"{family_name} {entry_kind} metadata repeats role_id {role_id}"
+                )
+
+            topology_labels = raw_entry.get("topology_labels", [])
+            if not isinstance(topology_labels, list):
+                raise ValueError(
+                    f"{family_name} {entry_kind} role {role_id} must define "
+                    "topology_labels as a list"
+                )
+
+            normalized_entries.append(
+                {
+                    "role_id": role_id,
+                    connectivity_key: int(raw_entry[connectivity_key]),
+                    "topology_labels": list(
+                        dict.fromkeys(str(label) for label in topology_labels)
+                    ),
+                }
+            )
+            seen_role_ids.add(role_id)
+
+        return normalized_entries
+
+    def _normalize_family_role_metadata(
+        self,
+        family_name: str,
+        raw_metadata: Any,
+    ) -> Dict[str, Any]:
+        """Normalize one family's sidecar metadata into the canonical role shape."""
+        if not isinstance(raw_metadata, dict):
+            raise ValueError(
+                f"{family_name} metadata must be a mapping in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        return {
+            "schema": self.ROLE_METADATA_SCHEMA,
+            "node_roles": self._normalize_role_entries(
+                family_name,
+                raw_metadata.get("node_roles"),
+                entry_kind="node_roles",
+                connectivity_key="expected_connectivity",
+            ),
+            "edge_roles": self._normalize_role_entries(
+                family_name,
+                raw_metadata.get("edge_roles"),
+                entry_kind="edge_roles",
+                connectivity_key="linker_connectivity",
+            ),
+        }
+
+    def _read_role_metadata(
+        self, data_path: Optional[str] = None
+    ) -> Dict[str, Dict[str, Any]]:
+        """Load optional sidecar role metadata for MOF families."""
+        if data_path is None:
+            data_path = self.data_path
+
+        role_metadata_path = Path(data_path, self.ROLE_METADATA_FILENAME)
+        if not role_metadata_path.exists():
+            return {}
+
+        with open(role_metadata_path, "r", encoding="utf-8") as fp:
+            raw_metadata = json.load(fp)
+
+        if not isinstance(raw_metadata, dict):
+            raise ValueError(
+                f"{self.ROLE_METADATA_FILENAME} must contain a JSON object"
+            )
+
+        if raw_metadata.get("schema_version") != 1:
+            raise ValueError(
+                f"{self.ROLE_METADATA_FILENAME} must declare schema_version 1"
+            )
+
+        family_metadata = raw_metadata.get("families", {})
+        if not isinstance(family_metadata, dict):
+            raise ValueError(
+                f"{self.ROLE_METADATA_FILENAME} must define a 'families' mapping"
+            )
+
+        return {
+            family_name: self._normalize_family_role_metadata(
+                family_name, raw_family_metadata
+            )
+            for family_name, raw_family_metadata in family_metadata.items()
+        }
+
     def _read_mof_top_dict(self, data_path: Optional[str] = None) -> None:
-        """Load MOF_topology_dict from data_path and populate self.mof_top_dict.
+        """Load MOF_topology_dict and optional role sidecar metadata from data_path.
 
         Args:
             data_path: Directory containing MOF_topology_dict. Uses self.data_path if None.
         """
         if data_path is None:
             data_path = self.data_path
+        role_metadata_by_family = self._read_role_metadata(data_path)
         if Path(data_path, "MOF_topology_dict").exists():
             mof_top_dict_path = str(Path(data_path, "MOF_topology_dict"))
             with open(mof_top_dict_path, "r") as f:
@@ -112,10 +234,28 @@ class MofTopLibrary:
                     "metal": [mof.split()[2]],
                     "linker_topic": int(mof.split()[3]),
                     "topology": mof.split()[-1],
+                    "role_metadata": role_metadata_by_family.get(mof_name),
                 }
             else:
                 mof_top_dict[mof_name]["metal"].append(mof.split()[2])
         self.mof_top_dict = mof_top_dict
+
+    def get_role_metadata(
+        self, mof_family: Optional[str] = None
+    ) -> Optional[Dict[str, Any]]:
+        """Return passive normalized role metadata for a family, if present."""
+        if self.mof_top_dict is None:
+            self._read_mof_top_dict(self.data_path)
+
+        family_name = mof_family if mof_family is not None else self.mof_family
+        if family_name is None:
+            return None
+
+        family_entry = self.mof_top_dict.get(family_name)
+        if family_entry is None:
+            return None
+
+        return family_entry.get("role_metadata")
 
     def list_mof_families(self) -> None:
         """Print all available MOF family names from the topology dictionary to the output stream."""
@@ -162,6 +302,7 @@ class MofTopLibrary:
             "node_connectivity"]
         self.linker_connectivity = self.mof_top_dict[mof_family][
             "linker_topic"]
+        self.role_metadata = self.mof_top_dict[mof_family].get("role_metadata")
         self.net_filename = self.mof_top_dict[mof_family]["topology"] + ".cif"
         # check if template cif exists
         self.ostream.print_info(f"MOF family {mof_family} is selected")

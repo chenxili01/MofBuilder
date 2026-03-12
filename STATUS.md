@@ -6,14 +6,14 @@ latest active checkpoint in `WORKLOG.md`.
 ## Current State
 
 - Roadmap: `PLANS.md` is frozen
-- Current phase: Phase 1 — Role-Safe Topology Parsing
-- Current checkpoint: `P1.2` — handoff
-- Current status: complete
+- Phase: Phase 2 — Additive Family/Template Role Metadata
+- Checkpoint: `P2.2` — handoff
+- Status: complete
 - Active thread / branch: `codex_record`
-- Next action: start `P2.0` in a new thread if the Phase 1 handoff is accepted
-- Last completed checkpoint: `P1.2`
+- Next step: reviewer check, then `P3.0` in a new thread if accepted
+- Last completed checkpoint: `P2.2`
 - Blocking conflict: none recorded
-- Verification: required standard-path verification is complete: `scripts/run_tests.sh tests/test_io_reader.py` passed (8 tests) and `scripts/run_tests.sh tests/test_core_net.py` passed (5 tests, with 5 existing `pytest.mark.core` warnings)
+- Verification: `scripts/run_tests.sh tests/test_core_moftoplibrary.py` passed (5 tests)
 - Last update: 2026-03-12
 
 ## Rules

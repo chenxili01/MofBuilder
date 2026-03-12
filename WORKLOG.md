@@ -198,45 +198,107 @@ Use this exact field set for every checkpoint subsection.
 
 ### Checkpoint P2.0 — before coding
 
-- Date:
-- Thread / branch:
-- Status: pending
-- Goal: define one additive metadata path and passive normalized accessors
-- Phase gate checked against `PLANS.md`:
-- Files changed:
-- Tests added:
-- Tests run:
-- Decisions:
-- Conflicts / blockers:
-- Handoff / next checkpoint:
+- Date: 2026-03-12
+- Thread / branch: `codex_record`
+- Status: complete
+- Goal: add an additive way to describe multi-role families without breaking the existing `MOF_topology_dict` contract
+- Phase gate checked against `PLANS.md`: yes; Phase 2 remains limited to `src/mofbuilder/core/moftoplibrary.py`, `tests/test_core_moftoplibrary.py`, and optionally one new metadata fixture under `tests/database/`, with builder/runtime consumption still out of scope.
+- Files changed: `WORKLOG.md`, `STATUS.md`
+- Tests added: none
+- Tests run: none
+- Decisions: recorded the Phase 2 Phase Contract under `P2.0`; kept the phase limited to one additive sidecar metadata source, one normalized in-memory metadata shape, and passive metadata loading/accessors only.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: `P2.1` — implementation
+
+**Phase Contract**
+
+- Phase name: `Phase 2 — Additive Family/Template Role Metadata`
+
+**Goal**
+- Add an additive way to describe multi-role families without breaking the existing `MOF_topology_dict` contract.
+
+**Scope**
+- Keep `MOF_topology_dict` readable as-is for single-role families.
+- Introduce optional role metadata as a sidecar mechanism instead of replacing the current table immediately.
+- Expose role metadata in the canonical normalized form, but only as passive metadata accessors.
+- Choose exactly one additive metadata source for this phase and document it in code/tests; do not leave the schema open-ended across threads.
+- Prefer an additive sidecar over breaking the current `"MOF node_connectivity metal linker_topic topology"` schema early.
+- Keep this phase limited to metadata schema and passive loading only; it does not own builder/runtime consumption.
+- Choose exactly one normalized in-memory metadata shape for multi-role families; adapters may parse raw metadata sources, but downstream code must receive one stable normalized shape.
+
+**Allowed Files**
+- `src/mofbuilder/core/moftoplibrary.py`
+- `tests/test_core_moftoplibrary.py`
+- optionally one new metadata fixture under `tests/database/`
+- `WORKLOG.md` for required phase logging only
+- `STATUS.md` for phase/checkpoint/status updates only
+
+**Forbidden Files**
+- All files outside the allowed list are out of scope for Phase 2.
+- Explicitly forbidden: `src/mofbuilder/core/builder.py`, `src/mofbuilder/core/net.py`, `src/mofbuilder/io/cif_reader.py`, `src/mofbuilder/core/optimizer.py`, `src/mofbuilder/core/supercell.py`, `src/mofbuilder/core/write.py`, `src/mofbuilder/core/defects.py`, `src/mofbuilder/core/framework.py`, `src/mofbuilder/md/`, `database/`, `PLANS.md`, `ARCHITECTURE.md`, `AGENTS.md`, and `CODEX_CONTEXT.md`.
+
+**Architecture Invariants**
+- Preserve the locked pipeline: `MofTopLibrary.fetch(...)` -> `FrameNet.create_net(...)` -> `MetalOrganicFrameworkBuilder.load_framework()` -> `MetalOrganicFrameworkBuilder.optimize_framework()` -> `MetalOrganicFrameworkBuilder.make_supercell()` -> `MetalOrganicFrameworkBuilder.build()`.
+- Preserve graph states `G`, `sG`, `superG`, `eG`, and `cleaved_eG`.
+- Do not rename, reorder, merge, or add pipeline stages.
+- Keep responsibilities fixed: `MofTopLibrary` owns family/template metadata loading and normalization into passive role metadata structures; `FrameNet` still owns topology graph construction and topology role annotation; `MetalOrganicFrameworkBuilder` still owns runtime role registries.
+- Preserve the graph-centered architecture, existing public APIs, and the single-role template path as the default/base case.
+- Do not move heavy imports into package `__init__` files or `cli.py`.
+
+**Role Model Invariants**
+- Runtime topology role identifiers remain graph-stored only: `FrameNet.G.nodes[n]["node_role_id"]` and `FrameNet.G.edges[e]["edge_role_id"]`.
+- Runtime fragment registries remain `node_role_registry` and `edge_role_registry`.
+- Phase 2 metadata must normalize toward the canonical role model without creating competing runtime role stores or local role maps.
+- Role identifiers must not be inferred from chemistry.
+- Single-role normalization remains the backward-compatible base case: families without role metadata must still map cleanly to `node:default` and `edge:default` semantics.
+
+**Required Tests**
+- `scripts/run_tests.sh tests/test_core_moftoplibrary.py`
+- Regression tests proving families with no role metadata still resolve exactly as before.
+- Metadata tests proving a multi-role family can be loaded into the canonical normalized role model without invoking build/runtime code.
+- If a new metadata fixture is needed, keep it under `tests/database/` and limit it to Phase 2 metadata coverage.
+
+**Success Criteria**
+- `MofTopLibrary` can return legacy scalar metadata plus optional role metadata.
+- Single-role families require no new metadata.
+- Exactly one additive metadata source is implemented for this phase.
+- Exactly one normalized in-memory metadata shape is exposed downstream from `MofTopLibrary`.
+- Builder/runtime fragment loading, optimizer inputs, and other later-phase consumers remain unchanged.
+
+**Stop Rule**
+- Stop immediately if Phase 2 work requires editing any forbidden file or changing module responsibilities.
+- Stop immediately if satisfying the phase requires refactoring `builder.py`, changing fragment loading, changing optimizer inputs, or modifying any runtime consumer outside `MofTopLibrary`.
+- Stop immediately if the work would support multiple metadata formats in parallel "for flexibility" or back-propagate runtime cache or fragment-loading concerns into the metadata schema.
+- Stop immediately if the locked pipeline, graph-state names, public APIs, or canonical role-model ownership rules would need to change.
+- If any schema, runtime, or invariant conflict is discovered, record it first in `WORKLOG.md` and `STATUS.md`, then stop before revising `PLANS.md`.
 
 ### Checkpoint P2.1 — implementation
 
-- Date:
-- Thread / branch:
-- Status: pending
-- Goal:
-- Phase gate checked against `PLANS.md`:
-- Files changed:
-- Tests added:
-- Tests run:
-- Decisions:
-- Conflicts / blockers:
-- Handoff / next checkpoint:
+- Date: 2026-03-12
+- Thread / branch: `codex_record`
+- Status: complete
+- Goal: add one additive sidecar metadata source in `MofTopLibrary` and expose normalized passive role metadata without changing legacy scalar family resolution
+- Phase gate checked against `PLANS.md`: yes; implementation stayed inside `src/mofbuilder/core/moftoplibrary.py`, `tests/test_core_moftoplibrary.py`, `WORKLOG.md`, and `STATUS.md` only.
+- Files changed: `src/mofbuilder/core/moftoplibrary.py`, `tests/test_core_moftoplibrary.py`, `WORKLOG.md`, `STATUS.md`
+- Tests added: `test_read_mof_top_dict_loads_optional_role_metadata_sidecar`, `test_fetch_preserves_legacy_scalars_and_selected_role_metadata`
+- Tests run: `scripts/run_tests.sh tests/test_core_moftoplibrary.py` (passed: 5 tests)
+- Decisions: implemented exactly one additive metadata source as `MOF_topology_role_metadata.json` next to `MOF_topology_dict`; normalized sidecar data into one passive in-memory shape under per-family `role_metadata` with `schema`, `node_roles`, and `edge_roles`; kept families without sidecar metadata on the legacy path with unchanged scalar fields and `role_metadata=None`.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: `P2.2` — handoff
 
 ### Checkpoint P2.2 — handoff
 
-- Date:
-- Thread / branch:
-- Status: pending
+- Date: 2026-03-12
+- Thread / branch: `codex_record`
+- Status: complete
 - Goal: confirm metadata schema is stable enough for builder normalization
-- Phase gate checked against `PLANS.md`:
-- Files changed:
-- Tests added:
-- Tests run:
-- Decisions:
-- Conflicts / blockers:
-- Handoff / next checkpoint:
+- Phase gate checked against `PLANS.md`: yes; Phase 2 remained metadata-only and did not modify `builder.py`, topology parsing, optimizer, supercell, writer, defects, framework, MD modules, or bundled database files.
+- Files changed: `src/mofbuilder/core/moftoplibrary.py`, `tests/test_core_moftoplibrary.py`, `WORKLOG.md`, `STATUS.md`
+- Tests added: `test_read_mof_top_dict_loads_optional_role_metadata_sidecar`, `test_fetch_preserves_legacy_scalars_and_selected_role_metadata`
+- Tests run: `scripts/run_tests.sh tests/test_core_moftoplibrary.py` (passed: 5 tests)
+- Decisions: Phase 2 now exposes legacy scalar family metadata plus optional passive role metadata from one JSON sidecar format; the normalized role shape is stable for downstream consumption and does not introduce competing runtime role stores or builder/runtime behavior changes.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: Phase 2 handoff complete; next checkpoint is `P3.0` in a new thread after reviewer acceptance.
 
 ## Phase 3 — Builder Input Normalization and Role Registries
 
