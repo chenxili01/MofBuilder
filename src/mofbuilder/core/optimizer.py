@@ -52,6 +52,8 @@ class NetOptimizer:
         self.EC_X_data = None
         self.E_data = None
         self.E_X_data = None
+        self.node_role_registry = None
+        self.edge_role_registry = None
         self.sorted_nodes = None
         self.sorted_edges = None
         self.cell_info = None
@@ -63,12 +65,15 @@ class NetOptimizer:
         self.opt_rots = None
         self.opt_params = None
         self.new_edge_length = None
+        self.new_edge_lengths = None
         self.optimized_pair = None
         self.sc_node_pos_dict = None
         self.sc_rot_node_X_pos = None
         self.sc_unit_cell = None
         self.sc_unit_cell_inv = None
         self.fake_edge = False
+        self.node_fragment_payloads = None
+        self.edge_fragment_payloads = None
         #self.constant_length = 1.54  #default C-C single bond length
         self.linker_frag_length = None
 
@@ -167,35 +172,26 @@ class NetOptimizer:
         self.ostream.flush()
 
         G = self.G.copy()
-        self.node_x_ccoords = self.V_X_data[:, 5:8].astype(float)
-        self.node_ccoords = self.V_data[:, 5:8].astype(float)
+        self.node_x_ccoords = (self.V_X_data[:, 5:8].astype(float)
+                               if self.V_X_data is not None else None)
+        self.node_ccoords = (self.V_data[:, 5:8].astype(float)
+                             if self.V_data is not None else None)
         self.ec_x_ccoords = self.EC_X_data[:, 5:8].astype(
             float) if self.EC_X_data is not None else None
         self.ec_ccoords = self.EC_data[:, 5:8].astype(
             float) if self.EC_data is not None else None
-        self.e_x_ccoords = self.E_X_data[:, 5:8].astype(float)
-        self.e_ccoords = self.E_data[:, 5:8].astype(float)
+        self.e_x_ccoords = (self.E_X_data[:, 5:8].astype(float)
+                            if self.E_X_data is not None else None)
+        self.e_ccoords = (self.E_data[:, 5:8].astype(float)
+                          if self.E_data is not None else None)
         self.opt_drv.sorted_nodes = self.sorted_nodes
         self.opt_drv.pname_set_dict = self.pname_set_dict
 
-        node_atom = self.V_data[:, 0:2]
-        ec_atom = self.EC_data[:, 0:2] if self.EC_data is not None else None
-
-        linker_frag_length = self.linker_frag_length
-        constant_length = self.constant_length
-        x_com_length = np.mean(
-            [np.linalg.norm(i) for i in self.node_x_ccoords])
+        self._prepare_role_fragment_payloads(G)
         # firstly, check if all V nodes have highest connectivity
         # secondly, sort all DV nodes by connectivity
         sorted_nodes = self.sorted_nodes
         sorted_edges = self.sorted_edges
-
-        self.nodes_atom = {}
-        for n in sorted_nodes:
-            if "CV" in n:
-                self.nodes_atom[n] = ec_atom
-            else:
-                self.nodes_atom[n] = node_atom
 
     # reindex the nodes in the Xatoms_positions with the index in the sorted_nodes, like G has 16 nodes[2,5,7], but the new dictionary should be [0,1,2]
         node_pos_dict, node_X_pos_dict = self._generate_pos_dict(G)
@@ -286,17 +282,14 @@ class NetOptimizer:
         # loop all of the edges in G and get the lengths of the edges, length is the distance between the two nodes ccoords
         edge_lengths, lengths = self._get_edge_lengths(G)
 
-        x_com_length = np.mean(
-            [np.linalg.norm(i) for i in self.node_x_ccoords])
-        if self.fake_edge:
-            new_edge_length = self.constant_length + 2 * x_com_length
-        else:
-            new_edge_length = self.linker_frag_length + 2 * self.constant_length + 2 * x_com_length
+        target_edge_lengths = self._get_target_edge_lengths()
+        new_edge_length = target_edge_lengths[(self.sorted_edges[0][0],
+                                               self.sorted_edges[0][1])]
 
         # update the node ccoords in G by loop edge, start from the start_node, and then update the connected node ccoords by the edge length, and update the next node ccords from the updated node
 
         new_ccoords, old_ccoords = self._update_node_ccoords(
-            G, edge_lengths, start_node, new_edge_length)
+            G, edge_lengths, start_node, target_edge_lengths)
         # exclude the start_node in updated_ccoords and original_ccoords
         new_ccoords = {k: v for k, v in new_ccoords.items() if k != start_node}
         old_ccoords = {k: v for k, v in old_ccoords.items() if k != start_node}
@@ -348,6 +341,10 @@ class NetOptimizer:
         self.opt_rots = opt_rots
         self.optimized_cell_info = optimized_cell_info
         self.new_edge_length = new_edge_length
+        self.new_edge_lengths = {
+            edge: target_edge_lengths[edge]
+            for edge in self.sorted_edges
+        }
 
         self.sG = sG
         self.sc_node_pos_dict = sc_node_pos_dict
@@ -369,9 +366,6 @@ class NetOptimizer:
             sG (networkx graph):graph of the target MOF cell, with scaled and rotated node and edge positions
         """
         # linker_middle_point = np.mean(linker_x_vecs,axis=0)
-        e_xx_vec = self.e_x_ccoords
-        self.e_atom = self.E_data[:, 0:2]
-        linker_frag_length = self.linker_frag_length
         optimized_pair = self.optimized_pair
         scaled_rotated_Xatoms_positions = self.sc_rot_node_X_pos
         scaled_rotated_node_positions = self.sc_rot_node_pos
@@ -379,18 +373,21 @@ class NetOptimizer:
         sG = self.sG.copy()
         sc_unit_cell_inv = self.sc_unit_cell_inv
         nodes_atom = self.nodes_atom
-        if linker_frag_length > 0.0:
-            scalar = (linker_frag_length +
-                      2 * self.constant_length) / linker_frag_length
-        else:
-            scalar = 1.0
-
-        extended_e_xx_vec = [i * scalar for i in e_xx_vec]
         norm_xx_vector_record = []
         rot_record = []
 
         # edges = {}
         for (i, j), pair in optimized_pair.items():
+            edge_payload = self.edge_fragment_payloads[(i, j)]
+            e_xx_vec = edge_payload["x_coords"]
+            linker_frag_length = edge_payload["linker_frag_length"]
+            if linker_frag_length > 0.0:
+                scalar = (linker_frag_length +
+                          2 * self.constant_length) / linker_frag_length
+            else:
+                scalar = 1.0
+
+            extended_e_xx_vec = [coord * scalar for coord in e_xx_vec]
             x_idx_i, x_idx_j = pair
             reindex_i = sorted_nodes.index(i)
             reindex_j = sorted_nodes.index(j)
@@ -418,11 +415,12 @@ class NetOptimizer:
                 self.ostream.flush()
             # use superimpose to get the rotation matrix
             # use record to record the rotation matrix for get rid of the repeat calculation
-            if self.linker_frag_length >= 0.0:
+            if linker_frag_length >= 0.0:
                 # for normal linker, the direction is important
                 indices = [
                     index for index, value in enumerate(norm_xx_vector_record)
-                    if is_list_A_in_B(norm_xx_vector, value)
+                    if value["role_id"] == sG.edges[(i, j)].get("edge_role_id")
+                    and is_list_A_in_B(norm_xx_vector, value["xx_vector"])
                 ]
                 if len(indices) == 1:
                     rot = rot_record[indices[0]]
@@ -431,7 +429,10 @@ class NetOptimizer:
                     _, rot, trans = superimpose_rotation_only(
                         extended_e_xx_vec, xx_vector)
                     # rot = reorthogonalize_matrix(rot)
-                    norm_xx_vector_record.append(norm_xx_vector)
+                    norm_xx_vector_record.append({
+                        "role_id": sG.edges[(i, j)].get("edge_role_id"),
+                        "xx_vector": norm_xx_vector,
+                    })
                     # the rot may be opposite, so we need to check the angle between the two vectors
                     # if the angle is larger than 90 degree, we need to reverse the rot
                     roted_xx = np.dot(extended_e_xx_vec, rot)
@@ -461,11 +462,11 @@ class NetOptimizer:
                 rot = np.eye(3)
 
             # use the rotation matrix to rotate the linker x coords
-            placed_edge_ccoords = (np.dot(self.e_ccoords, rot) +
+            placed_edge_ccoords = (np.dot(edge_payload["coords"], rot) +
                                    x_i_x_j_middle_point)
 
             placed_edge = np.hstack(
-                (np.asarray(self.e_atom), placed_edge_ccoords))
+                (np.asarray(edge_payload["atom"]), placed_edge_ccoords))
             sG.edges[(i, j)]["coords"] = x_i_x_j_middle_point
             sG.edges[(i, j)]["c_points"] = placed_edge
 
@@ -567,12 +568,136 @@ class NetOptimizer:
 
         return rotated_positions, optimized_pair
 
+    def _fragment_payload_from_arrays(self,
+                                      data,
+                                      x_data,
+                                      *,
+                                      linker_frag_length=None,
+                                      fake_edge=False):
+        assert_msg_critical(
+            data is not None and x_data is not None,
+            "Optimizer fragment payload is missing atom or X-atom data.")
+        return {
+            "atom": data[:, 0:2],
+            "coords": data[:, 5:8].astype(float),
+            "x_coords": x_data[:, 5:8].astype(float),
+            "linker_frag_length": linker_frag_length,
+            "fake_edge": fake_edge,
+        }
+
+    def _get_single_registry_entry(self, registry):
+        if registry and len(registry) == 1:
+            return next(iter(registry.values()))
+        return None
+
+    def _get_node_registry_entry(self, G, node):
+        registry = self.node_role_registry or {}
+        if not registry:
+            return None
+        role_id = G.nodes[node].get("node_role_id")
+        if role_id in registry:
+            return registry[role_id]
+        return self._get_single_registry_entry(registry)
+
+    def _get_edge_registry_entry(self, G, edge):
+        registry = self.edge_role_registry or {}
+        if not registry:
+            return None
+        role_id = G.edges[edge].get("edge_role_id")
+        if role_id in registry:
+            return registry[role_id]
+        return self._get_single_registry_entry(registry)
+
+    def _get_center_registry_entry_for_node(self, G, node):
+        if not (self.edge_role_registry and "CV" in node):
+            return None
+        for neighbor in G.neighbors(node):
+            role_entry = self._get_edge_registry_entry(G, (node, neighbor))
+            if (role_entry is not None
+                    and role_entry.get("linker_center_data") is not None
+                    and role_entry.get("linker_center_X_data") is not None):
+                return role_entry
+        return None
+
+    def _resolve_node_fragment_payload(self, G, node):
+        if "CV" in node:
+            role_entry = self._get_center_registry_entry_for_node(G, node)
+            if role_entry is not None:
+                return self._fragment_payload_from_arrays(
+                    role_entry["linker_center_data"],
+                    role_entry["linker_center_X_data"],
+                )
+            return self._fragment_payload_from_arrays(self.EC_data,
+                                                      self.EC_X_data)
+
+        role_entry = self._get_node_registry_entry(G, node)
+        if (role_entry is not None and role_entry.get("node_data") is not None
+                and role_entry.get("node_X_data") is not None):
+            return self._fragment_payload_from_arrays(role_entry["node_data"],
+                                                      role_entry["node_X_data"])
+        return self._fragment_payload_from_arrays(self.V_data, self.V_X_data)
+
+    def _resolve_edge_fragment_payload(self, G, edge):
+        role_entry = self._get_edge_registry_entry(G, edge)
+        if role_entry is not None:
+            if int(role_entry["linker_connectivity"]) > 2:
+                data = role_entry.get("linker_outer_data")
+                x_data = role_entry.get("linker_outer_X_data")
+            else:
+                data = role_entry.get("linker_center_data")
+                x_data = role_entry.get("linker_center_X_data")
+            if data is not None and x_data is not None:
+                linker_frag_length = role_entry.get("linker_frag_length")
+                if linker_frag_length is None:
+                    linker_frag_length = self.linker_frag_length
+                return self._fragment_payload_from_arrays(
+                    data,
+                    x_data,
+                    linker_frag_length=linker_frag_length,
+                    fake_edge=bool(role_entry.get("linker_fake_edge", False)),
+                )
+
+        return self._fragment_payload_from_arrays(
+            self.E_data,
+            self.E_X_data,
+            linker_frag_length=self.linker_frag_length,
+            fake_edge=self.fake_edge,
+        )
+
+    def _prepare_role_fragment_payloads(self, G):
+        self.node_fragment_payloads = {}
+        self.nodes_atom = {}
+        for node in self.sorted_nodes:
+            payload = self._resolve_node_fragment_payload(G, node)
+            self.node_fragment_payloads[node] = payload
+            self.nodes_atom[node] = payload["atom"]
+
+        self.edge_fragment_payloads = {}
+        for edge in self.sorted_edges:
+            payload = self._resolve_edge_fragment_payload(G, edge)
+            self.edge_fragment_payloads[edge] = payload
+            self.edge_fragment_payloads[(edge[1], edge[0])] = payload
+
+    def _get_target_edge_lengths(self):
+        target_edge_lengths = {}
+        for edge in self.sorted_edges:
+            node_i, node_j = edge
+            node_i_payload = self.node_fragment_payloads[node_i]
+            node_j_payload = self.node_fragment_payloads[node_j]
+            edge_payload = self.edge_fragment_payloads[edge]
+            x_com_i = np.mean(np.linalg.norm(node_i_payload["x_coords"], axis=1))
+            x_com_j = np.mean(np.linalg.norm(node_j_payload["x_coords"], axis=1))
+            if edge_payload["fake_edge"]:
+                target_length = self.constant_length + x_com_i + x_com_j
+            else:
+                target_length = (edge_payload["linker_frag_length"] +
+                                 2 * self.constant_length + x_com_i + x_com_j)
+            target_edge_lengths[edge] = target_length
+            target_edge_lengths[(edge[1], edge[0])] = target_length
+        return target_edge_lengths
+
     def _generate_pos_dict(self, sG):
         """Build dicts of node positions and X-atom positions per node index from sG and node/EC coords."""
-        ec_x_ccoords = self.ec_x_ccoords
-        ec_ccoords = self.ec_ccoords
-        node_x_ccoords = self.node_x_ccoords
-        node_ccoords = self.node_ccoords
         sorted_nodes = self.sorted_nodes
 
         def addidx(array):
@@ -582,17 +707,12 @@ class NetOptimizer:
 
         sc_node_pos_dict = {}
         sc_node_X_pos_dict = {}
-        for n in sorted_nodes:
-            if "CV" in n:
-                sc_node_X_pos_dict[sorted_nodes.index(n)] = addidx(
-                    sG.nodes[n]["ccoords"] + ec_x_ccoords)
-                sc_node_pos_dict[sorted_nodes.index(n)] = addidx(
-                    sG.nodes[n]["ccoords"] + ec_ccoords)
-            else:
-                sc_node_X_pos_dict[sorted_nodes.index(n)] = addidx(
-                    sG.nodes[n]["ccoords"] + node_x_ccoords)
-                sc_node_pos_dict[sorted_nodes.index(n)] = addidx(
-                    sG.nodes[n]["ccoords"] + node_ccoords)
+        for idx, node in enumerate(sorted_nodes):
+            payload = self.node_fragment_payloads[node]
+            sc_node_X_pos_dict[idx] = addidx(sG.nodes[node]["ccoords"] +
+                                             payload["x_coords"])
+            sc_node_pos_dict[idx] = addidx(sG.nodes[node]["ccoords"] +
+                                           payload["coords"])
         return sc_node_pos_dict, sc_node_X_pos_dict
 
     def _apply_rot_trans2dict(self, sG, sc_node_pos_dict, sc_node_X_pos_dict):
@@ -617,7 +737,7 @@ class NetOptimizer:
 
     def _generate_pname_set(self, G, sorted_nodes, node_X_pos_dict):
         """Build pname set and dict mapping pname to sorted node indices and initial rot_trans per pname."""
-        pname_list = [pname(n) for n in sorted_nodes]
+        pname_list = [self._get_rotation_group_name(G, n) for n in sorted_nodes]
         pname_set = set(pname_list)
         pname_set_dict = {}
         for n in pname_set:
@@ -625,11 +745,11 @@ class NetOptimizer:
                 "ind_ofsortednodes": [],
             }
         for i, node in enumerate(sorted_nodes):
-            pname_set_dict[pname(node)]["ind_ofsortednodes"].append(i)
-            if len(pname_set_dict[pname(node)]
+            group_name = self._get_rotation_group_name(G, node)
+            pname_set_dict[group_name]["ind_ofsortednodes"].append(i)
+            if len(pname_set_dict[group_name]
                    ["ind_ofsortednodes"]) == 1:  # first node
-                pname_set_dict[pname(
-                    node)]["rot_trans"] = get_rot_trans_matrix(
+                pname_set_dict[group_name]["rot_trans"] = get_rot_trans_matrix(
                         node, G, sorted_nodes,
                         node_X_pos_dict)  # initial guess
 
@@ -639,9 +759,18 @@ class NetOptimizer:
             self.ostream.print_info(f"pname_set_dict: {pname_set_dict}")
         return pname_set, pname_set_dict
 
+    def _get_rotation_group_name(self, G, node):
+        role_id = G.nodes[node].get("node_role_id")
+        if role_id is None:
+            return pname(node)
+        if role_id == "node:default" and (not self.node_role_registry
+                                           or len(self.node_role_registry) <= 1):
+            return pname(node)
+        return f"{pname(node)}::{role_id}"
+
     def _update_node_ccoords(self, G, edge_lengths, start_node,
-                             new_edge_length):
-        """Propagate node positions from start_node so edge lengths match new_edge_length."""
+                             new_edge_lengths):
+        """Propagate node positions from start_node so edge lengths match per-edge target lengths."""
         updated_ccoords = {}
         original_ccoords = {}
         updated_ccoords[start_node] = G.nodes[start_node]["ccoords"]
@@ -655,10 +784,11 @@ class NetOptimizer:
                         continue
                     edge = (n, nn)
                     edge_length = edge_lengths[edge]
+                    target_edge_length = new_edge_lengths[edge]
                     updated_ccoords[nn] = (
                         updated_ccoords[n] +
                         (G.nodes[nn]["ccoords"] - G.nodes[n]["ccoords"]) *
-                        new_edge_length / edge_length)
+                        target_edge_length / edge_length)
                     original_ccoords[nn] = G.nodes[nn]["ccoords"]
                     updated_node.append(nn)
 
@@ -1032,7 +1162,7 @@ class OptimizationDriver:
 
 def recenter_and_norm_vectors(vectors, extra_mass_center=None):
     """Center vectors (optionally at extra_mass_center) and normalize each row. Returns (normalized_vectors, mass_center)."""
-    vectors = np.array(vectors)
+    vectors = np.asarray(vectors, dtype=float)
     if extra_mass_center is not None:
         mass_center = extra_mass_center
     else:
