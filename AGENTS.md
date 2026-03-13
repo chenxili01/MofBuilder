@@ -429,6 +429,18 @@ Rules:
 If an implementation requires architecture changes,
 stop and report the conflict instead of modifying it.
 
+## Architecture Milestone Lock
+
+The Phase 1-8 role-aware architecture milestone is now frozen as the approved
+baseline for this repository.
+
+Future debugging and feature work must extend the existing staged pipeline and
+role-aware model rather than replacing them.
+
+Do not casually mutate or redefine the completed milestone; start new work from
+a new plan that preserves the locked pipeline, graph states, and graph-stored
+role-id plus builder-registry architecture.
+
 ## Role Model Invariants
 
 Role identifiers are the only topology classification mechanism.

@@ -5,12 +5,13 @@ latest active checkpoint in `WORKLOG.md`.
 
 ## Current State
 
-- Roadmap: `PLANS.md` is frozen
-- Phase: Phase 8 — Documentation and Example Sync
-- Checkpoint: `P8.2` — handoff
-- Status: review-fix implemented
+- Project state: architecture milestone complete
+- Roadmap: `PLANS.md` remains the completed historical roadmap for Phases 1-8
+- Final approved phase: Phase 8 — Documentation and Example Sync
+- Final checkpoint: `P8.2` — handoff
+- Status: APPROVED
 - Active thread / branch: `codex_record`
-- Next step: reviewer acceptance / closeout
+- Next step: start a new planning cycle before additional debugging, feature work, or architecture changes
 - Last completed checkpoint: `P8.2`
 - Blocking conflict: none
 - Verification: documentation-to-code consistency audit; `scripts/run_tests.sh tests/smoke/test_smoke_cli.py` (passed: 3 tests, 3 existing `pytest.mark.smoke` warnings); `scripts/run_tests.sh tests/smoke/test_smoke_imports.py` (passed: 2 tests, 2 existing `pytest.mark.smoke` warnings); Phase 8 review-fix static verification confirmed `docs/quickstart.md` and `docs/examples.md` now route to the canonical manual pages and `docs/index.md` points to `docs/source/manual/*`

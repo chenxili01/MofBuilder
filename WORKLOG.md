@@ -1147,3 +1147,17 @@ Use this exact field set for every checkpoint subsection.
 - Decisions: chose the preferred redirect/include strategy instead of copying content again; `docs/quickstart.md` and `docs/examples.md` now include the canonical manual pages verbatim, and `docs/index.md` now points readers to `docs/source/manual/*` as the authoritative manual location to prevent future drift.
 - Conflicts / blockers: none.
 - Handoff / next checkpoint: Phase 8 review-fix is implemented; root docs now match the manual path and the thread is ready for reviewer acceptance / closeout.
+
+## Milestone Freeze — Role-Aware Architecture Baseline
+
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete
+- Goal: finalize the completed Phase 1-8 multi-role architecture effort as a frozen repository baseline for future debugging and extension work
+- Phase gate checked against `PLANS.md`: yes; `PLANS.md` remains unchanged as the completed historical roadmap, with the final approved checkpoint staying `P8.2` — handoff
+- Files changed: `STATUS.md`, `WORKLOG.md`, `AGENTS.md`, `ARCHITECTURE_DECISIONS.md`
+- Tests added: none
+- Tests run: no runtime tests required for this freeze-only documentation finalization; verification is limited to control-document consistency with the already-approved Phase 8 state
+- Decisions: all phases 1-8 are recorded as complete and approved; this repository state is now the frozen baseline for future debugging, maintenance, and extension work; future work should begin from a new planning cycle rather than casually mutating the completed milestone; the role-aware architecture remains additive to the existing staged pipeline instead of replacing it
+- Conflicts / blockers: none
+- Handoff / next checkpoint: milestone freeze complete; any new work must start with a new plan and an explicitly scoped checkpoint outside the completed Phase 1-8 roadmap
