@@ -43,7 +43,9 @@ class MofTopLibrary:
     """
 
     ROLE_METADATA_FILENAME = "MOF_topology_role_metadata.json"
-    ROLE_METADATA_SCHEMA = "mof_topology_role_metadata/v1"
+    ROLE_METADATA_SCHEMA_NAME = "mof_reticular_role_metadata"
+    ROLE_METADATA_SCHEMA_VERSION = 1
+    ROLE_METADATA_COMPAT_SCHEMA = "mof_topology_role_metadata/v1"
 
     def __init__(
         self,
@@ -83,59 +85,585 @@ class MofTopLibrary:
         self.linker_connectivity = None
         self.net_type = None
         self.role_metadata = None
+        self.canonical_role_metadata = None
 
         self._debug = False
 
-    def _normalize_role_entries(
+    def _derive_canonical_role_id(self, family_name: str, role_alias: str) -> str:
+        """Derive the canonical runtime role id from a family-local alias."""
+        alias = str(role_alias)
+        if not alias:
+            raise ValueError(f"{family_name} role aliases must be non-empty")
+
+        role_class = alias[0]
+        if role_class not in {"V", "C", "E"}:
+            raise ValueError(
+                f"{family_name} role alias {alias} must start with V, C, or E"
+            )
+
+        namespace = "edge" if role_class == "E" else "node"
+        return f"{namespace}:{alias}"
+
+    def _get_role_class(
         self,
         family_name: str,
-        raw_entries: Any,
+        roles: Dict[str, Dict[str, str]],
+        role_alias: str,
         *,
-        entry_kind: str,
-        connectivity_key: str,
-    ) -> List[Dict[str, Any]]:
-        """Normalize node/edge role metadata into a stable passive shape."""
-        if raw_entries is None:
-            return []
-        if not isinstance(raw_entries, list):
+        context: str,
+    ) -> str:
+        """Resolve a role alias to its declared class and fail early if missing."""
+        if role_alias not in roles:
             raise ValueError(
-                f"{family_name} {entry_kind} metadata must be a list in "
+                f"{family_name} {context} references unknown role alias {role_alias}"
+            )
+        return roles[role_alias]["role_class"]
+
+    def _normalize_string_list(
+        self,
+        family_name: str,
+        *,
+        field_name: str,
+        raw_values: Any,
+    ) -> List[str]:
+        """Normalize a JSON array of strings while preserving declared order."""
+        if raw_values is None:
+            return []
+        if not isinstance(raw_values, list):
+            raise ValueError(
+                f"{family_name} {field_name} must be a list in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+        return [str(value) for value in raw_values]
+
+    def _normalize_roles(
+        self,
+        family_name: str,
+        raw_roles: Any,
+    ) -> Dict[str, Dict[str, str]]:
+        """Normalize the declared role aliases and canonical ids."""
+        if not isinstance(raw_roles, dict) or not raw_roles:
+            raise ValueError(
+                f"{family_name} metadata must define a non-empty 'roles' mapping "
+                f"in {self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_roles: Dict[str, Dict[str, str]] = {}
+        for raw_alias, raw_role in raw_roles.items():
+            role_alias = str(raw_alias)
+            expected_role_id = self._derive_canonical_role_id(family_name, role_alias)
+            if not isinstance(raw_role, dict):
+                raise ValueError(
+                    f"{family_name} role {role_alias} must be a mapping in "
+                    f"{self.ROLE_METADATA_FILENAME}"
+                )
+
+            role_class = str(raw_role.get("role_class", role_alias[0]))
+            if role_class not in {"V", "C", "E"}:
+                raise ValueError(
+                    f"{family_name} role {role_alias} must declare role_class "
+                    "as V, C, or E"
+                )
+            if role_class != role_alias[0]:
+                raise ValueError(
+                    f"{family_name} role {role_alias} prefix does not match "
+                    f"declared role_class {role_class}"
+                )
+
+            canonical_role_id = str(
+                raw_role.get("canonical_role_id", expected_role_id)
+            )
+            if canonical_role_id != expected_role_id:
+                raise ValueError(
+                    f"{family_name} role {role_alias} must use canonical_role_id "
+                    f"{expected_role_id}"
+                )
+
+            normalized_roles[role_alias] = {
+                "role_class": role_class,
+                "canonical_role_id": canonical_role_id,
+            }
+
+        return normalized_roles
+
+    def _normalize_connectivity_rules(
+        self,
+        family_name: str,
+        raw_rules: Any,
+        roles: Dict[str, Dict[str, str]],
+    ) -> Dict[str, Dict[str, List[str]]]:
+        """Normalize incident-edge declarations for V/C role aliases."""
+        if raw_rules is None:
+            return {}
+        if not isinstance(raw_rules, dict):
+            raise ValueError(
+                f"{family_name} connectivity_rules must be a mapping in "
                 f"{self.ROLE_METADATA_FILENAME}"
             )
 
-        normalized_entries: List[Dict[str, Any]] = []
-        seen_role_ids = set()
-        for raw_entry in raw_entries:
-            if not isinstance(raw_entry, dict):
+        normalized_rules: Dict[str, Dict[str, List[str]]] = {}
+        for raw_alias, raw_rule in raw_rules.items():
+            role_alias = str(raw_alias)
+            role_class = self._get_role_class(
+                family_name,
+                roles,
+                role_alias,
+                context="connectivity_rules",
+            )
+            if role_class not in {"V", "C"}:
                 raise ValueError(
-                    f"{family_name} {entry_kind} metadata entries must be mappings"
+                    f"{family_name} connectivity_rules may only target V* or C* "
+                    f"roles, not {role_alias}"
+                )
+            if not isinstance(raw_rule, dict):
+                raise ValueError(
+                    f"{family_name} connectivity_rules.{role_alias} must be a mapping"
                 )
 
-            role_id = str(raw_entry["role_id"])
-            if role_id in seen_role_ids:
+            incident_edge_aliases = self._normalize_string_list(
+                family_name,
+                field_name=f"connectivity_rules.{role_alias}.incident_edge_aliases",
+                raw_values=raw_rule.get("incident_edge_aliases"),
+            )
+            for edge_alias in incident_edge_aliases:
+                if (
+                    self._get_role_class(
+                        family_name,
+                        roles,
+                        edge_alias,
+                        context=f"connectivity_rules.{role_alias}",
+                    )
+                    != "E"
+                ):
+                    raise ValueError(
+                        f"{family_name} connectivity_rules.{role_alias} may only "
+                        f"reference E* aliases, not {edge_alias}"
+                    )
+
+            normalized_rules[role_alias] = {
+                "incident_edge_aliases": incident_edge_aliases,
+            }
+
+        return normalized_rules
+
+    def _normalize_path_rules(
+        self,
+        family_name: str,
+        raw_rules: Any,
+        roles: Dict[str, Dict[str, str]],
+    ) -> List[Dict[str, Any]]:
+        """Normalize ordered path declarations and restrict them to G2 paths."""
+        if raw_rules is None:
+            return []
+        if not isinstance(raw_rules, list):
+            raise ValueError(
+                f"{family_name} path_rules must be a list in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_rules: List[Dict[str, Any]] = []
+        for index, raw_rule in enumerate(raw_rules):
+            if not isinstance(raw_rule, dict):
                 raise ValueError(
-                    f"{family_name} {entry_kind} metadata repeats role_id {role_id}"
+                    f"{family_name} path_rules[{index}] must be a mapping"
                 )
 
-            topology_labels = raw_entry.get("topology_labels", [])
-            if not isinstance(topology_labels, list):
+            edge_alias = str(raw_rule.get("edge_alias"))
+            if self._get_role_class(
+                family_name,
+                roles,
+                edge_alias,
+                context=f"path_rules[{index}]",
+            ) != "E":
                 raise ValueError(
-                    f"{family_name} {entry_kind} role {role_id} must define "
-                    "topology_labels as a list"
+                    f"{family_name} path_rules[{index}].edge_alias must reference "
+                    "an E* role"
                 )
 
-            normalized_entries.append(
+            endpoint_pattern = self._normalize_string_list(
+                family_name,
+                field_name=f"path_rules[{index}].endpoint_pattern",
+                raw_values=raw_rule.get("endpoint_pattern"),
+            )
+            if len(endpoint_pattern) != 3 or endpoint_pattern[1] != edge_alias:
+                raise ValueError(
+                    f"{family_name} path_rules[{index}] must declare a three-part "
+                    "endpoint_pattern whose middle alias matches edge_alias"
+                )
+
+            pattern_classes = [
+                self._get_role_class(
+                    family_name,
+                    roles,
+                    alias,
+                    context=f"path_rules[{index}]",
+                )
+                for alias in endpoint_pattern
+            ]
+            if pattern_classes not in (["V", "E", "V"], ["V", "E", "C"]):
+                raise ValueError(
+                    f"{family_name} path_rules[{index}] must be limited to "
+                    "V-E-V or V-E-C endpoint patterns"
+                )
+
+            normalized_rules.append(
                 {
-                    "role_id": role_id,
-                    connectivity_key: int(raw_entry[connectivity_key]),
-                    "topology_labels": list(
-                        dict.fromkeys(str(label) for label in topology_labels)
-                    ),
+                    "edge_alias": edge_alias,
+                    "endpoint_pattern": endpoint_pattern,
                 }
             )
-            seen_role_ids.add(role_id)
 
-        return normalized_entries
+        return normalized_rules
+
+    def _normalize_bundle_rules(
+        self,
+        family_name: str,
+        raw_rules: Any,
+        roles: Dict[str, Dict[str, str]],
+    ) -> Dict[str, Dict[str, Any]]:
+        """Normalize bundle declarations and keep ownership on C* only."""
+        if raw_rules is None:
+            return {}
+        if not isinstance(raw_rules, dict):
+            raise ValueError(
+                f"{family_name} bundle_rules must be a mapping in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_rules: Dict[str, Dict[str, Any]] = {}
+        for raw_alias, raw_rule in raw_rules.items():
+            role_alias = str(raw_alias)
+            if self._get_role_class(
+                family_name,
+                roles,
+                role_alias,
+                context="bundle_rules",
+            ) != "C":
+                raise ValueError(
+                    f"{family_name} bundle_rules may only be declared on C* "
+                    f"aliases, not {role_alias}"
+                )
+            if not isinstance(raw_rule, dict):
+                raise ValueError(
+                    f"{family_name} bundle_rules.{role_alias} must be a mapping"
+                )
+
+            attachment_edge_aliases = self._normalize_string_list(
+                family_name,
+                field_name=f"bundle_rules.{role_alias}.attachment_edge_aliases",
+                raw_values=raw_rule.get("attachment_edge_aliases"),
+            )
+            for edge_alias in attachment_edge_aliases:
+                if (
+                    self._get_role_class(
+                        family_name,
+                        roles,
+                        edge_alias,
+                        context=f"bundle_rules.{role_alias}",
+                    )
+                    != "E"
+                ):
+                    raise ValueError(
+                        f"{family_name} bundle_rules.{role_alias} may only "
+                        f"reference E* aliases, not {edge_alias}"
+                    )
+
+            normalized_rules[role_alias] = {
+                "bundle_owner": str(raw_rule.get("bundle_owner")),
+                "attachment_edge_aliases": attachment_edge_aliases,
+            }
+
+        return normalized_rules
+
+    def _normalize_slot_rules(
+        self,
+        family_name: str,
+        raw_rules: Any,
+        roles: Dict[str, Dict[str, str]],
+    ) -> Dict[str, List[Dict[str, Any]]]:
+        """Normalize passive slot metadata without introducing runtime logic."""
+        if raw_rules is None:
+            return {}
+        if not isinstance(raw_rules, dict):
+            raise ValueError(
+                f"{family_name} slot_rules must be a mapping in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_rules: Dict[str, List[Dict[str, Any]]] = {}
+        for raw_alias, raw_slots in raw_rules.items():
+            role_alias = str(raw_alias)
+            self._get_role_class(
+                family_name,
+                roles,
+                role_alias,
+                context="slot_rules",
+            )
+            if not isinstance(raw_slots, list):
+                raise ValueError(
+                    f"{family_name} slot_rules.{role_alias} must be a list"
+                )
+
+            normalized_slots: List[Dict[str, Any]] = []
+            for index, raw_slot in enumerate(raw_slots):
+                if not isinstance(raw_slot, dict):
+                    raise ValueError(
+                        f"{family_name} slot_rules.{role_alias}[{index}] must be a "
+                        "mapping"
+                    )
+
+                slot_rule = {
+                    "attachment_index": int(raw_slot["attachment_index"]),
+                    "slot_type": str(raw_slot["slot_type"]),
+                }
+                if "endpoint_side" in raw_slot:
+                    endpoint_side = str(raw_slot["endpoint_side"])
+                    if endpoint_side not in {"V", "C"}:
+                        raise ValueError(
+                            f"{family_name} slot_rules.{role_alias}[{index}] "
+                            "endpoint_side must be V or C"
+                        )
+                    slot_rule["endpoint_side"] = endpoint_side
+
+                normalized_slots.append(slot_rule)
+
+            normalized_rules[role_alias] = normalized_slots
+
+        return normalized_rules
+
+    def _normalize_cyclic_order_rules(
+        self,
+        family_name: str,
+        raw_rules: Any,
+        roles: Dict[str, Dict[str, str]],
+    ) -> Dict[str, Dict[str, Any]]:
+        """Normalize passive cyclic-order metadata for C* roles."""
+        if raw_rules is None:
+            return {}
+        if not isinstance(raw_rules, dict):
+            raise ValueError(
+                f"{family_name} cyclic_order_rules must be a mapping in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_rules: Dict[str, Dict[str, Any]] = {}
+        for raw_alias, raw_rule in raw_rules.items():
+            role_alias = str(raw_alias)
+            if self._get_role_class(
+                family_name,
+                roles,
+                role_alias,
+                context="cyclic_order_rules",
+            ) != "C":
+                raise ValueError(
+                    f"{family_name} cyclic_order_rules may only be declared on "
+                    f"C* aliases, not {role_alias}"
+                )
+            if not isinstance(raw_rule, dict):
+                raise ValueError(
+                    f"{family_name} cyclic_order_rules.{role_alias} must be a "
+                    "mapping"
+                )
+
+            ordered_attachment_indices = raw_rule.get("ordered_attachment_indices")
+            if not isinstance(ordered_attachment_indices, list):
+                raise ValueError(
+                    f"{family_name} cyclic_order_rules.{role_alias} must define "
+                    "ordered_attachment_indices as a list"
+                )
+
+            normalized_rules[role_alias] = {
+                "ordered_attachment_indices": [
+                    int(index) for index in ordered_attachment_indices
+                ],
+                "order_kind": str(raw_rule.get("order_kind")),
+            }
+
+        return normalized_rules
+
+    def _normalize_edge_kind_rules(
+        self,
+        family_name: str,
+        raw_rules: Any,
+        roles: Dict[str, Dict[str, str]],
+    ) -> Dict[str, Dict[str, str]]:
+        """Normalize edge-kind metadata and require explicit null-edge models."""
+        if raw_rules is None:
+            return {}
+        if not isinstance(raw_rules, dict):
+            raise ValueError(
+                f"{family_name} edge_kind_rules must be a mapping in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_rules: Dict[str, Dict[str, str]] = {}
+        for raw_alias, raw_rule in raw_rules.items():
+            role_alias = str(raw_alias)
+            if self._get_role_class(
+                family_name,
+                roles,
+                role_alias,
+                context="edge_kind_rules",
+            ) != "E":
+                raise ValueError(
+                    f"{family_name} edge_kind_rules may only target E* aliases, "
+                    f"not {role_alias}"
+                )
+            if not isinstance(raw_rule, dict):
+                raise ValueError(
+                    f"{family_name} edge_kind_rules.{role_alias} must be a mapping"
+                )
+
+            edge_kind = str(raw_rule.get("edge_kind"))
+            if edge_kind not in {"real", "null"}:
+                raise ValueError(
+                    f"{family_name} edge_kind_rules.{role_alias}.edge_kind must be "
+                    "'real' or 'null'"
+                )
+
+            normalized_rule = {"edge_kind": edge_kind}
+            if edge_kind == "null":
+                if "null_payload_model" not in raw_rule:
+                    raise ValueError(
+                        f"{family_name} edge_kind_rules.{role_alias} must define "
+                        "null_payload_model for null edges"
+                    )
+                normalized_rule["null_payload_model"] = str(
+                    raw_rule["null_payload_model"]
+                )
+
+            normalized_rules[role_alias] = normalized_rule
+
+        return normalized_rules
+
+    def _normalize_resolve_rules(
+        self,
+        family_name: str,
+        raw_rules: Any,
+        roles: Dict[str, Dict[str, str]],
+    ) -> Dict[str, Dict[str, str]]:
+        """Normalize passive resolve metadata for E* roles."""
+        if raw_rules is None:
+            return {}
+        if not isinstance(raw_rules, dict):
+            raise ValueError(
+                f"{family_name} resolve_rules must be a mapping in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_rules: Dict[str, Dict[str, str]] = {}
+        for raw_alias, raw_rule in raw_rules.items():
+            role_alias = str(raw_alias)
+            if self._get_role_class(
+                family_name,
+                roles,
+                role_alias,
+                context="resolve_rules",
+            ) != "E":
+                raise ValueError(
+                    f"{family_name} resolve_rules may only target E* aliases, "
+                    f"not {role_alias}"
+                )
+            if not isinstance(raw_rule, dict):
+                raise ValueError(
+                    f"{family_name} resolve_rules.{role_alias} must be a mapping"
+                )
+
+            normalized_rules[role_alias] = {
+                "resolve_mode": str(raw_rule.get("resolve_mode")),
+            }
+
+        return normalized_rules
+
+    def _normalize_unresolved_edge_policy(
+        self,
+        family_name: str,
+        raw_policy: Any,
+        roles: Dict[str, Dict[str, str]],
+        edge_kind_rules: Dict[str, Dict[str, str]],
+    ) -> Dict[str, Any]:
+        """Normalize family-level unresolved-edge policy without runtime actions."""
+        if raw_policy is None:
+            return {}
+        if not isinstance(raw_policy, dict):
+            raise ValueError(
+                f"{family_name} unresolved_edge_policy must be a mapping in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+        if not raw_policy:
+            return {}
+
+        default_action = raw_policy.get("default_action")
+        if not isinstance(default_action, str):
+            raise ValueError(
+                f"{family_name} unresolved_edge_policy.default_action must be a "
+                "string"
+            )
+
+        allowed_null_fallback_edge_aliases = self._normalize_string_list(
+            family_name,
+            field_name=(
+                "unresolved_edge_policy.allowed_null_fallback_edge_aliases"
+            ),
+            raw_values=raw_policy.get("allowed_null_fallback_edge_aliases"),
+        )
+        for edge_alias in allowed_null_fallback_edge_aliases:
+            if self._get_role_class(
+                family_name,
+                roles,
+                edge_alias,
+                context="unresolved_edge_policy",
+            ) != "E":
+                raise ValueError(
+                    f"{family_name} unresolved_edge_policy may only reference E* "
+                    f"aliases, not {edge_alias}"
+                )
+            if edge_kind_rules.get(edge_alias, {}).get("edge_kind") != "null":
+                raise ValueError(
+                    f"{family_name} unresolved_edge_policy may only allow null "
+                    f"fallback for aliases declared as null edges, not {edge_alias}"
+                )
+
+        return {
+            "default_action": default_action,
+            "allowed_null_fallback_edge_aliases": (
+                allowed_null_fallback_edge_aliases
+            ),
+        }
+
+    def _normalize_fragment_lookup_hints(
+        self,
+        family_name: str,
+        raw_hints: Any,
+        roles: Dict[str, Dict[str, str]],
+    ) -> Dict[str, Dict[str, Any]]:
+        """Normalize passive lookup hints without compiling runtime registries."""
+        if raw_hints is None:
+            return {}
+        if not isinstance(raw_hints, dict):
+            raise ValueError(
+                f"{family_name} fragment_lookup_hints must be a mapping in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_hints: Dict[str, Dict[str, Any]] = {}
+        for raw_alias, raw_hint in raw_hints.items():
+            role_alias = str(raw_alias)
+            self._get_role_class(
+                family_name,
+                roles,
+                role_alias,
+                context="fragment_lookup_hints",
+            )
+            if not isinstance(raw_hint, dict):
+                raise ValueError(
+                    f"{family_name} fragment_lookup_hints.{role_alias} must be a "
+                    "mapping"
+                )
+
+            normalized_hints[role_alias] = dict(raw_hint)
+
+        return normalized_hints
 
     def _normalize_family_role_metadata(
         self,
@@ -149,20 +677,137 @@ class MofTopLibrary:
                 f"{self.ROLE_METADATA_FILENAME}"
             )
 
+        schema_name = raw_metadata.get("schema_name", self.ROLE_METADATA_SCHEMA_NAME)
+        if schema_name != self.ROLE_METADATA_SCHEMA_NAME:
+            raise ValueError(
+                f"{family_name} metadata must declare schema_name "
+                f"{self.ROLE_METADATA_SCHEMA_NAME}"
+            )
+
+        schema_version = raw_metadata.get(
+            "schema_version", self.ROLE_METADATA_SCHEMA_VERSION
+        )
+        if int(schema_version) != self.ROLE_METADATA_SCHEMA_VERSION:
+            raise ValueError(
+                f"{family_name} metadata must declare schema_version "
+                f"{self.ROLE_METADATA_SCHEMA_VERSION}"
+            )
+
+        declared_family_name = str(raw_metadata.get("family_name", family_name))
+        if declared_family_name != family_name:
+            raise ValueError(
+                f"{family_name} metadata family_name must match the families key"
+            )
+
+        roles = self._normalize_roles(family_name, raw_metadata.get("roles"))
+        connectivity_rules = self._normalize_connectivity_rules(
+            family_name,
+            raw_metadata.get("connectivity_rules"),
+            roles,
+        )
+        path_rules = self._normalize_path_rules(
+            family_name,
+            raw_metadata.get("path_rules"),
+            roles,
+        )
+        bundle_rules = self._normalize_bundle_rules(
+            family_name,
+            raw_metadata.get("bundle_rules"),
+            roles,
+        )
+        slot_rules = self._normalize_slot_rules(
+            family_name,
+            raw_metadata.get("slot_rules"),
+            roles,
+        )
+        cyclic_order_rules = self._normalize_cyclic_order_rules(
+            family_name,
+            raw_metadata.get("cyclic_order_rules"),
+            roles,
+        )
+        edge_kind_rules = self._normalize_edge_kind_rules(
+            family_name,
+            raw_metadata.get("edge_kind_rules"),
+            roles,
+        )
+        resolve_rules = self._normalize_resolve_rules(
+            family_name,
+            raw_metadata.get("resolve_rules"),
+            roles,
+        )
+        unresolved_edge_policy = self._normalize_unresolved_edge_policy(
+            family_name,
+            raw_metadata.get("unresolved_edge_policy"),
+            roles,
+            edge_kind_rules,
+        )
+        fragment_lookup_hints = self._normalize_fragment_lookup_hints(
+            family_name,
+            raw_metadata.get("fragment_lookup_hints"),
+            roles,
+        )
+
         return {
-            "schema": self.ROLE_METADATA_SCHEMA,
-            "node_roles": self._normalize_role_entries(
-                family_name,
-                raw_metadata.get("node_roles"),
-                entry_kind="node_roles",
-                connectivity_key="expected_connectivity",
-            ),
-            "edge_roles": self._normalize_role_entries(
-                family_name,
-                raw_metadata.get("edge_roles"),
-                entry_kind="edge_roles",
-                connectivity_key="linker_connectivity",
-            ),
+            "schema_name": self.ROLE_METADATA_SCHEMA_NAME,
+            "schema_version": self.ROLE_METADATA_SCHEMA_VERSION,
+            "family_name": family_name,
+            "roles": roles,
+            "connectivity_rules": connectivity_rules,
+            "path_rules": path_rules,
+            "bundle_rules": bundle_rules,
+            "slot_rules": slot_rules,
+            "cyclic_order_rules": cyclic_order_rules,
+            "edge_kind_rules": edge_kind_rules,
+            "resolve_rules": resolve_rules,
+            "unresolved_edge_policy": unresolved_edge_policy,
+            "fragment_lookup_hints": fragment_lookup_hints,
+        }
+
+    def _build_compat_role_metadata(
+        self,
+        family_name: str,
+        canonical_role_metadata: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Compile passive canonical metadata into the existing builder seam."""
+        node_roles = []
+        edge_roles = []
+
+        connectivity_rules = canonical_role_metadata["connectivity_rules"]
+        slot_rules = canonical_role_metadata["slot_rules"]
+
+        for role_alias, role_spec in canonical_role_metadata["roles"].items():
+            role_entry = {
+                "role_id": role_spec["canonical_role_id"],
+                "topology_labels": [role_alias],
+            }
+            role_class = role_spec["role_class"]
+
+            if role_class in {"V", "C"}:
+                if role_alias not in connectivity_rules:
+                    raise ValueError(
+                        f"{family_name} metadata must define "
+                        f"connectivity_rules.{role_alias} to preserve the "
+                        "existing builder seam"
+                    )
+                role_entry["expected_connectivity"] = len(
+                    connectivity_rules[role_alias]["incident_edge_aliases"]
+                )
+                node_roles.append(role_entry)
+            else:
+                if role_alias not in slot_rules:
+                    raise ValueError(
+                        f"{family_name} metadata must define "
+                        f"slot_rules.{role_alias} to preserve the existing "
+                        "builder seam"
+                    )
+                role_entry["linker_connectivity"] = len(slot_rules[role_alias])
+                edge_roles.append(role_entry)
+
+        return {
+            "schema": self.ROLE_METADATA_COMPAT_SCHEMA,
+            "node_roles": node_roles,
+            "edge_roles": edge_roles,
+            "canonical_role_metadata": canonical_role_metadata,
         }
 
     def _read_role_metadata(
@@ -184,9 +829,16 @@ class MofTopLibrary:
                 f"{self.ROLE_METADATA_FILENAME} must contain a JSON object"
             )
 
-        if raw_metadata.get("schema_version") != 1:
+        if raw_metadata.get("schema_name") != self.ROLE_METADATA_SCHEMA_NAME:
             raise ValueError(
-                f"{self.ROLE_METADATA_FILENAME} must declare schema_version 1"
+                f"{self.ROLE_METADATA_FILENAME} must declare schema_name "
+                f"{self.ROLE_METADATA_SCHEMA_NAME}"
+            )
+
+        if raw_metadata.get("schema_version") != self.ROLE_METADATA_SCHEMA_VERSION:
+            raise ValueError(
+                f"{self.ROLE_METADATA_FILENAME} must declare schema_version "
+                f"{self.ROLE_METADATA_SCHEMA_VERSION}"
             )
 
         family_metadata = raw_metadata.get("families", {})
@@ -195,12 +847,17 @@ class MofTopLibrary:
                 f"{self.ROLE_METADATA_FILENAME} must define a 'families' mapping"
             )
 
-        return {
-            family_name: self._normalize_family_role_metadata(
+        normalized_metadata = {}
+        for family_name, raw_family_metadata in family_metadata.items():
+            canonical_role_metadata = self._normalize_family_role_metadata(
                 family_name, raw_family_metadata
             )
-            for family_name, raw_family_metadata in family_metadata.items()
-        }
+            normalized_metadata[family_name] = self._build_compat_role_metadata(
+                family_name,
+                canonical_role_metadata,
+            )
+
+        return normalized_metadata
 
     def _read_mof_top_dict(self, data_path: Optional[str] = None) -> None:
         """Load MOF_topology_dict and optional role sidecar metadata from data_path.
@@ -243,7 +900,7 @@ class MofTopLibrary:
     def get_role_metadata(
         self, mof_family: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
-        """Return passive normalized role metadata for a family, if present."""
+        """Return builder-compatible additive role metadata for a family, if present."""
         if self.mof_top_dict is None:
             self._read_mof_top_dict(self.data_path)
 
@@ -256,6 +913,16 @@ class MofTopLibrary:
             return None
 
         return family_entry.get("role_metadata")
+
+    def get_canonical_role_metadata(
+        self, mof_family: Optional[str] = None
+    ) -> Optional[Dict[str, Any]]:
+        """Return canonical passive role metadata for a family, if present."""
+        role_metadata = self.get_role_metadata(mof_family)
+        if role_metadata is None:
+            return None
+
+        return role_metadata.get("canonical_role_metadata")
 
     def list_mof_families(self) -> None:
         """Print all available MOF family names from the topology dictionary to the output stream."""
@@ -303,6 +970,9 @@ class MofTopLibrary:
         self.linker_connectivity = self.mof_top_dict[mof_family][
             "linker_topic"]
         self.role_metadata = self.mof_top_dict[mof_family].get("role_metadata")
+        self.canonical_role_metadata = self.get_canonical_role_metadata(
+            self.mof_family
+        )
         self.net_filename = self.mof_top_dict[mof_family]["topology"] + ".cif"
         # check if template cif exists
         self.ostream.print_info(f"MOF family {mof_family} is selected")

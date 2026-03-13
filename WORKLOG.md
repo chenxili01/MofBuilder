@@ -210,6 +210,261 @@ Use this exact field set for every checkpoint subsection.
 - Conflicts / blockers: none
 - Handoff / next checkpoint: `P2.1` — implementation
 
+**Correction — 2026-03-13 fresh controlled Phase 2 executor-thread contract refresh**
+
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: contract generated
+- Goal: prepare the fresh controlled Phase 2 executor thread at `P2.0` using the current-cycle passive metadata contract from `PLANS.md`
+- Phase gate checked against `PLANS.md`: yes; `STATUS.md` names the next valid action as "start a fresh controlled Phase 2 executor thread", so the active checkpoint is reset to `P2.0` in `fixture-only` mode with no bundled-database edits authorized.
+- Files changed: `WORKLOG.md`, `STATUS.md`
+- Tests added: none
+- Tests run: none
+- Decisions: reopened `P2.0` as the active checkpoint without rewriting completed historical Phase 2 entries; fixed the controlled-thread mode to `fixture-only`; explicitly kept `database/MOF_topology_role_metadata.json` and all other bundled database files out of scope; kept Phase 2 limited to passive metadata loading and library-boundary schema checking in `MofTopLibrary`; deferred runtime compilation, registry construction, bundle-id derivation, unresolved-edge-policy normalization, and structured runtime validation APIs to Phase 3.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: `P2.1` — implementation
+
+**Phase Contract**
+
+- Phase name: `Phase 2 — Additive Family/Template Role Metadata`
+
+**Goal**
+- Phase 2 is limited to passive parsing and schema-checking of family metadata at the `MofTopLibrary` boundary only.
+- Expose the reticular role grammar as one JSON-readable passive schema with lightweight validation only.
+- Defer runtime compilation and runtime policy work to Phase 3.
+
+**Scope**
+- `MofTopLibrary` passive metadata extension only.
+- Current execution mode is `fixture-only`.
+- Allowed passive work is limited to loading one normalized passive reticular metadata shape, validating it at the library boundary, and exposing additive metadata accessors.
+- Do not add builder/runtime consumption, registry construction, bundle-id derivation, unresolved-edge-policy normalization, structured runtime validation APIs, or bundled database edits in this checkpoint.
+
+**Allowed Files**
+- `src/mofbuilder/core/moftoplibrary.py`
+- `tests/test_core_moftoplibrary.py`
+- metadata fixture(s) under `tests/database/`
+- `WORKLOG.md`
+- `STATUS.md`
+
+**Forbidden Files**
+- `database/MOF_topology_role_metadata.json`
+- all other bundled database files
+- `src/mofbuilder/core/net.py`
+- `src/mofbuilder/core/builder.py`
+- `src/mofbuilder/core/optimizer.py`
+- `src/mofbuilder/core/supercell.py`
+- `src/mofbuilder/core/framework.py`
+- `src/mofbuilder/core/defects.py`
+- `src/mofbuilder/core/termination.py`
+- `src/mofbuilder/core/write.py`
+- `src/mofbuilder/core/linker.py`
+- `src/mofbuilder/io/cif_reader.py`
+- `src/mofbuilder/md/`
+- `PLANS.md`
+- `ARCHITECTURE.md`
+- `AGENTS.md`
+- `CODEX_CONTEXT.md`
+
+**Architecture Invariants**
+- Preserve the locked pipeline: `MofTopLibrary.fetch(...)` -> `FrameNet.create_net(...)` -> `MetalOrganicFrameworkBuilder.load_framework()` -> `MetalOrganicFrameworkBuilder.optimize_framework()` -> `MetalOrganicFrameworkBuilder.make_supercell()` -> `MetalOrganicFrameworkBuilder.build()`.
+- Preserve graph states `G`, `sG`, `superG`, `eG`, and `cleaved_eG`.
+- Do not rename, reorder, merge, or add pipeline stages.
+- Keep responsibilities fixed: `MofTopLibrary` owns passive family/template metadata loading and normalization; `FrameNet` owns topology graph construction and graph role stamping; `MetalOrganicFrameworkBuilder` owns runtime role registries and later compilation.
+- `MOF_topology_dict` must remain readable for existing families.
+- No graph or runtime behavior changes are allowed in Phase 2.
+- Do not introduce a heavy schema-validation dependency.
+- `MofTopLibrary.fetch()` key names, return types, and family-selection behavior remain unchanged for existing bundled families except for an optional additive `role_metadata` field.
+
+**Role Model Invariants**
+- Graph-stored role ids remain the runtime source of truth: `FrameNet.G.nodes[n]["node_role_id"]` and `FrameNet.G.edges[e]["edge_role_id"]`.
+- Runtime fragment registries remain `node_role_registry` and `edge_role_registry`; Phase 2 must not create competing runtime role stores or local role maps.
+- Metadata remains passive and additive.
+- Role identifiers must not be inferred from chemistry.
+- Canonical ids must be derivable from aliases.
+- Path rules are limited to `V-E-V` and `V-E-C`.
+- Bundle ownership may only be declared on `C*`.
+- Null-edge declarations and unresolved-edge fallback policy must be explicit where used.
+- Validation stays library-boundary only in Phase 2.
+
+**Required Tests**
+- `scripts/run_tests.sh tests/test_core_moftoplibrary.py`
+- at least one legacy-family regression
+- at least one no-role-metadata regression
+- at least one invalid-schema negative test
+- only if bundled database mode is explicitly approved by a plan revision that names exact families, at least one regression proving existing bundled families are unchanged except for an additive `role_metadata` field
+
+**Success Criteria**
+- `MofTopLibrary` can load one normalized passive reticular metadata shape.
+- Legacy scalar metadata remains intact.
+- Families without new metadata still resolve exactly as before.
+- Invalid metadata fails at the library boundary, not downstream.
+- No graph mutation or runtime consumption is introduced.
+- This controlled thread stays in `fixture-only` mode with no bundled database edits.
+
+**Stop Rule**
+- Stop immediately if the phase requires runtime fragment resolution, graph mutation outside passive metadata loading, or multiple concurrent schema variants without one canonical normalized representation.
+- Stop immediately if the work would alter `MofTopLibrary.fetch()` results for an existing bundled family, even if no file outside `src/mofbuilder/core/moftoplibrary.py` is edited.
+- Stop immediately if satisfying the phase requires editing any forbidden file or changing module responsibilities.
+- If any schema, runtime, or invariant conflict is discovered, record it first in `WORKLOG.md` and `STATUS.md`, then stop before revising `PLANS.md`.
+
+**Correction — 2026-03-13 review-aware Phase 2 remediation contract refresh**
+
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: contract generated
+- Goal: prepare a corrective Phase 2 remediation pass that restores the existing `MofTopLibrary` -> builder metadata seam without changing forbidden downstream source files
+- Phase gate checked against `PLANS.md`: yes; Phase 2 remains limited to passive metadata loading and validation at the `MofTopLibrary` boundary, but the failed review requires preserving the already-existing downstream consumer contract and correcting the status/logging mismatch before any new implementation claim.
+- Files changed: `WORKLOG.md`, `STATUS.md`
+- Tests added: none
+- Tests run: none
+- Decisions: reset the active checkpoint to `P2.0` for a review-driven remediation pass; carried forward the reviewer's seam-compatibility finding as a hard contract constraint; allowed builder-seam regression coverage in `tests/test_core_builder.py` while keeping `src/mofbuilder/core/builder.py` forbidden; kept bundled database edits, runtime registry construction changes, and builder source changes out of scope.
+- Conflicts / blockers: unresolved review failure; the current canonical `role_metadata` shape is not yet allowed to replace the runtime-facing `node_roles` / `edge_roles` seam consumed by the existing builder.
+- Handoff / next checkpoint: `P2.1` — implementation
+
+**Phase Contract**
+
+- Phase name: `Phase 2 — Additive Family/Template Role Metadata`
+
+**Goal**
+- Remediate the failed Phase 2 run by restoring compatibility at the `MofTopLibrary` boundary while keeping Phase 2 metadata passive, additive, and library-owned.
+- Preserve the current downstream builder seam in this phase; any newer canonical schema must remain additive rather than replacing the runtime-facing metadata shape already consumed by the repository baseline.
+
+**Review Context**
+- Latest reviewer verdict: `FAILED`.
+- Must-fix-before-implementation: correct the execution-state mismatch by treating the phase as back at `P2.0` with a remediation contract; do not claim `P2.2` handoff again until a new handoff entry exists for the corrected run.
+- Must-fix-during-implementation: preserve the existing downstream seam used by `src/mofbuilder/core/builder.py`, which currently consumes `role_metadata["node_roles"]` and `role_metadata["edge_roles"]`.
+- Must-fix-during-implementation: add regression coverage proving canonical sidecar metadata remains consumable by the existing builder registry initialization path without changing `builder.py`.
+- Record-and-stop conflict: if the desired canonical schema cannot coexist with the current seam without editing forbidden downstream source files, record the conflict in `WORKLOG.md` and `STATUS.md` and stop instead of silently changing the seam.
+
+**Scope**
+- `MofTopLibrary` passive metadata loading, normalization, and validation only.
+- The remediation may reshape `self.role_metadata` only to preserve the existing runtime-facing seam and may expose newer canonical metadata only through an additive field/accessor that does not break current consumers.
+- The remediation may add or revise narrow tests covering `MofTopLibrary` behavior and the existing builder-facing seam.
+- No builder source changes, runtime registry redesign, graph mutation, optimizer changes, supercell changes, or bundled database edits are allowed.
+
+**Allowed Files**
+- `src/mofbuilder/core/moftoplibrary.py`
+- `tests/test_core_moftoplibrary.py`
+- `tests/test_core_builder.py`
+- metadata fixture(s) under `tests/database/`
+- `WORKLOG.md`
+- `STATUS.md`
+
+**Forbidden Files**
+- `src/mofbuilder/core/builder.py`
+- `database/MOF_topology_role_metadata.json`
+- all other bundled database files
+- `src/mofbuilder/core/net.py`
+- `src/mofbuilder/core/optimizer.py`
+- `src/mofbuilder/core/supercell.py`
+- `src/mofbuilder/core/framework.py`
+- `src/mofbuilder/core/defects.py`
+- `src/mofbuilder/core/termination.py`
+- `src/mofbuilder/core/write.py`
+- `src/mofbuilder/core/linker.py`
+- `src/mofbuilder/io/cif_reader.py`
+- `src/mofbuilder/md/`
+- `PLANS.md`
+- `ARCHITECTURE.md`
+- `AGENTS.md`
+- `CODEX_CONTEXT.md`
+- `REVIEW.md`
+- all files outside the allowed list
+
+**Architecture Invariants**
+- Preserve the locked pipeline: `MofTopLibrary.fetch(...)` -> `FrameNet.create_net(...)` -> `MetalOrganicFrameworkBuilder.load_framework()` -> `MetalOrganicFrameworkBuilder.optimize_framework()` -> `MetalOrganicFrameworkBuilder.make_supercell()` -> `MetalOrganicFrameworkBuilder.build()`.
+- Preserve graph states `G`, `sG`, `superG`, `eG`, and `cleaved_eG`.
+- Do not rename, reorder, merge, or add pipeline stages.
+- Keep responsibilities fixed: `MofTopLibrary` owns passive family/template metadata loading and normalization; `MetalOrganicFrameworkBuilder` remains the existing runtime consumer in later phases; this remediation must not move responsibilities between them.
+- `MOF_topology_dict` must remain readable for existing families.
+- No graph or runtime behavior changes are allowed in Phase 2.
+- Do not introduce a heavy schema-validation dependency.
+
+**Role Model Invariants**
+- Graph-stored role ids remain the runtime source of truth: `FrameNet.G.nodes[n]["node_role_id"]` and `FrameNet.G.edges[e]["edge_role_id"]`.
+- Runtime fragment registries remain `node_role_registry` and `edge_role_registry`; Phase 2 must not create competing runtime role stores or local role maps.
+- Metadata remains passive and additive.
+- Role identifiers must not be inferred from chemistry.
+- Canonical ids must remain deterministic and alias-derived where declared.
+- Path rules remain limited to `V-E-V` and `V-E-C`.
+- Bundle ownership may only be declared on `C*`.
+- Null-edge declarations and unresolved-edge fallback policy must remain explicit where used.
+- Validation stays library-boundary only in Phase 2.
+
+**Compatibility Requirements**
+- Preserve the current single-role path as the default/base case.
+- Preserve the existing downstream consumer contract unless this phase explicitly authorizes coordinated changes; it does not.
+- Additive metadata must not silently replace an existing runtime-facing schema.
+- If a new schema or accessor is retained, it must be additive or isolated behind a new field/accessor while `role_metadata` stays consumable by the current builder seam.
+- Families without new metadata must continue to resolve exactly as before.
+- Existing bundled-family behavior must remain unchanged in this fixture-only remediation pass.
+
+**Required Tests**
+- `scripts/run_tests.sh tests/test_core_moftoplibrary.py`
+- `scripts/run_tests.sh tests/test_core_builder.py`
+- at least one legacy-family regression
+- at least one no-role-metadata regression
+- at least one invalid-schema negative test
+- at least one seam regression proving canonical sidecar metadata does not make the existing builder collapse back to default roles
+
+**Success Criteria**
+- `MofTopLibrary` preserves the existing builder-consumable `role_metadata` seam for `node_roles` / `edge_roles`.
+- Any newer canonical schema remains additive and does not replace the current runtime-facing shape.
+- Legacy scalar metadata remains intact.
+- Families without new metadata still resolve exactly as before.
+- Invalid metadata fails at the library boundary, not downstream.
+- Builder seam regression coverage exists and passes without changing `src/mofbuilder/core/builder.py`.
+- `WORKLOG.md` and `STATUS.md` stay synchronized; no new `P2.2` handoff claim is made until the remediation implementation actually reaches handoff cleanly.
+
+**Stop Rule**
+- Stop immediately if preserving the current builder seam requires editing `src/mofbuilder/core/builder.py` or any other forbidden file.
+- Stop immediately if the remediation would replace the runtime-facing `role_metadata` schema instead of preserving it and adding new metadata additively.
+- Stop immediately if satisfying the phase requires runtime fragment resolution, graph mutation outside passive metadata loading, or changing module responsibilities.
+- Stop immediately if the required seam regression cannot be added within the allowed test files; record the conflict in `WORKLOG.md` and `STATUS.md` instead of widening scope implicitly.
+- If any schema, runtime, or invariant conflict is discovered, record it first in `WORKLOG.md` and `STATUS.md`, then stop before revising `PLANS.md`.
+
+**Correction — 2026-03-13 controlled fixture-only Phase 2 implementation**
+
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete
+- Goal: replace the older passive sidecar shape with the current-cycle canonical family-role schema and validate it at the `MofTopLibrary` boundary only
+- Phase gate checked against `PLANS.md`: yes; implementation stayed inside `src/mofbuilder/core/moftoplibrary.py`, `tests/test_core_moftoplibrary.py`, `WORKLOG.md`, and `STATUS.md`, with no bundled-database edits and no runtime/builder changes.
+- Files changed: `src/mofbuilder/core/moftoplibrary.py`, `tests/test_core_moftoplibrary.py`, `WORKLOG.md`, `STATUS.md`
+- Tests added: `test_read_mof_top_dict_without_sidecar_keeps_role_metadata_none`, `test_read_mof_top_dict_loads_canonical_role_metadata_sidecar`, `test_read_mof_top_dict_rejects_invalid_schema_at_library_boundary`
+- Tests run: `python -m compileall src/mofbuilder/core/moftoplibrary.py tests/test_core_moftoplibrary.py` (passed); `scripts/run_tests.sh tests/test_core_moftoplibrary.py` (passed: 7 tests)
+- Decisions: normalized passive role metadata to the canonical current-cycle shape with `schema_name`, `schema_version`, `family_name`, `roles`, `connectivity_rules`, `path_rules`, `bundle_rules`, `slot_rules`, `cyclic_order_rules`, `edge_kind_rules`, `resolve_rules`, `unresolved_edge_policy`, and `fragment_lookup_hints`; added lightweight library-boundary validation for legal role prefixes/classes, alias-derived canonical ids, `V-E-V` / `V-E-C` path grammar, `C*`-only bundle ownership, explicit null-edge declarations, and explicit unresolved-edge null-fallback references; kept the thread in `fixture-only` mode so existing bundled families still load through the legacy no-sidecar path with `role_metadata=None`.
+- Conflicts / blockers: none; no bundled family behavior changed because `database/MOF_topology_role_metadata.json` remained untouched.
+- Handoff / next checkpoint: `P2.2` — handoff
+
+**Correction — 2026-03-13 Phase 2 seam-remediation implementation result**
+
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete
+- Goal: restore the existing builder-consumable `role_metadata["node_roles"]` / `["edge_roles"]` seam while retaining the canonical passive schema additively at the `MofTopLibrary` boundary
+- Phase gate checked against `PLANS.md`: yes; remediation stayed inside `src/mofbuilder/core/moftoplibrary.py`, `tests/test_core_moftoplibrary.py`, `tests/test_core_builder.py`, `WORKLOG.md`, and `STATUS.md`, with no builder-source or bundled-database edits.
+- Files changed: `src/mofbuilder/core/moftoplibrary.py`, `tests/test_core_moftoplibrary.py`, `tests/test_core_builder.py`, `WORKLOG.md`, `STATUS.md`
+- Tests added: `test_read_mof_top_dict_loads_builder_compatible_role_metadata_sidecar`, `test_role_registries_consume_canonical_sidecar_through_moftoplibrary_seam`
+- Tests run: `scripts/run_tests.sh tests/test_core_moftoplibrary.py` (passed: 7 tests); `scripts/run_tests.sh tests/test_core_builder.py` (passed: 5 tests, 5 existing `PytestUnknownMarkWarning` warnings for `pytest.mark.core`)
+- Decisions: restored `role_metadata` to the existing builder-facing compat schema with `schema`, `node_roles`, and `edge_roles`; preserved the current-cycle canonical passive schema additively under `canonical_role_metadata` plus `get_canonical_role_metadata()`; compiled node-role connectivity from `connectivity_rules` and edge-role connectivity from `slot_rules` so the existing builder registry initialization path remains usable without editing `src/mofbuilder/core/builder.py`.
+- Conflicts / blockers: none; the review seam-compatibility issue is resolved within the allowed Phase 2 boundary.
+- Handoff / next checkpoint: `P2.2` — handoff
+
+**Correction — 2026-03-13 Phase 2 seam-remediation handoff**
+
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete
+- Goal: close the corrective Phase 2 remediation pass with status/worklog synchronized to the repaired seam-preserving implementation
+- Phase gate checked against `PLANS.md`: yes; the remediation remained passive and library-owned, with no forbidden downstream source edits and no bundled database changes.
+- Files changed: `src/mofbuilder/core/moftoplibrary.py`, `tests/test_core_moftoplibrary.py`, `tests/test_core_builder.py`, `WORKLOG.md`, `STATUS.md`
+- Tests added: `test_read_mof_top_dict_loads_builder_compatible_role_metadata_sidecar`, `test_role_registries_consume_canonical_sidecar_through_moftoplibrary_seam`
+- Tests run: `scripts/run_tests.sh tests/test_core_moftoplibrary.py` (passed: 7 tests); `scripts/run_tests.sh tests/test_core_builder.py` (passed: 5 tests, 5 existing `PytestUnknownMarkWarning` warnings for `pytest.mark.core`)
+- Decisions: kept the new canonical schema additive instead of runtime-facing; ensured families without sidecar metadata still expose `role_metadata=None`; verified the existing builder seam no longer collapses canonical sidecar metadata back to default roles.
+- Conflicts / blockers: none active; only the pre-existing unknown-mark warnings remain and they do not block the narrow Phase 2 contract path.
+- Handoff / next checkpoint: Phase 2 remediation handoff complete; next step is reviewer check before any later phase work.
+
 ## Maintenance Phase M1 — `create_net` Template Compatibility
 
 - Scope anchor: `src/mofbuilder/core/net.py`, matching tests

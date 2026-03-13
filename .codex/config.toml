@@ -1,0 +1,15 @@
+model = "gpt-5.4"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+# Fast cheap runs
+[profiles.fast]
+model_reasoning_effort = "low"
+
+# Normal execution
+[profiles.normal]
+model_reasoning_effort = "medium"
+
+# Deep review
+[profiles.review]
+model_reasoning_effort = "high"

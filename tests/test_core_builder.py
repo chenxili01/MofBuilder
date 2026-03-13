@@ -1,3 +1,4 @@
+import json
 from types import MethodType, SimpleNamespace
 
 import networkx as nx
@@ -6,6 +7,7 @@ import pytest
 
 import mofbuilder.core.builder as builder_module
 from mofbuilder.core.builder import MetalOrganicFrameworkBuilder
+from mofbuilder.core.moftoplibrary import MofTopLibrary
 
 
 class _DummyDefectGenerator:
@@ -41,6 +43,105 @@ class _ComparableTable:
 
     def __repr__(self):
         return repr(self._data)
+
+
+def _canonical_family_role_metadata():
+    return {
+        "schema_name": "mof_reticular_role_metadata",
+        "schema_version": 1,
+        "family_name": "TEST-MULTI",
+        "roles": {
+            "VA": {"role_class": "V", "canonical_role_id": "node:VA"},
+            "CA": {"role_class": "C", "canonical_role_id": "node:CA"},
+            "EA": {"role_class": "E", "canonical_role_id": "edge:EA"},
+            "EB": {"role_class": "E", "canonical_role_id": "edge:EB"},
+        },
+        "connectivity_rules": {
+            "VA": {"incident_edge_aliases": ["EA", "EA", "EB", "EB"]},
+            "CA": {"incident_edge_aliases": ["EA", "EA"]},
+        },
+        "path_rules": [
+            {"edge_alias": "EA", "endpoint_pattern": ["VA", "EA", "CA"]},
+            {"edge_alias": "EB", "endpoint_pattern": ["VA", "EB", "VA"]},
+        ],
+        "bundle_rules": {
+            "CA": {
+                "bundle_owner": "linker",
+                "attachment_edge_aliases": ["EA", "EA"],
+            }
+        },
+        "slot_rules": {
+            "VA": [
+                {"attachment_index": 0, "slot_type": "XA"},
+                {"attachment_index": 1, "slot_type": "XA"},
+                {"attachment_index": 2, "slot_type": "XB"},
+                {"attachment_index": 3, "slot_type": "XB"},
+            ],
+            "CA": [
+                {"attachment_index": 0, "slot_type": "XA"},
+                {"attachment_index": 1, "slot_type": "XA"},
+            ],
+            "EA": [
+                {"attachment_index": 0, "slot_type": "XA", "endpoint_side": "V"},
+                {"attachment_index": 1, "slot_type": "XA", "endpoint_side": "C"},
+            ],
+            "EB": [
+                {"attachment_index": 0, "slot_type": "XB", "endpoint_side": "V"},
+                {"attachment_index": 1, "slot_type": "XB", "endpoint_side": "V"},
+            ],
+        },
+        "cyclic_order_rules": {
+            "CA": {
+                "ordered_attachment_indices": [0, 1],
+                "order_kind": "clockwise_local_topology",
+            }
+        },
+        "edge_kind_rules": {
+            "EA": {"edge_kind": "real"},
+            "EB": {
+                "edge_kind": "null",
+                "null_payload_model": "duplicated_zero_length_anchors",
+            },
+        },
+        "resolve_rules": {
+            "EA": {"resolve_mode": "ownership_transfer"},
+            "EB": {"resolve_mode": "alignment_only"},
+        },
+        "unresolved_edge_policy": {
+            "default_action": "error",
+            "allowed_null_fallback_edge_aliases": ["EB"],
+        },
+        "fragment_lookup_hints": {
+            "VA": {"library": "nodes_database", "keywords": ["2c", "rod", "Al"]},
+            "CA": {"library": "linker_input", "fragment_kind": "center"},
+            "EA": {"library": "linker_input", "fragment_kind": "connector"},
+            "EB": {"library": "family_metadata", "fragment_kind": "null_edge"},
+        },
+    }
+
+
+def _write_test_database(db_path, *, metadata=None):
+    (db_path / "template_database").mkdir(parents=True)
+    (db_path / "MOF_topology_dict").write_text(
+        "MOF            node_connectivity    metal     linker_topic     topology \n"
+        "TEST-MULTI             8             Zn           4              csq\n",
+        encoding="utf-8",
+    )
+    (db_path / "template_database" / "csq.cif").write_text(
+        "data_test\n",
+        encoding="utf-8",
+    )
+    if metadata is not None:
+        (db_path / "MOF_topology_role_metadata.json").write_text(
+            json.dumps(
+                {
+                    "schema_name": "mof_reticular_role_metadata",
+                    "schema_version": 1,
+                    "families": {"TEST-MULTI": metadata},
+                }
+            ),
+            encoding="utf-8",
+        )
 
 
 @pytest.mark.core
@@ -248,6 +349,35 @@ def test_role_registries_consume_phase_two_metadata_without_local_role_maps():
         builder.linker_center_data
     )
     assert builder.edge_role_registry["edge:ditopic"]["linker_center_data"] is None
+
+
+@pytest.mark.core
+def test_role_registries_consume_canonical_sidecar_through_moftoplibrary_seam(
+    tmp_path,
+):
+    db = tmp_path / "db"
+    _write_test_database(db, metadata=_canonical_family_role_metadata())
+
+    lib = MofTopLibrary()
+    lib.data_path = str(db)
+    lib._read_mof_top_dict(str(db))
+    lib.select_mof_family("TEST-MULTI")
+
+    builder = MetalOrganicFrameworkBuilder(mof_family="TEST-MULTI")
+    builder.node_connectivity = lib.node_connectivity
+    builder.linker_connectivity = lib.linker_connectivity
+    builder.node_metal = "Zn"
+    builder.dummy_atom_node = True
+    builder.linker_xyzfile = "tests/database/example_linker.xyz"
+    builder.mof_top_library = lib
+
+    builder._initialize_role_registries()
+
+    assert lib.role_metadata["schema"] == "mof_topology_role_metadata/v1"
+    assert list(builder.node_role_specs) == ["node:VA", "node:CA"]
+    assert list(builder.edge_role_specs) == ["edge:EA", "edge:EB"]
+    assert builder.node_role_specs["node:VA"]["expected_connectivity"] == 4
+    assert builder.edge_role_specs["edge:EA"]["linker_connectivity"] == 2
 
 
 @pytest.mark.core
