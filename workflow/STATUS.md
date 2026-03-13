@@ -10,8 +10,8 @@ Local workflow control status for the prompt-file fallback path.
 - Next step: reviewer
 - Execution mode: prompt-file fallback / control-doc bootstrap
 - Active thread / branch: `codex_record`
-- Blocking conflict: mixed dirty worktree across `workflow/run.py` and Phase 2 source/test files outside this directory
-- Last update: 2026-03-13
+- Blocking conflict: required test runner environment currently lacks `pytest` for `scripts/run_tests.sh tests/test_workflow_run.py`
+- Last update: 2026-03-14
 
 ## Rules
 

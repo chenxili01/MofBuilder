@@ -6,17 +6,31 @@ import argparse
 import json
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 import traceback
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, Iterable, Literal, Optional
 
 
 Step = Literal["planner", "executor", "reviewer"]
 VALID_STEPS = {"planner", "executor", "reviewer"}
+
+PHASE_HEADING_RE = re.compile(
+    r"^\s{0,3}#{1,6}\s*Phase\s+(?P<number>\d+)\s*[-:–—]\s*(?P<title>.+?)\s*$",
+    re.MULTILINE,
+)
+PHASE_NUMBER_RE = re.compile(r"\bPhase\s+(?P<number>\d+)\b")
+
+
+@dataclass(frozen=True)
+class Phase:
+    number: int
+    name: str
 
 
 # --------------------------------------------------
@@ -25,6 +39,7 @@ VALID_STEPS = {"planner", "executor", "reviewer"}
 
 SCRIPT_PATH = pathlib.Path(__file__).resolve()
 ROOT = SCRIPT_PATH.parent
+REPO_ROOT = ROOT.parent
 STATE_DIR = ROOT / "workflow"
 STATE_FILE = STATE_DIR / "state.json"
 
@@ -36,6 +51,7 @@ STATUS_FILE = ROOT / "STATUS.md"
 WORKLOG_FILE = ROOT / "WORKLOG.md"
 REVIEW_FILE = ROOT / "REVIEW.md"
 PLANS_FILE = ROOT / "PLANS.md"
+REPO_PLANS_FILE = REPO_ROOT / "PLANS.md"
 CRASH_LOG_FILE = STATE_DIR / "crash.log"
 
 
@@ -122,6 +138,43 @@ def tail_chars(text: str, limit: int, truncated_label: str) -> str:
 
 def section(name: str, text: str) -> str:
     return f"===== {name} =====\n{text.strip()}\n"
+
+
+def resolve_plans_path(preferred_path: pathlib.Path = PLANS_FILE) -> pathlib.Path:
+    if preferred_path.exists():
+        return preferred_path
+    if preferred_path == PLANS_FILE and REPO_PLANS_FILE.exists():
+        return REPO_PLANS_FILE
+    return preferred_path
+
+
+def load_phases(plans_path: pathlib.Path = PLANS_FILE) -> list[Phase]:
+    resolved_plans_path = resolve_plans_path(plans_path)
+    text = read_text_if_exists(resolved_plans_path, "")
+    phases = [
+        Phase(number=int(match.group("number")), name=f"Phase {match.group('number')} - {match.group('title').strip()}")
+        for match in PHASE_HEADING_RE.finditer(text)
+    ]
+    if not phases:
+        raise RuntimeError(f"No phase headings were found in {resolved_plans_path.name}.")
+    return phases
+
+
+def find_phase_index(phases: list[Phase], phase_name: str) -> int:
+    for idx, phase in enumerate(phases):
+        if phase.name == phase_name:
+            return idx
+
+    phase_match = PHASE_NUMBER_RE.search(phase_name)
+    if phase_match is None:
+        raise ValueError(f"Phase was not found: {phase_name}")
+
+    phase_number = int(phase_match.group("number"))
+    for idx, phase in enumerate(phases):
+        if phase.number == phase_number:
+            return idx
+
+    raise ValueError(f"Phase was not found: {phase_name}")
 
 
 # --------------------------------------------------
