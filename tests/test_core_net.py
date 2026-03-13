@@ -40,6 +40,12 @@ def write_test_cif(tmp_path, atom_lines, v_con=1, ec_con=None):
     return cif_path
 
 
+def write_raw_test_cif(tmp_path, cif_text, filename="topology.cif"):
+    cif_path = tmp_path / filename
+    cif_path.write_text(cif_text, encoding="utf-8")
+    return cif_path
+
+
 @pytest.mark.core
 def test_create_net_from_test_cif():
     net = FrameNet()
@@ -130,6 +136,63 @@ def test_create_net_attaches_deterministic_role_annotations(tmp_path):
     assert first_edge_roles == second_edge_roles
     assert set(first_node_roles) == {"node:VA", "node:VB"}
     assert set(first_edge_roles) == {"edge:EA", "edge:EB"}
+
+
+@pytest.mark.core
+def test_create_net_supports_role_specific_template_types_without_header_metadata(
+    tmp_path,
+):
+    cif_path = write_raw_test_cif(
+        tmp_path,
+        """data_role_specific_template
+_audit_creation_date              2026-03-13
+_audit_creation_method            role-specific topology points
+_symmetry_space_group_name_H-M    'P1'
+_symmetry_Int_Tables_number       1
+loop_
+_symmetry_equiv_pos_as_xyz
+  x,y,z
+_cell_length_a                    10.0
+_cell_length_b                    10.0
+_cell_length_c                    10.0
+_cell_angle_alpha                 90.0
+_cell_angle_beta                  90.0
+_cell_angle_gamma                 90.0
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+VA      VA1  -0.2500   0.0000   0.0000
+VA      VA2   0.2500   0.0000   0.0000
+VA      VA3   0.0000  -0.2500   0.0000
+VA      VA4   0.0000   0.2500   0.0000
+CA      CA1   0.0000   0.0000   0.0000
+EA      EA1  -0.1250   0.0000   0.0000
+EB      EB1   0.1250   0.0000   0.0000
+EA      EA2   0.0000  -0.1250   0.0000
+EB      EB2   0.0000   0.1250   0.0000
+loop_
+""",
+    )
+    net = FrameNet()
+    net.create_net(cif_file=str(cif_path))
+
+    assert net.G.number_of_nodes() > 0
+    assert net.G.number_of_edges() > 0
+    assert len(net.sorted_nodes) == net.G.number_of_nodes()
+    assert len(net.sorted_edges) == net.G.number_of_edges()
+    assert net.max_degree == 4
+    assert net.linker_connectivity == 4
+    assert {data["node_role_id"] for _, data in net.G.nodes(data=True)} == {
+        "node:VA",
+        "node:CA",
+    }
+    assert {data["edge_role_id"] for _, _, data in net.G.edges(data=True)} == {
+        "edge:EA",
+        "edge:EB",
+    }
 
 
 @pytest.mark.core

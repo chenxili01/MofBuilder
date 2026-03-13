@@ -210,6 +210,64 @@ Use this exact field set for every checkpoint subsection.
 - Conflicts / blockers: none
 - Handoff / next checkpoint: `P2.1` — implementation
 
+## Maintenance Phase M1 — `create_net` Template Compatibility
+
+- Scope anchor: `src/mofbuilder/core/net.py`, matching tests
+- Must preserve: locked pipeline, graph-state semantics, legacy `V`/`E`/`EC` template support, and existing single-role defaults for legacy templates
+- Must not: change builder/runtime metadata ownership or move parsing responsibilities out of `FrameNet`
+
+### Checkpoint M1.0 — before coding
+
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: in progress
+- Goal: make `FrameNet.create_net()` accept both legacy coarse template site types (`V`, `E`, `EC`) and newer role-specific site types (for example `VA`, `CA`, `EA`, `EB`), including templates that omit `V_con` / `EC_con` header metadata
+- Phase gate checked against `PLANS.md`: yes; this is a localized post-roadmap maintenance change limited to topology graph construction in `src/mofbuilder/core/net.py`, matching tests, and required log/status updates only.
+- Files changed: `WORKLOG.md`, `STATUS.md`
+- Tests added: none
+- Tests run: none
+- Decisions: treat this as a narrow compatibility fix inside `FrameNet`; preserve legacy default-role behavior for coarse `V`/`E`/`EC` templates while allowing role-specific site-type prefixes to map to the same topology classes without touching builder/runtime modules.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: `M1.1` — implementation
+
+**Phase Contract**
+
+- Goal: restore/create backward-compatible topology parsing for both legacy and role-specific template CIF site-type conventions.
+- Scope: `FrameNet.create_net()` site-class resolution, fallback handling when `V_con` / `EC_con` are missing, and one narrow regression in `tests/test_core_net.py`.
+- Allowed files: `src/mofbuilder/core/net.py`, `tests/test_core_net.py`, `WORKLOG.md`, `STATUS.md`.
+- Forbidden files: all other source, test, metadata, and documentation files remain out of scope.
+- Invariants: keep the locked pipeline order intact; preserve graph states `G`, `sG`, `superG`, `eG`, `cleaved_eG`; preserve legacy single-role defaults for legacy coarse templates; do not change public builder/framework APIs; do not move topology metadata ownership out of `FrameNet`/`CifReader`.
+- Success criteria: legacy tests keep passing; `create_net()` can build a graph from a role-specific template that uses `VA`/`CA`/`EA`/`EB`-style site types and omits `V_con` / `EC_con`; role ids remain deterministic.
+- Stop rule: stop if the fix requires editing builder/runtime/metadata modules, changing graph-state names, or redefining the role model beyond `FrameNet` topology parsing.
+
+### Checkpoint M1.1 — implementation
+
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete
+- Goal: make `FrameNet.create_net()` resolve both legacy and role-specific CIF site-type conventions while preserving legacy behavior
+- Phase gate checked against `PLANS.md`: yes; implementation stayed inside `src/mofbuilder/core/net.py`, `tests/test_core_net.py`, and required log/status updates only.
+- Files changed: `src/mofbuilder/core/net.py`, `tests/test_core_net.py`, `WORKLOG.md`, `STATUS.md`
+- Tests added: `test_create_net_supports_role_specific_template_types_without_header_metadata`
+- Tests run: `scripts/run_tests.sh tests/test_core_net.py` (passed: 6 tests, 6 existing `PytestUnknownMarkWarning` warnings for `pytest.mark.core`)
+- Decisions: resolved topology site classes from the CIF's available atom-site types instead of hardcoding only `V` / `E` / `EC`; preserved legacy default-role collapse for coarse legacy site types while keeping explicit role ids for role-specific site types such as `VA` / `CA` / `EA` / `EB`; treated edge-center presence as the multitopic signal and inferred linker connectivity from CV-node degree when `EC_con` metadata is absent; skipped the final `V_con` consistency warning when the header omits `V_con` and logged the inferred connectivity instead.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: `M1.2` — handoff
+
+### Checkpoint M1.2 — handoff
+
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete
+- Goal: close the localized `create_net()` template-compatibility maintenance task and return the repository to the approved baseline
+- Phase gate checked against `PLANS.md`: yes; no builder/runtime/metadata modules or locked architecture boundaries were changed.
+- Files changed: `src/mofbuilder/core/net.py`, `tests/test_core_net.py`, `WORKLOG.md`, `STATUS.md`
+- Tests added: `test_create_net_supports_role_specific_template_types_without_header_metadata`
+- Tests run: `scripts/run_tests.sh tests/test_core_net.py` (passed: 6 tests, 6 existing `PytestUnknownMarkWarning` warnings for `pytest.mark.core`)
+- Decisions: kept the fix localized to `FrameNet` topology parsing and graph construction; preserved old template support and added fallback behavior for role-specific templates that omit legacy header connectivity fields.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: maintenance task complete; return `STATUS.md` to the approved post-Phase-8 baseline with this compatibility fix recorded as the latest update.
+
 **Phase Contract**
 
 - Phase name: `Phase 2 — Additive Family/Template Role Metadata`

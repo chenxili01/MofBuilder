@@ -122,6 +122,70 @@ class FrameNet:
             dtype=object,
         )
 
+    def _build_explicit_role_ids(self, role_labels, prefix):
+        """Build deterministic role ids without collapsing a single explicit role to default."""
+        role_labels = np.asarray(role_labels, dtype=object)
+        return np.asarray(
+            [f"{prefix}:{self._sanitize_role_token(label)}" for label in role_labels],
+            dtype=object,
+        )
+
+    def _get_available_site_types(self):
+        """Return atom-site types from the CIF in first-seen order."""
+        array_atom, _ = self.cifreader._extract_atoms_fcoords_from_lines(
+            self.cifreader.atom_site_sector
+        )
+        return list(dict.fromkeys(str(atom_type) for atom_type in array_atom[:, 0]))
+
+    def _resolve_site_type_groups(self):
+        """Resolve CIF atom-site types into vertex, edge, and edge-center groups."""
+        available_types = self._get_available_site_types()
+        vertex_types = [
+            atom_type for atom_type in available_types
+            if atom_type == "V" or atom_type.startswith("V")
+        ]
+        edge_center_types = [
+            atom_type for atom_type in available_types
+            if atom_type == "EC" or atom_type.startswith("C")
+        ]
+        edge_types = [
+            atom_type for atom_type in available_types
+            if (atom_type == "E" or atom_type.startswith("E")) and atom_type != "EC"
+        ]
+        return vertex_types, edge_types, edge_center_types
+
+    def _collect_sites_for_types(self, site_types):
+        """Collect primitive-cell coordinates and role labels for the requested CIF site types."""
+        if not site_types:
+            return np.empty((0, 3)), np.empty((0,), dtype=object)
+
+        collected_fcoords = []
+        collected_role_labels = []
+        for site_type in site_types:
+            _, _, target_fcoords = (
+                self.cifreader.get_type_atoms_fcoords_in_primitive_cell(
+                    target_type=site_type
+                )
+            )
+            if len(target_fcoords) == 0:
+                continue
+            collected_fcoords.append(np.asarray(target_fcoords, dtype=float))
+            collected_role_labels.append(
+                np.asarray(self.cifreader.target_role_labels, dtype=object)
+            )
+
+        if not collected_fcoords:
+            return np.empty((0, 3)), np.empty((0,), dtype=object)
+
+        return np.vstack(collected_fcoords), np.concatenate(collected_role_labels)
+
+    def _infer_linker_connectivity(self):
+        """Infer linker connectivity from CV-node degree when CIF metadata is absent."""
+        cv_nodes = [n for n in self.G.nodes() if self.G.nodes[n].get("note") == "CV"]
+        if not cv_nodes:
+            return 2
+        return max(self.G.degree(node) for node in cv_nodes)
+
     # Unit cell extraction and coordinate conversion
     def _extract_unit_cell(self, cell_info):
         """Build 3x3 unit cell matrix from [a, b, c, alpha, beta, gamma] (angles in degrees)."""
@@ -443,41 +507,82 @@ class FrameNet:
     def create_net(self, cif_file=None):
         """Read CIF, extract V/E/EC atoms, build G with nodes/edges, set cell_info, unit_cell, sorted_nodes, sorted_edges, linker_connectivity."""
         self.cif_file = cif_file if cif_file is not None else self.cif_file
+        self.G = nx.Graph()
         self.cifreader.read_cif(self.cif_file)
+        vertex_types, edge_types, edge_center_types = self._resolve_site_type_groups()
+        assert_msg_critical(
+            len(vertex_types) > 0,
+            f"No vertex site types found in topology CIF {self.cif_file}.",
+        )
+        assert_msg_critical(
+            len(edge_types) > 0,
+            f"No edge site types found in topology CIF {self.cif_file}.",
+        )
+        uses_explicit_node_types = any(
+            site_type not in {"V", "EC"} for site_type in vertex_types + edge_center_types
+        )
+        uses_explicit_edge_types = any(site_type != "E" for site_type in edge_types)
+
         self.ostream.print_info(f"fetching Vertex from {self.cif_file}")
         self.ostream.flush()
-        _, _, self.vvnode = self.cifreader.get_type_atoms_fcoords_in_primitive_cell(
-            target_type="V")
-        self.vvnode_role_ids = self._build_role_ids(
-            self.cifreader.target_role_labels, "node")
+        self.vvnode, vvnode_role_labels = self._collect_sites_for_types(vertex_types)
         self.ostream.print_info(f"fetching Edge from {self.cif_file}")
         self.ostream.flush()
-        _, _, self.eenode = self.cifreader.get_type_atoms_fcoords_in_primitive_cell(
-            target_type="E")
-        self.eenode_role_ids = self._build_role_ids(
-            self.cifreader.target_role_labels, "edge")
+        self.eenode, eenode_role_labels = self._collect_sites_for_types(edge_types)
+        if uses_explicit_edge_types:
+            self.eenode_role_ids = self._build_explicit_role_ids(
+                eenode_role_labels, "edge"
+            )
+        else:
+            self.eenode_role_ids = self._build_role_ids(eenode_role_labels, "edge")
         self.vvnode333 = self._make_supercell_3x3x3(self.vvnode)
         self.eenode333 = self._make_supercell_3x3x3(self.eenode)
-        self.vvnode333_role_ids = self._make_supercell_role_ids(self.vvnode_role_ids)
+        self.vvnode333_role_ids = None
         self.eenode333_role_ids = self._make_supercell_role_ids(
             self.eenode_role_ids)
-        if self.cifreader.EC_con is not None:
+        has_edge_centers = len(edge_center_types) > 0
+        ecnode_role_labels = np.empty((0,), dtype=object)
+        self.ecnode = np.empty((0, 3))
+        self.ecnode_role_ids = np.empty((0,), dtype=object)
+        self.ecnode333 = None
+        self.ecnode333_role_ids = None
+        if has_edge_centers:
             self.ostream.print_info(
                 f"fetching Edge Center from {self.cif_file}")
             self.ostream.flush()
-            _, _, self.ecnode = self.cifreader.get_type_atoms_fcoords_in_primitive_cell(
-                target_type="EC")
-            self.ecnode_role_ids = self._build_role_ids(
-                self.cifreader.target_role_labels, "node")
+            self.ecnode, ecnode_role_labels = self._collect_sites_for_types(
+                edge_center_types
+            )
             self.ecnode333 = self._make_supercell_3x3x3(self.ecnode)
+
+        if uses_explicit_node_types:
+            all_node_role_labels = np.concatenate(
+                [vvnode_role_labels, ecnode_role_labels]
+            )
+            all_node_role_ids = self._build_explicit_role_ids(
+                all_node_role_labels, "node"
+            )
+            split_index = len(vvnode_role_labels)
+            self.vvnode_role_ids = all_node_role_ids[:split_index]
+            self.ecnode_role_ids = all_node_role_ids[split_index:]
+        else:
+            self.vvnode_role_ids = self._build_role_ids(vvnode_role_labels, "node")
+            if has_edge_centers:
+                self.ecnode_role_ids = self._build_role_ids(
+                    ecnode_role_labels, "node"
+                )
+
+        self.vvnode333_role_ids = self._make_supercell_role_ids(self.vvnode_role_ids)
+        if has_edge_centers:
             self.ecnode333_role_ids = self._make_supercell_role_ids(
-                self.ecnode_role_ids)
+                self.ecnode_role_ids
+            )
 
         self.cell_info = self.cifreader.cell_info
         self.unit_cell = self._extract_unit_cell(self.cell_info)
         self.unit_cell_inv = np.linalg.inv(self.unit_cell)
 
-        if self.cifreader.EC_con is None:  #ditopic linker MOF
+        if not has_edge_centers:  # ditopic linker MOF
             self.linker_connectivity = 2
             self._find_pair_v_e(distance_range=self.edge_length_range)
             self._add_ccoords(self.G, self.unit_cell)
@@ -492,7 +597,11 @@ class FrameNet:
             self._set_DE_E()
             self._sort_nodes_by_type_connectivity()
             self._find_and_sort_edges_bynodeconnectivity()
-            self.linker_connectivity = int(self.cifreader.EC_con)
+            expected_ec_con = getattr(self.cifreader, "EC_con", None)
+            if expected_ec_con is None:
+                self.linker_connectivity = self._infer_linker_connectivity()
+            else:
+                self.linker_connectivity = int(expected_ec_con)
 
         if self._debug:
             self.ostream.print_info(f"Net created from {self.cif_file}")
@@ -511,9 +620,15 @@ class FrameNet:
         )
         self.ostream.flush()
 
-        if int(self.max_degree) != int(self.cifreader.V_con):
+        expected_v_con = getattr(self.cifreader, "V_con", None)
+        if expected_v_con is None:
+            self.ostream.print_info(
+                f"No V_con metadata found in {self.cif_file}; inferred node connectivity as {self.max_degree}."
+            )
+            self.ostream.flush()
+        elif int(self.max_degree) != int(expected_v_con):
             self.ostream.print_warning(
-                f"Max degree of the net: {self.max_degree}, {self.max_degree==self.cifreader.V_con} to the net connectivity {self.cifreader.V_con}"
+                f"Max degree of the net: {self.max_degree}, {self.max_degree==expected_v_con} to the net connectivity {expected_v_con}"
             )
         else:
             self.ostream.print_info(

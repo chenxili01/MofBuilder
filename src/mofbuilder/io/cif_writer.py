@@ -155,7 +155,7 @@ class CifWriter:
                 x = float(values[5]) / x_max if x_max != 0 else 0
                 y = float(values[6]) / y_max if y_max != 0 else 0
                 z = float(values[7]) / z_max if z_max != 0 else 0
-                formatted_line = "%7s%4s%15.10f%15.10f%15.10f" % (
+                formatted_line = "%-7s%4s%15.10f%15.10f%15.10f" % (
                     atom_type, atom_label, x, y, z)
                 new_cif.write(formatted_line + '\n')
 
