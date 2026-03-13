@@ -1219,3 +1219,15 @@ Use this exact field set for every checkpoint subsection.
 - Decisions: all phases 1-8 are recorded as complete and approved; this repository state is now the frozen baseline for future debugging, maintenance, and extension work; future work should begin from a new planning cycle rather than casually mutating the completed milestone; the role-aware architecture remains additive to the existing staged pipeline instead of replacing it
 - Conflicts / blockers: none
 - Handoff / next checkpoint: milestone freeze complete; any new work must start with a new plan and an explicitly scoped checkpoint outside the completed Phase 1-8 roadmap
+
+## Repair Log — 2026-03-13 Uncontrolled M2 Rollback
+
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete (repair-only)
+- Goal: audit and roll back an uncontrolled maintenance run that added unapproved topology-loader source/tests and incorrectly marked the run as completed in control docs
+- Files changed: `WORKLOG.md`, `STATUS.md`; removed unapproved additions `src/mofbuilder/core/topology_defaults.py`, `src/mofbuilder/core/topology_loader.py`, `tests/test_topology_family_loader.py`, `tests/fixtures/MIL53_LIKE_ROD.json`
+- Tests run: none for the rollback itself
+- Decisions: the uncontrolled run happened and was audited; its completion claims were invalidated and rolled back; no valid Phase 2 execution is accepted from that run
+- Conflicts / blockers: none
+- Handoff / next checkpoint: repository returned to pre-run baseline for source/tests; ready for a fresh controlled Phase 2 executor thread
