@@ -12,15 +12,22 @@ Metal-Organic Framework (MOF) structures for simulation workflows.
 - Solvation and MD setup pipeline
 - Public API references focused on user-facing classes/functions
 
+## Canonical documentation location
+
+The canonical user manual lives under `docs/source/manual/`.
+Root-level pages in `docs/` should route to those manual pages rather than
+carry independent copies. `docs/quickstart.md` and `docs/examples.md` are now
+include stubs that pull from the manual pages below to avoid future drift.
+
 ## Start Here
 
 ```{toctree}
 :maxdepth: 2
-:caption: Manual
+:caption: Canonical Manual
 
-installation
-quickstart
-examples
+source/manual/installation
+source/manual/quickstart
+source/manual/examples
 api
 ```
 
@@ -31,6 +38,7 @@ api
 - Read the Docs: <https://mofbuilder.readthedocs.io>
 
 ```{note}
-The Sphinx build source is in `docs/source/`. Root-level Markdown files in
-`docs/` are provided for readability and maintenance.
+Update `docs/source/manual/*` when changing user-facing manual content. The
+root `docs/` pages should remain routing or include stubs so there is only one
+manual source of truth.
 ```

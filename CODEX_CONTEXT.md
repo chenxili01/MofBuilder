@@ -12,6 +12,11 @@ the graph states `G`, `sG`, `superG`, `eG`, `cleaved_eG`, plus merged atom table
 in `Framework.framework_data` and `Framework.framework_fcoords_data`. The
 package surface is lazy, but `core` and `md` themselves are not dependency-light.
 
+The single-role path remains the default public path. Internally, topology role
+ids live on graphs as `node_role_id` and `edge_role_id`, while the builder owns
+the runtime `node_role_registry` and `edge_role_registry`. Families without
+role metadata normalize to `node:default` and `edge:default`.
+
 ## Most Important Modules / Classes
 
 - `mofbuilder.MetalOrganicFrameworkBuilder`
@@ -35,6 +40,7 @@ package surface is lazy, but `core` and `md` themselves are not dependency-light
 - Preserve scientific geometry and numerical behavior
 - Keep bundled database behavior aligned with tests
 - Improve internals without changing graph/data contracts
+- Keep the canonical role model graph-stored and registry-driven
 - Treat `analysis/` as unfinished unless you implement it
 - Preserve current mutation semantics
   - `build()` fills `builder.framework`
@@ -47,6 +53,8 @@ package surface is lazy, but `core` and `md` themselves are not dependency-light
 - Do not rename public APIs unless explicitly asked
 - Do not move heavy imports into package `__init__` files or `cli.py`
 - When changing graph-producing code, inspect all downstream consumers
+- Keep topology role ids on graphs and fragment resolution in builder-owned
+  registries
 - When changing framework mutation/export code, ensure merged data stays in sync
 - If you change package exports or CLI behavior, inspect the smoke tests first
 - Mirror runtime data-format changes in `tests/database/`

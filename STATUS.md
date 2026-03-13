@@ -6,14 +6,14 @@ latest active checkpoint in `WORKLOG.md`.
 ## Current State
 
 - Roadmap: `PLANS.md` is frozen
-- Phase: Phase 7 — Multi-Edge Force-Field and Simulation-Prep Support
-- Checkpoint: `P7.4` — minimal executor fix and narrow built-framework regression verification
-- Status: complete
+- Phase: Phase 8 — Documentation and Example Sync
+- Checkpoint: `P8.2` — handoff
+- Status: review-fix implemented
 - Active thread / branch: `codex_record`
-- Next step: Phase 7 reopen is closed; await reviewer acceptance before starting `P8.0`
-- Last completed checkpoint: `P7.4`
+- Next step: reviewer acceptance / closeout
+- Last completed checkpoint: `P8.2`
 - Blocking conflict: none
-- Verification: baseline `scripts/run_tests.sh tests/test_core_framework.py` passed (7 tests, 7 existing `PytestUnknownMarkWarning` warnings) and `scripts/run_tests.sh tests/test_md_gmxfilemerge.py` passed (7 tests); post-fix `scripts/run_tests.sh tests/test_core_framework.py` passed (8 tests, 8 existing `PytestUnknownMarkWarning` warnings) and `scripts/run_tests.sh tests/test_md_gmxfilemerge.py` passed (7 tests); the new coverage now proves the real builder-built framework handoff path
+- Verification: documentation-to-code consistency audit; `scripts/run_tests.sh tests/smoke/test_smoke_cli.py` (passed: 3 tests, 3 existing `pytest.mark.smoke` warnings); `scripts/run_tests.sh tests/smoke/test_smoke_imports.py` (passed: 2 tests, 2 existing `pytest.mark.smoke` warnings); Phase 8 review-fix static verification confirmed `docs/quickstart.md` and `docs/examples.md` now route to the canonical manual pages and `docs/index.md` points to `docs/source/manual/*`
 - Last update: 2026-03-13
 
 ## Rules

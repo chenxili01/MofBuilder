@@ -204,6 +204,10 @@ Own:
 - `database/MOF_topology_dict`
 - `database/template_database/`
 
+It can also load optional additive family role metadata from:
+
+- `database/MOF_topology_role_metadata.json`
+
 This resolves node connectivity, linker topic, available metals, and the
 template CIF file for the chosen MOF family.
 
@@ -218,6 +222,9 @@ node connectivity, metal, linker topic, and topology stem.
 - unit-cell data
 - sorted topology metadata
 - linker connectivity information
+- deterministic graph role annotations:
+  - `G.nodes[n]["node_role_id"]`
+  - `G.edges[e]["edge_role_id"]`
 
 ### 3. Fragment preparation
 
@@ -226,6 +233,15 @@ The builder prepares:
 - node data via `FrameNode`
 - linker data via `FrameLinker`
 - optional termination data via `FrameTermination`
+- builder-owned runtime role registries:
+  - `node_role_registry`
+  - `edge_role_registry`
+
+For families without role metadata, the builder normalizes to the single-role
+base case:
+
+- `node:default`
+- `edge:default`
 
 ### 4. Optimization
 
@@ -233,6 +249,9 @@ The builder prepares:
 
 - node rotations
 - cell parameters
+
+Role-aware fragment selection is driven by graph-stored role ids plus the
+builder-owned registries; the single-role path remains the default fast path.
 
 This yields the optimized graph `sG` and frame-unit-cell information.
 
@@ -246,6 +265,8 @@ This yields the optimized graph `sG` and frame-unit-cell information.
 - `cleaved_eG`
 - matching dictionaries and residue-related metadata used downstream
 
+Role metadata is propagated through `superG`, `eG`, and `cleaved_eG`.
+
 ### 6. Framework materialization
 
 `MetalOrganicFrameworkBuilder.build()` copies the resulting state into
@@ -258,10 +279,29 @@ through `Framework.get_merged_data()`.
 
 - write output files
 - remove or replace substructures
-- solvate the system
+- solvate the framework
 - generate linker force-field data
 - prepare MD inputs
 - launch the OpenMM pipeline through `md_driver`
+
+The built `Framework` retains the role-aware data needed by later post-build
+steps, including the edge-role registry used by the current MD-preparation
+path.
+
+## Canonical Role Model
+
+MOFBuilder now uses one internal role model across the pipeline:
+
+- topology role ids are stored on graphs, not inferred from chemistry
+- `FrameNet.G.nodes[n]["node_role_id"]` is the node-role source of truth
+- `FrameNet.G.edges[e]["edge_role_id"]` is the edge-role source of truth
+- `MetalOrganicFrameworkBuilder` owns `node_role_registry` and
+  `edge_role_registry`
+- families without role metadata normalize to `node:default` and
+  `edge:default`
+
+This role model is internal plumbing around the stable public workflow, not a
+separate public orchestration path.
 
 Specific behaviors that matter for modifications:
 

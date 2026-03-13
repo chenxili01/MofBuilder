@@ -1011,17 +1011,82 @@ Use this exact field set for every checkpoint subsection.
 
 ### Checkpoint P8.0 — before coding
 
-- Date:
-- Thread / branch:
-- Status: pending
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: contract generated
 - Goal: sync docs to the implemented multi-role model and verified limits
-- Phase gate checked against `PLANS.md`:
-- Files changed:
-- Tests added:
-- Tests run:
-- Decisions:
-- Conflicts / blockers:
-- Handoff / next checkpoint:
+- Phase gate checked against `PLANS.md`: yes; Phase 8 remains limited to `README.md`, `docs/source/manual/*.md`, `ARCHITECTURE.md`, `CODEX_CONTEXT.md`, `AGENTS.md`, and planner logging in `WORKLOG.md` / `STATUS.md`, with algorithmic refactors, source-code changes, test changes, and behavior expansion out of scope.
+- Files changed: `WORKLOG.md`, `STATUS.md`
+- Tests added: none
+- Tests run: none
+- Decisions: recorded the Phase 8 Phase Contract under `P8.0`; kept the phase documentation-only, limited documentation claims to implemented and already-verified behavior, and preserved the rule that unsupported heterogeneous cases must not be documented as complete.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: `P8.1` — implementation
+
+**Phase Contract**
+
+- Phase name: `Phase 8 — Documentation and Example Sync`
+
+**Goal**
+- Document the new internal model after the code stabilizes.
+
+**Scope**
+- Explain the single-role base case and the new multi-role internal model.
+- Document any additive family/template metadata introduced in Phase 2.
+- Add one multi-role example only after the code path is stable.
+- Keep this phase limited to documentation and example synchronization only.
+- Keep documentation aligned to implemented behavior and verified limits rather than aspirational behavior.
+
+**Allowed Files**
+- `README.md`
+- `docs/source/manual/*.md`
+- `ARCHITECTURE.md`
+- `CODEX_CONTEXT.md`
+- `AGENTS.md`
+- `WORKLOG.md` for required phase logging only
+- `STATUS.md` for phase/checkpoint/status updates only
+
+**Forbidden Files**
+- All files outside the allowed list are out of scope for Phase 8.
+- Explicitly forbidden: all production source files under `src/mofbuilder/`, all tests under `tests/`, all bundled database assets under `database/`, `PLANS.md`, and any new algorithmic or runtime-behavior changes.
+- Must not mix documentation work with algorithmic refactors.
+- Must not document unsupported heterogeneous cases as complete.
+
+**Architecture Invariants**
+- Preserve the locked pipeline: `MofTopLibrary.fetch(...)` -> `FrameNet.create_net(...)` -> `MetalOrganicFrameworkBuilder.load_framework()` -> `MetalOrganicFrameworkBuilder.optimize_framework()` -> `MetalOrganicFrameworkBuilder.make_supercell()` -> `MetalOrganicFrameworkBuilder.build()`.
+- Preserve graph states `G`, `sG`, `superG`, `eG`, and `cleaved_eG`.
+- Do not rename methods, reorder pipeline steps, merge pipeline stages, introduce new top-level pipeline stages, or move responsibilities between modules.
+- Keep responsibilities fixed: `FrameNet` owns topology graph construction and topology role annotation; `MofTopLibrary` owns topology family metadata; `MetalOrganicFrameworkBuilder` owns fragment normalization and runtime role registries; `Optimizer` owns node/linker placement; `Supercell` owns supercell expansion; `Writer / Framework` own merged structure output and user-facing orchestration; `Defects` own defect operations; `MD modules` own simulation preparation.
+- Preserve current public APIs, object-lifetime semantics, graph-centered architecture, staged build pipeline, topology-driven connectivity, and the rule that atomic coordinates are derived from optimized graph state.
+- Keep the single-role path documented as the default/base case.
+
+**Role Model Invariants**
+- Role identifiers remain the only topology classification mechanism.
+- `node_role_id` must remain on `FrameNet.G.nodes[n]["node_role_id"]`.
+- `edge_role_id` must remain on `FrameNet.G.edges[e]["edge_role_id"]`.
+- Fragment registries remain `node_role_registry` and `edge_role_registry`.
+- Documentation must describe graph-stored role identifiers and builder-owned registries as the canonical runtime model; it must not introduce alternate role stores, local role maps, or chemistry-inferred role semantics.
+- Single-role normalization remains the backward-compatible base case via `node:default` and `edge:default` when no role metadata is present.
+
+**Required Tests**
+- No new runtime test target is introduced by `PLANS.md` for Phase 8.
+- Required verification is documentation-to-code consistency against the implemented behavior and already recorded verification for Phases 1-7.
+- If documentation touches package-surface or CLI behavior descriptions, inspect the existing smoke-test expectations before making claims that exceed current coverage.
+- Do not claim support for any workflow or heterogeneous case that lacks implementation and recorded verification.
+
+**Success Criteria**
+- Documentation matches the implemented behavior.
+- No claims are made before tests exist.
+- The single-role base case and the new multi-role internal model are both documented clearly.
+- The additive family/template metadata introduced in Phase 2 is documented accurately.
+- At most one multi-role example is added, and only if it reflects a stable implemented path.
+- Documentation does not overstate unsupported heterogeneous cases or imply broader support than the verified Phase 1-7 implementation provides.
+
+**Stop Rule**
+- Stop immediately if Phase 8 work requires editing any forbidden file or making algorithmic, runtime, or schema changes.
+- Stop immediately if accurate documentation would require inventing behavior, promising unsupported heterogeneous support, or describing architecture that conflicts with the locked pipeline or canonical role model.
+- Stop immediately if the work would require changing module responsibilities, public APIs, graph-state names, or role ownership rules rather than documenting them.
+- If any schema, runtime, or invariant conflict is discovered while documenting the implemented behavior, record it first in `WORKLOG.md` and `STATUS.md`, then stop before revising `PLANS.md`.
 
 ### Checkpoint P7.4 — minimal executor fix and narrow built-framework regression verification
 
@@ -1039,28 +1104,46 @@ Use this exact field set for every checkpoint subsection.
 
 ### Checkpoint P8.1 — implementation
 
-- Date:
-- Thread / branch:
-- Status: pending
-- Goal:
-- Phase gate checked against `PLANS.md`:
-- Files changed:
-- Tests added:
-- Tests run:
-- Decisions:
-- Conflicts / blockers:
-- Handoff / next checkpoint:
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete
+- Goal: sync the README, manual pages, and internal context docs to the implemented Phase 1-7 role model and verified public limits
+- Phase gate checked against `PLANS.md`: yes; implementation stayed inside `README.md`, `docs/source/manual/*.md`, `ARCHITECTURE.md`, `CODEX_CONTEXT.md`, `WORKLOG.md`, and `STATUS.md` only, with no source, test, or database edits.
+- Files changed: `README.md`, `docs/source/manual/quickstart.md`, `docs/source/manual/module_guide.md`, `docs/source/manual/examples.md`, `ARCHITECTURE.md`, `CODEX_CONTEXT.md`, `WORKLOG.md`, `STATUS.md`
+- Tests added: none
+- Tests run: `scripts/run_tests.sh tests/smoke/test_smoke_cli.py` (passed: 3 tests; 3 existing `PytestUnknownMarkWarning` warnings for `pytest.mark.smoke`); `scripts/run_tests.sh tests/smoke/test_smoke_imports.py` (passed: 2 tests; 2 existing `PytestUnknownMarkWarning` warnings for `pytest.mark.smoke`)
+- Decisions: rewrote the README around the stable staged workflow and the single-role default path; documented the canonical internal role model with graph-stored `node_role_id` / `edge_role_id` and builder-owned `node_role_registry` / `edge_role_registry`; documented the optional additive `MOF_topology_role_metadata.json` sidecar without implying it is bundled for all families; added one bounded example that inspects the internal role model on the default build path rather than inventing an unverified public multi-fragment configuration workflow.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: `P8.2` — handoff
 
 ### Checkpoint P8.2 — handoff
 
-- Date:
-- Thread / branch:
-- Status: pending
+- Date: 2026-03-13
+- Thread / branch: `codex_record`
+- Status: complete
 - Goal: confirm docs match code and known limitations
-- Phase gate checked against `PLANS.md`:
-- Files changed:
-- Tests added:
-- Tests run:
-- Decisions:
-- Conflicts / blockers:
-- Handoff / next checkpoint:
+- Phase gate checked against `PLANS.md`: yes; Phase 8 remained documentation-only and did not modify production source files, tests, bundled database assets, or the locked architecture.
+- Files changed: `README.md`, `docs/source/manual/quickstart.md`, `docs/source/manual/module_guide.md`, `docs/source/manual/examples.md`, `ARCHITECTURE.md`, `CODEX_CONTEXT.md`, `WORKLOG.md`, `STATUS.md`
+- Tests added: none
+- Tests run: `scripts/run_tests.sh tests/smoke/test_smoke_cli.py` (passed: 3 tests; 3 existing `PytestUnknownMarkWarning` warnings for `pytest.mark.smoke`); `scripts/run_tests.sh tests/smoke/test_smoke_imports.py` (passed: 2 tests; 2 existing `PytestUnknownMarkWarning` warnings for `pytest.mark.smoke`)
+- Decisions: Phase 8 now documents the verified single-role base case, the implemented internal multi-role model, the optional Phase 2 sidecar metadata source, and the current scope limits without overstating unsupported heterogeneous public workflows; package-surface and CLI wording was checked against existing smoke coverage before handoff.
+- Conflicts / blockers: none
+- Handoff / next checkpoint: Phase 8 handoff complete; roadmap implementation is documentation-synced and ready for reviewer acceptance / closeout.
+
+**Correction — 2026-03-13 Phase 8 review-fix reopen (before coding)**
+
+- Scope: sync only the root documentation entry path by updating `docs/quickstart.md`, `docs/examples.md`, `docs/index.md`, `WORKLOG.md`, and `STATUS.md`.
+- Invariants: keep the already-approved Phase 8 manual wording intact, preserve the documented single-role base case and canonical graph-stored role model, and avoid any source, test, or `docs/source/manual/*` changes.
+- Out-of-scope modules: all production code, all tests, `PLANS.md`, `AGENTS.md`, `ARCHITECTURE.md`, `CODEX_CONTEXT.md`, `docs/source/manual/*`, and every other file remain forbidden.
+- Decisions: use the preferred single-source strategy by converting the stale root quickstart/examples pages into include stubs and by routing the root index directly to `docs/source/manual/*`.
+- Conflicts / blockers: none.
+- Handoff / next checkpoint: apply the root-doc sync, confirm the root paths now resolve to the canonical manual content, then record the review-fix result.
+
+**Correction — 2026-03-13 Phase 8 review-fix result**
+
+- Files changed: `docs/quickstart.md`, `docs/examples.md`, `docs/index.md`, `WORKLOG.md`, `STATUS.md`
+- Tests added: none
+- Tests run: no runtime tests required for this documentation-only review fix; static verification performed by direct file comparison against `docs/source/manual/quickstart.md` and `docs/source/manual/examples.md`, plus route inspection of `docs/index.md`.
+- Decisions: chose the preferred redirect/include strategy instead of copying content again; `docs/quickstart.md` and `docs/examples.md` now include the canonical manual pages verbatim, and `docs/index.md` now points readers to `docs/source/manual/*` as the authoritative manual location to prevent future drift.
+- Conflicts / blockers: none.
+- Handoff / next checkpoint: Phase 8 review-fix is implemented; root docs now match the manual path and the thread is ready for reviewer acceptance / closeout.

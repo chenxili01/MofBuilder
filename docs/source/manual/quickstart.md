@@ -1,7 +1,8 @@
 # Quickstart
 
-This quickstart demonstrates a minimal end-to-end build workflow:
-select a MOF family, provide linker data, build the framework, and export files.
+This quickstart demonstrates the stable single-role end-to-end build workflow:
+select a MOF family, provide linker data, build the framework, and export
+files.
 
 ## 1. Import core classes
 
@@ -32,6 +33,15 @@ framework = builder.build()
 
 At this point, `framework` is a `Framework` object containing graph/cell data
 and writer/MD-preparation helpers.
+
+For families without optional role metadata, this path also initializes the
+default internal role model:
+
+- `builder.node_role_registry["node:default"]`
+- `builder.edge_role_registry["edge:default"]`
+
+The topology graph defaults to `node:default` and `edge:default` role ids in
+the same case.
 
 ## 4. Export structure files
 

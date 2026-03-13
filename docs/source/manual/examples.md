@@ -158,3 +158,43 @@ mofbuilder list-metals --mof-family HKUST-1
 
 This is useful for validating installation and discovering available MOF family
 names before running a full build.
+
+## Example 5: Inspect the internal role model on the default build path
+
+This example does not introduce a new public multi-fragment API. It shows the
+implemented internal model that Phase 1-7 now keeps consistent across the
+topology, optimizer, supercell, writer, defect, and MD-preparation layers.
+
+```python
+from veloxchem.molecule import Molecule
+from mofbuilder import MetalOrganicFrameworkBuilder
+
+builder = MetalOrganicFrameworkBuilder(mof_family="HKUST-1")
+builder.node_metal = "Cu"
+builder.linker_molecule = Molecule.read_smiles(
+    "O=C([O-])c1ccc(cc1)C(=O)[O-]"
+)
+
+builder.load_framework()
+
+node_roles = {data["node_role_id"] for _, data in builder.G.nodes(data=True)}
+edge_roles = {
+    data["edge_role_id"] for _, _, data in builder.G.edges(data=True)
+}
+
+print(node_roles)
+print(edge_roles)
+print(builder.node_role_registry.keys())
+print(builder.edge_role_registry.keys())
+```
+
+Expected outcome for a family without sidecar role metadata:
+
+- node-role ids are `{"node:default"}`
+- edge-role ids are `{"edge:default"}`
+- the builder owns one-entry registries keyed by `node:default` and
+  `edge:default`
+
+If optional family role metadata is added through
+`MOF_topology_role_metadata.json`, the same runtime model is used with
+family-defined role ids instead of only the default ones.
