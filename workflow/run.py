@@ -40,18 +40,26 @@ class Phase:
 SCRIPT_PATH = pathlib.Path(__file__).resolve()
 ROOT = SCRIPT_PATH.parent
 REPO_ROOT = ROOT.parent
+
+
+def resolve_control_path(filename: str) -> pathlib.Path:
+    repo_path = REPO_ROOT / filename
+    if repo_path.exists():
+        return repo_path
+    return ROOT / filename
+
+
 STATE_DIR = ROOT / "workflow"
 STATE_FILE = STATE_DIR / "state.json"
 
-PLANNER_FILE = ROOT / "PLANNER.md"
-EXECUTOR_FILE = ROOT / "EXECUTOR.md"
-REVIEWER_FILE = ROOT / "REVIEWER.md"
+PLANNER_FILE = resolve_control_path("PLANNER.md")
+EXECUTOR_FILE = resolve_control_path("EXECUTOR.md")
+REVIEWER_FILE = resolve_control_path("REVIEWER.md")
 
-STATUS_FILE = ROOT / "STATUS.md"
-WORKLOG_FILE = ROOT / "WORKLOG.md"
-REVIEW_FILE = ROOT / "REVIEW.md"
-PLANS_FILE = ROOT / "PLANS.md"
-REPO_PLANS_FILE = REPO_ROOT / "PLANS.md"
+STATUS_FILE = resolve_control_path("STATUS.md")
+WORKLOG_FILE = resolve_control_path("WORKLOG.md")
+REVIEW_FILE = resolve_control_path("REVIEW.md")
+PLANS_FILE = resolve_control_path("PLANS.md")
 CRASH_LOG_FILE = STATE_DIR / "crash.log"
 
 
@@ -140,23 +148,14 @@ def section(name: str, text: str) -> str:
     return f"===== {name} =====\n{text.strip()}\n"
 
 
-def resolve_plans_path(preferred_path: pathlib.Path = PLANS_FILE) -> pathlib.Path:
-    if preferred_path.exists():
-        return preferred_path
-    if preferred_path == PLANS_FILE and REPO_PLANS_FILE.exists():
-        return REPO_PLANS_FILE
-    return preferred_path
-
-
 def load_phases(plans_path: pathlib.Path = PLANS_FILE) -> list[Phase]:
-    resolved_plans_path = resolve_plans_path(plans_path)
-    text = read_text_if_exists(resolved_plans_path, "")
+    text = read_text_if_exists(plans_path, "")
     phases = [
         Phase(number=int(match.group("number")), name=f"Phase {match.group('number')} - {match.group('title').strip()}")
         for match in PHASE_HEADING_RE.finditer(text)
     ]
     if not phases:
-        raise RuntimeError(f"No phase headings were found in {resolved_plans_path.name}.")
+        raise RuntimeError(f"No phase headings were found in {plans_path.name}.")
     return phases
 
 

@@ -1566,5 +1566,16 @@ Use this exact field set for every checkpoint subsection.
 - Decisions: the reported startup failure was caused by a parser mismatch between `workflow/run.py` and the live `PLANS.md` heading structure, with an adjacent resume bug when `STATUS.md` phase titles differed from roadmap titles; both are now covered by a narrow unit-level regression
 - Conflicts / blockers: none
 - Handoff / next checkpoint: maintenance repair complete; runner is ready for the user to rerun `python3 workflow/run.py` in a real workflow session
-=======
->>>>>>> parent of 3dadc6a (planning cpt)
+
+## Administrative Reset — 2026-03-14
+
+- Goal: reset the automated workflow bootstrap so a new `python3 workflow/run.py`
+  session starts from the Phase 1 planner baseline.
+- Scope: control-doc cleanup plus workflow runner bootstrap path repair only.
+- Invariants: preserve `PLANS.md`, preserve historical execution entries in
+  this file, and avoid changing locked MOFBuilder pipeline or phase semantics.
+- Decisions: repository-root `PLANNER.md`, `EXECUTOR.md`, `REVIEWER.md`,
+  `PLANS.md`, `STATUS.md`, `WORKLOG.md`, and `REVIEW.md` are the canonical
+  workflow control files; stale review state was replaced with a reset
+  baseline; workflow step state was reset to `planner`.
+- Next step: run the planner from `Phase 1 - Planning/spec`, checkpoint `P1.0`.

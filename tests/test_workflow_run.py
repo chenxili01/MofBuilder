@@ -40,3 +40,24 @@ def test_find_phase_index_falls_back_to_phase_number_when_titles_differ():
     )
 
     assert phase_index == 1
+
+
+def test_runner_uses_repo_root_control_docs_and_prompt_files():
+    workflow_run = load_workflow_run_module()
+
+    assert workflow_run.PLANS_FILE == ROOT / "PLANS.md"
+    assert workflow_run.STATUS_FILE == ROOT / "STATUS.md"
+    assert workflow_run.WORKLOG_FILE == ROOT / "WORKLOG.md"
+    assert workflow_run.REVIEW_FILE == ROOT / "REVIEW.md"
+    assert workflow_run.PLANNER_FILE == ROOT / "PLANNER.md"
+    assert workflow_run.EXECUTOR_FILE == ROOT / "EXECUTOR.md"
+    assert workflow_run.REVIEWER_FILE == ROOT / "REVIEWER.md"
+
+
+def test_read_context_reads_repo_root_status_snapshot():
+    workflow_run = load_workflow_run_module()
+
+    context = workflow_run.read_context(12000)
+
+    assert "===== STATUS.md =====" in context
+    assert "Minimal dashboard for phased multi-role execution." in context
