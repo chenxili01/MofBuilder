@@ -912,3 +912,131 @@ notes:
 - Checkpoint: phase-6-plan-finalized
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews Phase 6 completion and decides whether to advance
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T10:35:33+00:00
+
+## Active Phase
+- Phase: 7
+- Name: Post-Optimization Resolve
+
+## Objective
+Implement Phase 7 in the builder only: consume the existing Phase 6 resolve scaffolding after primitive-cell optimization, perform builder-owned post-optimization resolve for `V-E-C` and `V-E-V` cases, commit bundle ownership and provenance before framework assembly, and preserve the existing optimizer, supercell, and framework boundaries.
+
+## Scope
+- `src/mofbuilder/core/builder.py`
+- `tests/test_core_builder.py`
+
+## Tasks
+1. Audit the existing Phase 6 builder state and add a single post-optimization resolve step in `MetalOrganicFrameworkBuilder` that runs after `self.net_optimizer.place_edge_in_net()` in `optimize_framework()` and before `make_supercell()` / framework assembly consume downstream state.
+2. Implement builder-only helpers in `src/mofbuilder/core/builder.py` that consume `self.resolve_instructions`, `self.bundle_registry`, `self.null_edge_rules`, `self.provenance_map`, `self.node_role_registry`, `self.edge_role_registry`, and optimized graph state to resolve in the required order: node, then linker bundle, then edge.
+3. Commit Phase 7 runtime outputs inside the builder only: resolved ownership assignments, bundle-level ownership state for `C*` centers, and provenance history updates keyed to existing instruction ids, while keeping null edges explicit `E*` metadata-driven cases and not collapsing them into zero-length real edges.
+4. Feed the resolved builder-owned data forward without moving role interpretation into `Framework`: framework assembly may receive already resolved builder outputs, but `Framework` itself must remain role-agnostic and no optimizer or supercell semantics may be changed.
+5. Add focused tests in `tests/test_core_builder.py` covering one role-aware `V-E-C` bundle case, one `V-E-V` edge case, and one legacy/default-role case, asserting deterministic resolve order, ownership/provenance updates, null-edge handling, and no future-phase leakage.
+
+## Validation
+- Targeted builder tests confirm post-optimization resolve runs only after optimization state exists and processes instructions in `node -> linker bundle -> edge` order.
+- Tests confirm `C*` bundle ownership is committed in builder state, provenance history is updated per instruction, and null-edge handling still follows metadata/policy rather than geometry shortcuts.
+- Regression tests confirm legacy/default-role workflows remain valid and do not require role-aware metadata.
+- Self-review confirms no production changes outside `src/mofbuilder/core/builder.py`, and no changes to optimizer, framework, supercell, linker, defects, termination, writer, or MD modules.
+
+## Non-goals
+- No changes to `src/mofbuilder/core/net.py`, `optimizer.py`, `framework.py`, `supercell.py`, `linker.py`, `write.py`, `defects.py`, `termination.py`, or MD modules.
+- No graph-grammar expansion beyond `V-E-V` and `V-E-C`.
+- No framework-owned role interpretation, no optimizer redesign, no supercell-time resolve, and no downstream defect/termination consumption work.
+- No public API redesign or builder constructor-signature change.
+
+## Exit Criteria
+- Builder performs bounded post-optimization resolve using existing Phase 6 scaffolding and stores resolved ownership/provenance state before framework assembly.
+- `C*` bundle ownership and null-edge semantics remain checkpoint-consistent, and `Framework` remains role-agnostic.
+- Targeted Phase 7 tests cover role-aware and legacy paths without requiring future-phase changes.
+- Execution remains confined to Phase 7 scope only.
+
+## STATUS.md Update
+- Phase: Phase 7
+- Checkpoint: phase-7-plan-finalized
+- Status: READY_FOR_EXECUTOR
+- Next step: Executor implements the active phase only
+
+`STATUS.md` was updated in [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
+
+
+## 2026-03-14 — executor — complete phase 7 post-optimization resolve in builder
+
+branch:
+mofbuilder-role-refactor
+
+phase:
+Phase 7 — Post-Optimization Resolve
+
+summary:
+- Added a builder-only post-optimization resolve pass that runs after primitive-cell edge placement, resolves node, linker-bundle, and edge records in `node -> linker bundle -> edge` order, and leaves optimizer, supercell, framework, and downstream modules unchanged.
+- Committed bundle ownership and provenance state inside builder-managed structures by extending `bundle_registry`, `provenance_map`, and new resolved-state maps while keeping null edges as explicit metadata-driven `E*` cases instead of treating them as zero-length real edges.
+- Annotated the optimized primitive graph with resolved ownership metadata so builder-managed resolve output stays attached to the graph before supercell/framework handoff without moving role interpretation into `Framework`.
+- Added focused builder tests for a `V-E-C` bundle transfer case, a `V-E-V` null-edge case, and the legacy default-role no-op path.
+
+files touched:
+- src/mofbuilder/core/builder.py
+- tests/test_core_builder.py
+- WORKLOG.md
+- STATUS.md
+
+invariants checked:
+- Phase scope stayed within `src/mofbuilder/core/builder.py`, `tests/test_core_builder.py`, and required workflow files.
+- Builder remained the owner of role interpretation and resolve/provenance state; `Framework` stayed role-agnostic.
+- Primitive-first optimization order was preserved by running resolve after `NetOptimizer.place_edge_in_net()` and before supercell expansion.
+- Graph role ids remained on graph nodes/edges, and the graph remained the source of truth with additional resolved metadata attached to the optimized primitive graph.
+- Grammar was not expanded beyond `V-E-V` and `V-E-C`, and null-edge semantics remained explicit and distinct from zero-length real edges.
+- No optimizer, supercell, framework, linker, defects, termination, writer, or MD production modules were modified.
+
+notes:
+- Validation run: `python -m compileall src/mofbuilder/core/builder.py tests/test_core_builder.py`.
+- `python -m pytest -q tests/test_core_builder.py` could not run because `pytest` is not installed in the active environment.
+- Direct execution of the new test functions could not run because `networkx` is not installed in the active environment.
+- Assumption: builder-owned resolved-state maps and optimized-graph annotations are the Phase 7 handoff surface until a later planned phase teaches downstream modules to consume them explicitly.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T10:59:34+00:00
+
+## Active Phase
+- Phase: 7
+- Name: Post-Optimization Resolve
+
+## Implemented
+- Added a builder-only post-optimization resolve pass in [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py) that runs after primitive-cell optimization/edge placement and before supercell expansion.
+- Resolved builder-owned state in `node -> linker bundle -> edge` order using existing `resolve_instructions`, `bundle_registry`, `node_role_registry`, `edge_role_registry`, `null_edge_rules`, and `provenance_map`.
+- Committed bundle ownership and provenance updates for `V-E-C` cases, kept `V-E-V` null edges explicit, and annotated the optimized primitive graph with resolved ownership metadata without moving semantics into `Framework`.
+- Added focused Phase 7 coverage in [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py) for bundle transfer, null-edge resolve, and legacy default-role no-op behavior.
+- Updated [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md) and [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md) for planner handoff.
+
+## Files Changed
+- [src/mofbuilder/core/builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py)
+- [tests/test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+
+## Validation
+- `python -m compileall src/mofbuilder/core/builder.py tests/test_core_builder.py`
+- `python -m pytest -q tests/test_core_builder.py` could not run: `pytest` is not installed.
+- Direct execution of the new test functions could not run: `networkx` is not installed in the active environment.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- The environment is missing `pytest` and `networkx`, so the new Phase 7 tests were validated only by compilation, not runtime execution.
+- The resolved builder-owned maps and graph annotations are in place for handoff, but downstream consumption remains for later planned phases.
+
+## STATUS.md Update
+- Phase: Phase 7
+- Checkpoint: phase-7-plan-finalized
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance

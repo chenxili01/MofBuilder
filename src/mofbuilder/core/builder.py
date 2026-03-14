@@ -151,6 +151,11 @@ class MetalOrganicFrameworkBuilder:
         self.fragment_lookup_map = {}
         self.null_edge_rules = {}
         self.provenance_map = {}
+        self.resolved_node_fragments = {}
+        self.resolved_bundle_fragments = {}
+        self.resolved_edge_fragments = {}
+        self.resolve_merge_map = {}
+        self.resolve_execution_log = []
 
         #need to be set by user
         self.linker_xyzfile = None  #can be set directly
@@ -701,6 +706,203 @@ class MetalOrganicFrameworkBuilder:
             self.resolve_instructions
         )
 
+    def _get_registry_entry_by_role_id(self, registry, role_id):
+        if not registry:
+            return None
+        if role_id in registry:
+            return registry[role_id]
+        if len(registry) == 1:
+            return next(iter(registry.values()))
+        return None
+
+    def _append_provenance_history(self, instruction_id, event, **details):
+        provenance_entry = self.provenance_map.get(instruction_id)
+        if provenance_entry is None:
+            return
+        history_entry = {"event": event}
+        history_entry.update(details)
+        provenance_entry["ownership_history"].append(history_entry)
+
+    def _resolve_node_fragments_post_optimization(self, graph):
+        self.resolved_node_fragments = {}
+        for node_name in sorted(graph.nodes(), key=str):
+            node_role_id = self._normalize_runtime_role_id(
+                graph.nodes[node_name].get("node_role_id"),
+                namespace="node",
+            )
+            registry_entry = self._get_registry_entry_by_role_id(
+                self.node_role_registry,
+                node_role_id,
+            )
+            node_record = {
+                "node_name": node_name,
+                "role_id": node_role_id,
+                "role_prefix": self._get_role_prefix(node_role_id),
+                "registry_entry": registry_entry,
+                "fragment_lookup_hint": self.fragment_lookup_map.get(node_role_id),
+                "resolution_stage": "node",
+            }
+            self.resolved_node_fragments[node_name] = node_record
+            graph.nodes[node_name]["resolved_node_role_id"] = node_role_id
+            graph.nodes[node_name]["resolved_node_stage"] = "resolved"
+            self.resolve_execution_log.append(f"node:{node_name}")
+
+    def _resolve_bundle_fragments_post_optimization(self, graph):
+        self.resolved_bundle_fragments = {}
+        for bundle_id in sorted(self.bundle_registry):
+            bundle_entry = self.bundle_registry[bundle_id]
+            center_node = bundle_entry["center_node"]
+            center_role_id = self._normalize_runtime_role_id(
+                graph.nodes[center_node].get("node_role_id"),
+                namespace="node",
+            )
+            instruction_ids = [
+                instruction["instruction_id"]
+                for instruction in self.resolve_instructions
+                if instruction.get("bundle_id") == bundle_id
+            ]
+            resolved_bundle_record = {
+                "bundle_id": bundle_id,
+                "center_node": center_node,
+                "owner_role_id": center_role_id,
+                "edge_list": list(bundle_entry["edge_list"]),
+                "ordering": list(bundle_entry["ordering"]),
+                "instruction_ids": instruction_ids,
+                "ownership_committed": True,
+                "resolution_stage": "bundle",
+            }
+            self.resolved_bundle_fragments[bundle_id] = resolved_bundle_record
+            bundle_entry["resolved_owner_role_id"] = center_role_id
+            bundle_entry["resolved_instruction_ids"] = list(instruction_ids)
+            bundle_entry["ownership_committed"] = True
+            bundle_entry["resolution_status"] = "resolved"
+            graph.nodes[center_node]["resolved_bundle_id"] = bundle_id
+            graph.nodes[center_node]["resolved_bundle_owner_role_id"] = center_role_id
+            graph.nodes[center_node]["resolved_bundle_status"] = "resolved"
+            for instruction_id in instruction_ids:
+                provenance_entry = self.provenance_map.get(instruction_id)
+                if provenance_entry is None:
+                    continue
+                provenance_entry["status"] = "bundle_resolved"
+                self._append_provenance_history(
+                    instruction_id,
+                    "bundle_ownership_committed",
+                    bundle_id=bundle_id,
+                    owner_role_id=center_role_id,
+                )
+            self.resolve_execution_log.append(bundle_id)
+
+    def _resolve_edge_fragments_post_optimization(self, graph):
+        self.resolved_edge_fragments = {}
+        self.resolve_merge_map = {}
+        for instruction in self.resolve_instructions:
+            instruction_id = instruction["instruction_id"]
+            edge = instruction["graph_edge"]
+            edge_role_id = self._normalize_runtime_role_id(
+                instruction["edge_role_id"],
+                namespace="edge",
+            )
+            registry_entry = self._get_registry_entry_by_role_id(
+                self.edge_role_registry,
+                edge_role_id,
+            )
+            owner_bundle_id = None
+            owner_role_id = None
+            ownership_status = "retained_by_edge"
+            transfer_committed = False
+
+            if (
+                instruction.get("bundle_id") is not None
+                and instruction.get("resolve_mode") == "ownership_transfer"
+                and not instruction.get("is_null_edge")
+            ):
+                owner_bundle_id = instruction["bundle_id"]
+                owner_role_id = instruction.get("bundle_owner_role_id")
+                ownership_status = "transferred_to_bundle"
+                transfer_committed = True
+
+            if instruction.get("is_null_edge"):
+                ownership_status = "null_edge_explicit"
+
+            edge_record = {
+                "instruction_id": instruction_id,
+                "graph_edge": edge,
+                "edge_role_id": edge_role_id,
+                "bundle_id": instruction.get("bundle_id"),
+                "owner_bundle_id": owner_bundle_id,
+                "owner_role_id": owner_role_id,
+                "resolve_mode": instruction.get("resolve_mode"),
+                "edge_kind": instruction.get("edge_kind", "real"),
+                "is_null_edge": bool(instruction.get("is_null_edge", False)),
+                "null_payload_model": instruction.get("null_payload_model"),
+                "fragment_lookup_hint": self.fragment_lookup_map.get(edge_role_id),
+                "registry_entry": registry_entry,
+                "ownership_status": ownership_status,
+                "transfer_committed": transfer_committed,
+                "resolution_stage": "edge",
+            }
+            self.resolved_edge_fragments[instruction_id] = edge_record
+            self.resolve_merge_map[instruction_id] = {
+                "node_role_ids": dict(instruction["node_role_ids"]),
+                "bundle_id": instruction.get("bundle_id"),
+                "edge_record": edge_record,
+            }
+
+            if graph.has_edge(*edge):
+                graph.edges[edge]["resolve_instruction_id"] = instruction_id
+                graph.edges[edge]["resolved_edge_kind"] = edge_record["edge_kind"]
+                graph.edges[edge]["resolved_null_payload_model"] = (
+                    edge_record["null_payload_model"]
+                )
+                graph.edges[edge]["resolved_owner_bundle_id"] = owner_bundle_id
+                graph.edges[edge]["resolved_owner_role_id"] = owner_role_id
+                graph.edges[edge]["resolved_transfer_committed"] = transfer_committed
+                graph.edges[edge]["resolved_edge_status"] = ownership_status
+
+            provenance_entry = self.provenance_map.get(instruction_id)
+            if provenance_entry is not None:
+                provenance_entry["status"] = (
+                    "resolved_null_edge"
+                    if edge_record["is_null_edge"]
+                    else "resolved"
+                )
+                provenance_entry["resolved_owner_role_id"] = owner_role_id
+                provenance_entry["transfer_committed"] = transfer_committed
+                self._append_provenance_history(
+                    instruction_id,
+                    "edge_resolved",
+                    edge_kind=edge_record["edge_kind"],
+                    ownership_status=ownership_status,
+                    owner_bundle_id=owner_bundle_id,
+                    owner_role_id=owner_role_id,
+                )
+
+            self.resolve_execution_log.append(f"edge:{instruction_id}")
+
+    def _execute_post_optimization_resolve(self):
+        self.resolved_node_fragments = {}
+        self.resolved_bundle_fragments = {}
+        self.resolved_edge_fragments = {}
+        self.resolve_merge_map = {}
+        self.resolve_execution_log = []
+
+        if not self.resolve_instructions:
+            return
+
+        optimized_graph = getattr(self.net_optimizer, "sG", None)
+        if optimized_graph is None:
+            optimized_graph = self.sG
+        if optimized_graph is None:
+            return
+
+        self._resolve_node_fragments_post_optimization(optimized_graph)
+        self._resolve_bundle_fragments_post_optimization(optimized_graph)
+        self._resolve_edge_fragments_post_optimization(optimized_graph)
+
+        if getattr(self.net_optimizer, "sG", None) is not None:
+            self.net_optimizer.sG = optimized_graph
+        self.sG = optimized_graph.copy()
+
     def _compile_bundle_registry(self):
         self.bundle_registry = {}
         if self.G is None:
@@ -1096,6 +1298,7 @@ class MetalOrganicFrameworkBuilder:
         self.net_optimizer.place_edge_in_net()
         #here we can get the unit cell with nodes and edges placed
         self.sG = self.net_optimizer.sG.copy()  #scaled and rotated G
+        self._execute_post_optimization_resolve()
         self.frame_cell_info = self.net_optimizer.optimized_cell_info
         self.frame_unit_cell = self.net_optimizer.sc_unit_cell
         # save_xyz("scale_optimized_nodesstructure.xyz", scaled_rotated_node_positions)

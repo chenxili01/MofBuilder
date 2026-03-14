@@ -2,10 +2,10 @@
 
 ## Workflow Status
 
-- Phase: Phase 6
-- Checkpoint: phase-6-plan-finalized
+- Phase: Phase 7
+- Checkpoint: phase-7-plan-finalized
 - Status: COMPLETED_PENDING_PLANNER
-- Next step: Planner reviews Phase 6 completion and decides whether to advance
+- Next step: Planner reviews Phase 7 completion and decides whether to advance
 - Last update: 2026-03-14
 
 ## Branch
@@ -18,7 +18,7 @@ Implement the role-based topology semantics defined in `ROUND1_CHECKPOINT.md` an
 
 ## Current Focus
 
-Phase 6 planning is complete. The next step is executor-only implementation of builder-owned resolve preparation: add passive resolve scaffolding structures for resolve instructions, fragment lookup hints, null-edge policy handling, and provenance preparation using existing graph role ids, registries, bundle data, and family metadata, while stopping before optimizer changes, fragment mutation, ownership transfer, or framework assembly changes.
+Phase 7 execution is complete in the builder. The planner should review the post-optimization resolve implementation, builder-owned ownership/provenance outputs, and targeted validation results before deciding whether to advance the workflow.
 
 ## Invariants
 

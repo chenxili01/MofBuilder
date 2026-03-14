@@ -1009,3 +1009,212 @@ def test_read_net_keeps_bundle_registry_empty_for_legacy_default_role_graphs(
     assert builder.provenance_map == {}
     assert list(builder.node_role_registry) == ["node:default"]
     assert list(builder.edge_role_registry) == ["edge:default"]
+
+
+@pytest.mark.core
+def test_execute_post_optimization_resolve_commits_bundle_and_provenance_in_order():
+    builder = MetalOrganicFrameworkBuilder(mof_family="TEST-MULTI")
+    canonical_metadata = _canonical_family_role_metadata()
+    builder.mof_top_library.role_metadata = {
+        "schema": "mof_topology_role_metadata/v1",
+        "canonical_role_metadata": canonical_metadata,
+        "node_roles": [
+            {
+                "role_id": "node:VA",
+                "expected_connectivity": 4,
+                "topology_labels": ["VA"],
+            },
+            {
+                "role_id": "node:CA",
+                "expected_connectivity": 2,
+                "topology_labels": ["CA"],
+            },
+        ],
+        "edge_roles": [
+            {
+                "role_id": "edge:EA",
+                "linker_connectivity": 4,
+                "topology_labels": ["EA"],
+            },
+            {
+                "role_id": "edge:EB",
+                "linker_connectivity": 4,
+                "topology_labels": ["EB"],
+            },
+        ],
+    }
+    builder.mof_top_library.canonical_role_metadata = canonical_metadata
+    builder.role_metadata = builder.mof_top_library.role_metadata
+    builder.node_connectivity = 4
+    builder.linker_connectivity = 4
+    builder.node_metal = "Zn"
+    builder.linker_xyzfile = "tests/database/example_linker.xyz"
+    builder.G = nx.Graph()
+    builder.G.add_node("V0", node_role_id="node:VA")
+    builder.G.add_node("V1", node_role_id="node:VA")
+    builder.G.add_node(
+        "C0",
+        node_role_id="node:CA",
+        cyclic_edge_order=[("V0", "C0"), ("V1", "C0")],
+    )
+    builder.G.add_edge(
+        "V0",
+        "C0",
+        edge_role_id="edge:EA",
+        slot_index={"V0": 0, "C0": 0},
+    )
+    builder.G.add_edge(
+        "V1",
+        "C0",
+        edge_role_id="edge:EA",
+        slot_index={"V1": 0, "C0": 1},
+    )
+    builder.G.add_edge(
+        "V0",
+        "V1",
+        edge_role_id="edge:EB",
+        slot_index={"V0": 1, "V1": 1},
+    )
+
+    builder._initialize_role_registries()
+    builder._compile_bundle_registry()
+    builder._prepare_resolve_scaffolding()
+    builder.net_optimizer = SimpleNamespace(sG=builder.G.copy())
+    builder.sG = builder.G.copy()
+
+    builder._execute_post_optimization_resolve()
+
+    assert builder.resolve_execution_log == [
+        "node:C0",
+        "node:V0",
+        "node:V1",
+        "bundle:C0",
+        "edge:resolve:V0|C0|edge:EA",
+        "edge:resolve:V0|V1|edge:EB",
+        "edge:resolve:V1|C0|edge:EA",
+    ]
+    assert builder.bundle_registry["bundle:C0"]["ownership_committed"] is True
+    assert builder.bundle_registry["bundle:C0"]["resolved_owner_role_id"] == "node:CA"
+    assert builder.resolved_bundle_fragments["bundle:C0"]["instruction_ids"] == [
+        "resolve:V0|C0|edge:EA",
+        "resolve:V1|C0|edge:EA",
+    ]
+    assert (
+        builder.resolved_edge_fragments["resolve:V0|C0|edge:EA"]["ownership_status"]
+        == "transferred_to_bundle"
+    )
+    assert (
+        builder.resolved_edge_fragments["resolve:V0|C0|edge:EA"]["owner_bundle_id"]
+        == "bundle:C0"
+    )
+    assert (
+        builder.provenance_map["resolve:V0|C0|edge:EA"]["status"] == "resolved"
+    )
+    assert builder.provenance_map["resolve:V0|C0|edge:EA"]["transfer_committed"] is True
+    assert builder.provenance_map["resolve:V0|C0|edge:EA"]["ownership_history"] == [
+        {
+            "event": "bundle_ownership_committed",
+            "bundle_id": "bundle:C0",
+            "owner_role_id": "node:CA",
+        },
+        {
+            "event": "edge_resolved",
+            "edge_kind": "real",
+            "ownership_status": "transferred_to_bundle",
+            "owner_bundle_id": "bundle:C0",
+            "owner_role_id": "node:CA",
+        },
+    ]
+    assert builder.net_optimizer.sG.nodes["C0"]["resolved_bundle_id"] == "bundle:C0"
+    assert (
+        builder.net_optimizer.sG.edges["V0", "C0"]["resolved_owner_bundle_id"]
+        == "bundle:C0"
+    )
+
+
+@pytest.mark.core
+def test_execute_post_optimization_resolve_keeps_null_edges_explicit():
+    builder = MetalOrganicFrameworkBuilder(mof_family="TEST-MULTI")
+    canonical_metadata = _canonical_family_role_metadata()
+    builder.mof_top_library.role_metadata = {
+        "schema": "mof_topology_role_metadata/v1",
+        "canonical_role_metadata": canonical_metadata,
+        "node_roles": [
+            {
+                "role_id": "node:VA",
+                "expected_connectivity": 4,
+                "topology_labels": ["VA"],
+            }
+        ],
+        "edge_roles": [
+            {
+                "role_id": "edge:EB",
+                "linker_connectivity": 4,
+                "topology_labels": ["EB"],
+            }
+        ],
+    }
+    builder.mof_top_library.canonical_role_metadata = canonical_metadata
+    builder.role_metadata = builder.mof_top_library.role_metadata
+    builder.node_connectivity = 4
+    builder.linker_connectivity = 4
+    builder.node_metal = "Zn"
+    builder.G = nx.Graph()
+    builder.G.add_node("V0", node_role_id="node:VA")
+    builder.G.add_node("V1", node_role_id="node:VA")
+    builder.G.add_edge(
+        "V0",
+        "V1",
+        edge_role_id="edge:EB",
+        slot_index={"V0": 0, "V1": 0},
+    )
+
+    builder._initialize_role_registries()
+    builder._prepare_resolve_scaffolding()
+    builder.net_optimizer = SimpleNamespace(sG=builder.G.copy())
+    builder.sG = builder.G.copy()
+
+    builder._execute_post_optimization_resolve()
+
+    edge_record = builder.resolved_edge_fragments["resolve:V0|V1|edge:EB"]
+    assert edge_record["is_null_edge"] is True
+    assert edge_record["ownership_status"] == "null_edge_explicit"
+    assert edge_record["transfer_committed"] is False
+    assert (
+        builder.provenance_map["resolve:V0|V1|edge:EB"]["status"]
+        == "resolved_null_edge"
+    )
+    assert builder.provenance_map["resolve:V0|V1|edge:EB"]["ownership_history"] == [
+        {
+            "event": "edge_resolved",
+            "edge_kind": "null",
+            "ownership_status": "null_edge_explicit",
+            "owner_bundle_id": None,
+            "owner_role_id": None,
+        }
+    ]
+    assert (
+        builder.net_optimizer.sG.edges["V0", "V1"]["resolved_edge_kind"] == "null"
+    )
+    assert (
+        builder.net_optimizer.sG.edges["V0", "V1"]["resolved_transfer_committed"]
+        is False
+    )
+
+
+@pytest.mark.core
+def test_execute_post_optimization_resolve_keeps_legacy_default_path_empty():
+    builder = MetalOrganicFrameworkBuilder(mof_family="MOF-TEST")
+    builder.net_optimizer = SimpleNamespace(sG=nx.Graph())
+    builder.net_optimizer.sG.add_node("V0", node_role_id="node:default")
+    builder.net_optimizer.sG.add_node("V1", node_role_id="node:default")
+    builder.net_optimizer.sG.add_edge("V0", "V1", edge_role_id="edge:default")
+    builder.sG = builder.net_optimizer.sG.copy()
+
+    builder._execute_post_optimization_resolve()
+
+    assert builder.resolved_node_fragments == {}
+    assert builder.resolved_bundle_fragments == {}
+    assert builder.resolved_edge_fragments == {}
+    assert builder.resolve_merge_map == {}
+    assert builder.resolve_execution_log == []
