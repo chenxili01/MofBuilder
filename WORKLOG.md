@@ -226,3 +226,85 @@ I updated [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/
 I updated [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py) to cover the new builder-surface typed registry behavior and to keep explicit legacy literal-`X` compatibility assertions. I also updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md) and [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md) for the phase handoff.
 
 Validation: `python -m compileall src/mofbuilder/core/builder.py tests/test_core_builder.py` passed. `pytest` could not be run here because the active interpreter does not have the `pytest` module installed.
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T23:25:34+00:00
+
+Updated the Phase 4 plan and switched the workflow handoff to executor.
+
+`PLAN.md` now contains a bounded implementation-ready Phase 4 contract at [PLAN.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/PLAN.md), covering:
+- builder-owned `source_atom_type` resolution from slot/path semantics
+- explicit resolved-anchor compilation into runtime/snapshot surfaces
+- legacy literal-`X` compatibility as a compatibility view only
+- bounded tests and explicit stop rules to avoid drifting into Phase 5
+
+`STATUS.md` is now executor-ready at [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md):
+- Phase: `Phase 4`
+- Checkpoint: `phase-4-plan-generated`
+- Status: `READY FOR EXECUTOR`
+- Next step: `executor`
+
+No production code or tests were changed.
+
+
+## executor-run
+
+- Timestamp: 2026-03-15T00:28:27+01:00
+
+Implemented `Phase 4` only: builder-owned resolved-anchor compilation into
+runtime and optimization snapshot surfaces.
+
+Changed files:
+
+- [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py)
+- [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+
+What changed:
+
+- Added builder-owned slot-rule compilation helpers that resolve
+  `source_atom_type` from slot/path semantics against preserved typed
+  attachment registries, preferring typed matches first and falling back to
+  literal `X` only for legacy compatibility.
+- Exported explicit resolved-anchor metadata on runtime and optimization
+  snapshot slot rules, including `source_atom_type`, `anchor_source_type`,
+  `anchor_source_ordinal`, `anchor_vector`, and the associated compatibility
+  resolution mode.
+- Compiled per-node incident-edge target anchor metadata and per-edge
+  `target_anchor_by_node` / `target_direction_by_node` maps from semantic graph
+  geometry when node `ccoords` are present, so downstream consumers no longer
+  need to re-derive anchor identity from raw typed buckets.
+- Added bounded builder tests for one typed resolved-anchor compilation case
+  and one legacy literal-`X` compatibility case, and updated the existing
+  role-aware snapshot expectation to reflect Phase 4 anchor metadata.
+- Updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+  to mark Phase 4 complete and hand back to planner.
+
+Validations:
+
+- `python -m compileall src/mofbuilder/core/builder.py tests/test_core_builder.py`
+- Attempted `pytest -q tests/test_core_builder.py`, but `pytest` is not installed in this shell.
+- Attempted `python -m pytest -q tests/test_core_builder.py`, but the active interpreter does not have the `pytest` module installed.
+- Attempted direct Python snapshot sanity checks, but the active interpreter is also missing runtime test dependencies such as `networkx`.
+
+Risks:
+
+- Target-anchor compilation currently depends on semantic graph node `ccoords`;
+  when those coordinates are absent, the builder still exports resolved source
+  anchors but leaves target-anchor fields unset.
+- Center-role runtime slot compilation reuses linker-center attachment tables
+  from matching edge-role registries; if future families need multiple distinct
+  center fragment sources at the same phase boundary, Phase 5 or later may need
+  a more explicit center-role source selection seam.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T23:35:56+00:00
+
+Implemented Phase 4 only. [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py) now resolves `source_atom_type` from slot/path semantics into builder-owned slot-rule anchor metadata, exports explicit source anchor fields on runtime/optimization snapshots, and compiles per-edge target anchor maps when semantic-graph `ccoords` are available. [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py) now covers one typed resolved-anchor case and one legacy literal-`X` compatibility case, and I updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md) and [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md) to mark Phase 4 complete and hand back to planner.
+
+Validation was limited to `python -m compileall src/mofbuilder/core/builder.py tests/test_core_builder.py`, which passed. I could not run `pytest` here because the shell/interpreter is missing `pytest`, and direct runtime import checks were also blocked by missing dependencies such as `networkx`.

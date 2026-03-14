@@ -202,6 +202,40 @@ def _make_role_aware_snapshot_builder(*, prepare_resolve=True):
     return builder
 
 
+def _attachment_rows(rows):
+    return np.array(rows, dtype=object)
+
+
+def _configure_phase_four_anchor_inputs(
+    builder,
+    *,
+    node_attachment_data_by_type,
+    linker_center_attachment_data_by_type,
+):
+    builder.node_attachment_data_by_type = dict(node_attachment_data_by_type)
+    builder.node_attachment_coords_by_type = {
+        key: rows[:, 5:8].astype(float)
+        for key, rows in builder.node_attachment_data_by_type.items()
+    }
+    builder.linker_center_attachment_data_by_type = dict(linker_center_attachment_data_by_type)
+    builder.linker_center_attachment_coords_by_type = {
+        key: rows[:, 5:8].astype(float)
+        for key, rows in builder.linker_center_attachment_data_by_type.items()
+    }
+    builder.linker_outer_attachment_data_by_type = {}
+    builder.linker_outer_attachment_coords_by_type = {}
+    builder._update_node_role_registry_data()
+    builder._update_edge_role_registry_data()
+
+    graph = builder.net_optimizer.sG if getattr(builder.net_optimizer, "sG", None) is not None else builder.G
+    graph.nodes["V0"]["ccoords"] = np.array([0.0, 0.0, 0.0])
+    graph.nodes["V1"]["ccoords"] = np.array([0.0, 3.0, 0.0])
+    graph.nodes["C0"]["ccoords"] = np.array([3.0, 0.0, 0.0])
+    builder.sG = graph.copy()
+    if getattr(builder.net_optimizer, "sG", None) is not None:
+        builder.net_optimizer.sG = graph.copy()
+
+
 def _write_test_database(db_path, *, metadata=None):
     (db_path / "template_database").mkdir(parents=True)
     (db_path / "MOF_topology_dict").write_text(
@@ -1559,9 +1593,13 @@ def test_snapshot_export_getters_compile_role_aware_builder_runtime_state():
     assert optimization_snapshot.graph_phase == "sG"
     assert list(optimization_snapshot.graph_node_records) == ["C0", "V0", "V1"]
     assert optimization_snapshot.graph_node_records["C0"].role_id == "node:CA"
-    assert optimization_snapshot.graph_node_records["C0"].slot_rules == (
-        {"attachment_index": 0, "slot_type": "XA"},
-        {"attachment_index": 1, "slot_type": "XA"},
+    assert tuple(
+        (slot_rule["attachment_index"], slot_rule["slot_type"])
+        for slot_rule in optimization_snapshot.graph_node_records["C0"].slot_rules
+    ) == ((0, "XA"), (1, "XA"))
+    assert all(
+        slot_rule["anchor_resolution_mode"] == "unresolved"
+        for slot_rule in optimization_snapshot.graph_node_records["C0"].slot_rules
     )
     assert optimization_snapshot.graph_node_records["C0"].bundle_id == "bundle:C0"
     assert (
@@ -1619,12 +1657,111 @@ def test_snapshot_export_getters_compile_role_aware_builder_runtime_state():
         == "duplicated_zero_length_anchors"
     )
     assert optimization_snapshot.graph_edge_records["V0|V1"].allows_null_fallback is True
-    assert optimization_snapshot.metadata["phase_bounded"] == "phase_3_semantics"
+    assert optimization_snapshot.metadata["phase_bounded"] == "phase_4_resolved_anchors"
     assert not hasattr(optimization_snapshot, "provenance_records")
     assert framework_snapshot.graph_phase == "cleaved_eG"
     assert list(framework_snapshot.bundle_records) == ["bundle:C0"]
     assert "resolve:V0|C0|edge:EA" in framework_snapshot.provenance_records
     assert "resolved:bundle:C0" in framework_snapshot.resolved_state_records
+
+
+@pytest.mark.core
+def test_snapshot_export_compiles_typed_resolved_anchors_from_builder_owned_attachment_tables():
+    builder = _make_role_aware_snapshot_builder()
+    _configure_phase_four_anchor_inputs(
+        builder,
+        node_attachment_data_by_type={
+            "XA": _attachment_rows(
+                [
+                    ["XA", "XA1", 1, "NODE", 1, "2.0", "0.0", "0.0", 1.0, 0.0, "XA"],
+                    ["XA", "XA2", 2, "NODE", 1, "0.0", "2.0", "0.0", 1.0, 0.0, "XA"],
+                ]
+            ),
+            "XB": _attachment_rows(
+                [
+                    ["XB", "XB1", 3, "NODE", 1, "0.0", "0.0", "2.0", 1.0, 0.0, "XB"],
+                    ["XB", "XB2", 4, "NODE", 1, "0.0", "-2.0", "0.0", 1.0, 0.0, "XB"],
+                ]
+            ),
+        },
+        linker_center_attachment_data_by_type={
+            "XA": _attachment_rows(
+                [
+                    ["XA", "XA1", 1, "LIG", 1, "1.0", "0.0", "0.0", 1.0, 0.0, "XA"],
+                    ["XA", "XA2", 2, "LIG", 1, "0.0", "1.0", "0.0", 1.0, 0.0, "XA"],
+                ]
+            ),
+        },
+    )
+
+    runtime_snapshot = builder.get_role_runtime_snapshot()
+    optimization_snapshot = builder.get_optimization_semantic_snapshot()
+
+    va_slot_rule = runtime_snapshot.node_role_records["node:VA"].slot_rules[0]
+    assert va_slot_rule["slot_type"] == "XA"
+    assert va_slot_rule["source_atom_type"] == "XA"
+    assert va_slot_rule["anchor_source_type"] == "XA"
+    assert va_slot_rule["anchor_source_ordinal"] == 0
+    assert va_slot_rule["anchor_vector"] == (2.0, 0.0, 0.0)
+
+    ca_slot_rule = runtime_snapshot.node_role_records["node:CA"].slot_rules[1]
+    assert ca_slot_rule["anchor_source_type"] == "XA"
+    assert ca_slot_rule["anchor_source_ordinal"] == 1
+    assert ca_slot_rule["anchor_vector"] == (0.0, 1.0, 0.0)
+
+    constraint = optimization_snapshot.graph_node_records["V0"].incident_edge_constraints[0]
+    assert constraint["resolved_anchor"]["anchor_source_type"] == "XA"
+    assert constraint["target_anchor"] == (2.0, 0.0, 0.0)
+    assert constraint["target_direction"] == (3.0, 0.0, 0.0)
+
+    edge_metadata = optimization_snapshot.graph_edge_records["V0|C0"].metadata
+    assert edge_metadata["target_anchor_by_node"]["V0"] == (2.0, 0.0, 0.0)
+    assert edge_metadata["resolved_anchor_by_node"]["V0"]["anchor_source_type"] == "XA"
+    assert optimization_snapshot.metadata["phase_bounded"] == "phase_4_resolved_anchors"
+
+
+@pytest.mark.core
+def test_snapshot_export_preserves_legacy_literal_x_anchor_compatibility():
+    builder = _make_role_aware_snapshot_builder()
+    _configure_phase_four_anchor_inputs(
+        builder,
+        node_attachment_data_by_type={
+            "X": _attachment_rows(
+                [
+                    ["X", "X1", 1, "NODE", 1, "1.5", "0.0", "0.0", 1.0, 0.0, "X"],
+                    ["X", "X2", 2, "NODE", 1, "0.0", "1.5", "0.0", 1.0, 0.0, "X"],
+                    ["X", "X3", 3, "NODE", 1, "0.0", "0.0", "1.5", 1.0, 0.0, "X"],
+                    ["X", "X4", 4, "NODE", 1, "0.0", "-1.5", "0.0", 1.0, 0.0, "X"],
+                ]
+            ),
+        },
+        linker_center_attachment_data_by_type={
+            "X": _attachment_rows(
+                [
+                    ["X", "X1", 1, "LIG", 1, "1.0", "0.0", "0.0", 1.0, 0.0, "X"],
+                    ["X", "X2", 2, "LIG", 1, "0.0", "1.0", "0.0", 1.0, 0.0, "X"],
+                ]
+            ),
+        },
+    )
+
+    runtime_snapshot = builder.get_role_runtime_snapshot()
+    optimization_snapshot = builder.get_optimization_semantic_snapshot()
+
+    va_slot_rule = runtime_snapshot.node_role_records["node:VA"].slot_rules[0]
+    assert va_slot_rule["slot_type"] == "XA"
+    assert va_slot_rule["source_atom_type"] == "X"
+    assert va_slot_rule["anchor_source_type"] == "X"
+    assert va_slot_rule["anchor_resolution_mode"] == "legacy_literal_X_compatibility"
+    assert va_slot_rule["anchor_vector"] == (1.5, 0.0, 0.0)
+
+    constraint = optimization_snapshot.graph_node_records["V0"].incident_edge_constraints[0]
+    assert constraint["resolved_anchor"]["anchor_source_type"] == "X"
+    assert constraint["target_anchor"] == (1.5, 0.0, 0.0)
+
+    edge_slot_rule = runtime_snapshot.edge_role_records["edge:EA"].slot_rules[0]
+    assert edge_slot_rule["source_atom_type"] == "X"
+    assert edge_slot_rule["anchor_resolution_mode"] == "legacy_literal_X_compatibility"
 
 
 @pytest.mark.core

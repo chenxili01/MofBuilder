@@ -2,8 +2,8 @@
 
 ## Workflow Status
 
-- Phase: Phase 3
-- Checkpoint: phase-3-builder-registry-complete
+- Phase: Phase 4
+- Checkpoint: phase-4-resolved-anchor-compilation-complete
 - Status: COMPLETED
 - Next step: planner
 - Last update: 2026-03-15
@@ -20,31 +20,33 @@ resolved anchors rather than a universal literal `X` bucket.
 
 ## Current Focus
 
-Phase 3 implementation is complete. Builder-owned surfaces now retain typed
-attachment tables and coordinate registries keyed by preserved
-`source_atom_type`, while legacy literal-`X` payloads remain available as
-compatibility views for existing callers.
+Phase 4 implementation is complete. Builder-owned runtime and optimization
+snapshot compilation now resolve `source_atom_type` from slot/path semantics,
+export explicit resolved-anchor metadata, and preserve legacy literal-`X`
+families as compatibility views rather than the canonical semantic model.
 
-## Executor Handoff
+## Planner Handoff
 
-1. Phase 3 completed without widening into resolved-anchor compilation or
-   optimizer migration.
-2. `MetalOrganicFrameworkBuilder` now keeps builder-owned typed attachment
-   tables and coordinate registries for node, linker-center, and linker-outer
-   fragment surfaces.
-3. Builder role registries now store typed attachment payloads alongside the
-   existing legacy `node_X_data`, `linker_center_X_data`, and
-   `linker_outer_X_data` compatibility fields.
-4. Builder loading paths now preserve Phase 2 typed fragment inputs into
-   builder-owned registries, including recentered outer-linker attachment
-   coordinates.
-5. Phase 3 tests were updated to cover a builder-surface typed attachment
-   registry case and a legacy literal-`X` compatibility case.
-6. Validation was limited in this shell:
-   `python -m compileall` passed for the changed files, but
-   `python -m pytest` could not run because `pytest` is not installed in the
-   active interpreter.
-7. Next step is planner handoff for Phase 4 only.
+1. Phase 4 completed without widening into optimizer-consumption migration,
+   framework changes, graph grammar changes, or constructor-signature changes.
+2. `MetalOrganicFrameworkBuilder` now compiles resolved slot anchors into
+   runtime and optimization snapshot slot rules, including
+   `source_atom_type`, `anchor_source_type`, `anchor_source_ordinal`, and
+   `anchor_vector`.
+3. Optimization graph node and edge records now carry explicit per-edge target
+   anchor metadata derived from semantic graph geometry when node `ccoords`
+   are available, so downstream code can consume compiled anchors instead of
+   reconstructing them from raw attachment buckets.
+4. Legacy literal-`X` fallback remains valid: slot/path resolution prefers a
+   typed source match first and falls back to literal `X` only as
+   compatibility behavior.
+5. Builder tests now cover one typed resolved-anchor compilation case and one
+   legacy literal-`X` resolved-anchor compatibility case.
+6. Validation in this shell remained limited:
+   `python -m compileall src/mofbuilder/core/builder.py tests/test_core_builder.py`
+   passed, but `pytest` is unavailable and the active interpreter also lacks
+   runtime test dependencies such as `networkx`.
+7. Next step is planner handoff for Phase 5 only.
 
 ## Invariants
 

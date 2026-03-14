@@ -97,3 +97,22 @@ Preserve my core style:
 - honest validation and blockers
 
 Optimize for full control with minimal unnecessary ceremony.
+
+
+For tiny tasks
+
+Use spec-first lightweight
+
+For bug fixes
+
+Use issue-driven
+
+For uncertain design work
+
+Use spike-then-harden
+
+For large architecture branches
+
+Use your current planner + executor phased control-doc style
+
+That would give you the benefits of other styles without losing the control you value.

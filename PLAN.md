@@ -339,6 +339,54 @@ Representative outputs may include:
 
 This phase must preserve semantics-first legality and builder ownership.
 
+Execution plan for this phase only:
+
+1. Audit the builder runtime/snapshot compilation path in the Phase 4 allowed
+   modules and identify every downstream-facing surface that still requires
+   attachment meaning to be reconstructed from raw typed attachment tables or
+   legacy literal-`X` compatibility buckets.
+2. Introduce a builder-owned resolved-anchor compilation step that uses
+   slot/path semantics to choose the fragment-local `source_atom_type` for each
+   attachable role before any optimizer-local consumption occurs.
+3. Compile explicit resolved-anchor records into the builder-owned runtime
+   and/or snapshot surfaces using narrow metadata that downstream consumers can
+   read directly, including the chosen source type and enough anchor identity
+   to avoid re-derivation from raw atom buckets.
+4. Preserve legacy literal-`X` compatibility payloads as compatibility views
+   only, but make sure the newly compiled resolved anchors become the canonical
+   builder-owned semantic output for later optimizer migration.
+5. Add bounded tests that prove:
+   one typed attachment case compiles a resolved anchor from preserved typed
+   builder data, and one legacy literal-`X` case still produces a valid
+   resolved anchor without changing framework behavior or broad optimizer flow.
+6. Keep Phase 4 bounded to builder-owned resolution and anchor compilation
+   only:
+   do not migrate optimizer local placement to depend on the new records yet,
+   and do not widen the work into framework, graph grammar, or rollout-control
+   changes.
+
+Executor handoff constraints:
+
+- Allowed files: `mofbuilder/core/builder.py`, `mofbuilder/core/optimizer.py`,
+  `mofbuilder/core/` new helper modules if needed, `tests/`, and workflow
+  markdown files only.
+- Required outcome: builder-owned runtime/snapshot surfaces compile explicit
+  resolved-anchor records from slot/path semantics and preserved typed
+  attachment inputs so downstream code no longer needs raw-bucket inference.
+- Required seam statement: builder remains the only owner of
+  `source_atom_type` resolution and resolved-anchor compilation; optimizer must
+  not reinterpret fragment-local atom labels or re-resolve slot legality in
+  this phase.
+- Required compatibility statement: legacy literal-`X` families must still
+  compile valid resolved anchors, but `node_X_data`-style payloads remain
+  compatibility surfaces rather than the canonical semantic model.
+- Required test coverage: at least one typed resolved-anchor compilation case
+  and at least one legacy literal-`X` resolved-anchor compatibility case.
+- Stop rule: stop immediately if the work would require optimizer-consumption
+  migration, framework changes, graph grammar changes, constructor-signature
+  changes, or compatibility-rollout controls beyond compiling the new anchor
+  records.
+
 ---
 
 # Phase 5 — Optimizer Consumption Migration

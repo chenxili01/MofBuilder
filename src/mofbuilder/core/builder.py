@@ -1039,6 +1039,173 @@ class MetalOrganicFrameworkBuilder:
     def _get_edge_slot_rules(self, canonical_metadata, role_id):
         return tuple(canonical_metadata.get("slot_rules", {}).get(self._get_role_alias(role_id), ()))
 
+    def _coerce_anchor_tuple(self, value):
+        if value is None:
+            return None
+        flat = np.asarray(value, dtype=float).reshape(-1)
+        if flat.shape[0] != 3:
+            return None
+        return (float(flat[0]), float(flat[1]), float(flat[2]))
+
+    def _resolve_slot_source_atom_type(self, slot_type, attachment_coords_by_type):
+        coords_by_type = attachment_coords_by_type or {}
+        normalized_slot_type = str(slot_type) if slot_type is not None else None
+        if normalized_slot_type and normalized_slot_type in coords_by_type:
+            return normalized_slot_type, "slot_type_match"
+        if "X" in coords_by_type:
+            return "X", "legacy_literal_X_compatibility"
+        if normalized_slot_type is None and len(coords_by_type) == 1:
+            return next(iter(coords_by_type)), "single_available_source_type"
+        return None, "unresolved"
+
+    def _compile_resolved_slot_rules(self, slot_rules, attachment_coords_by_type):
+        compiled_slot_rules = []
+        source_ordinals = {}
+
+        for slot_rule in slot_rules or ():
+            compiled_rule = dict(slot_rule)
+            slot_type = compiled_rule.get("slot_type")
+            source_atom_type, resolution_mode = self._resolve_slot_source_atom_type(
+                slot_type,
+                attachment_coords_by_type,
+            )
+            compiled_rule["source_atom_type"] = source_atom_type
+            compiled_rule["anchor_resolution_mode"] = resolution_mode
+
+            if source_atom_type is None:
+                compiled_slot_rules.append(compiled_rule)
+                continue
+
+            source_atom_type = str(source_atom_type)
+            source_ordinal = source_ordinals.get(source_atom_type, 0)
+            source_ordinals[source_atom_type] = source_ordinal + 1
+            compiled_rule["anchor_source_type"] = source_atom_type
+            compiled_rule["anchor_source_ordinal"] = source_ordinal
+
+            coords = np.asarray(
+                (attachment_coords_by_type or {}).get(source_atom_type, ()),
+                dtype=float,
+            )
+            if coords.ndim == 1 and coords.size == 3:
+                coords = coords.reshape(1, 3)
+            if coords.ndim == 2 and source_ordinal < len(coords):
+                anchor_vector = self._coerce_anchor_tuple(coords[source_ordinal])
+                if anchor_vector is not None:
+                    compiled_rule["anchor_vector"] = anchor_vector
+                    compiled_rule["anchor_point"] = anchor_vector
+                    compiled_rule["anchor_position"] = anchor_vector
+                    compiled_rule["chemistry_direction"] = anchor_vector
+
+            compiled_slot_rules.append(compiled_rule)
+
+        return tuple(compiled_slot_rules)
+
+    def _attachment_coords_by_type_equal(self, left, right):
+        left = left or {}
+        right = right or {}
+        if set(left) != set(right):
+            return False
+        for key in left:
+            if not np.array_equal(np.asarray(left[key], dtype=float), np.asarray(right[key], dtype=float)):
+                return False
+        return True
+
+    def _get_node_role_attachment_coords_by_type(self, role_id):
+        role_class = self._get_node_role_class(role_id)
+        if role_class == "C":
+            candidate_coords = []
+            for edge_entry in self.edge_role_registry.values():
+                coords_by_type = edge_entry.get("linker_center_attachment_coords_by_type", {})
+                if coords_by_type:
+                    candidate_coords.append(dict(coords_by_type))
+            if len(candidate_coords) == 1:
+                return candidate_coords[0]
+            if candidate_coords and all(
+                self._attachment_coords_by_type_equal(candidate_coords[0], candidate_coord)
+                for candidate_coord in candidate_coords[1:]
+            ):
+                return candidate_coords[0]
+            return {}
+
+        registry_entry = self.node_role_registry.get(role_id, {})
+        return dict(registry_entry.get("node_attachment_coords_by_type", {}))
+
+    def _get_edge_role_attachment_coords_by_type(self, role_id):
+        registry_entry = self.edge_role_registry.get(role_id, {})
+        linker_connectivity = registry_entry.get("linker_connectivity")
+        if linker_connectivity is not None and int(linker_connectivity) > 2:
+            outer_coords = dict(registry_entry.get("linker_outer_attachment_coords_by_type", {}))
+            if outer_coords:
+                return outer_coords
+        return dict(registry_entry.get("linker_center_attachment_coords_by_type", {}))
+
+    def _get_graph_node_attachment_coords_by_type(self, graph, node_name):
+        role_id = self._normalize_runtime_role_id(
+            graph.nodes[node_name].get("node_role_id"),
+            namespace="node",
+        )
+        role_class = self._get_node_role_class(role_id)
+        if role_class == "C":
+            role_entry = self._get_center_registry_entry_for_node(graph, node_name)
+            if role_entry is None:
+                return {}
+            return dict(role_entry.get("linker_center_attachment_coords_by_type", {}))
+
+        role_entry = self._get_node_registry_entry(graph, node_name)
+        if role_entry is None:
+            return {}
+        return dict(role_entry.get("node_attachment_coords_by_type", {}))
+
+    def _get_slot_rule_by_attachment_index(self, slot_rules, attachment_index):
+        if attachment_index is None:
+            return {}
+        for slot_rule in slot_rules or ():
+            if slot_rule.get("attachment_index") == attachment_index:
+                return dict(slot_rule)
+        return {}
+
+    def _build_target_anchor_payload(self, graph, local_node_id, remote_node_id, local_slot_rule):
+        if local_node_id not in graph.nodes or remote_node_id not in graph.nodes:
+            return {}
+
+        local_center = self._coerce_anchor_tuple(graph.nodes[local_node_id].get("ccoords"))
+        remote_center = self._coerce_anchor_tuple(graph.nodes[remote_node_id].get("ccoords"))
+        if local_center is None or remote_center is None:
+            return {}
+
+        local_center_vec = np.asarray(local_center, dtype=float)
+        remote_center_vec = np.asarray(remote_center, dtype=float)
+        target_vector = remote_center_vec - local_center_vec
+        vector_norm = float(np.linalg.norm(target_vector))
+        if vector_norm <= 1.0e-12:
+            return {}
+
+        payload = {
+            "target_direction": self._coerce_anchor_tuple(target_vector),
+            "target_vector": self._coerce_anchor_tuple(target_vector),
+        }
+
+        source_anchor = self._coerce_anchor_tuple(local_slot_rule.get("anchor_vector"))
+        if source_anchor is not None:
+            source_norm = float(np.linalg.norm(np.asarray(source_anchor, dtype=float)))
+            if source_norm > 1.0e-12:
+                target_anchor = local_center_vec + (target_vector / vector_norm) * source_norm
+                target_anchor_tuple = self._coerce_anchor_tuple(target_anchor)
+                payload["target_anchor"] = target_anchor_tuple
+                payload["target_point"] = target_anchor_tuple
+
+        payload["resolved_anchor"] = {
+            "local_node_id": str(local_node_id),
+            "remote_node_id": str(remote_node_id),
+            "slot_index": local_slot_rule.get("attachment_index"),
+            "slot_type": local_slot_rule.get("slot_type"),
+            "anchor_source_type": local_slot_rule.get("anchor_source_type"),
+            "anchor_source_ordinal": local_slot_rule.get("anchor_source_ordinal"),
+            "target_direction": payload.get("target_direction"),
+            "target_anchor": payload.get("target_anchor"),
+        }
+        return payload
+
     def _get_semantic_graph(self):
         if self.sG is not None:
             return self.sG
@@ -1087,6 +1254,14 @@ class MetalOrganicFrameworkBuilder:
                 namespace="node",
             )
             node_record = node_role_records.get(role_id)
+            resolved_slot_rules = self._compile_resolved_slot_rules(
+                (
+                    node_record.slot_rules
+                    if node_record is not None
+                    else self._get_node_slot_rules(canonical_metadata, role_id)
+                ),
+                self._get_graph_node_attachment_coords_by_type(graph, node_name),
+            )
             bundle_id = f"bundle:{node_name}" if f"bundle:{node_name}" in self.bundle_registry else None
             bundle_record = self.bundle_registry.get(bundle_id, {})
             incident_edge_ids = []
@@ -1101,17 +1276,40 @@ class MetalOrganicFrameworkBuilder:
                 )
                 instruction = instruction_lookup.get(self._get_graph_edge_lookup_key(edge), {})
                 edge_id = self._get_graph_edge_id(instruction.get("graph_edge", edge))
+                local_slot_index = (
+                    edge_data.get("slot_index", {}).get(node_name)
+                    if isinstance(edge_data.get("slot_index"), dict)
+                    else None
+                )
+                local_slot_rule = self._get_slot_rule_by_attachment_index(
+                    resolved_slot_rules,
+                    local_slot_index,
+                )
+                remote_node_id = next(
+                    (
+                        endpoint_node_id
+                        for endpoint_node_id in edge
+                        if endpoint_node_id != node_name
+                    ),
+                    None,
+                )
+                target_anchor_payload = (
+                    self._build_target_anchor_payload(
+                        graph,
+                        node_name,
+                        remote_node_id,
+                        local_slot_rule,
+                    )
+                    if remote_node_id is not None
+                    else {}
+                )
                 incident_edge_ids.append(edge_id)
                 incident_edge_role_ids.append(edge_role_id)
                 incident_edge_constraints.append(
                     {
                         "edge_id": edge_id,
                         "edge_role_id": edge_role_id,
-                        "slot_index": (
-                            edge_data.get("slot_index", {}).get(node_name)
-                            if isinstance(edge_data.get("slot_index"), dict)
-                            else None
-                        ),
+                        "slot_index": local_slot_index,
                         "path_type": instruction.get("path_type"),
                         "endpoint_pattern": tuple(
                             self._get_edge_endpoint_pattern(
@@ -1127,6 +1325,11 @@ class MetalOrganicFrameworkBuilder:
                         ),
                         "resolve_mode": instruction.get("resolve_mode"),
                         "is_null_edge": bool(instruction.get("is_null_edge", False)),
+                        "target_anchor": target_anchor_payload.get("target_anchor"),
+                        "target_point": target_anchor_payload.get("target_point"),
+                        "target_vector": target_anchor_payload.get("target_vector"),
+                        "target_direction": target_anchor_payload.get("target_direction"),
+                        "resolved_anchor": target_anchor_payload.get("resolved_anchor"),
                     }
                 )
 
@@ -1145,11 +1348,7 @@ class MetalOrganicFrameworkBuilder:
                 node_id=str(node_name),
                 role_id=role_id,
                 role_class=self._get_node_role_class(role_id),
-                slot_rules=(
-                    node_record.slot_rules
-                    if node_record is not None
-                    else self._get_node_slot_rules(canonical_metadata, role_id)
-                ),
+                slot_rules=resolved_slot_rules,
                 incident_edge_ids=tuple(incident_edge_ids),
                 incident_edge_role_ids=tuple(incident_edge_role_ids),
                 incident_edge_constraints=tuple(incident_edge_constraints),
@@ -1167,6 +1366,7 @@ class MetalOrganicFrameworkBuilder:
         self,
         canonical_metadata,
         edge_role_records,
+        graph_node_records,
     ):
         graph = self._get_semantic_graph()
         if graph is None:
@@ -1203,6 +1403,48 @@ class MetalOrganicFrameworkBuilder:
                 for node_name in endpoint_node_ids
             )
             edge_id = self._get_graph_edge_id(endpoint_node_ids)
+            target_anchor_by_node = {}
+            target_point_by_node = {}
+            target_vector_by_node = {}
+            target_direction_by_node = {}
+            resolved_anchor_by_node = {}
+            for node_name in endpoint_node_ids:
+                remote_node_id = next(
+                    (
+                        endpoint_node_id
+                        for endpoint_node_id in endpoint_node_ids
+                        if endpoint_node_id != node_name
+                    ),
+                    None,
+                )
+                if remote_node_id is None:
+                    continue
+                slot_index = (
+                    edge_data.get("slot_index", {}).get(node_name)
+                    if isinstance(edge_data.get("slot_index"), dict)
+                    else None
+                )
+                local_slot_rule = self._get_slot_rule_by_attachment_index(
+                    graph_node_records.get(node_name).slot_rules
+                    if node_name in graph_node_records
+                    else (),
+                    slot_index,
+                )
+                target_anchor_payload = self._build_target_anchor_payload(
+                    graph,
+                    node_name,
+                    remote_node_id,
+                    local_slot_rule,
+                )
+                if target_anchor_payload.get("target_anchor") is not None:
+                    target_anchor_by_node[str(node_name)] = target_anchor_payload["target_anchor"]
+                    target_point_by_node[str(node_name)] = target_anchor_payload["target_point"]
+                if target_anchor_payload.get("target_vector") is not None:
+                    target_vector_by_node[str(node_name)] = target_anchor_payload["target_vector"]
+                if target_anchor_payload.get("target_direction") is not None:
+                    target_direction_by_node[str(node_name)] = target_anchor_payload["target_direction"]
+                if target_anchor_payload.get("resolved_anchor") is not None:
+                    resolved_anchor_by_node[str(node_name)] = target_anchor_payload["resolved_anchor"]
 
             records[edge_id] = GraphEdgeSemanticRecord(
                 edge_id=edge_id,
@@ -1250,6 +1492,11 @@ class MetalOrganicFrameworkBuilder:
                         edge_record.edge_kind if edge_record is not None else None,
                     ),
                     "bundle_owner_role_id": instruction.get("bundle_owner_role_id"),
+                    "target_anchor_by_node": target_anchor_by_node,
+                    "target_point_by_node": target_point_by_node,
+                    "target_vector_by_node": target_vector_by_node,
+                    "target_direction_by_node": target_direction_by_node,
+                    "resolved_anchor_by_node": resolved_anchor_by_node,
                 },
             )
 
@@ -1286,6 +1533,10 @@ class MetalOrganicFrameworkBuilder:
         for role_id in sorted(role_ids):
             spec = self.node_role_specs.get(role_id, {})
             registry_entry = self.node_role_registry.get(role_id, {})
+            resolved_slot_rules = self._compile_resolved_slot_rules(
+                self._get_node_slot_rules(canonical_metadata, role_id),
+                self._get_node_role_attachment_coords_by_type(role_id),
+            )
             records[role_id] = NodeRoleRecord(
                 role_id=role_id,
                 family_alias=self._get_role_alias(role_id),
@@ -1301,7 +1552,7 @@ class MetalOrganicFrameworkBuilder:
                     canonical_metadata,
                     role_id,
                 ),
-                slot_rules=self._get_node_slot_rules(canonical_metadata, role_id),
+                slot_rules=resolved_slot_rules,
                 metadata_reference=registry_entry.get("metadata_reference", {}),
                 metadata={
                     "fragment_source": registry_entry.get("fragment_source"),
@@ -1329,6 +1580,10 @@ class MetalOrganicFrameworkBuilder:
             registry_entry = self.edge_role_registry.get(role_id, {})
             role_alias = self._get_role_alias(role_id)
             role_rule = (self.null_edge_rules or {}).get("roles", {}).get(role_id, {})
+            resolved_slot_rules = self._compile_resolved_slot_rules(
+                self._get_edge_slot_rules(canonical_metadata, role_id),
+                self._get_edge_role_attachment_coords_by_type(role_id),
+            )
             records[role_id] = EdgeRoleRecord(
                 role_id=role_id,
                 family_alias=role_alias,
@@ -1345,7 +1600,7 @@ class MetalOrganicFrameworkBuilder:
                     role_id,
                     instruction=instruction_lookup.get(role_id),
                 ),
-                slot_rules=self._get_edge_slot_rules(canonical_metadata, role_id),
+                slot_rules=resolved_slot_rules,
                 edge_kind=role_rule.get("edge_kind", "real"),
                 resolve_mode=resolve_rules.get(role_alias, {}).get("resolve_mode"),
                 null_edge_policy=null_edge_policy_records.get(role_id),
@@ -1815,6 +2070,7 @@ class MetalOrganicFrameworkBuilder:
         graph_edge_records = self._build_optimization_graph_edge_records(
             canonical_metadata,
             runtime_snapshot.edge_role_records,
+            graph_node_records,
         )
         semantic_graph = self._get_semantic_graph()
         self._validate_optimization_semantic_snapshot(
@@ -1839,7 +2095,7 @@ class MetalOrganicFrameworkBuilder:
             metadata={
                 "builder_owned": True,
                 "derived_from": "RoleRuntimeSnapshot",
-                "phase_bounded": "phase_3_semantics",
+                "phase_bounded": "phase_4_resolved_anchors",
             },
         )
 
