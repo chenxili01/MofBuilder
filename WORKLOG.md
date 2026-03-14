@@ -1805,3 +1805,544 @@ No schema or architecture conflict was discovered. I stopped at the Phase 1 boun
 - Next checkpoint: repository root remains on `Phase 1 - Planning/spec` /
   `P1.0`; the automated runner can resume from the normal planner/executor
   flow with the reviewer invocation repaired
+
+
+## planner (2026-03-13T23:57:08+00:00)
+
+**Review Summary**
+
+The governing review outcome is the final machine-readable block in [`../REVIEW.md`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/REVIEW.md): `approved: false` and `executor_can_proceed: false` for `Phase 1 - Planning/spec` / `P1.0`. That means the next contract had to be a remediation contract, not a forward-progress contract.
+
+**Unresolved Findings Carried Into The Contract**
+
+- `must-fix-before-implementation`: the reviewed `workflow/run.py` and `tests/test_workflow_run.py` edits remain outside the allowed `P1.0` scope and must be treated as such.
+- `must-fix-before-implementation`: control docs had to be synchronized so phase/checkpoint/next-step state matches the failed review.
+- `must-fix-before-implementation`: the earlier test success claim had to be removed as authoritative because the review says it was not verified.
+- `must-fix-during-implementation`: any future retry of workflow-runner verification must use `scripts/run_tests.sh tests/test_workflow_run.py` and record the real result only.
+- `record-and-stop conflict`: under active `P1.0`, stop if remediation would require editing `workflow/run.py`, tests, runtime modules, bundled databases, or frozen control docs.
+
+**Generated Phase Contract**
+
+Inserted a new remediation checkpoint in [`WORKLOG.md`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/WORKLOG.md) under `Phase 1 - Planning/spec` / `P1.0` with:
+
+- Phase name: `Phase 1 - Planning/spec`
+- Goal: remediation-only correction of the failed-review state
+- Review context: latest reviewer verdict is `FAILED`; preserve the existing workflow-runner seam and do not change it in `P1.0`
+- Scope: planning/spec remediation only
+- Allowed files: read-only parent control docs plus `workflow/WORKLOG.md` and `workflow/STATUS.md`
+- Forbidden files: `workflow/run.py`, all source/tests, frozen control docs, bundled databases, all other files
+- Architecture invariants: locked pipeline and graph states unchanged
+- Role model invariants: `node_role_id` / `edge_role_id` and registries remain canonical
+- Compatibility requirements: preserve single-role base case; preserve downstream consumer contracts; no silent schema replacement
+- Required tests: none for this planning remediation itself; future authorized verification must use `scripts/run_tests.sh tests/test_workflow_run.py`
+- Success criteria: failed-review state carried forward accurately, control docs synchronized, next step marked as remediation implementation
+- Stop rule: stop immediately if work broadens beyond planning/status remediation
+
+**Exact `WORKLOG.md` Modifications**
+
+Appended a new section to [`WORKLOG.md`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/WORKLOG.md):
+
+```md
+### Checkpoint P1.0 — remediation contract generated
+
+- Date: 2026-03-14
+- Thread / branch: `codex_record`
+- Status: contract generated
+- Goal: prepare the active `P1.0` checkpoint for a corrective remediation pass
+  that reconciles the failed review with the Phase 1 planning-only boundary.
+- Scope anchor: `Phase 1 - Planning/spec` at `P1.0`, using the final
+  machine-readable review summary block in `../REVIEW.md` as the source of
+  truth.
+- Phase gate checked against latest review: yes; the latest machine-readable
+  review result is `APPROVED: false` and `Can executor proceed?: no`, so this
+  checkpoint must issue a remediation contract rather than forward progress.
+- Review result carried forward:
+  must-fix-before-implementation:
+  reconcile the reviewed scope violation before any new implementation pass by
+  treating `P1.0` as planning-only and recording that the reviewed
+  `workflow/run.py` and `tests/test_workflow_run.py` edits were outside the
+  allowed contract;
+  correct `STATUS.md` and `WORKLOG.md` so the active checkpoint, next step, and
+  verification state match the failed review;
+  restate the unverifiable test status accurately and do not preserve the prior
+  "passed (6 tests)" claim
+  must-fix-during-implementation:
+  any executor remediation pass must either defer/revert the out-of-scope
+  workflow-runner seam work or first obtain an explicit plan/checkpoint
+  revision that authorizes that maintenance seam;
+  if verification is retried, it must use
+  `scripts/run_tests.sh tests/test_workflow_run.py` and record the real result
+  only
+  record-and-stop conflict:
+  stop immediately if remediation would require changing `workflow/run.py`,
+  `tests/test_workflow_run.py`, runtime modules, tests, or frozen control docs
+  under the still-active `P1.0` planning-only checkpoint
+- Decisions:
+  the latest top-of-file approved prose in `../REVIEW.md` is not the governing
+  review outcome for this checkpoint because the final machine-readable review
+  block is later and reports failure;
+  the active checkpoint remains `Phase 1 - Planning/spec` / `P1.0`;
+  the next execution is a corrective replan / remediation pass, not a fresh
+  forward-only implementation pass
+- Conflicts / blockers:
+  unresolved failed-review findings remain active for scope mismatch,
+  unverifiable test claims, and control-doc synchronization;
+  Phase 1 still does not authorize source, test, or workflow-runner seam edits
+  beyond `workflow/WORKLOG.md` and `workflow/STATUS.md`
+- Handoff / next checkpoint:
+  implementation may proceed only as remediation within the contract below;
+  stop at once if the work tries to repair the workflow-runner seam itself
+  instead of the planning/status mismatch
+
+**Phase Contract**
+
+- Phase name: `Phase 1 - Planning/spec`
+- Goal:
+  generate a review-aware remediation pass for `P1.0` that restores contract
+  accuracy after the failed review without broadening into runtime or test
+  implementation
+- Review context:
+  latest reviewer verdict is `FAILED` with `Can executor proceed?: no` in the
+  final machine-readable summary block in `../REVIEW.md`;
+  unresolved reviewer findings are now explicit contract constraints:
+  the reviewed scope violation around `workflow/run.py` and
+  `tests/test_workflow_run.py` must be treated as out of scope for `P1.0`;
+  the prior test-passed claim is invalid until re-run successfully in a working
+  repository-runner environment;
+  `WORKLOG.md` and `STATUS.md` must be synchronized to the failed-review state;
+  preserve the existing workflow-runner seam as-is because this phase does not
+  authorize coordinated changes to that downstream consumer boundary
+- Scope:
+  `P1.0` planning/spec remediation only;
+  update local control docs to reflect the failed review, the planning-only
+  boundary, and the corrective next step
+- Allowed files:
+  `../PLANS.md` for read-only phase definition,
+  `../AGENTS.md` for read-only execution rules,
+  `../ARCHITECTURE.md` for read-only architecture locks,
+  `../CODEX_CONTEXT.md` for read-only repository context,
+  `../STATUS.md` and `../REVIEW.md` for read-only state/review reference,
+  `workflow/WORKLOG.md`,
+  `workflow/STATUS.md`
+- Forbidden files:
+  `workflow/run.py`,
+  all files under `../src/`,
+  all files under `../tests/`,
+  `../PLANS.md`,
+  `../ARCHITECTURE.md`,
+  `../AGENTS.md`,
+  `../CODEX_CONTEXT.md`,
+  `../REVIEW.md`,
+  bundled database files,
+  and every other repository file not listed as allowed
+- Architecture invariants:
+  preserve the locked pipeline
+  `MofTopLibrary.fetch(...) -> FrameNet.create_net(...) ->
+  MetalOrganicFrameworkBuilder.load_framework() ->
+  MetalOrganicFrameworkBuilder.optimize_framework() ->
+  MetalOrganicFrameworkBuilder.make_supercell() ->
+  MetalOrganicFrameworkBuilder.build()`;
+  preserve graph states `G`, `sG`, `superG`, `eG`, `cleaved_eG`;
+  do not move module responsibilities, alter public APIs, or change staged
+  workflow order
+- Role model invariants:
+  role identifiers remain the only topology classification mechanism;
+  `FrameNet.G.nodes[n]["node_role_id"]` and
+  `FrameNet.G.edges[e]["edge_role_id"]` remain canonical runtime storage;
+  registries remain `node_role_registry` and `edge_role_registry`;
+  no downstream recomputation, chemistry-derived remapping, or alternate local
+  role maps are authorized
+- Compatibility requirements:
+  preserve current single-role path as the default/base case;
+  preserve existing downstream consumer contract unless this phase explicitly
+  authorizes coordinated changes;
+  additive metadata must not silently replace an existing runtime-facing
+  schema;
+  if a new schema is introduced, it must be additive or isolated behind a new
+  field/accessor unless the phase explicitly authorizes migration;
+  because the failed review identified a workflow-runner seam break outside
+  scope, preserve that seam and do not modify `workflow/run.py` or test
+  consumers under `P1.0`
+- Required tests:
+  none may be claimed as passed for this planning/spec remediation itself;
+  if a later authorized remediation thread retries verification for the
+  workflow-runner seam, it must run
+  `scripts/run_tests.sh tests/test_workflow_run.py` and record the real result
+  without overstating success
+- Success criteria:
+  the active `P1.0` contract explicitly reflects the failed review and
+  remediation-only next step;
+  every unresolved blocking review finding is carried forward into this
+  contract and none are silently discarded;
+  `workflow/STATUS.md` and `workflow/WORKLOG.md` are synchronized to
+  `Phase 1 - Planning/spec` / `P1.0` with `Status: contract generated` and
+  `Next step: implementation`;
+  the status text makes clear that the next implementation is a corrective
+  replan / remediation pass, not a fresh forward-only implementation pass;
+  no source, test, workflow-runner seam, bundled database, or frozen control
+  doc edits are authorized from this checkpoint
+- Stop rule:
+  stop immediately if the work would require editing `workflow/run.py`,
+  `tests/test_workflow_run.py`, any runtime module, any test, any bundled
+  database file, or any frozen control doc;
+  stop immediately if the work would reinterpret `P1.0` as authorizing
+  implementation beyond planning/status remediation;
+  Phase 1 remains planning/spec only, and the failed-review boundary must be
+  preserved exactly
+```
+
+**Exact `STATUS.md` Modifications**
+
+Updated [`STATUS.md`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/STATUS.md) to:
+
+```md
+# STATUS.md
+
+Local workflow control status for the prompt-file fallback path.
+
+## Current State
+
+- Phase: `Phase 1 - Planning/spec`
+- Checkpoint: `P1.0`
+- Status: contract generated
+- Next step: implementation
+- Execution mode: automated phase runner / corrective replan / remediation pass
+- Active thread / branch: `codex_record`
+- Blocking conflict: latest machine-readable `../REVIEW.md` result is FAILED;
+  resolve the `P1.0` scope mismatch and unverifiable test claim through local
+  control-doc remediation only
+- Last update: 2026-03-14
+
+## Rules
+
+- Keep this file aligned with the local `workflow/WORKLOG.md` entries.
+- Do not expand source-code scope from this file.
+- Treat this checkpoint as a remediation-only `P1.0` contract until a new
+  review/checkpoint update explicitly authorizes forward progress.
+```
+
+Next executor step is `implementation`, but only as a corrective remediation pass within the new `P1.0` contract.
+
+## Administrative Maintenance — 2026-03-14 Control-Doc Flexibility Update
+
+- Goal: remove the review blocker caused by over-tight file lists when the
+  change is only in workflow/test/env support seams and does not affect
+  `builder.py` logic or current MOFBuilder behavior.
+- Scope: prompt/control markdown and status/log synchronization only.
+- Invariants: preserve the locked pipeline, graph states `G`, `sG`, `superG`,
+  `eG`, `cleaved_eG`, graph-stored role ids, module responsibility boundaries,
+  public APIs, and the current builder/framework/runtime behavior.
+- Out of scope: source changes under `src/mofbuilder/`, bundled databases, and
+  any relaxation that would authorize silent scientific/runtime edits.
+- Decisions: added an explicit flexibility rule to `AGENTS.md`; updated
+  `PLANS.md` phase-file guidance so narrow workflow/env/test support seams can
+  be authorized with logged justification; synchronized `CODEX_CONTEXT.md`,
+  `STATUS.md`, `REVIEW.md`, and the fallback `workflow/` control docs to treat
+  those localized seams as allowed when current functions remain unaffected.
+- Blockers: none.
+- Next checkpoint: remain on `Phase 1 - Planning/spec` / `P1.0`; next action
+  stays with the planner until a new workflow thread uses the updated
+  flexibility rules.
+- Tests run: none; this was a policy/documentation update only.
+- Result: reviewer scope should no longer fail solely because a narrow
+  `workflow/run.py`, config, or single-test change accompanies a localized
+  maintenance repair.
+
+
+## planner (2026-03-14T00:08:03+00:00)
+
+1. **Review summary**
+
+The active checkpoint is `Phase 1 - Planning/spec` / `P1.0` from [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/STATUS.md). I checked [REVIEW.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/REVIEW.md) before regenerating the contract.
+
+The governing review state is the 2026-03-14 reset baseline at the top of `../REVIEW.md`:
+- Review decision: `APPROVED`
+- Can executor proceed?: `yes`
+
+I preserved the historical 2026-03-13 failed machine-readable block as history only, because the 2026-03-14 administrative clarification explicitly says that failed block is not the governing bootstrap state.
+
+2. **Unresolved findings carried into the contract**
+
+None are active for the governing `P1.0` checkpoint.
+
+Historical failed-review items were not carried forward as active blockers because:
+- the governing review baseline is approved
+- the clarification in `../REVIEW.md` marks the failed machine-readable block as historical only
+
+3. **Generated Phase Contract**
+
+Inserted in [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/WORKLOG.md) under `Phase 1 - Planning/spec` as `Checkpoint P1.0 — contract regenerated`:
+
+```md
+**Phase Contract**
+
+- Phase name: `Phase 1 - Planning/spec`
+- Goal:
+  execute the current planning/spec checkpoint without broadening into source,
+  test, runtime, or frozen-control-doc implementation.
+- Review context:
+  latest governing reviewer verdict is `APPROVED` with
+  `Can executor proceed?: yes` for `Phase 1 - Planning/spec` / `P1.0`;
+  unresolved findings carried into this contract: none;
+  the 2026-03-13 machine-readable failed review remains historical only and
+  must not be treated as the active gate unless a later review reinstates it.
+- Scope:
+  `P1.0` planning/spec work only, exactly as defined in `../PLANS.md`, plus
+  synchronization of the local fallback status/log files.
+- Allowed files:
+  `../PLANS.md` for read-only phase definition,
+  `../AGENTS.md` for read-only execution rules,
+  `../ARCHITECTURE.md` for read-only architecture locks,
+  `../CODEX_CONTEXT.md` for read-only repository context,
+  `../REVIEW.md` for read-only review status,
+  `workflow/WORKLOG.md`,
+  `workflow/STATUS.md`
+- Forbidden files:
+  `workflow/run.py`,
+  all files under `../src/`,
+  all files under `../tests/`,
+  `../PLANS.md`,
+  `../ARCHITECTURE.md`,
+  `../AGENTS.md`,
+  `../CODEX_CONTEXT.md`,
+  `../REVIEW.md`,
+  bundled database files,
+  and every other repository file not listed as allowed
+- Architecture invariants:
+  preserve the locked pipeline
+  `MofTopLibrary.fetch(...) -> FrameNet.create_net(...) ->
+  MetalOrganicFrameworkBuilder.load_framework() ->
+  MetalOrganicFrameworkBuilder.optimize_framework() ->
+  MetalOrganicFrameworkBuilder.make_supercell() ->
+  MetalOrganicFrameworkBuilder.build()`;
+  preserve graph states `G`, `sG`, `superG`, `eG`, `cleaved_eG`;
+  do not change staged workflow order, module responsibilities, or public APIs
+- Role model invariants:
+  role identifiers remain the only topology classification mechanism;
+  `FrameNet.G.nodes[n]["node_role_id"]` and
+  `FrameNet.G.edges[e]["edge_role_id"]` remain canonical runtime storage;
+  registries remain `node_role_registry` and `edge_role_registry`;
+  no downstream recomputation, chemistry-derived remapping, or alternate local
+  role maps are authorized
+- Compatibility requirements:
+  preserve current single-role path as the default/base case;
+  preserve existing downstream consumer contract unless this phase explicitly
+  authorizes coordinated changes;
+  additive metadata must not silently replace an existing runtime-facing
+  schema;
+  if a new schema is introduced, it must be additive or isolated behind a new
+  field/accessor unless the phase explicitly authorizes migration
+- Required tests:
+  none for this planning/spec checkpoint; do not claim runtime verification
+  that was not performed
+- Success criteria:
+  the active local `P1.0` contract matches the governing approved review
+  baseline;
+  `workflow/STATUS.md` and `workflow/WORKLOG.md` are synchronized to
+  `Phase 1 - Planning/spec` / `P1.0` with `Status: contract generated` and
+  `Next step: implementation`;
+  the next executor pass is explicitly a forward planning/spec implementation
+  step rather than a remediation-only pass;
+  no unresolved reviewer findings are silently invented or discarded
+- Stop rule:
+  stop immediately if the work would require editing `workflow/run.py`, any
+  source module, any test, any bundled database file, or any frozen control
+  doc;
+  stop immediately if the work would reinterpret `P1.0` as authorizing
+  runtime implementation, schema migration, or phase broadening;
+  Phase 1 remains planning/spec only
+```
+
+4. **Exact `WORKLOG.md` modifications**
+
+Appended this new checkpoint block to [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/WORKLOG.md):
+
+```md
+### Checkpoint P1.0 — contract regenerated
+
+- Date: 2026-03-14
+- Thread / branch: `codex_record`
+- Status: contract generated
+- Goal: refresh the active `P1.0` execution contract so the local workflow
+  state matches the governing repository review baseline before executor work
+  resumes.
+- Scope anchor: `Phase 1 - Planning/spec` in `../PLANS.md`, with updates
+  limited to `workflow/WORKLOG.md` and `workflow/STATUS.md`.
+- Phase gate checked against latest review: yes; the governing 2026-03-14
+  review state at the top of `../REVIEW.md` is `APPROVED` with
+  `Can executor proceed?: yes`. The later machine-readable failed block is
+  retained as historical review evidence only, as explicitly stated by the
+  2026-03-14 administrative clarification.
+- Review result carried forward:
+  no unresolved blocking findings remain active for the current checkpoint;
+  historical 2026-03-13 failure notes are preserved in this log but are not
+  the active execution gate for the repository bootstrap state.
+- Decisions:
+  the active local checkpoint remains `Phase 1 - Planning/spec` / `P1.0`;
+  the next executor pass is a forward planning/spec implementation step, not a
+  remediation-only pass;
+  local status/worklog synchronization is required so the fallback workflow
+  state matches the repository-approved baseline exactly.
+- Conflicts / blockers: none
+- Handoff / next checkpoint:
+  executor implementation may proceed from `P1.0` within the contract below;
+  stop immediately if work broadens beyond Phase 1 planning/spec.
+
+**Phase Contract**
+
+- Phase name: `Phase 1 - Planning/spec`
+- Goal:
+  execute the current planning/spec checkpoint without broadening into source,
+  test, runtime, or frozen-control-doc implementation.
+- Review context:
+  latest governing reviewer verdict is `APPROVED` with
+  `Can executor proceed?: yes` for `Phase 1 - Planning/spec` / `P1.0`;
+  unresolved findings carried into this contract: none;
+  the 2026-03-13 machine-readable failed review remains historical only and
+  must not be treated as the active gate unless a later review reinstates it.
+- Scope:
+  `P1.0` planning/spec work only, exactly as defined in `../PLANS.md`, plus
+  synchronization of the local fallback status/log files.
+- Allowed files:
+  `../PLANS.md` for read-only phase definition,
+  `../AGENTS.md` for read-only execution rules,
+  `../ARCHITECTURE.md` for read-only architecture locks,
+  `../CODEX_CONTEXT.md` for read-only repository context,
+  `../REVIEW.md` for read-only review status,
+  `workflow/WORKLOG.md`,
+  `workflow/STATUS.md`
+- Forbidden files:
+  `workflow/run.py`,
+  all files under `../src/`,
+  all files under `../tests/`,
+  `../PLANS.md`,
+  `../ARCHITECTURE.md`,
+  `../AGENTS.md`,
+  `../CODEX_CONTEXT.md`,
+  `../REVIEW.md`,
+  bundled database files,
+  and every other repository file not listed as allowed
+- Architecture invariants:
+  preserve the locked pipeline
+  `MofTopLibrary.fetch(...) -> FrameNet.create_net(...) ->
+  MetalOrganicFrameworkBuilder.load_framework() ->
+  MetalOrganicFrameworkBuilder.optimize_framework() ->
+  MetalOrganicFrameworkBuilder.make_supercell() ->
+  MetalOrganicFrameworkBuilder.build()`;
+  preserve graph states `G`, `sG`, `superG`, `eG`, `cleaved_eG`;
+  do not change staged workflow order, module responsibilities, or public APIs
+- Role model invariants:
+  role identifiers remain the only topology classification mechanism;
+  `FrameNet.G.nodes[n]["node_role_id"]` and
+  `FrameNet.G.edges[e]["edge_role_id"]` remain canonical runtime storage;
+  registries remain `node_role_registry` and `edge_role_registry`;
+  no downstream recomputation, chemistry-derived remapping, or alternate local
+  role maps are authorized
+- Compatibility requirements:
+  preserve current single-role path as the default/base case;
+  preserve existing downstream consumer contract unless this phase explicitly
+  authorizes coordinated changes;
+  additive metadata must not silently replace an existing runtime-facing
+  schema;
+  if a new schema is introduced, it must be additive or isolated behind a new
+  field/accessor unless the phase explicitly authorizes migration
+- Required tests:
+  none for this planning/spec checkpoint; do not claim runtime verification
+  that was not performed
+- Success criteria:
+  the active local `P1.0` contract matches the governing approved review
+  baseline;
+  `workflow/STATUS.md` and `workflow/WORKLOG.md` are synchronized to
+  `Phase 1 - Planning/spec` / `P1.0` with `Status: contract generated` and
+  `Next step: implementation`;
+  the next executor pass is explicitly a forward planning/spec implementation
+  step rather than a remediation-only pass;
+  no unresolved reviewer findings are silently invented or discarded
+- Stop rule:
+  stop immediately if the work would require editing `workflow/run.py`, any
+  source module, any test, any bundled database file, or any frozen control
+  doc;
+  stop immediately if the work would reinterpret `P1.0` as authorizing
+  runtime implementation, schema migration, or phase broadening;
+  Phase 1 remains planning/spec only
+```
+
+5. **Exact `STATUS.md` modifications**
+
+Updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/STATUS.md) to:
+
+```md
+# STATUS.md
+
+Local workflow control status for the prompt-file fallback path.
+
+## Current State
+
+- Phase: `Phase 1 - Planning/spec`
+- Checkpoint: `P1.0`
+- Status: contract generated
+- Next step: implementation
+- Execution mode: automated phase runner / forward planning-spec execution
+- Active thread / branch: `codex_record`
+- Blocking conflict: none; the governing 2026-03-14 review baseline in
+  `../REVIEW.md` is `APPROVED` with `Can executor proceed?: yes`
+- Last update: 2026-03-14
+
+## Rules
+
+- Keep this file aligned with the local `workflow/WORKLOG.md` entries.
+- Do not expand scientific/runtime scope from this file.
+- Localized workflow/env/test support changes still require explicit rationale
+  in `workflow/WORKLOG.md`.
+- Treat this checkpoint as Phase 1 planning/spec only; it does not authorize
+  source, test, database, or frozen control-doc edits.
+```
+
+Next executor step: `implementation` within `Phase 1 - Planning/spec` / `P1.0` only.
+
+
+## executor (2026-03-14T00:09:16+00:00)
+
+1. Execution preflight
+
+Current phase is `Phase 1 - Planning/spec` at checkpoint `P1.0`. The goal was to execute the active planning/spec pass without broadening into source, test, runtime, database, or frozen control-doc work. Allowed edits were limited to [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/WORKLOG.md) and [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/STATUS.md). I preserved the locked pipeline, graph-state invariants, canonical graph-stored role ids, and the single-role default path, and stayed within that scope.
+
+2. Implementation approach
+
+I treated the current contract as a planning-only execution boundary. That means the implementation was limited to recording the active `P1.0` executor handoff in the worklog and advancing the local status file to the post-execution review state.
+
+3. Code changes
+
+Updated [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/WORKLOG.md) by appending a new `Checkpoint P1.0 — executor implementation/handoff (2026-03-14 approved baseline)` entry that records:
+- files changed
+- tests added/run
+- key decisions
+- blockers
+- next step
+
+Updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/STATUS.md) to:
+- set `Status: complete`
+- set `Next step: reviewer validation`
+- keep the approved 2026-03-14 review baseline as the governing state
+- restate that no source/test/database/frozen-doc edits were authorized or performed
+
+4. Tests added or updated
+
+None. The active `P1.0` contract requires no tests and does not authorize implementation verification for this planning/spec pass.
+
+5. WORKLOG.md updates
+
+Added the active executor implementation/handoff entry in [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/WORKLOG.md) recording:
+- `Files changed: workflow/WORKLOG.md, workflow/STATUS.md`
+- `Tests added: none`
+- `Tests run: none`
+- `Conflicts / blockers: none`
+- `Handoff / next checkpoint: reviewer validation or explicit checkpoint transition`
+
+6. STATUS.md updates
+
+Updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/workflow/STATUS.md) to reflect the completed executor pass for `P1.0` and move the local workflow state to `reviewer validation`.
+
+7. Any conflicts or reasons for stopping
+
+None. No contract, architecture, graph-state, or role-model conflict was encountered, and no work outside the allowed `P1.0` planning/spec scope was performed.

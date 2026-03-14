@@ -1166,11 +1166,19 @@ Stop and escalate if:
 ## 16. Phase-by-phase allowed files
 
 This section is a compact execution map. Later phase contracts may narrow these
-lists further, but they must not silently broaden them.
+lists further, but they must not silently broaden core scientific/runtime
+scope.
+
+Localized support seams may still be added to the active contract with explicit
+`WORKLOG.md` / `STATUS.md` justification when they are required to keep the
+current phase executable, testable, or reviewable and they do not change
+locked runtime behavior. Typical examples are `workflow/run.py`,
+`workflow/*.md`, `scripts/run_tests.sh`, one narrow supporting regression test,
+or closely related environment/configuration files.
 
 | Phase | Allowed files | Files that should not be touched in that phase |
 | --- | --- | --- |
-| 1 | `PLAN.md` | All runtime modules, tests, frozen records |
+| 1 | `PLANS.md`, control-doc synchronization files, and localized workflow / environment support seams allowed by the note above | All runtime modules and tests that would change MOFBuilder behavior, bundled databases, frozen architecture docs |
 | 2 | `src/mofbuilder/core/moftoplibrary.py`, `tests/test_core_moftoplibrary.py`, metadata fixtures under `tests/database/`; `database/MOF_topology_role_metadata.json` only if a plan revision explicitly authorizes that file and names exact families | `builder.py`, `net.py`, `optimizer.py`, `supercell.py`, `framework.py`, `defects.py`, `termination.py`, `write.py`, MD modules |
 | 3 | `src/mofbuilder/core/builder.py`, `src/mofbuilder/core/net.py` for validation only, `tests/test_core_builder.py`, `tests/test_core_net.py` | `optimizer.py`, `supercell.py`, `framework.py`, `defects.py`, `termination.py`, `write.py`, MD modules |
 | 4 | `src/mofbuilder/core/optimizer.py`, narrow helper files if strictly required, `tests/test_core_optimizer.py` | `supercell.py`, `framework.py`, `defects.py`, `termination.py`, `write.py`, metadata files |

@@ -60,3 +60,6 @@ role metadata normalize to `node:default` and `edge:default`.
 - Mirror runtime data-format changes in `tests/database/`
 - Use tests under `tests/` when available; if the environment cannot run them,
   report that clearly instead of guessing
+- Localized workflow/environment maintenance is acceptable when needed to keep
+  the repository runnable or reviewable, provided it does not alter current MOF
+  runtime behavior or builder-owned logic

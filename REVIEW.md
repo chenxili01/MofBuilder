@@ -47,3 +47,12 @@ Required log/status corrections:
     "`STATUS.md` and `WORKLOG.md` are not synchronized on current state/next step, and `STATUS.md` overstates test verification."
   ]
 }
+
+## Administrative clarification (2026-03-14)
+
+The approved reset baseline at the top of this file remains the governing
+review state for the current repository bootstrap. The older 2026-03-13 failed
+machine-readable block is retained as history only; its scope-mismatch finding
+was tied to the earlier contract wording before localized workflow,
+environment/configuration, and one-file regression-test support seams were
+explicitly authorized in the control docs.

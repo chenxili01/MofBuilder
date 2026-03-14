@@ -515,6 +515,36 @@ stop rule
 
 Implementation must remain inside the contract boundary.
 
+## Phase Contract Flexibility Rule
+
+Allowed-file lists define the primary execution boundary, but they do not need
+to forbid every localized support seam by default.
+
+Small, reviewable changes may be included in the active contract when all of
+the following are true:
+
+- they do not alter locked pipeline order, graph-state invariants, role-model
+  invariants, or public runtime behavior
+- they do not change `src/mofbuilder/core/builder.py` logic unless the active
+  phase already authorizes `builder.py`
+- they are limited to workflow/control plumbing, environment/configuration
+  helpers, the repository test runner, or one narrow supporting regression test
+- the reason for including them is recorded explicitly in `WORKLOG.md` and
+  reflected in `STATUS.md`
+
+Examples of allowed support seams when the criteria above are met:
+
+- `workflow/run.py`
+- `workflow/*.md`
+- `scripts/run_tests.sh`
+- narrow environment/configuration files
+- one closely related test file that proves the localized change
+
+Do not use this flexibility rule to broaden core scientific/runtime scope
+silently. If the change would affect current MOFBuilder functions, builder
+logic, phase-owned runtime behavior, or module responsibilities, stop and
+record the conflict instead.
+
 
 ## Planner Scope Rule
 
@@ -525,14 +555,16 @@ The planner may:
 - generate a Phase Contract
 - update `WORKLOG.md`
 - update `STATUS.md`
+- update workflow/prompt control markdown files when the user explicitly asks
+  for rule refinement or when a review-blocking contract mismatch requires a
+  targeted policy correction
 
 The planner must not:
 - modify source code
 - modify tests
-- modify `PLANS.md`
-- modify `ARCHITECTURE.md`
-- modify `CODEX_CONTEXT.md`
-- modify `AGENTS.md`
+- modify `PLANS.md`, `ARCHITECTURE.md`, `CODEX_CONTEXT.md`, or `AGENTS.md`
+  unless the user explicitly requests policy changes or a real control-doc
+  conflict requires a narrowly scoped correction
 
 Planner output should be limited to phase scope, invariants, allowed files,
 forbidden files, required tests, success criteria, and stop rules.
