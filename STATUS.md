@@ -2,10 +2,10 @@
 
 ## Workflow Status
 
-- Phase: Phase 1
-- Checkpoint: Phase 1 plan finalized
+- Phase: Phase 2
+- Checkpoint: phase-2-plan-finalized
 - Status: COMPLETED_PENDING_PLANNER
-- Next step: Planner reviews completion and decides whether to advance
+- Next step: Planner reviews Phase 2 completion and decides whether to advance
 - Last update: 2026-03-14
 
 ## Branch
@@ -18,7 +18,7 @@ Implement the role-based topology semantics defined in `ROUND1_CHECKPOINT.md` an
 
 ## Current Focus
 
-Phase 1 execution completed: `MofTopLibrary` now loads passive topology role metadata for both the existing canonical sidecar schema and the simpler Phase 1 JSON-compatible dictionary shape, with Phase 1 accessors added and no builder, FrameNet, optimizer, or downstream changes.
+Phase 2 execution completed: `FrameNet.create_net()` now preserves the existing role-id stamping path and attaches graph-local `slot_index` metadata on edges plus deterministic `cyclic_edge_order` metadata for linker-center (`C*` / legacy `CV`) nodes and their incident edges, with no builder, optimizer, framework, or later-phase behavior added.
 
 ## Invariants
 

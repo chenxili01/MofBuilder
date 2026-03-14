@@ -66,6 +66,11 @@ def test_create_net_from_test_cif():
     assert {data["edge_role_id"] for _, _, data in net.G.edges(data=True)} == {
         "edge:default"
     }
+    assert all("slot_index" in data for _, _, data in net.G.edges(data=True))
+    assert all(isinstance(data["slot_index"], dict) for _, _, data in net.G.edges(data=True))
+    assert not any(
+        "cyclic_edge_order" in data for _, data in net.G.nodes(data=True)
+    )
 
 
 @pytest.mark.core
@@ -100,6 +105,11 @@ def test_create_net_preserves_single_role_scalar_outputs(tmp_path):
     assert {data["edge_role_id"] for _, _, data in net.G.edges(data=True)} == {
         "edge:default"
     }
+    assert all("slot_index" in data for _, _, data in net.G.edges(data=True))
+    assert all(
+        set(data["slot_index"]) == set(edge)
+        for edge, data in net.G.edges.items()
+    )
 
 
 @pytest.mark.core
@@ -136,6 +146,7 @@ def test_create_net_attaches_deterministic_role_annotations(tmp_path):
     assert first_edge_roles == second_edge_roles
     assert set(first_node_roles) == {"node:VA", "node:VB"}
     assert set(first_edge_roles) == {"edge:EA", "edge:EB"}
+    assert all("slot_index" in data for _, _, data in first.G.edges(data=True))
 
 
 @pytest.mark.core
@@ -193,6 +204,18 @@ loop_
         "edge:EA",
         "edge:EB",
     }
+    cv_nodes = [
+        node_name for node_name, data in net.G.nodes(data=True) if data["node_role_id"] == "node:CA"
+    ]
+    assert len(cv_nodes) == 1
+    cv_node = cv_nodes[0]
+    cyclic_edge_order = net.G.nodes[cv_node]["cyclic_edge_order"]
+    assert len(cyclic_edge_order) == net.G.degree(cv_node) == 4
+    assert len(set(cyclic_edge_order)) == 4
+    for order_index, edge in enumerate(cyclic_edge_order):
+        assert cv_node in edge
+        assert net.G.edges[edge]["cyclic_edge_order"][cv_node] == order_index
+        assert net.G.edges[edge]["slot_index"][cv_node] in range(net.G.degree(cv_node))
 
 
 @pytest.mark.core

@@ -231,6 +231,85 @@ class FrameNet:
             return edge
         return (edge[1], edge[0])
 
+    def _sorted_incident_edges(self, node_name):
+        """Return incident edges in a stable order for slot indexing."""
+        return sorted(
+            self.G.edges(node_name),
+            key=lambda edge: (
+                0 if self._check_edge_inunitcell(self.G, edge) else 1,
+                self._put_V_ahead_of_CV(edge),
+            ),
+        )
+
+    def _is_linker_center_node(self, node_name):
+        """Return True when the node should own cyclic edge ordering metadata."""
+        node_data = self.G.nodes[node_name]
+        role_id = str(node_data.get("node_role_id", ""))
+        return role_id.startswith("node:C") or node_data.get("note") == "CV"
+
+    def _compute_cyclic_edge_order(self, node_name, incident_edges):
+        """Compute a deterministic local cyclic order around a linker-center node."""
+        node_data = self.G.nodes[node_name]
+        center = np.asarray(node_data["ccoords"], dtype=float)
+        neighbor_vectors = []
+        for edge in incident_edges:
+            other = edge[1] if edge[0] == node_name else edge[0]
+            neighbor = np.asarray(self.G.nodes[other]["ccoords"], dtype=float)
+            vector = neighbor - center
+            norm = np.linalg.norm(vector)
+            if norm <= 1e-12:
+                continue
+            neighbor_vectors.append((edge, vector))
+
+        if len(neighbor_vectors) <= 1:
+            return [edge for edge, _ in neighbor_vectors]
+
+        vectors = np.asarray([vector for _, vector in neighbor_vectors], dtype=float)
+        _, _, vh = np.linalg.svd(vectors, full_matrices=False)
+        axis_x = vh[0]
+        axis_y = vh[1] if len(vh) > 1 else np.array([0.0, 1.0, 0.0])
+        axis_x = axis_x / np.linalg.norm(axis_x)
+        axis_y = axis_y - np.dot(axis_y, axis_x) * axis_x
+        axis_y_norm = np.linalg.norm(axis_y)
+        if axis_y_norm <= 1e-12:
+            fallback = np.array([1.0, 0.0, 0.0])
+            if np.isclose(np.abs(np.dot(fallback, axis_x)), 1.0):
+                fallback = np.array([0.0, 1.0, 0.0])
+            axis_y = fallback - np.dot(fallback, axis_x) * axis_x
+            axis_y_norm = np.linalg.norm(axis_y)
+        axis_y = axis_y / axis_y_norm
+
+        def angle_key(item):
+            edge, vector = item
+            x = float(np.dot(vector, axis_x))
+            y = float(np.dot(vector, axis_y))
+            angle = float(np.arctan2(y, x))
+            return (angle, self._put_V_ahead_of_CV(edge))
+
+        ordered_vectors = sorted(neighbor_vectors, key=angle_key)
+        return [edge for edge, _ in ordered_vectors]
+
+    def _attach_slot_and_ordering_metadata(self):
+        """Attach stable slot indices to all edges and cyclic ordering to linker centers."""
+        G = self.G
+        nx.set_edge_attributes(G, {}, "slot_index")
+        nx.set_edge_attributes(G, {}, "cyclic_edge_order")
+
+        for node_name in G.nodes():
+            incident_edges = self._sorted_incident_edges(node_name)
+            for slot_index, edge in enumerate(incident_edges):
+                slot_map = dict(G.edges[edge].get("slot_index", {}))
+                slot_map[node_name] = slot_index
+                G.edges[edge]["slot_index"] = slot_map
+
+            if self._is_linker_center_node(node_name):
+                cyclic_edges = self._compute_cyclic_edge_order(node_name, incident_edges)
+                G.nodes[node_name]["cyclic_edge_order"] = list(cyclic_edges)
+                for order_index, edge in enumerate(cyclic_edges):
+                    order_map = dict(G.edges[edge].get("cyclic_edge_order", {}))
+                    order_map[node_name] = order_index
+                    G.edges[edge]["cyclic_edge_order"] = order_map
+
     # Graph construction and edge finding
 
     def _find_pair_v_e(self, distance_range=None):
@@ -588,6 +667,7 @@ class FrameNet:
             self._add_ccoords(self.G, self.unit_cell)
             self._set_DV_V(self.G)
             self._set_DE_E()
+            self._attach_slot_and_ordering_metadata()
             self._sort_nodes_by_type_connectivity()
             self._find_and_sort_edges_bynodeconnectivity()
         else:  # multitopic linker MOF
@@ -595,6 +675,7 @@ class FrameNet:
             self._add_ccoords(self.G, self.unit_cell)
             self._set_DV_V(self.G)
             self._set_DE_E()
+            self._attach_slot_and_ordering_metadata()
             self._sort_nodes_by_type_connectivity()
             self._find_and_sort_edges_bynodeconnectivity()
             expected_ec_con = getattr(self.cifreader, "EC_con", None)

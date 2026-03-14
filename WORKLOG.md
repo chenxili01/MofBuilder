@@ -165,6 +165,82 @@ Implement the Phase 1 passive role-metadata extension in `MofTopLibrary` only. T
 
 `STATUS.md` has been updated accordingly in [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
 
+## 2026-03-14 — executor — complete phase 2 role graph annotations in framenet
+
+branch:
+mofbuilder-role-refactor
+
+phase:
+Phase 2 — Role Graph in FrameNet
+
+summary:
+- Extended `FrameNet.create_net()` to attach stable `slot_index` metadata to graph edges for both legacy single-role and role-aware topologies.
+- Added deterministic `cyclic_edge_order` metadata for linker-center nodes (`C*` roles and legacy `CV` nodes) and stored the corresponding local order indices on incident edges.
+- Preserved existing `node_role_id` / `edge_role_id` stamping behavior and kept `V-E-V` graphs free of fabricated linker-center ordering metadata.
+- Added focused `net` tests covering backward-compatible slot metadata and explicit `V-E-C` cyclic ordering behavior.
+
+files touched:
+- src/mofbuilder/core/net.py
+- tests/test_core_net.py
+- WORKLOG.md
+- STATUS.md
+
+invariants checked:
+- Topology graph remains the source of truth; new Phase 2 metadata is stored on graph nodes and edges only.
+- Builder/Framework separation preserved; no builder, framework, optimizer, or downstream production modules were changed.
+- Phase scope respected; implementation stayed within `src/mofbuilder/core/net.py`, `tests/test_core_net.py`, and required workflow files.
+- Backward compatibility preserved for legacy/default-role `V-E-V` templates.
+- Grammar remained restricted to `V-E-V` and `V-E-C`, and null-edge semantics were not reinterpreted.
+
+notes:
+- Validation run: `python -m compileall src/mofbuilder/core/net.py tests/test_core_net.py`.
+- `python -m pytest -q tests/test_core_net.py` could not run in this environment because `pytest` is not installed.
+- Additional direct runtime validation could not be executed in this environment because the active Python environment does not have `numpy` available outside the repository source stubs.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T10:15:00+00:00
+
+## Active Phase
+- Phase: 2
+- Name: Role Graph in FrameNet
+
+## Implemented
+- Added graph-local slot indexing helpers in [net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/net.py) so each topology edge now carries a deterministic `slot_index` mapping keyed by its endpoint nodes.
+- Added canonical cyclic ordering in [net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/net.py) for linker-center nodes, storing `cyclic_edge_order` on `C*` / legacy `CV` nodes and per-node order indices on their incident edges.
+- Kept the existing `node_role_id` and `edge_role_id` stamping path intact and limited ordering metadata to linker-center cases, leaving simple `V-E-V` graphs without fabricated linker ordering.
+- Added focused assertions in [test_core_net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_net.py) for `slot_index` coverage in legacy/default-role graphs and `cyclic_edge_order` coverage in explicit `V-E-C` graphs.
+- Updated the executor handoff in [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md) and [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
+
+## Files Changed
+- [src/mofbuilder/core/net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/net.py)
+- [tests/test_core_net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_net.py)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+
+## Validation
+- Ran `python -m compileall src/mofbuilder/core/net.py tests/test_core_net.py`.
+- `python -m pytest -q tests/test_core_net.py` could not run because `pytest` is not installed in this environment.
+- Direct runtime verification of the new graph metadata could not run because the active Python environment is missing `numpy`.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Full Phase 2 behavioral validation is still pending in an environment with `pytest` and runtime scientific dependencies installed.
+- `FrameNet.validate_roles()` and builder-side validation calls remain intentionally deferred to Phase 3.
+
+## STATUS.md Update
+- Phase: Phase 2
+- Checkpoint: phase-2-plan-finalized
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance
+
 ## 2026-03-14 — executor — complete phase 1 topology metadata loader
 
 branch:
@@ -240,5 +316,96 @@ notes:
 ## STATUS.md Update
 - Phase: Phase 1
 - Checkpoint: Phase 1 plan finalized
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T10:00:09+00:00
+
+## Active Phase
+- Phase: 2
+- Name: Role Graph in FrameNet
+
+## Objective
+Complete the Phase 2 topology-graph annotation work in `FrameNet` only. The executor should preserve the graph as the source of truth, keep existing default-role behavior for legacy/single-role families, and finish graph-local slot and cyclic-order metadata without introducing builder-managed interpretation, validation, or optimizer changes.
+
+## Scope
+- `src/mofbuilder/core/net.py`
+- `tests/test_core_net.py`
+
+## Tasks
+1. Audit the existing `FrameNet.create_net()` flow and keep the current `node_role_id` / `edge_role_id` stamping path intact, including backward-compatible default-role behavior for legacy `V` / `E` templates and explicit role-aware CIF site types such as `VA`, `CA`, `EA`, and `EB`.
+2. Extend the graph-construction path in `src/mofbuilder/core/net.py` so the created graph carries Phase 2 slot metadata with deterministic `slot_index` assignment on the topology objects participating in each attachment, while keeping the metadata topology-derived and local to the graph rather than moving interpretation into builder registries.
+3. For `V-E-C` topologies only, compute canonical cyclic ordering once from topology during `create_net()`, then store `cyclic_edge_order` on each `C*` node and its incident `E*` edges in a deterministic, testable form; leave `V-E-V` cases without fabricated linker-center ordering.
+4. Add focused tests in `tests/test_core_net.py` covering both a legacy/simple case and a role-aware `V-E-C` case, asserting the presence and stability of `node_role_id`, `edge_role_id`, `slot_index`, and `cyclic_edge_order` on the resulting graph objects.
+5. Stop after the graph carries the required Phase 2 metadata; do not add `FrameNet.validate_roles()`, builder validation calls, bundle compilation, null-edge runtime policy, or any optimizer/framework behavior.
+
+## Validation
+- Targeted tests in `tests/test_core_net.py` confirm the graph contains `node_role_id`, `edge_role_id`, `slot_index`, and `cyclic_edge_order` after `create_net()`.
+- Regression coverage confirms existing single-role / default-role `V-E-V` behavior still works without requiring new metadata inputs.
+- Self-check confirms no production modules outside `src/mofbuilder/core/net.py` were modified for Phase 2.
+- Validation should remain limited to Phase 2 scope; builder calls to validation are deferred to Phase 3.
+
+## Non-goals
+- No changes to `src/mofbuilder/core/builder.py`, `src/mofbuilder/core/moftoplibrary.py`, optimizer, framework, supercell, linker, write, defects, or termination modules.
+- No new validation API, no builder-owned role normalization, no bundle registry, no provenance scaffolding, and no resolve execution.
+- No expansion beyond the allowed grammar `V-E-V` and `V-E-C`, and no reinterpretation of null edges beyond preserving existing passive semantics.
+
+## Exit Criteria
+- `FrameNet.create_net()` emits graph objects with stable `node_role_id`, `edge_role_id`, `slot_index`, and `cyclic_edge_order` metadata in the Phase 2 cases.
+- Targeted net tests cover both backward-compatible simple templates and role-aware `V-E-C` ordering behavior.
+- The implementation remains confined to Phase 2 scope and does not pull Phase 3 or later responsibilities forward.
+
+## STATUS.md Update
+- Phase: Phase 2
+- Checkpoint: phase-2-plan-finalized
+- Status: READY_FOR_EXECUTOR
+- Next step: Executor implements the active phase only
+
+`STATUS.md` has been updated accordingly in [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T10:06:05+00:00
+
+## Active Phase
+- Phase: 2
+- Name: Role Graph in FrameNet
+
+## Implemented
+- Added deterministic graph-local `slot_index` metadata assignment for each edge endpoint in [net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/net.py#L234).
+- Added canonical `cyclic_edge_order` computation for linker-center `C*` and legacy `CV` nodes, with matching per-edge order metadata, in [net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/net.py#L250).
+- Wired the new Phase 2 metadata attachment into both `V-E-V` and `V-E-C` `create_net()` paths in [net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/net.py#L668).
+- Added focused Phase 2 assertions for default-role slot metadata and explicit `V-E-C` cyclic ordering in [test_core_net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_net.py#L49).
+- Updated the planner handoff in [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md#L168) and [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md#L5).
+
+## Files Changed
+- [src/mofbuilder/core/net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/net.py)
+- [tests/test_core_net.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_net.py)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+
+## Validation
+- Ran `python -m compileall src/mofbuilder/core/net.py tests/test_core_net.py`.
+- `python -m pytest -q tests/test_core_net.py` could not run because `pytest` is not installed in this environment.
+- Direct runtime validation could not run because the active Python environment is missing `numpy`.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Full Phase 2 behavior validation is still pending in an environment with `pytest` and runtime scientific dependencies installed.
+- Phase 3 validation API and builder-side validation calls were not implemented.
+
+## STATUS.md Update
+- Phase: Phase 2
+- Checkpoint: phase-2-plan-finalized
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews completion and decides whether to advance
