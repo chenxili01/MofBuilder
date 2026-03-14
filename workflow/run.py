@@ -33,6 +33,15 @@ class Phase:
     name: str
 
 
+@dataclass(frozen=True)
+class StatusSnapshot:
+    phase_name: str
+    phase_number: int
+    checkpoint: str
+    status: str
+    next_step: str
+
+
 # --------------------------------------------------
 # Paths
 # --------------------------------------------------
@@ -49,8 +58,9 @@ def resolve_control_path(filename: str) -> pathlib.Path:
     return ROOT / filename
 
 
-STATE_DIR = ROOT / "workflow"
+STATE_DIR = ROOT / "state"
 STATE_FILE = STATE_DIR / "state.json"
+LEGACY_STATE_FILE = ROOT / "workflow" / "state.json"
 
 PLANNER_FILE = resolve_control_path("PLANNER.md")
 EXECUTOR_FILE = resolve_control_path("EXECUTOR.md")
@@ -92,6 +102,10 @@ REVIEW_SCHEMA = {
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def today_iso() -> str:
+    return datetime.now().date().isoformat()
 
 
 def ensure_parent(path: pathlib.Path) -> None:
@@ -176,6 +190,38 @@ def find_phase_index(phases: list[Phase], phase_name: str) -> int:
     raise ValueError(f"Phase was not found: {phase_name}")
 
 
+def _strip_status_value(value: str) -> str:
+    value = value.strip()
+    if value.startswith("`") and value.endswith("`") and len(value) >= 2:
+        return value[1:-1]
+    return value
+
+
+def load_status_snapshot(status_path: pathlib.Path = STATUS_FILE) -> StatusSnapshot:
+    text = read_text_if_exists(status_path, "")
+    fields: dict[str, str] = {}
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line.startswith("- ") or ":" not in line:
+            continue
+        key, value = line[2:].split(":", 1)
+        fields[key.strip()] = _strip_status_value(value)
+
+    phase_name = fields.get("Phase", "")
+    phase_match = PHASE_NUMBER_RE.search(phase_name)
+    if phase_match is None:
+        raise RuntimeError(f"Could not parse current phase from {status_path.name}.")
+
+    return StatusSnapshot(
+        phase_name=phase_name,
+        phase_number=int(phase_match.group("number")),
+        checkpoint=fields.get("Checkpoint", ""),
+        status=fields.get("Status", ""),
+        next_step=fields.get("Next step", ""),
+    )
+
+
 # --------------------------------------------------
 # Subprocess helpers
 # --------------------------------------------------
@@ -231,6 +277,12 @@ def git_commit(tag: str) -> str:
     return sha
 
 
+def git_phase_tag(phase_number: int, suffix: str) -> str:
+    if suffix:
+        return f"phase{phase_number}-{suffix}"
+    return f"phase{phase_number}"
+
+
 def verify_git_repo() -> None:
     run_cmd(["git", "rev-parse", "--is-inside-work-tree"], check=True)
 
@@ -246,24 +298,112 @@ def normalize_step(value: Any) -> Step:
 
 
 def load_state() -> Dict[str, Step]:
-    if not STATE_FILE.exists():
+    state_path = STATE_FILE if STATE_FILE.exists() else LEGACY_STATE_FILE
+    if not state_path.exists():
         return {"step": "planner"}
 
     try:
-        data = json.loads(read_text_if_exists(STATE_FILE, "{}"))
+        data = json.loads(read_text_if_exists(state_path, "{}"))
     except json.JSONDecodeError:
-        print("Warning: malformed workflow/state.json; resetting to planner", file=sys.stderr)
+        print(f"Warning: malformed {state_path}; resetting to planner", file=sys.stderr)
         return {"step": "planner"}
 
     step = normalize_step(data.get("step"))
     if step != data.get("step"):
-        print("Warning: invalid step in workflow/state.json; resetting to planner", file=sys.stderr)
+        print(f"Warning: invalid step in {state_path}; resetting to planner", file=sys.stderr)
 
     return {"step": step}
 
 
 def save_state(step: Step) -> None:
     write_json_atomic(STATE_FILE, {"step": step})
+    if LEGACY_STATE_FILE.exists():
+        LEGACY_STATE_FILE.unlink(missing_ok=True)
+
+
+def infer_step_from_status(snapshot: StatusSnapshot) -> Optional[Step]:
+    next_step = snapshot.next_step.strip().lower()
+    status = snapshot.status.strip().lower()
+
+    if "reviewer" in next_step:
+        return "reviewer"
+    if "executor" in next_step or "implementation" in next_step:
+        return "executor"
+    if "planner" in next_step:
+        return "planner"
+    if status in {"pending", "contract generated"}:
+        return "planner"
+    return None
+
+
+def resolve_resume_step(initial_step: Optional[Step]) -> Step:
+    if initial_step is not None:
+        return initial_step
+
+    saved_step = load_state()["step"]
+    status_snapshot = load_status_snapshot()
+    status_step = infer_step_from_status(status_snapshot)
+
+    if status_step is None:
+        return saved_step
+
+    if status_step != saved_step:
+        print(
+            "Workflow state disagrees with STATUS.md; "
+            f"using {status_step} from STATUS.md instead of {saved_step}."
+        )
+        save_state(status_step)
+
+    return status_step
+
+
+def replace_status_field(text: str, key: str, value: str) -> str:
+    pattern = re.compile(rf"(?m)^- {re.escape(key)}:.*$")
+    if not pattern.search(text):
+        raise RuntimeError(f"Could not find '{key}' in {STATUS_FILE.name}.")
+    return pattern.sub(f"- {key}: {value}", text, count=1)
+
+
+def update_status_snapshot(
+    *,
+    phase_name: Optional[str] = None,
+    checkpoint: Optional[str] = None,
+    status: Optional[str] = None,
+    next_step: Optional[str] = None,
+    last_update: Optional[str] = None,
+) -> None:
+    text = read_text_if_exists(STATUS_FILE, "")
+
+    updates = {
+        "Phase": f"`{phase_name}`" if phase_name is not None else None,
+        "Checkpoint": f"`{checkpoint}`" if checkpoint is not None else None,
+        "Status": status,
+        "Next step": next_step,
+        "Last update": last_update,
+    }
+
+    for key, value in updates.items():
+        if value is None:
+            continue
+        text = replace_status_field(text, key, value)
+
+    write_text_atomic(STATUS_FILE, text)
+
+
+def advance_status_to_next_phase(phases: list[Phase], current_snapshot: StatusSnapshot) -> Optional[Phase]:
+    current_index = find_phase_index(phases, current_snapshot.phase_name)
+    if current_index + 1 >= len(phases):
+        return None
+
+    next_phase = phases[current_index + 1]
+    update_status_snapshot(
+        phase_name=next_phase.name,
+        checkpoint=f"P{next_phase.number}.0",
+        status="pending",
+        next_step="planner",
+        last_update=today_iso(),
+    )
+    return next_phase
 
 
 # --------------------------------------------------
@@ -417,9 +557,7 @@ def run_planner(model: str, max_context_chars: int) -> str:
             "Be explicit about the next executor step."
         ),
     )
-    out = run_codex_exec(prompt, model=model, allow_edits=True, use_search=False)
-    append_markdown_section(WORKLOG_FILE, "planner", out)
-    return out
+    return run_codex_exec(prompt, model=model, allow_edits=True, use_search=False)
 
 
 def run_executor(model: str, max_context_chars: int) -> str:
@@ -433,9 +571,7 @@ def run_executor(model: str, max_context_chars: int) -> str:
             "and summarize exactly what changed."
         ),
     )
-    out = run_codex_exec(prompt, model=model, allow_edits=True, use_search=False)
-    append_markdown_section(WORKLOG_FILE, "executor", out)
-    return out
+    return run_codex_exec(prompt, model=model, allow_edits=True, use_search=False)
 
 
 def run_reviewer(model: str, max_context_chars: int) -> Dict[str, Any]:
@@ -502,32 +638,51 @@ def workflow(
     max_context_chars: int,
     no_git: bool,
 ) -> None:
-    state = load_state()
-    step: Step = initial_step or state["step"]
-
-    print(f"Resuming at: {step}")
+    step = resolve_resume_step(initial_step)
+    phases = load_phases()
+    final_phase_number = phases[-1].number
+    last_approved_phase_number: Optional[int] = None
 
     if not no_git:
         verify_git_repo()
 
     try:
-        if step == "planner":
-            print("Running planner...")
-            run_planner(model=model, max_context_chars=max_context_chars)
-            save_state("executor")
-            step = "executor"
+        while True:
+            status_snapshot = load_status_snapshot()
+            print(f"Resuming at: {step} ({status_snapshot.phase_name} / {status_snapshot.checkpoint})")
 
-        if step == "executor":
-            print("Running executor...")
-            run_executor(model=model, max_context_chars=max_context_chars)
-            if not no_git:
-                sha = git_commit("executor-checkpoint")
-                print(f"Executor checkpoint: {sha}")
-            save_state("reviewer")
-            step = "reviewer"
+            if step == "planner":
+                print("Running planner...")
+                run_planner(model=model, max_context_chars=max_context_chars)
+                planner_snapshot = load_status_snapshot()
+                if (
+                    last_approved_phase_number is not None
+                    and planner_snapshot.phase_number == last_approved_phase_number
+                ):
+                    print(
+                        "Planner did not advance beyond the previously approved phase; "
+                        "stopping to avoid repeating the same phase."
+                    )
+                    save_state("planner")
+                    return
+                save_state("executor")
+                step = "executor"
+                continue
 
-        if step == "reviewer":
+            if step == "executor":
+                print("Running executor...")
+                executor_snapshot = load_status_snapshot()
+                run_executor(model=model, max_context_chars=max_context_chars)
+                if not no_git:
+                    tag = git_phase_tag(executor_snapshot.phase_number, "executor-checkpoint")
+                    sha = git_commit(tag)
+                    print(f"Executor checkpoint ({tag}): {sha}")
+                save_state("reviewer")
+                step = "reviewer"
+                continue
+
             print("Running reviewer...")
+            reviewer_snapshot = load_status_snapshot()
             review = run_reviewer(model=model, max_context_chars=max_context_chars)
 
             approved = bool(review.get("approved"))
@@ -536,21 +691,34 @@ def workflow(
             print(f"Review summary: {review.get('summary', '')}")
 
             if approved:
+                last_approved_phase_number = reviewer_snapshot.phase_number
                 if not no_git:
-                    sha = git_commit("phase-approved")
-                    print(f"Phase approved: {sha}")
+                    tag = git_phase_tag(reviewer_snapshot.phase_number, "checkpoint")
+                    sha = git_commit(tag)
+                    print(f"Phase checkpoint ({tag}): {sha}")
                 save_state("planner")
-                return
+                if reviewer_snapshot.phase_number >= final_phase_number:
+                    print("Final phase approved; workflow is complete.")
+                    return
+                next_phase = advance_status_to_next_phase(phases, reviewer_snapshot)
+                if next_phase is None:
+                    print("No further phase was found after approval; workflow is complete.")
+                    return
+                print(f"Advancing to: {next_phase.name} / P{next_phase.number}.0")
+                step = "planner"
+                continue
 
             if not no_git:
-                sha = git_commit("review-failure")
-                print(f"Review failure checkpoint: {sha}")
+                tag = git_phase_tag(reviewer_snapshot.phase_number, "review-failure")
+                sha = git_commit(tag)
+                print(f"Review failure checkpoint ({tag}): {sha}")
 
             remediation_step(model=model, max_context_chars=max_context_chars)
 
             next_step: Step = "executor" if executor_can_proceed else "planner"
             save_state(next_step)
             print(f"Next step: {next_step}")
+            return
 
     except Exception as exc:
         print(f"Workflow failure: {exc}", file=sys.stderr)
@@ -559,7 +727,8 @@ def workflow(
 
         if not no_git:
             try:
-                git_commit("workflow-crash")
+                crash_phase = load_status_snapshot().phase_number
+                git_commit(git_phase_tag(crash_phase, "workflow-crash"))
             except Exception as git_exc:
                 print(f"Crash checkpoint failed: {git_exc}", file=sys.stderr)
 
@@ -575,7 +744,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--step",
         choices=sorted(VALID_STEPS),
-        help="Force the starting step instead of using workflow/state.json.",
+        help="Force the starting step instead of using the saved workflow state.",
     )
     parser.add_argument(
         "--model",

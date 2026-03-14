@@ -55,6 +55,13 @@ def test_runner_uses_repo_root_control_docs_and_prompt_files():
     assert workflow_run.REVIEWER_FILE == ROOT / "REVIEWER.md"
 
 
+def test_runner_uses_state_dir_instead_of_nested_workflow_path():
+    workflow_run = load_workflow_run_module()
+
+    assert workflow_run.STATE_FILE == ROOT / "workflow" / "state" / "state.json"
+    assert workflow_run.LEGACY_STATE_FILE == ROOT / "workflow" / "workflow" / "state.json"
+
+
 def test_read_context_reads_repo_root_status_snapshot():
     workflow_run = load_workflow_run_module()
 
@@ -62,6 +69,16 @@ def test_read_context_reads_repo_root_status_snapshot():
 
     assert "===== STATUS.md =====" in context
     assert "Minimal dashboard for phased multi-role execution." in context
+
+
+def test_load_status_snapshot_reads_repo_root_current_phase():
+    workflow_run = load_workflow_run_module()
+
+    snapshot = workflow_run.load_status_snapshot()
+
+    assert snapshot.phase_name == "Phase 1 - Planning/spec"
+    assert snapshot.phase_number == 1
+    assert snapshot.checkpoint == "P1.0"
 
 
 def test_run_codex_exec_places_never_approval_before_exec_subcommand(monkeypatch):
@@ -111,3 +128,159 @@ def test_run_codex_exec_keeps_edit_mode_on_exec_subcommand(monkeypatch):
     assert captured["cmd"][:2] == ["codex", "exec"]
     assert "--full-auto" in captured["cmd"]
     assert "--ask-for-approval" not in captured["cmd"]
+
+
+def test_workflow_advances_through_successive_approved_phases(monkeypatch):
+    workflow_run = load_workflow_run_module()
+
+    current = {"phase": 1}
+    calls = {"planner": 0, "executor": 0, "reviewer": 0}
+    saved_steps = []
+    git_tags = []
+    phase_advances = []
+
+    monkeypatch.setattr(workflow_run, "load_state", lambda: {"step": "planner"})
+    monkeypatch.setattr(workflow_run, "save_state", lambda step: saved_steps.append(step))
+    monkeypatch.setattr(workflow_run, "verify_git_repo", lambda: None)
+    monkeypatch.setattr(
+        workflow_run,
+        "load_phases",
+        lambda plans_path=workflow_run.PLANS_FILE: [
+            workflow_run.Phase(1, "Phase 1 - Planning/spec"),
+            workflow_run.Phase(2, "Phase 2 - Additive Family/Template Role Metadata"),
+        ],
+    )
+    monkeypatch.setattr(
+        workflow_run,
+        "load_status_snapshot",
+        lambda status_path=workflow_run.STATUS_FILE: workflow_run.StatusSnapshot(
+            phase_name=(
+                "Phase 1 - Planning/spec"
+                if current["phase"] == 1
+                else "Phase 2 - Additive Family/Template Role Metadata"
+            ),
+            phase_number=current["phase"],
+            checkpoint=f"P{current['phase']}.0",
+            status="in progress",
+            next_step="planner",
+        ),
+    )
+
+    def fake_run_planner(*, model, max_context_chars):
+        calls["planner"] += 1
+        return "planner"
+
+    def fake_run_executor(*, model, max_context_chars):
+        calls["executor"] += 1
+        return "executor"
+
+    def fake_run_reviewer(*, model, max_context_chars):
+        calls["reviewer"] += 1
+        return {
+            "approved": True,
+            "executor_can_proceed": True,
+            "summary": f"phase {current['phase']} approved",
+            "issues": [],
+        }
+
+    monkeypatch.setattr(workflow_run, "run_planner", fake_run_planner)
+    monkeypatch.setattr(workflow_run, "run_executor", fake_run_executor)
+    monkeypatch.setattr(workflow_run, "run_reviewer", fake_run_reviewer)
+    monkeypatch.setattr(
+        workflow_run,
+        "advance_status_to_next_phase",
+        lambda phases, snapshot: phase_advances.append(snapshot.phase_number)
+        or current.update({"phase": snapshot.phase_number + 1})
+        or workflow_run.Phase(current["phase"], "Phase 2 - Additive Family/Template Role Metadata"),
+    )
+    monkeypatch.setattr(
+        workflow_run,
+        "git_commit",
+        lambda tag: git_tags.append(tag) or f"sha-{len(git_tags)}",
+    )
+
+    workflow_run.workflow(
+        initial_step="planner",
+        model="gpt-test",
+        max_context_chars=4000,
+        no_git=False,
+    )
+
+    assert calls == {"planner": 2, "executor": 2, "reviewer": 2}
+    assert git_tags == [
+        "phase1-executor-checkpoint",
+        "phase1-checkpoint",
+        "phase2-executor-checkpoint",
+        "phase2-checkpoint",
+    ]
+    assert phase_advances == [1]
+    assert saved_steps == [
+        "executor",
+        "reviewer",
+        "planner",
+        "executor",
+        "reviewer",
+        "planner",
+    ]
+
+
+def test_workflow_prefers_status_step_when_saved_state_is_stale(monkeypatch):
+    workflow_run = load_workflow_run_module()
+
+    calls = {"planner": 0, "executor": 0, "reviewer": 0}
+    saved_steps = []
+
+    monkeypatch.setattr(workflow_run, "load_state", lambda: {"step": "planner"})
+    monkeypatch.setattr(workflow_run, "save_state", lambda step: saved_steps.append(step))
+    monkeypatch.setattr(workflow_run, "verify_git_repo", lambda: None)
+    monkeypatch.setattr(
+        workflow_run,
+        "load_phases",
+        lambda plans_path=workflow_run.PLANS_FILE: [
+            workflow_run.Phase(1, "Phase 1 - Planning/spec"),
+        ],
+    )
+    monkeypatch.setattr(
+        workflow_run,
+        "load_status_snapshot",
+        lambda status_path=workflow_run.STATUS_FILE: workflow_run.StatusSnapshot(
+            phase_name="Phase 1 - Planning/spec",
+            phase_number=1,
+            checkpoint="P1.0",
+            status="complete",
+            next_step="reviewer validation",
+        ),
+    )
+
+    monkeypatch.setattr(
+        workflow_run,
+        "run_planner",
+        lambda **kwargs: calls.__setitem__("planner", calls["planner"] + 1),
+    )
+    monkeypatch.setattr(
+        workflow_run,
+        "run_executor",
+        lambda **kwargs: calls.__setitem__("executor", calls["executor"] + 1),
+    )
+
+    def fake_run_reviewer(*, model, max_context_chars):
+        calls["reviewer"] += 1
+        return {
+            "approved": True,
+            "executor_can_proceed": True,
+            "summary": "approved",
+            "issues": [],
+        }
+
+    monkeypatch.setattr(workflow_run, "run_reviewer", fake_run_reviewer)
+    monkeypatch.setattr(workflow_run, "git_commit", lambda tag: tag)
+
+    workflow_run.workflow(
+        initial_step=None,
+        model="gpt-test",
+        max_context_chars=4000,
+        no_git=False,
+    )
+
+    assert calls == {"planner": 0, "executor": 0, "reviewer": 1}
+    assert saved_steps == ["reviewer", "planner"]

@@ -1,23 +1,24 @@
 # WORKLOG.md
 
-Use this file as the execution log for the multi-role topology effort.
-Keep it aligned with `PLANS.md`. Use `STATUS.md` as the live dashboard and this
-file as the append-only history.
+Use this file as the append-only execution history for the multi-role topology
+effort. Keep it aligned with `PLANS.md`. `STATUS.md` is the live dashboard; use
+this file for the matching checkpoint record only.
 
 ## Rules
 
-- `PLANS.md` is the frozen roadmap. Do not use this file to redefine phase
-  scope.
+- Read `STATUS.md` first. For routine work, read only the active phase section,
+  the active checkpoint, and its Phase Contract.
+- `PLANS.md` is the frozen roadmap; do not use this file to redefine scope.
 - One Codex thread should usually touch one phase only.
-- Append facts; do not rewrite completed entries except to add a clearly marked
-  correction.
-- Update the matching checkpoint before starting work and again at handoff.
-- Record only execution details: files changed, tests added/run, decisions,
+- Append facts. Do not rewrite completed entries except for clearly marked
+  corrections.
+- Update the matching checkpoint before work starts and again at handoff.
+- Record execution details only: files changed, tests added/run, decisions,
   blockers, and the next checkpoint.
-- If implementation reveals a conflict with `PLANS.md`, graph invariants, or
-  the canonical role model, stop and record the conflict here and in
-  `STATUS.md` before changing the plan.
-- Keep single-role behavior as the default/base case in every phase entry.
+- If a conflict with `PLANS.md`, locked invariants, or the canonical role model
+  appears, record it here and in `STATUS.md` before changing the plan.
+- Keep the single-role/base-case path intact in every phase entry unless the
+  active contract explicitly says otherwise.
 
 ## Exact Checkpoint Template
 
@@ -36,6 +37,17 @@ Use this exact field set for every checkpoint subsection.
 - Decisions:
 - Conflicts / blockers:
 - Handoff / next checkpoint:
+
+## Phase Contract Authoring Rule
+
+Use `AGENTS.md` as the source of truth for shared repo-wide invariants. In
+Phase Contracts, prefer:
+
+- `Shared invariants reference:` cite the relevant `AGENTS.md` section names
+- `Phase-specific constraints:` spell out only what is unique to this phase
+
+Do not copy long unchanged invariant lists into every new checkpoint unless the
+phase truly changes or narrows them.
 
 ## Phase 1 — Role-Safe Topology Parsing
 
@@ -2346,3 +2358,50 @@ Updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/wor
 7. Any conflicts or reasons for stopping
 
 None. No contract, architecture, graph-state, or role-model conflict was encountered, and no work outside the allowed `P1.0` planning/spec scope was performed.
+
+**Correction — 2026-03-14 localized workflow runner seam (before coding)**
+
+- Scope: apply the explicit support-seam allowance to `workflow/run.py`, `tests/test_workflow_run.py`, `WORKLOG.md`, and `STATUS.md` only so the automated runner can advance through successive approved phases without requiring a manual rerun after each phase.
+- Invariants: preserve the locked MOFBuilder pipeline, graph-state and role-model invariants, current phase ordering from `PLANS.md`, and the existing planner -> executor -> reviewer gate inside each phase; do not broaden into `src/`, bundled databases, or other workflow/control files.
+- Tests planned: `scripts/run_tests.sh tests/test_workflow_run.py`
+- Decisions: treat per-phase continuation and git checkpoint naming as localized workflow orchestration only; derive phase identity from the live control docs instead of hardcoding a phase list in the runner.
+- Conflicts / blockers: none at pre-coding time.
+- Handoff / next checkpoint: implement the localized runner/test update, run the narrow workflow test, then record the actual verification result and resulting checkpoint behavior.
+
+**Correction — 2026-03-14 localized workflow runner seam (after coding)**
+
+- Files changed: `workflow/run.py`, `tests/test_workflow_run.py`, `WORKLOG.md`, `STATUS.md`
+- Tests added: `test_load_status_snapshot_reads_repo_root_current_phase`, `test_workflow_advances_through_successive_approved_phases`
+- Tests run: `scripts/run_tests.sh tests/test_workflow_run.py` (passed: 8 tests)
+- Decisions: the runner now parses the live root `STATUS.md` into a phase snapshot, continues automatically from one approved phase into the next planner cycle, stops at the final planned phase, and writes phase-specific git checkpoints (`phaseX-executor-checkpoint`, `phaseX-checkpoint`, `phaseX-review-failure`, `phaseX-workflow-crash`) instead of only generic tags.
+- Conflicts / blockers: none; the change remained inside the explicitly allowed workflow support seam and did not touch MOFBuilder runtime modules.
+- Handoff / next checkpoint: localized workflow support seam is implemented and narrow-test verified; next step is reviewer validation of `P1.0`.
+
+**Correction — 2026-03-14 workflow continuity cleanup (before coding)**
+
+- Scope: keep the workflow-support seam local to `workflow/run.py`, `tests/test_workflow_run.py`, `WORKLOG.md`, and `STATUS.md`, and remove redundant local workflow control docs that are no longer authoritative.
+- Invariants: preserve the locked MOFBuilder pipeline, graph-state and role-model invariants, current phase ordering from `PLANS.md`, and the existing planner -> executor -> reviewer gate; do not broaden into `src/`, bundled databases, or other workflow/control files.
+- Tests planned: `scripts/run_tests.sh tests/test_workflow_run.py`
+- Decisions: fix the stale nested state path, let canonical root `STATUS.md` win when saved step state is stale, stop auto-appending planner/executor transcripts into `WORKLOG.md`, and make approved reviews advance the live phase pointer instead of waiting for a second rerun.
+- Conflicts / blockers: none at pre-coding time.
+- Handoff / next checkpoint: implement the runner cleanup, remove duplicate local workflow status/worklog files, run the narrow workflow test target, then record the exact verification result.
+
+**Correction — 2026-03-14 workflow continuity cleanup (after coding)**
+
+- Files changed: `workflow/run.py`, `tests/test_workflow_run.py`, `WORKLOG.md`, `STATUS.md`; removed `workflow/STATUS.md`, removed `workflow/WORKLOG.md`.
+- Tests added: `test_runner_uses_state_dir_instead_of_nested_workflow_path`, `test_workflow_prefers_status_step_when_saved_state_is_stale`
+- Tests updated: `test_workflow_advances_through_successive_approved_phases`
+- Tests run: `scripts/run_tests.sh tests/test_workflow_run.py` (passed: 10 tests)
+- Decisions:
+  use `workflow/state/state.json` as the canonical saved-step location and treat `workflow/workflow/state.json` as legacy input only
+  resolve the starting step from root `STATUS.md` when it disagrees with saved state so stale local state does not restart the wrong role
+  advance root `STATUS.md` to the next phase immediately after an approved review so the same invocation can continue smoothly
+  stop duplicating planner/executor output in root `WORKLOG.md`; the planner/executor remain responsible for canonical worklog edits
+  remove tracked `workflow/STATUS.md` and `workflow/WORKLOG.md` because the repo-level control docs are the only authoritative copies under current rules
+- Conflicts / blockers: none; the cleanup stayed inside the allowed workflow seam and did not touch scientific/runtime modules.
+
+**Correction — 2026-03-14 workflow continuity cleanup (handoff)**
+
+- Result: runner continuity is repaired for the current repository state; stale saved planner state no longer overrides root `STATUS.md`, approved reviews advance to the next phase within the same run, and duplicate local control docs are removed.
+- Verification: `scripts/run_tests.sh tests/test_workflow_run.py` passed (`10 passed`).
+- Next step: reviewer validation of the `P1.0` workflow continuity cleanup.

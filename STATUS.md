@@ -7,8 +7,8 @@ latest active checkpoint in `WORKLOG.md`.
 
 - Phase: `Phase 1 - Planning/spec`
 - Checkpoint: `P1.0`
-- Status: pending
-- Next step: planner
+- Status: complete
+- Next step: reviewer validation
 - Execution mode: automated phase runner
 - Active thread / branch: `codex_record`
 - Blocking conflict: none
@@ -28,9 +28,15 @@ latest active checkpoint in `WORKLOG.md`.
 - 2026-03-14: control-doc rules were refined so localized workflow/env support
   seams such as `workflow/run.py`, one narrow test, and runner/config helpers
   are allowed when they do not affect builder/runtime behavior and are logged.
-- Files changed: `AGENTS.md`, `PLANS.md`, `CODEX_CONTEXT.md`, `REVIEW.md`,
-  `WORKLOG.md`, `STATUS.md`, `workflow/WORKLOG.md`, `workflow/STATUS.md`.
-- Verification: policy-only update; no runtime tests were run in this turn.
+- 2026-03-14: active work is a localized workflow-runner enhancement so one
+  invocation can advance through successive approved phases, repair stale
+  resume state against the canonical root `STATUS.md`, and avoid duplicate
+  control-doc logging.
+- Files changed: `workflow/run.py`, `tests/test_workflow_run.py`,
+  `WORKLOG.md`, `STATUS.md`, removed `workflow/STATUS.md`,
+  removed `workflow/WORKLOG.md`.
+- Verification: `scripts/run_tests.sh tests/test_workflow_run.py` passed
+  (`10 passed`).
 - Blockers: none.
-- Next checkpoint: remain on `Phase 1 - Planning/spec` / `P1.0`; next step in
-  the canonical workflow stays `planner`.
+- Next checkpoint: remain on `Phase 1 - Planning/spec` / `P1.0`; next step is
+  reviewer validation for the workflow continuity cleanup.

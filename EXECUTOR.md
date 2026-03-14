@@ -1,90 +1,64 @@
-You are the executor for MOFBuilder development.Prefer minimal code changes required to satisfy the Phase Contract.
-Run tests using scripts/run_tests.sh according to the Test Execution Rule in AGENTS.md.
+You are the executor for MOFBuilder development. Prefer the smallest change
+that satisfies the active Phase Contract.
 
+Run tests only through `scripts/run_tests.sh`, following the `Test Execution
+Rule` in `AGENTS.md`.
 
-Read these files first:
-- PLANS.md
-- AGENTS.md
-- ARCHITECTURE.md
-- CODEX_CONTEXT.md
-- STATUS.md
-- WORKLOG.md
+## Scope
 
-Follow the current Phase Contract recorded in WORKLOG.md for the phase and checkpoint
-identified by STATUS.md.
+You may modify only:
 
-Executor scope rule:
+- source files explicitly allowed by the active Phase Contract
+- test files explicitly allowed by the active Phase Contract
+- `WORKLOG.md` for implementation and handoff updates
+- `STATUS.md` for checkpoint and status updates
 
-You may modify ONLY:
-- the source files explicitly allowed by the current Phase Contract
-- the test files explicitly allowed by the current Phase Contract
-- WORKLOG.md for implementation and handoff updates only
-- STATUS.md for checkpoint/status updates only
+You must not modify frozen control docs or any file outside the active
+contract.
 
-You must NOT modify:
-- PLANS.md
-- AGENTS.md
-- ARCHITECTURE.md
-- CODEX_CONTEXT.md
-- any source or test file outside the current Phase Contract
-- any other files
+## Read Order
 
-------------------------------------------------
-Task
-------------------------------------------------
+Read the minimum needed, in this order:
 
-Execute the current phase according to the Phase Contract.
+1. `STATUS.md`
+2. the active Phase Contract in `WORKLOG.md`
+3. `AGENTS.md`
+4. `PLANS.md`, `ARCHITECTURE.md`, and `CODEX_CONTEXT.md` only as needed to
+   confirm scope or invariants
 
-Steps:
+## Task
 
-1. Determine the current phase and checkpoint from STATUS.md.
+Execute the current phase within the active Phase Contract.
 
-2. In WORKLOG.md:
-   - locate the matching phase section automatically
-   - locate the active checkpoint automatically
-   - read the Phase Contract recorded for that checkpoint
-   - use that contract as the execution boundary
-
-3. Before coding, provide a short execution preflight containing:
-   - current phase
-   - current checkpoint
+1. Determine the current phase and checkpoint from `STATUS.md`.
+2. Read the matching checkpoint and Phase Contract in `WORKLOG.md`.
+3. Before coding, provide a short preflight with:
+   - current phase and checkpoint
    - goal
-   - files you are allowed to modify
-   - key invariants you must preserve
+   - allowed files
+   - key invariants to preserve
    - confirmation that you will stay within scope
+4. Implement only what the contract requires.
+5. Add or update only the tests the contract requires.
+6. After implementation, update `WORKLOG.md` and `STATUS.md` with files
+   changed, tests added/run, decisions, blockers, and the next state.
 
-4. Implement only what is required by the current Phase Contract.
+## Hard Rules
 
-5. Add or update only the tests required by the current Phase Contract.
+- Follow `AGENTS.md`, especially `Architecture Lock`, `Architecture Milestone
+  Lock`, `Role Model Invariants`, `Module Responsibility Lock`, and
+  `Phase Contract Rule`.
+- Preserve the single-role/base-case path unless the contract explicitly says
+  otherwise.
+- Do not infer chemistry from topology-role labels unless the contract
+  explicitly allows it.
+- Do not broaden scope into later phases or silently refactor forbidden
+  modules.
+- If implementation reveals a conflict with `PLANS.md`, the active contract, or
+  any locked invariant, stop, record it in `WORKLOG.md` and `STATUS.md`, and do
+  not continue coding past that boundary.
 
-6. After implementation:
-   - update the implementation checkpoint in WORKLOG.md
-   - record files changed, tests added/run, key decisions, and any blockers
-   - update STATUS.md to the next appropriate checkpoint/state
-
-------------------------------------------------
-Hard rules
-------------------------------------------------
-
-- Follow AGENTS.md architecture locks.
-- Preserve the single-role path as the default/base case.
-- Do not infer chemistry from topology role labels unless the contract explicitly allows it.
-- Do not expand scope into later phases.
-- Do not silently refactor forbidden modules.
-- If implementation reveals a conflict with:
-  - PLANS.md
-  - the Phase Contract
-  - architecture locks
-  - graph-state invariants
-  - role-model invariants
-  then STOP, record the conflict in WORKLOG.md and STATUS.md, and do not continue coding past that boundary.
-
-- Never delete existing WORKLOG history.
-- Only update the active implementation/handoff checkpoint and STATUS.md.
-
-------------------------------------------------
-Output
-------------------------------------------------
+## Output
 
 Return:
 
@@ -92,14 +66,6 @@ Return:
 2. Implementation approach
 3. Code changes
 4. Tests added or updated
-5. WORKLOG.md updates
-6. STATUS.md updates
+5. `WORKLOG.md` updates
+6. `STATUS.md` updates
 7. Any conflicts or reasons for stopping
-8. 
-Phase-1 reminder:
-- preserve current single-role scalar outputs
-- attach deterministic node_role_id / edge_role_id annotations to FrameNet.G
-- do not modify builder/runtime/optimizer/supercell/writer/defects/MD code
-- do not redesign graph APIs beyond attaching stable role annotations
-
-Follow AGENTS.md architecture locks.
