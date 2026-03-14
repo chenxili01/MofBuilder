@@ -4,10 +4,12 @@ import pytest
 
 from mofbuilder.core import optimizer as opt
 from mofbuilder.core.optimizer_contract import (
+    NodeLocalConstrainedRefinement,
     NodeDiscreteAmbiguityResolution,
     LegalNodeCorrespondence,
     NodeLocalRigidInitialization,
     NodePlacementContract,
+    compile_local_constrained_refinement,
     compile_discrete_ambiguity_resolution,
     compile_local_rigid_initialization,
     compile_legal_node_correspondences,
@@ -1141,3 +1143,171 @@ def test_role_aware_optimizer_uses_role_registries_for_grouping_and_edge_payload
     assert placed.edges[("V0_[0 0 0]", "V0_[1 0 0]")]["c_points"][0, 0] == "ROLE"
     assert placed.nodes["V0_[0 0 0]"]["c_points"][0, 0] == "A"
     assert placed.nodes["V0_[1 0 0]"]["c_points"][0, 0] == "B"
+
+
+def test_compile_local_constrained_refinement_improves_combined_local_objective_without_remapping():
+    theta = np.deg2rad(35.0)
+    ideal_rotation = np.array(
+        [
+            [np.cos(theta), -np.sin(theta), 0.0],
+            [np.sin(theta), np.cos(theta), 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    translation = np.array([1.5, -0.5, 0.25])
+    source_anchors = {
+        0: (1.0, 0.0, 0.0),
+        1: (0.0, 1.0, 0.0),
+        2: (0.0, 0.0, 1.0),
+    }
+    target_vectors = {
+        slot_index: tuple(np.dot(np.asarray(anchor), ideal_rotation))
+        for slot_index, anchor in source_anchors.items()
+    }
+    target_points = {
+        slot_index: tuple(np.dot(np.asarray(anchor), ideal_rotation) + translation)
+        for slot_index, anchor in source_anchors.items()
+    }
+    noisy_target_points = {
+        0: target_points[0],
+        1: tuple(np.asarray(target_points[1]) + np.array([0.2, -0.1, 0.0])),
+        2: target_points[2],
+    }
+
+    semantic_snapshot = OptimizationSemanticSnapshot(
+        family_name="ROLE-AWARE",
+        graph_phase="sG",
+        graph_node_records={
+            "V0": GraphNodeSemanticRecord(
+                node_id="V0",
+                role_id="node:VA",
+                role_class="V",
+                slot_rules=(
+                    {"attachment_index": 0, "slot_type": "XA", "anchor_vector": source_anchors[0], "chemistry_direction": source_anchors[0]},
+                    {"attachment_index": 1, "slot_type": "XB", "anchor_vector": source_anchors[1], "chemistry_direction": source_anchors[1]},
+                    {"attachment_index": 2, "slot_type": "XC", "anchor_vector": source_anchors[2], "chemistry_direction": source_anchors[2]},
+                ),
+                incident_edge_ids=("V0|V1", "V0|V2", "V0|V3"),
+                incident_edge_role_ids=("edge:EA", "edge:EB", "edge:EC"),
+                incident_edge_constraints=(
+                    {"edge_id": "V0|V1", "edge_role_id": "edge:EA", "slot_index": 0},
+                    {"edge_id": "V0|V2", "edge_role_id": "edge:EB", "slot_index": 1},
+                    {"edge_id": "V0|V3", "edge_role_id": "edge:EC", "slot_index": 2},
+                ),
+            ),
+        },
+        graph_edge_records={
+            "V0|V1": GraphEdgeSemanticRecord(
+                edge_id="V0|V1",
+                graph_edge=("V0", "V1"),
+                edge_role_id="edge:EA",
+                path_type="V-E-V",
+                endpoint_node_ids=("V0", "V1"),
+                endpoint_role_ids=("node:VA", "node:VB"),
+                endpoint_pattern=("VA", "EA", "VB"),
+                slot_index={"V0": 0, "V1": 0},
+                slot_rules=(
+                    {"attachment_index": 0, "slot_type": "XA", "endpoint_side": "V"},
+                ),
+                metadata={
+                    "target_point_by_node": {"V0": noisy_target_points[0]},
+                    "target_vector_by_node": {"V0": target_vectors[0]},
+                },
+            ),
+            "V0|V2": GraphEdgeSemanticRecord(
+                edge_id="V0|V2",
+                graph_edge=("V0", "V2"),
+                edge_role_id="edge:EB",
+                path_type="V-E-V",
+                endpoint_node_ids=("V0", "V2"),
+                endpoint_role_ids=("node:VA", "node:VC"),
+                endpoint_pattern=("VA", "EB", "VC"),
+                slot_index={"V0": 1, "V2": 0},
+                slot_rules=(
+                    {"attachment_index": 1, "slot_type": "XB", "endpoint_side": "V"},
+                ),
+                metadata={
+                    "target_point_by_node": {"V0": noisy_target_points[1]},
+                    "target_vector_by_node": {"V0": target_vectors[1]},
+                },
+            ),
+            "V0|V3": GraphEdgeSemanticRecord(
+                edge_id="V0|V3",
+                graph_edge=("V0", "V3"),
+                edge_role_id="edge:EC",
+                path_type="V-E-V",
+                endpoint_node_ids=("V0", "V3"),
+                endpoint_role_ids=("node:VA", "node:VD"),
+                endpoint_pattern=("VA", "EC", "VD"),
+                slot_index={"V0": 2, "V3": 0},
+                slot_rules=(
+                    {"attachment_index": 2, "slot_type": "XC", "endpoint_side": "V"},
+                ),
+                metadata={
+                    "target_point_by_node": {"V0": noisy_target_points[2]},
+                    "target_vector_by_node": {"V0": target_vectors[2]},
+                },
+            ),
+        },
+        node_role_records={
+            "node:VA": NodeRoleRecord(
+                role_id="node:VA",
+                family_alias="VA",
+                role_class="V",
+                slot_rules=(
+                    {"attachment_index": 0, "slot_type": "XA", "anchor_vector": source_anchors[0], "chemistry_direction": source_anchors[0]},
+                    {"attachment_index": 1, "slot_type": "XB", "anchor_vector": source_anchors[1], "chemistry_direction": source_anchors[1]},
+                    {"attachment_index": 2, "slot_type": "XC", "anchor_vector": source_anchors[2], "chemistry_direction": source_anchors[2]},
+                ),
+            ),
+        },
+        edge_role_records={
+            "edge:EA": EdgeRoleRecord(
+                role_id="edge:EA",
+                family_alias="EA",
+                role_class="E",
+                endpoint_pattern=("VA", "EA", "VB"),
+                slot_rules=(
+                    {"attachment_index": 0, "slot_type": "XA", "endpoint_side": "V"},
+                ),
+            ),
+            "edge:EB": EdgeRoleRecord(
+                role_id="edge:EB",
+                family_alias="EB",
+                role_class="E",
+                endpoint_pattern=("VA", "EB", "VC"),
+                slot_rules=(
+                    {"attachment_index": 1, "slot_type": "XB", "endpoint_side": "V"},
+                ),
+            ),
+            "edge:EC": EdgeRoleRecord(
+                role_id="edge:EC",
+                family_alias="EC",
+                role_class="E",
+                endpoint_pattern=("VA", "EC", "VD"),
+                slot_rules=(
+                    {"attachment_index": 2, "slot_type": "XC", "endpoint_side": "V"},
+                ),
+            ),
+        },
+    )
+
+    optimizer = opt.NetOptimizer(semantic_snapshot=semantic_snapshot)
+    rigid_initialization = optimizer.compile_local_rigid_initialization("V0")
+    refinement = optimizer.compile_local_constrained_refinement(
+        "V0",
+        rigid_initialization=rigid_initialization,
+        objective_weights={"anchor_mismatch": 1.0, "angle_alignment": 0.75},
+    )
+
+    assert isinstance(refinement, NodeLocalConstrainedRefinement)
+    assert refinement.correspondence.edge_to_slot_index == {"V0|V1": 0, "V0|V2": 1, "V0|V3": 2}
+    assert refinement.correspondence.edge_to_slot_index == rigid_initialization.correspondence.edge_to_slot_index
+    assert refinement.objective_value < refinement.initial_objective_value
+    assert refinement.metadata["direction_pair_count"] == 3
+    assert refinement.metadata["search_strategy"] == "deterministic coordinate descent around passive SVD pose"
+    assert "angle alignment penalty" in refinement.metadata["objective_terms"][1]
+    assert not np.allclose(
+        np.asarray(refinement.rotation_matrix),
+        np.asarray(rigid_initialization.rotation_matrix),
+    )

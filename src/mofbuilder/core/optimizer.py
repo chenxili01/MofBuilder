@@ -26,6 +26,7 @@ from ..utils.geometry import (unit_cell_to_cartesian_matrix,
                               locate_min_idx, reorthogonalize_matrix,
                               find_optimal_pairings, find_edge_pairings)
 from .optimizer_contract import (
+    compile_local_constrained_refinement,
     compile_discrete_ambiguity_resolution,
     compile_local_rigid_initialization,
     compile_legal_node_correspondences,
@@ -877,6 +878,29 @@ class NetOptimizer:
             node_id,
             node_contract=node_contract,
             correspondences=correspondences,
+        )
+
+    def compile_local_constrained_refinement(self,
+                                             node_id,
+                                             semantic_snapshot=None,
+                                             node_contract=None,
+                                             correspondence=None,
+                                             rigid_initialization=None,
+                                             ambiguity_resolution=None,
+                                             objective_weights=None):
+        snapshot = semantic_snapshot or self.semantic_snapshot
+        if snapshot is None:
+            raise ValueError(
+                "OptimizationSemanticSnapshot is required to compile local constrained refinement."
+            )
+        return compile_local_constrained_refinement(
+            snapshot,
+            node_id,
+            node_contract=node_contract,
+            correspondence=correspondence,
+            rigid_initialization=rigid_initialization,
+            ambiguity_resolution=ambiguity_resolution,
+            objective_weights=objective_weights,
         )
 
 

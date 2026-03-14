@@ -790,3 +790,186 @@ notes:
 - Checkpoint: phase-4-executor-implemented
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews completion and decides whether to advance
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T20:37:36+00:00
+
+## Active Phase
+- Phase: 5
+- Name: Local Constrained Refinement
+
+## Objective
+Add a small optimizer-owned local refinement layer that runs only after the existing legal-correspondence and SVD/ambiguity helpers, improves local chemical realism without changing semantic legality, and remains passive until the guarded integration phase. This plan is bounded by the in-repo control docs and checkpoints; `SNAPSHOT_API_HANDOFF.md`, `OPTIMIZER_DISCUSSION_MEMORY.md`, and `OPTIMIZER_TODO_ROADMAP.md` are referenced by workflow docs but are not present in this checkout.
+
+## Scope
+- `src/mofbuilder/core/optimizer.py`
+- `src/mofbuilder/core/optimizer_contract.py`
+- `src/mofbuilder/core/` new optimizer helper module only if refinement logic cannot stay isolated cleanly
+- `tests/test_core_optimizer.py`
+
+## Tasks
+1. Define a passive refinement result surface for one node that accepts only an already-legal correspondence plus its Phase 3 or Phase 4 rigid initialization result, and records the refined pose, objective breakdown, and any convergence metadata needed for debugging.
+2. Implement a minimal local chemistry-aware refinement routine that operates only inside the fixed legal correspondence neighborhood and uses a documented small objective set, preferably anchor mismatch plus one or two chemistry terms such as bond-distance, angle, or clash penalties; do not introduce broad force-field behavior or null-edge-specific policy in this phase.
+3. Expose the refinement pass passively through optimizer-owned code so it can be called directly in tests or through `NetOptimizer`, but do not wire it into `rotation_and_cell_optimization`, builder code, framework code, guarded migration flags, or legacy-path replacement.
+4. Add tests for at least one representative local case showing refinement starts from an SVD-derived pose, improves or preserves the local objective without changing the legal correspondence, and leaves default-role or legacy optimizer behavior unchanged when the new helper is not invoked.
+
+## Validation
+- `python -m py_compile src/mofbuilder/core/optimizer_contract.py src/mofbuilder/core/optimizer.py tests/test_core_optimizer.py`
+- `python -m pytest tests/test_core_optimizer.py`
+- Confirm the refinement consumes only snapshot-derived contract/correspondence/init outputs and does not inspect builder internals.
+- Confirm legality remains semantics-first and fixed before refinement; the refinement must not remap slots or edges.
+- Confirm Phase 5 scope only: no builder, framework, or supercell edits; no broad optimizer-loop wiring; no null-edge-specific behavior changes; no legacy-path behavior change.
+- If runtime validation cannot run because dependencies are missing, document that blocker explicitly in executor validation notes.
+
+## Non-goals
+- Builder snapshot schema, builder wiring, or framework changes.
+- Any legality compilation rewrite, slot remapping, or geometry-first matching.
+- Null-edge-specific orientation policy beyond preserving existing explicit metadata.
+- Broad global force-field redesign or supercell-related refinement.
+- Guarded integration into the main optimizer path.
+- Replacing, deleting, or silently changing the legacy optimizer path.
+
+## Exit Criteria
+- A passive local constrained refinement helper exists in optimizer-owned code and runs only after a legal correspondence and rigid initialization are already known.
+- The refinement objective is documented in code/tests and remains narrow, local, and chemistry-aware.
+- The refined result stays inside the same legal correspondence neighborhood and does not alter semantic legality.
+- Tests cover at least one representative refined local case without changing existing default or legacy optimizer behavior.
+- `STATUS.md` reflects executor-ready Phase 5 state.
+
+## STATUS.md Update
+- Phase: Phase 5
+- Checkpoint: phase-5-plan-ready
+- Status: READY_FOR_EXECUTOR
+- Next step: Executor implements the active phase only
+
+
+## 2026-03-14 — executor — phase 5 local constrained refinement implementation
+
+branch:
+optimizer-reconstruction
+
+phase:
+Phase 5 — Local Constrained Refinement
+
+checkpoint:
+phase-5-executor-implemented
+
+summary:
+- Added a passive optimizer-owned local constrained refinement result surface that keeps the legal correspondence fixed and records refined pose, objective breakdown, and convergence metadata.
+- Implemented a narrow refinement routine that starts from the existing local rigid initialization, uses only snapshot-derived contract and target data, and optimizes a documented local objective: anchor mismatch plus angle alignment for chemistry-direction pairs when present.
+- Exposed the refinement helper through `NetOptimizer` without wiring it into `rotation_and_cell_optimization`, builder code, framework code, or the legacy optimizer path.
+- Added a representative Phase 5 test showing the refinement improves the combined local objective while preserving the already-legal slot correspondence.
+
+files touched:
+- src/mofbuilder/core/optimizer_contract.py
+- src/mofbuilder/core/optimizer.py
+- tests/test_core_optimizer.py
+- WORKLOG.md
+- STATUS.md
+
+invariants checked:
+- Builder remains the owner of role interpretation and snapshot compilation.
+- Optimizer consumes only snapshot-derived contract/correspondence/rigid-initialization data for the new refinement helper.
+- Semantic legality remains fixed before refinement; the helper does not remap slots or edges.
+- Legacy optimizer behavior remains unchanged because the new refinement path is passive only.
+- Framework behavior, graph grammar, primitive-first ordering, and null-edge semantics were not modified in this phase.
+
+validation:
+- `python -m py_compile src/mofbuilder/core/optimizer_contract.py src/mofbuilder/core/optimizer.py tests/test_core_optimizer.py`
+- Targeted runtime smoke check for `compile_local_constrained_refinement(...)` could not run because `numpy` is not installed in the active interpreter.
+- `python -m pytest tests/test_core_optimizer.py` could not run because the active interpreter is missing test/runtime dependencies.
+
+notes:
+- The refinement search is intentionally narrow in this phase: deterministic coordinate descent around the passive SVD pose with documented anchor-mismatch and angle-alignment terms only.
+- No Phase 6 null-edge-specific policy, guarded integration wiring, builder changes, framework changes, or broad global refinement behavior was added.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T20:45:00+00:00
+
+## Active Phase
+- Phase: 5
+- Name: Local Constrained Refinement
+
+## Implemented
+- Added `NodeLocalConstrainedRefinement` and passive `compile_local_constrained_refinement(...)` support in [src/mofbuilder/core/optimizer_contract.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer_contract.py).
+- Implemented a documented minimal local objective that keeps correspondence fixed: anchor mismatch plus angle alignment for chemistry-direction pairs when snapshot target vectors are present.
+- Exposed the helper via `NetOptimizer.compile_local_constrained_refinement(...)` in [src/mofbuilder/core/optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py).
+- Added a representative Phase 5 refinement test in [tests/test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py).
+- Updated [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md) and [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
+
+## Files Changed
+- [src/mofbuilder/core/optimizer_contract.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer_contract.py)
+- [src/mofbuilder/core/optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py)
+- [tests/test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+
+## Validation
+- `python -m py_compile src/mofbuilder/core/optimizer_contract.py src/mofbuilder/core/optimizer.py tests/test_core_optimizer.py`
+- Targeted runtime smoke check and `python -m pytest tests/test_core_optimizer.py` could not run because the active interpreter is missing `numpy` and test dependencies.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Full Phase 5 runtime validation still needs an environment with `numpy` and `pytest` installed.
+- The Phase 5 objective is intentionally narrow and passive; null-edge-specific behavior and guarded integration remain for later phases.
+
+## STATUS.md Update
+- Phase: Phase 5
+- Checkpoint: phase-5-executor-implemented
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T20:44:36+00:00
+
+## Active Phase
+- Phase: 5
+- Name: Local Constrained Refinement
+
+## Implemented
+- Added a passive `NodeLocalConstrainedRefinement` result surface and refinement compiler in [src/mofbuilder/core/optimizer_contract.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer_contract.py#L238) and [src/mofbuilder/core/optimizer_contract.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer_contract.py#L956).
+- Implemented a narrow local objective that keeps the legal correspondence fixed: anchor mismatch plus angle alignment for `chemistry_direction`/`target_vector` pairs.
+- Exposed the helper passively via [src/mofbuilder/core/optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py#L883).
+- Added a representative Phase 5 test in [tests/test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py#L1148).
+- Updated [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md) and [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
+
+## Files Changed
+- `src/mofbuilder/core/optimizer_contract.py`
+- `src/mofbuilder/core/optimizer.py`
+- `tests/test_core_optimizer.py`
+- `WORKLOG.md`
+- `STATUS.md`
+
+## Validation
+- `python -m py_compile src/mofbuilder/core/optimizer_contract.py src/mofbuilder/core/optimizer.py tests/test_core_optimizer.py`
+- `git diff --check -- src/mofbuilder/core/optimizer_contract.py src/mofbuilder/core/optimizer.py tests/test_core_optimizer.py WORKLOG.md STATUS.md`
+- Targeted runtime smoke check and `python -m pytest tests/test_core_optimizer.py` could not run because the active interpreter is missing `numpy` and test dependencies.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Full Phase 5 runtime validation still needs an environment with `numpy` and `pytest`.
+- The refinement remains intentionally passive and narrow; Phase 6 null-edge-specific behavior and Phase 7 guarded integration were not touched.
+
+## STATUS.md Update
+- Phase: Phase 5
+- Checkpoint: phase-5-executor-implemented
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance

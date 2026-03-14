@@ -234,6 +234,30 @@ class NodeDiscreteAmbiguityResolution:
         return self.selected_candidate.rigid_initialization
 
 
+@dataclass(frozen=True)
+class NodeLocalConstrainedRefinement:
+    node_id: str
+    node_role_id: str
+    correspondence: LegalNodeCorrespondence
+    rigid_initialization: NodeLocalRigidInitialization
+    rotation_matrix: Tuple[Tuple[float, float, float], ...]
+    translation_vector: Tuple[float, float, float]
+    objective_breakdown: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
+    initial_objective_breakdown: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
+    objective_value: float = 0.0
+    initial_objective_value: float = 0.0
+    iterations: int = 0
+    converged: bool = False
+    metadata: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "rotation_matrix", _freeze_tuple(self.rotation_matrix))
+        object.__setattr__(self, "translation_vector", _freeze_tuple(self.translation_vector))
+        object.__setattr__(self, "objective_breakdown", _freeze_mapping(self.objective_breakdown))
+        object.__setattr__(self, "initial_objective_breakdown", _freeze_mapping(self.initial_objective_breakdown))
+        object.__setattr__(self, "metadata", _freeze_mapping(self.metadata))
+
+
 def _select_edge_slot_rule(
     edge_record: GraphEdgeSemanticRecord,
     role_record: Optional[EdgeRoleRecord],
@@ -436,6 +460,119 @@ def _extract_target_anchor(
         or _coerce_point3((edge_metadata.get("target_anchor_by_node") or {}).get(local_node_id))
         or _coerce_point3((edge_metadata.get("target_point_by_node") or {}).get(local_node_id))
         or _coerce_point3((edge_metadata.get("target_vector_by_node") or {}).get(local_node_id))
+    )
+
+
+def _extract_source_direction(slot_rule: FrozenMapping) -> Optional[Tuple[float, float, float]]:
+    return (
+        _coerce_point3(slot_rule.get("chemistry_direction"))
+        or _coerce_point3(slot_rule.get("anchor_direction"))
+        or _coerce_point3(slot_rule.get("anchor_vector"))
+    )
+
+
+def _extract_target_direction_vector(
+    requirement: IncidentEdgePlacementRequirement,
+    local_node_id: str,
+) -> Optional[Tuple[float, float, float]]:
+    if requirement.target_direction is None:
+        return None
+
+    metadata = requirement.target_direction.metadata
+    edge_metadata = metadata.get("edge_metadata", {})
+    constraint = metadata.get("constraint", {})
+
+    return (
+        _coerce_point3(metadata.get("target_direction"))
+        or _coerce_point3(metadata.get("target_vector"))
+        or _coerce_point3(constraint.get("target_direction"))
+        or _coerce_point3(constraint.get("target_vector"))
+        or _coerce_point3(edge_metadata.get("target_direction"))
+        or _coerce_point3(edge_metadata.get("target_vector"))
+        or _coerce_point3((edge_metadata.get("target_direction_by_node") or {}).get(local_node_id))
+        or _coerce_point3((edge_metadata.get("target_vector_by_node") or {}).get(local_node_id))
+    )
+
+
+def _normalize_vector(vector: np.ndarray) -> Optional[np.ndarray]:
+    norm = float(np.linalg.norm(vector))
+    if norm <= 1.0e-12:
+        return None
+    return vector / norm
+
+
+def _rotation_matrix_from_vector(rotation_vector: np.ndarray) -> np.ndarray:
+    theta = float(np.linalg.norm(rotation_vector))
+    if theta <= 1.0e-12:
+        return np.eye(3)
+
+    axis = rotation_vector / theta
+    kx, ky, kz = axis
+    skew = np.array(
+        [
+            [0.0, -kz, ky],
+            [kz, 0.0, -kx],
+            [-ky, kx, 0.0],
+        ],
+        dtype=float,
+    )
+    return (
+        np.eye(3)
+        + np.sin(theta) * skew
+        + (1.0 - np.cos(theta)) * (skew @ skew)
+    )
+
+
+def _evaluate_refinement_objective(
+    source_points: np.ndarray,
+    target_points: np.ndarray,
+    source_directions: np.ndarray,
+    target_directions: np.ndarray,
+    initial_rotation: np.ndarray,
+    initial_translation: np.ndarray,
+    params: np.ndarray,
+    weights: Mapping[str, float],
+) -> Tuple[float, Dict[str, float], np.ndarray, np.ndarray]:
+    rotation_delta = _rotation_matrix_from_vector(params[:3])
+    rotation = initial_rotation @ rotation_delta
+    translation = initial_translation + params[3:]
+
+    transformed_points = source_points @ rotation + translation
+    anchor_mismatch = float(
+        np.mean(np.sum((transformed_points - target_points) ** 2, axis=1))
+    )
+
+    angle_alignment_penalty = 0.0
+    if source_directions.size and target_directions.size:
+        transformed_directions = source_directions @ rotation
+        direction_penalties = []
+        for transformed_direction, target_direction in zip(
+            transformed_directions,
+            target_directions,
+        ):
+            normalized_transformed = _normalize_vector(transformed_direction)
+            normalized_target = _normalize_vector(target_direction)
+            if normalized_transformed is None or normalized_target is None:
+                continue
+            cosine = float(np.clip(np.dot(normalized_transformed, normalized_target), -1.0, 1.0))
+            direction_penalties.append(1.0 - cosine)
+        if direction_penalties:
+            angle_alignment_penalty = float(np.mean(direction_penalties))
+
+    objective_value = (
+        float(weights["anchor_mismatch"]) * anchor_mismatch
+        + float(weights["angle_alignment"]) * angle_alignment_penalty
+    )
+    return (
+        objective_value,
+        {
+            "anchor_mismatch": anchor_mismatch,
+            "angle_alignment_penalty": angle_alignment_penalty,
+            "weighted_anchor_mismatch": float(weights["anchor_mismatch"]) * anchor_mismatch,
+            "weighted_angle_alignment": float(weights["angle_alignment"]) * angle_alignment_penalty,
+        },
+        rotation,
+        translation,
     )
 
 
@@ -811,6 +948,191 @@ def compile_discrete_ambiguity_resolution(
         metadata={
             "candidate_count": len(candidates),
             "selection_policy": "lowest_rmsd_then_slot_signature",
+            "graph_phase": semantic_snapshot.graph_phase,
+        },
+    )
+
+
+def compile_local_constrained_refinement(
+    semantic_snapshot: OptimizationSemanticSnapshot,
+    node_id: str,
+    node_contract: Optional[NodePlacementContract] = None,
+    correspondence: Optional[LegalNodeCorrespondence] = None,
+    rigid_initialization: Optional[NodeLocalRigidInitialization] = None,
+    ambiguity_resolution: Optional[NodeDiscreteAmbiguityResolution] = None,
+    objective_weights: Optional[Mapping[str, float]] = None,
+) -> NodeLocalConstrainedRefinement:
+    contract = node_contract or compile_node_placement_contract(semantic_snapshot, node_id)
+    selected_correspondence = correspondence
+    selected_initialization = rigid_initialization
+
+    if ambiguity_resolution is not None:
+        if selected_correspondence is None:
+            selected_correspondence = ambiguity_resolution.selected_correspondence
+        if selected_initialization is None:
+            selected_initialization = ambiguity_resolution.selected_initialization
+
+    if selected_initialization is None:
+        selected_initialization = compile_local_rigid_initialization(
+            semantic_snapshot,
+            node_id,
+            node_contract=contract,
+            correspondence=selected_correspondence,
+        )
+
+    if selected_correspondence is None:
+        selected_correspondence = selected_initialization.correspondence
+
+    if selected_initialization.correspondence.edge_to_slot_index != selected_correspondence.edge_to_slot_index:
+        raise ValueError(
+            "Local constrained refinement requires the rigid initialization and legal correspondence to match."
+        )
+
+    weights = {
+        "anchor_mismatch": 1.0,
+        "angle_alignment": 0.25,
+    }
+    if objective_weights is not None:
+        weights.update({key: float(value) for key, value in objective_weights.items()})
+
+    requirement_by_edge_id = {
+        requirement.edge_id: requirement for requirement in contract.incident_requirements
+    }
+    source_points = []
+    target_points = []
+    source_directions = []
+    target_directions = []
+
+    for assignment in selected_correspondence.assignments:
+        requirement = requirement_by_edge_id[assignment.edge_id]
+        slot_rule = contract.slot_rules[assignment.slot_index]
+        source_anchor = _extract_source_anchor(slot_rule)
+        target_anchor = _extract_target_anchor(requirement, contract.node_id)
+        if source_anchor is None or target_anchor is None:
+            raise ValueError(
+                f"Local constrained refinement requires explicit source and target anchors for edge {assignment.edge_id}."
+            )
+        source_points.append(source_anchor)
+        target_points.append(target_anchor)
+
+        source_direction = _extract_source_direction(slot_rule)
+        target_direction = _extract_target_direction_vector(requirement, contract.node_id)
+        if source_direction is not None and target_direction is not None:
+            source_directions.append(source_direction)
+            target_directions.append(target_direction)
+
+    if len(source_points) < 2:
+        raise ValueError("At least two anchor pairs are required for local constrained refinement.")
+
+    source_point_array = np.asarray(source_points, dtype=float)
+    target_point_array = np.asarray(target_points, dtype=float)
+    source_direction_array = (
+        np.asarray(source_directions, dtype=float) if source_directions else np.empty((0, 3), dtype=float)
+    )
+    target_direction_array = (
+        np.asarray(target_directions, dtype=float) if target_directions else np.empty((0, 3), dtype=float)
+    )
+    initial_rotation = np.asarray(selected_initialization.rotation_matrix, dtype=float)
+    initial_translation = np.asarray(selected_initialization.translation_vector, dtype=float)
+
+    params = np.zeros(6, dtype=float)
+    objective_value, objective_breakdown, refined_rotation, refined_translation = (
+        _evaluate_refinement_objective(
+            source_point_array,
+            target_point_array,
+            source_direction_array,
+            target_direction_array,
+            initial_rotation,
+            initial_translation,
+            params,
+            weights,
+        )
+    )
+    initial_objective_value = float(objective_value)
+    initial_objective_breakdown = dict(objective_breakdown)
+    iterations = 1
+
+    search_schedule = (
+        (0.24, 0.16),
+        (0.12, 0.08),
+        (0.06, 0.04),
+        (0.03, 0.02),
+        (0.01, 0.01),
+    )
+
+    improved = False
+    for rotation_step, translation_step in search_schedule:
+        step_sizes = np.array(
+            [
+                rotation_step,
+                rotation_step,
+                rotation_step,
+                translation_step,
+                translation_step,
+                translation_step,
+            ],
+            dtype=float,
+        )
+        step_improved = False
+        for coordinate_index in range(6):
+            for direction in (-1.0, 1.0):
+                candidate_params = params.copy()
+                candidate_params[coordinate_index] += direction * step_sizes[coordinate_index]
+                (
+                    candidate_objective,
+                    candidate_breakdown,
+                    candidate_rotation,
+                    candidate_translation,
+                ) = _evaluate_refinement_objective(
+                    source_point_array,
+                    target_point_array,
+                    source_direction_array,
+                    target_direction_array,
+                    initial_rotation,
+                    initial_translation,
+                    candidate_params,
+                    weights,
+                )
+                iterations += 1
+                if candidate_objective + 1.0e-12 < objective_value:
+                    params = candidate_params
+                    objective_value = candidate_objective
+                    objective_breakdown = candidate_breakdown
+                    refined_rotation = candidate_rotation
+                    refined_translation = candidate_translation
+                    step_improved = True
+                    improved = True
+        if not step_improved:
+            continue
+
+    return NodeLocalConstrainedRefinement(
+        node_id=contract.node_id,
+        node_role_id=contract.node_role_id,
+        correspondence=selected_correspondence,
+        rigid_initialization=selected_initialization,
+        rotation_matrix=tuple(tuple(float(value) for value in row) for row in refined_rotation),
+        translation_vector=tuple(float(value) for value in refined_translation),
+        objective_breakdown={
+            **objective_breakdown,
+            "objective": float(objective_value),
+        },
+        initial_objective_breakdown={
+            **initial_objective_breakdown,
+            "objective": float(initial_objective_value),
+        },
+        objective_value=float(objective_value),
+        initial_objective_value=float(initial_objective_value),
+        iterations=iterations,
+        converged=not improved or objective_value <= initial_objective_value + 1.0e-12,
+        metadata={
+            "anchor_count": len(source_points),
+            "direction_pair_count": len(source_directions),
+            "objective_terms": (
+                "anchor mismatch penalty from rigidly transformed source anchors to target anchors",
+                "angle alignment penalty from chemistry_direction/target_vector pairs when present",
+            ),
+            "search_strategy": "deterministic coordinate descent around passive SVD pose",
+            "weights": weights,
             "graph_phase": semantic_snapshot.graph_phase,
         },
     )
