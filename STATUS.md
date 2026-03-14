@@ -7,11 +7,13 @@ latest active checkpoint in `WORKLOG.md`.
 
 - Phase: `Phase 1 - Planning/spec`
 - Checkpoint: `P1.0`
-- Status: complete
-- Next step: reviewer validation
+- Status: contract generated
+- Next step: executor corrective remediation pass
 - Execution mode: automated phase runner
 - Active thread / branch: `codex_record`
-- Blocking conflict: none
+- Blocking conflict: latest 2026-03-14 review is `FAILED` with
+  `Can executor proceed?: no`; reconcile the out-of-contract workflow
+  maintenance run and log/state mismatch before any forward progress
 - Last update: 2026-03-14
 
 ## Rules
@@ -28,15 +30,14 @@ latest active checkpoint in `WORKLOG.md`.
 - 2026-03-14: control-doc rules were refined so localized workflow/env support
   seams such as `workflow/run.py`, one narrow test, and runner/config helpers
   are allowed when they do not affect builder/runtime behavior and are logged.
-- 2026-03-14: active work is a localized workflow-runner enhancement so one
-  invocation can advance through successive approved phases, repair stale
-  resume state against the canonical root `STATUS.md`, and avoid duplicate
-  control-doc logging.
-- Files changed: `workflow/run.py`, `tests/test_workflow_run.py`,
-  `WORKLOG.md`, `STATUS.md`, removed `workflow/STATUS.md`,
-  removed `workflow/WORKLOG.md`.
-- Verification: `scripts/run_tests.sh tests/test_workflow_run.py` passed
-  (`10 passed`).
-- Blockers: none.
-- Next checkpoint: remain on `Phase 1 - Planning/spec` / `P1.0`; next step is
-  reviewer validation for the workflow continuity cleanup.
+- 2026-03-14: latest governing review outcome for the active checkpoint is the
+  2026-03-14 failed machine-readable summary block in `REVIEW.md`, so `P1.0`
+  is in remediation mode rather than forward execution.
+- 2026-03-14: unresolved remediation items are:
+  reconcile the out-of-contract workflow-maintenance run recorded against
+  `P1.0`;
+  keep `WORKLOG.md` and `STATUS.md` aligned with the actual authorized scope;
+  record that the latest failed review still needs append-only entry into
+  `REVIEW.md` by a permitted thread;
+  rerun `scripts/run_tests.sh tests/test_workflow_run.py` only after the
+  contract/logging mismatch is corrected.

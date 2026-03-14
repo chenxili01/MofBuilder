@@ -2405,3 +2405,32 @@ None. No contract, architecture, graph-state, or role-model conflict was encount
 - Result: runner continuity is repaired for the current repository state; stale saved planner state no longer overrides root `STATUS.md`, approved reviews advance to the next phase within the same run, and duplicate local control docs are removed.
 - Verification: `scripts/run_tests.sh tests/test_workflow_run.py` passed (`10 passed`).
 - Next step: reviewer validation of the `P1.0` workflow continuity cleanup.
+
+**Correction — 2026-03-14 root-state remediation reset**
+
+- Scope: root control-doc reconciliation only; do not reopen `workflow/run.py`,
+  tests, runtime modules, bundled databases, or frozen planning docs here.
+- Decisions:
+  the latest governing review for the active checkpoint is the 2026-03-14
+  failed machine-readable summary block in `REVIEW.md`, so root `STATUS.md`
+  must return to remediation mode for `Phase 1 - Planning/spec` / `P1.0`;
+  localized workflow or markdown support-seam work may be permissible only when
+  the active checkpoint contract names it explicitly, but the recorded
+  workflow-maintenance run still broadened beyond the then-active `P1.0`
+  contract and therefore remains a blocker until reconciled;
+  the runner/test changes are preserved as history rather than reclassified as
+  in-contract by this control-doc correction alone.
+- Tests run: none; this correction does not claim verification.
+- Conflicts / blockers:
+  the out-of-contract workflow-maintenance run recorded against `P1.0` remains
+  unresolved;
+  root `WORKLOG.md` and `STATUS.md` had drifted away from the latest failed
+  review state;
+  the latest failed review still needs append-only recording in `REVIEW.md` by
+  a permitted thread if that repository policy is being enforced.
+- Handoff / next checkpoint:
+  remain on `Phase 1 - Planning/spec` / `P1.0` with `Status: contract
+  generated`;
+  next step is an executor corrective remediation pass;
+  rerun `scripts/run_tests.sh tests/test_workflow_run.py` only after the
+  contract/logging mismatch is corrected.
