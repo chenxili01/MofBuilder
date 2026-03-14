@@ -2,6 +2,7 @@
 
 import sys
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 import networkx as nx
@@ -25,6 +26,7 @@ from ..utils.geometry import (unit_cell_to_cartesian_matrix,
                               locate_min_idx, reorthogonalize_matrix,
                               find_optimal_pairings, find_edge_pairings)
 from .other import fetch_X_atoms_ind_array
+from .runtime_snapshot import OptimizationSemanticSnapshot
 from .superimpose import superimpose_rotation_only
 
 
@@ -37,7 +39,7 @@ class NetOptimizer:
     opt_rots, sc_unit_cell, sc_rot_node_X_pos, sG, optimized_pair, etc.
     """
 
-    def __init__(self, comm=None, ostream=None):
+    def __init__(self, comm=None, ostream=None, semantic_snapshot=None):
         self.comm = comm or MPI.COMM_WORLD
         self.rank = self.comm.Get_rank()
         self.nodes = self.comm.Get_size()
@@ -74,6 +76,7 @@ class NetOptimizer:
         self.fake_edge = False
         self.node_fragment_payloads = None
         self.edge_fragment_payloads = None
+        self.semantic_snapshot = semantic_snapshot
         #self.constant_length = 1.54  #default C-C single bond length
         self.linker_frag_length = None
 
@@ -161,12 +164,17 @@ class NetOptimizer:
         - unsaturated_vnode_xoo_dict (dict):unsaturated node and the exposed X connected atom index and the corresponding O connected atoms
         """
 
-    def rotation_and_cell_optimization(self):
+    def rotation_and_cell_optimization(
+        self,
+        semantic_snapshot: Optional[OptimizationSemanticSnapshot] = None,
+    ):
         """
         two optimization steps:
         1. optimize the node rotation (vertex or edge center)
         2. optimize the cell parameters to fit the target MOF cell
         """
+        if semantic_snapshot is not None:
+            self.semantic_snapshot = semantic_snapshot
         #if self._debug:
         self.ostream.print_info(f"constant_length: {self.constant_length}")
         self.ostream.flush()

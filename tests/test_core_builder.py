@@ -585,7 +585,7 @@ def test_load_and_optimize_framework_single_role_keeps_scalar_state_and_passes_d
     optimizer_calls = []
     captured_optimizer = {}
 
-    def fake_rotation(self):
+    def fake_rotation(self, semantic_snapshot=None):
         optimizer_calls.append("rotation")
         captured_optimizer["instance"] = self
         assert self.node_role_registry is builder.node_role_registry
@@ -596,6 +596,8 @@ def test_load_and_optimize_framework_single_role_keeps_scalar_state_and_passes_d
         assert self.edge_role_registry["edge:default"]["linker_center_data"] == (
             linker_center_data
         )
+        assert isinstance(semantic_snapshot, OptimizationSemanticSnapshot)
+        assert semantic_snapshot == builder.get_optimization_semantic_snapshot()
         self.sG = self.G.copy()
         self.optimized_cell_info = [11.0, 11.0, 11.0, 90.0, 90.0, 90.0]
         self.sc_unit_cell = np.eye(3) * 11.0

@@ -2,8 +2,8 @@
 
 ## Workflow Status
 
-- Phase: Phase 4
-- Checkpoint: phase-4-validation-implemented
+- Phase: Phase 5
+- Checkpoint: phase-5-optimizer-hook-implemented
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews completion and decides whether to advance
 - Last update: 2026-03-14
@@ -18,7 +18,7 @@ Establish a clean, builder-owned snapshot API that future optimizer/rotation rec
 
 ## Current Focus
 
-Harden snapshot compilation with focused validation and compatibility tests covering missing role registry data, graph/snapshot consistency, bundle ordering consistency, null-edge rule consistency, legacy/default fallback stability, and allowed empty/partial optional data, without changing optimizer behavior, framework behavior, FrameNet graph stamping, or the build pipeline.
+Add the smallest optional optimizer snapshot-ingestion hook so the optimizer can accept a builder-compiled semantic snapshot without changing default behavior, optimizer scoring/objective logic, framework behavior, supercell behavior, or the build pipeline.
 
 ## Invariants
 

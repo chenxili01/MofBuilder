@@ -744,3 +744,173 @@ notes:
 - Checkpoint: phase-4-validation-implemented
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews completion and decides whether to advance
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T17:43:15+00:00
+
+## Active Phase
+- Phase: 5
+- Name: Optional Optimizer Snapshot Ingestion Hook
+
+## Objective
+Phase 5 should add the narrowest possible wiring so the optimizer can optionally receive a builder-compiled `OptimizationSemanticSnapshot`, while preserving the full legacy optimizer path and avoiding any role-aware optimization rewrite.
+
+## Scope
+- `src/mofbuilder/core/builder.py`
+- `src/mofbuilder/core/optimizer.py`
+- `tests/test_core_builder.py`
+- `tests/test_core_optimizer.py`
+
+## Tasks
+1. Add a minimal optional snapshot handoff from the builder into the existing optimizer call path in [`builder.py`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py), compiling the snapshot through the existing builder-owned getter and passing it only as an optional argument.
+2. Extend [`optimizer.py`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py) so `NetOptimizer` and/or `rotation_and_cell_optimization()` can accept `semantic_snapshot=None`, store it as a narrow input only, and leave the current no-snapshot execution path behaviorally unchanged.
+3. Add focused tests in [`test_core_builder.py`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py) and [`test_core_optimizer.py`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py) covering both construction paths: default legacy execution with no snapshot and optional execution with a provided snapshot object, proving the hook is wiring-only.
+
+## Validation
+- Run targeted validation for the touched builder/optimizer tests; prefer `pytest` on `tests/test_core_builder.py` and `tests/test_core_optimizer.py`, and if the environment still lacks required tooling, fall back to compile/import checks and document the blocker.
+- Verify invariants remain intact: graph role ids stay on graph elements, builder remains the owner of interpretation and snapshot compilation, optimizer does not reinterpret semantics or change scoring/objective logic, framework remains role-agnostic, primitive-first ordering is unchanged, and the old optimizer path remains fully intact.
+
+## Non-goals
+- Do not rewrite optimizer placement, rotation, scoring, objective, slot-matching, or null-edge algorithms.
+- Do not modify framework, supercell, FrameNet, graph grammar, snapshot schema ownership, or existing builder public APIs beyond the optional hook wiring allowed by Phase 5.
+
+## Exit Criteria
+- The optimizer can accept an optional semantic snapshot input through the Phase 5 hook, with `None` remaining the default path.
+- Tests demonstrate both no-snapshot and snapshot-present paths without public API breakage, ownership drift, or behavior changes to the existing optimizer flow.
+
+## STATUS.md Update
+- Phase: Phase 5
+- Checkpoint: phase-5-plan-ready
+- Status: READY_FOR_EXECUTOR
+- Next step: Executor implements the active phase only
+
+`STATUS.md` has been updated at [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
+
+
+## 2026-03-14 — executor — add phase 5 optimizer snapshot hook
+
+branch:
+role-runtime-contract
+
+phase:
+Phase 5 — Optional Optimizer Snapshot Ingestion Hook
+
+checkpoint:
+phase-5-optimizer-hook-implemented
+
+summary:
+- Added the narrowest builder-to-optimizer handoff so `optimize_framework()` passes a builder-compiled `OptimizationSemanticSnapshot` into the existing optimizer call path.
+- Extended `NetOptimizer` to accept an optional `semantic_snapshot` input at construction time and on `rotation_and_cell_optimization()` without changing the legacy no-snapshot path or optimizer logic.
+- Added focused builder and optimizer tests covering optional snapshot wiring, default `None` behavior, and method-level storage of the provided snapshot.
+
+files touched:
+- src/mofbuilder/core/builder.py
+- src/mofbuilder/core/optimizer.py
+- tests/test_core_builder.py
+- tests/test_core_optimizer.py
+
+invariants checked:
+- Graph role ids remain on graph elements; the snapshot is still builder-compiled and derived-only.
+- Builder remains the owner of role interpretation and snapshot compilation; optimizer only accepts the narrowed snapshot object.
+- Framework, supercell, FrameNet, primitive-first ordering, and optimizer scoring/objective logic were not modified.
+- The legacy optimizer path remains intact because `semantic_snapshot` is optional and defaults to `None`.
+
+validation:
+- `python -m compileall src/mofbuilder/core/builder.py src/mofbuilder/core/optimizer.py tests/test_core_builder.py tests/test_core_optimizer.py`
+- `python -m pytest tests/test_core_builder.py tests/test_core_optimizer.py` could not run because `pytest` is not installed in the available interpreter.
+- Direct runtime assertions could not run because `networkx` is not installed in the available interpreter.
+
+notes:
+- Phase 5 scope was kept to builder/optimizer hook wiring and focused tests only.
+- No optimizer algorithm rewrite or framework behavior change was introduced.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T18:00:00+00:00
+
+## Active Phase
+- Phase: 5
+- Name: Optional Optimizer Snapshot Ingestion Hook
+
+## Implemented
+- Passed a builder-compiled optimization semantic snapshot into the existing optimizer rotation entry point in [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py).
+- Added optional `semantic_snapshot` acceptance and storage on [`NetOptimizer`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py) without changing default optimizer behavior.
+- Added focused hook-coverage in [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py) and [test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py).
+
+## Files Changed
+- `src/mofbuilder/core/builder.py`
+- `src/mofbuilder/core/optimizer.py`
+- `tests/test_core_builder.py`
+- `tests/test_core_optimizer.py`
+- `WORKLOG.md`
+- `STATUS.md`
+
+## Validation
+- `python -m compileall src/mofbuilder/core/builder.py src/mofbuilder/core/optimizer.py tests/test_core_builder.py tests/test_core_optimizer.py`
+- `python -m pytest tests/test_core_builder.py tests/test_core_optimizer.py` could not run because `pytest` is not installed in the available interpreter.
+- Direct runtime assertions could not run because `networkx` is not installed in the available interpreter.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Environment is still missing `pytest`, so targeted test execution remains blocked.
+- The available interpreter is also missing `networkx`, so direct runtime import checks could not be completed locally.
+
+## STATUS.md Update
+- Phase: Phase 5
+- Checkpoint: phase-5-optimizer-hook-implemented
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T17:47:31+00:00
+
+## Active Phase
+- Phase: 5
+- Name: Optional Optimizer Snapshot Ingestion Hook
+
+## Implemented
+- Passed a builder-compiled `OptimizationSemanticSnapshot` into the existing optimizer rotation entry point in [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py#L2191).
+- Extended [`NetOptimizer`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py#L39) to accept and store an optional `semantic_snapshot` at construction and on `rotation_and_cell_optimization(...)`.
+- Added focused Phase 5 coverage in [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py#L585) and [test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py#L57).
+
+## Files Changed
+- `src/mofbuilder/core/builder.py`
+- `src/mofbuilder/core/optimizer.py`
+- `tests/test_core_builder.py`
+- `tests/test_core_optimizer.py`
+- `WORKLOG.md`
+- `STATUS.md`
+
+## Validation
+- `python -m compileall src/mofbuilder/core/builder.py src/mofbuilder/core/optimizer.py tests/test_core_builder.py tests/test_core_optimizer.py`
+- `git diff --check -- src/mofbuilder/core/builder.py src/mofbuilder/core/optimizer.py tests/test_core_builder.py tests/test_core_optimizer.py WORKLOG.md STATUS.md`
+- `python -m pytest tests/test_core_builder.py tests/test_core_optimizer.py` could not run because `pytest` is not installed in the available interpreter.
+- Direct runtime import/assertion checks could not run because the available interpreter is missing `networkx`.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Local runtime validation is still blocked by missing `pytest`.
+- Direct import-based validation is also blocked by missing `networkx` in the available interpreter.
+
+## STATUS.md Update
+- Phase: Phase 5
+- Checkpoint: phase-5-optimizer-hook-implemented
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance

@@ -2191,7 +2191,9 @@ class MetalOrganicFrameworkBuilder:
         self.ostream.print_info(
             "Start to optimize the node rotations and cell parameters")
         self.ostream.flush()
-        self.net_optimizer.rotation_and_cell_optimization()
+        self.net_optimizer.rotation_and_cell_optimization(
+            semantic_snapshot=self.get_optimization_semantic_snapshot()
+        )
         self.ostream.print_info("--------------------------------")
         self.ostream.print_info(
             "Finished optimizing the node rotations and cell parameters")

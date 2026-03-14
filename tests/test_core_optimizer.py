@@ -1,7 +1,9 @@
 import numpy as np
 import networkx as nx
+import pytest
 
 from mofbuilder.core import optimizer as opt
+from mofbuilder.core.runtime_snapshot import OptimizationSemanticSnapshot
 
 
 def _fragment_table(rows):
@@ -50,6 +52,43 @@ def test_expand_set_rots_maps_one_rotation_per_group():
     assert np.allclose(out[0], rot_v)
     assert np.allclose(out[1], rot_w)
     assert np.allclose(out[2], rot_v)
+
+
+def test_optimizer_optional_semantic_snapshot_hook_defaults_and_accepts_snapshot():
+    optimizer = opt.NetOptimizer()
+
+    assert optimizer.semantic_snapshot is None
+
+    semantic_snapshot = OptimizationSemanticSnapshot(
+        family_name="TEST-FAMILY",
+        graph_phase="G",
+        metadata={"phase_bounded": "phase_5_hook"},
+    )
+    optimizer_with_snapshot = opt.NetOptimizer(semantic_snapshot=semantic_snapshot)
+
+    assert optimizer_with_snapshot.semantic_snapshot is semantic_snapshot
+
+
+def test_rotation_and_cell_optimization_stores_optional_semantic_snapshot(
+    monkeypatch,
+):
+    optimizer = opt.NetOptimizer()
+    optimizer.constant_length = 1.54
+    optimizer.G = nx.Graph()
+    semantic_snapshot = OptimizationSemanticSnapshot(
+        family_name="TEST-FAMILY",
+        graph_phase="G",
+    )
+
+    def stop_after_hook(_graph):
+        raise RuntimeError("stop-after-hook")
+
+    monkeypatch.setattr(optimizer, "_prepare_role_fragment_payloads", stop_after_hook)
+
+    with pytest.raises(RuntimeError, match="stop-after-hook"):
+        optimizer.rotation_and_cell_optimization(semantic_snapshot=semantic_snapshot)
+
+    assert optimizer.semantic_snapshot is semantic_snapshot
 
 
 def test_get_rot_trans_matrix_uses_superimpose_result(monkeypatch):
