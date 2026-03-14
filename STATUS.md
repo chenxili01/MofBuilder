@@ -2,30 +2,31 @@
 
 ## Workflow Status
 
-- Phase: Phase 7
-- Checkpoint: workflow-complete
-- Status: COMPLETED
-- Next step: done
+- Phase: Phase 1
+- Checkpoint: workflow-initialized
+- Status: READY_FOR_PLANNER
+- Next step: Planner defines the active phase implementation plan
 - Last update: 2026-03-14
 
 ## Branch
 
-mofbuilder-role-refactor
+role-runtime-contract
 
 ## Objective
 
-Implement the role-based topology semantics defined in `ROUND1_CHECKPOINT.md` and `ROUND2_CHECKPOINT.md` while preserving backward compatibility, stable builder/framework ownership, and primitive-first optimization.
+Establish a clean, builder-owned snapshot API that future optimizer/rotation reconstruction can consume safely, without exposing arbitrary mutable builder internals.
 
 ## Current Focus
 
-Phase 7 execution is complete in the builder. The planner should review the post-optimization resolve implementation, builder-owned ownership/provenance outputs, and targeted validation results before deciding whether to advance the workflow.
+Start with snapshot architecture and record types only. Do not begin optimizer rewrite yet.
 
 ## Invariants
 
 1. Topology graph remains the source of truth.
 2. Builder owns role interpretation.
-3. Framework remains role-agnostic.
+3. Framework remains role-agnostic in this branch.
 4. Backward compatibility must be preserved.
 5. Primitive-first optimization must be preserved.
 6. Null-edge semantics must remain consistent with the checkpoints.
 7. Bundle ownership and resolver boundaries must remain consistent with the checkpoints.
+8. Snapshots are derived API views, not new sources of truth.

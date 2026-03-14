@@ -2,596 +2,179 @@
 
 ## Purpose
 
-This document records **architectural decisions and their rationale** for MOFBuilder.
-
-It serves several purposes:
-
-* explain **why the system is designed the way it is**
-* prevent accidental architectural drift
-* guide future contributors
-* help Codex agents understand design intent
+This document records architectural decisions for the `role-runtime-contract` branch.
 
 Each decision entry includes:
 
-* **Context**
-* **Decision**
-* **Consequences**
+* Context
+* Decision
+* Consequences
 
 ---
 
-# ADR-001: Stable Builder–Framework Separation
+# ADR-RTC-001: Snapshot-First Seam Before Optimizer Rewrite
 
 ## Context
 
-MOFBuilder must support a full workflow:
+The previous role-aware work introduced meaningful builder-owned state incrementally, but that state remains spread across multiple internal maps and structures.
 
-* topology interpretation
-* fragment preparation
-* geometry optimization
-* supercell expansion
-* structure export
-* defect manipulation
-* MD preparation
-
-These operations occur at **different conceptual stages**.
+The upcoming optimizer/rotation reconstruction needs semantic inputs, but allowing optimizer to consume arbitrary builder internals would create tight coupling and future drift.
 
 ## Decision
 
-Separate responsibilities between:
+Introduce a **snapshot-first API seam** before rewriting optimizer behavior.
 
-```
-MetalOrganicFrameworkBuilder
-Framework
-```
-
-Builder:
-
-* orchestrates the **construction process**
-
-Framework:
-
-* represents the **completed MOF structure**
-* provides **post-build operations**
+Builder will export explicit runtime snapshots instead of handing downstream modules arbitrary mutable internal state.
 
 ## Consequences
 
 Advantages:
 
-* clear lifecycle boundary
-* stable user-facing object
-* easier extension of post-build workflows
+* safer optimizer integration
+* clearer ownership boundaries
+* easier testing
+* easier staged migration
 
 Tradeoffs:
 
-* requires copying state from builder to framework
-* two objects must remain consistent
+* some temporary duplication between old internal structures and new snapshot views
+* requires explicit conversion/compilation logic
 
 ---
 
-# ADR-002: Graph-Centric Internal Representation
+# ADR-RTC-002: Builder Owns Snapshot Compilation
 
 ## Context
 
-MOF topologies are naturally expressed as **graphs**.
-
-Nodes represent:
-
-* metal clusters
-* linker centers
-
-Edges represent:
-
-* linker connectors
-* topology constraints
+Role interpretation, bundle maps, null-edge policies, and resolve scaffolding are all builder-owned responsibilities under the agreed checkpoints.
 
 ## Decision
 
-Represent MOF topology internally as **NetworkX graphs**.
+All snapshot compilation remains builder-owned.
 
-Primary graph states:
-
-```
-G         primitive topology graph
-sG        optimized primitive graph
-superG    expanded supercell graph
-eG        edge graph
-cleaved_eG processed edge graph
-```
-
-Graph attributes store semantic metadata.
+Snapshots compile from:
+- graph role ids
+- builder registries
+- bundle maps
+- resolve scaffolding
+- passive family metadata
 
 ## Consequences
 
 Advantages:
 
-* flexible topology representation
-* easier neighbor queries
-* natural fit for reticular chemistry
+* preserves checkpoint ownership
+* avoids optimizer/framework semantic drift
 
 Tradeoffs:
 
-* graph metadata must remain consistent across pipeline stages
-* graph copying between states requires careful handling
+* builder remains the central orchestration layer
+* builder code may grow unless helper modules are kept disciplined
 
 ---
 
-# ADR-003: Role IDs Stored on Graph Elements
+# ADR-RTC-003: Snapshots Are API Views, Not Sources of Truth
 
 ## Context
 
-Traditional MOF builders infer fragment placement from **chemistry heuristics**.
+The graph already stores role identity, and builder already owns runtime interpretation.
 
-However, topology-driven construction requires **explicit semantic roles**.
-
-Examples:
-
-* metal cluster centers
-* linker centers
-* connector edges
+Adding snapshots risks creating a third competing semantic source.
 
 ## Decision
 
-Store role identifiers directly on graph elements.
+Snapshots are **derived views only**.
 
-```
-G.nodes[n]["node_role_id"]
-G.edges[e]["edge_role_id"]
-```
-
-These become the **source of truth** for role semantics.
-
-Fragment assignment is resolved through builder-managed registries.
+The graph remains the topology source of truth.
+Builder remains the runtime interpretation owner.
+Snapshots are compiled, read-only views for downstream use.
 
 ## Consequences
 
 Advantages:
 
-* deterministic fragment assignment
-* explicit topology semantics
-* easier multi-role family support
+* preserves established invariants
+* avoids semantic duplication drift
 
 Tradeoffs:
 
-* requires metadata normalization
-* role registry must remain synchronized with graph state
+* conversion logic must be kept honest and tested
 
 ---
 
-# ADR-004: Role Registry Managed by Builder
+# ADR-RTC-004: Narrow Snapshot for Optimizer
 
 ## Context
 
-Graph elements identify roles, but they do not directly contain fragment payloads.
-
-Fragment payloads must be resolved dynamically.
+The optimizer will eventually need role-aware semantic inputs, but it should not become the owner of builder semantics or depend on full builder internals.
 
 ## Decision
 
-The builder maintains runtime registries:
-
-```
-node_role_registry
-edge_role_registry
-```
-
-Registries map role IDs to:
-
-* fragment payloads
-* slot metadata
-* connector information
+Define a separate `OptimizationSemanticSnapshot` rather than passing the full runtime snapshot or builder object.
 
 ## Consequences
 
 Advantages:
 
-* clean separation of topology and chemistry
-* easier fragment substitution
-* supports data-driven MOF families
+* narrow interface
+* simpler future optimizer contracts
+* easier test coverage
 
 Tradeoffs:
 
-* builder becomes central orchestration layer
-* registry state must propagate through pipeline
+* requires thoughtful selection of fields
+* may need revision if later optimizer requirements expand
 
 ---
 
-# ADR-005: Prefix-Based Role Semantics
+# ADR-RTC-005: Framework Remains Role-Agnostic in This Branch
 
 ## Context
 
-MOF families require multiple role types.
-
-Examples:
-
-```
-VA VB VC
-EA EB
-CA
-```
-
-However, roles must remain **family-specific**.
+The current branch targets the clean runtime contract first, not framework redesign.
 
 ## Decision
 
-Use prefix-based role semantics.
+Framework behavior remains unchanged in this branch.
 
-```
-V*  node center
-C*  linker center
-E*  connector edge
-```
-
-Suffix letters represent **family-local identifiers**.
-
-```
-VA != globally special node
-VA = one node role within a family
-```
+A `FrameworkInputSnapshot` may be defined as a stable handoff concept, but no framework semantic expansion occurs here.
 
 ## Consequences
 
 Advantages:
 
-* flexible role system
-* no global role namespace conflicts
-* supports arbitrary topology families
+* reduced risk
+* phase discipline
+* preserves builder/framework separation
 
 Tradeoffs:
 
-* role semantics must be interpreted using metadata
+* some future integration work remains for later branches
 
 ---
 
-# ADR-006: Restricted Graph Grammar
+# ADR-RTC-006: Legacy Default-Role Compatibility Remains Mandatory
 
 ## Context
 
-Reticular frameworks connect fragments through **two fundamental patterns**.
-
-```
-node — linker — node
-node — connector — linker center
-```
-
-Allowing arbitrary patterns would dramatically increase complexity.
-
-## Decision
-
-Limit the topology grammar to:
-
-```
-V-E-V
-V-E-C
-```
-
-Where:
-
-```
-V node center
-C linker center
-E connector edge
-```
-
-## Consequences
-
-Advantages:
-
-* simpler optimizer logic
-* deterministic linker reconstruction
-* easier validation
-
-Tradeoffs:
-
-* more exotic topology patterns are not supported yet
-
----
-
-# ADR-007: Linker Bundle Ownership
-
-## Context
-
-Multitopic linkers consist of:
-
-* central scaffold
-* connector arms
-
-Topology must reconstruct these fragments consistently.
-
-## Decision
-
-Define **linker center roles (`C*`) as bundle owners**.
-
-Bundle contents:
-
-```
-C center
-+ incident E connectors
-```
-
-## Consequences
-
-Advantages:
-
-* deterministic linker reconstruction
-* simpler fragment assembly logic
-
-Tradeoffs:
-
-* node roles cannot own linker fragments
-
----
-
-# ADR-008: Canonical Ordering Computed at Topology Stage
-
-## Context
-
-Linker arms must be assigned consistently.
-
-Without deterministic ordering, fragment placement becomes unstable.
-
-## Decision
-
-Compute canonical ordering during **FrameNet topology parsing**.
-
-Ordering metadata is attached to:
-
-```
-C nodes
-incident E edges
-```
-
-## Consequences
-
-Advantages:
-
-* deterministic fragment placement
-* consistent linker reconstruction
-
-Tradeoffs:
-
-* topology parser must compute ordering metadata
-
----
-
-# ADR-009: Null Edge Representation
-
-## Context
-
-Some MOF topologies contain **connections without explicit linker atoms**.
-
-Examples:
-
-* rod-like SBUs
-* shared metal clusters
-
-## Decision
-
-Represent these using **null edges**.
-
-Canonical representation:
-
-```
-two overlapping anchor points
-```
-
-Null edges remain explicit edge roles.
-Null edges represent topology connectivity without linker atoms.
-
-Important distinction:
-
-```
-null edge != zero-length chemical edge
-```
-
-## Consequences
-
-Advantages:
-
-* supports rod-like structures
-* preserves topology connectivity
-
-Tradeoffs:
-
-* additional metadata needed to distinguish null edges
-
----
-
-# ADR-010: Primitive Optimization Before Supercell Expansion
-
-## Context
-
-Optimizing large supercells is computationally expensive.
-
-## Decision
-
-Perform optimization only on the **primitive topology graph**.
-
-```
-optimize primitive cell
-→ expand to supercell
-```
-
-Supercell generation uses **translation-based replication**.
-
-## Consequences
-
-Advantages:
-
-* faster optimization
-* simpler geometry operations
-
-Tradeoffs:
-
-* supercell must correctly propagate role metadata
-
----
-
-# ADR-011: Provenance Tracking for Structural Resolve
-
-## Context
-
-Some construction steps may transfer atoms between fragments.
-
-Examples:
-
-* coordination group borrowing
-* termination placement
-
-## Decision
-
-Track **provenance metadata** for fragment ownership changes.
-
-Provenance survives until framework materialization.
-
-## Consequences
-
-Advantages:
-
-* enables unsaturated site detection
-* enables termination workflows
-* easier debugging
-
-Tradeoffs:
-
-* additional metadata management
-
----
-
-# ADR-012: Builder Pipeline Stability
-
-## Context
-
-Many modules depend on the builder workflow.
-
-Changing pipeline structure risks breaking downstream systems.
-
-## Decision
-
-Keep the builder pipeline stable.
-
-Core stages remain:
-
-```
-topology
-→ fragment preparation
-→ optimization
-→ supercell expansion
-→ framework materialization
-```
-
-## Consequences
-
-Advantages:
-
-* stable user workflows
-* easier maintenance
-
-Tradeoffs:
-
-* architectural evolution must remain incremental
-
----
-
-# ADR-013: Lazy Import Strategy
-
-## Context
-
-Scientific libraries introduce heavy dependencies.
-
-Users often only need a subset of functionality.
-
-## Decision
-
-Use lazy imports for:
-
-```
-mofbuilder
-mofbuilder.core
-```
-
-CLI remains dependency-light.
-
-## Consequences
-
-Advantages:
-
-* faster startup
-* lower installation friction
-
-Tradeoffs:
-
-* delayed import errors possible
-
----
-
-# ADR-014: Compatibility with Single-Role Families
-
-## Context
-
-Many MOF families do not require multi-role semantics.
-
-## Decision
-
-Normalize families without role metadata to:
+Many existing families do not carry the full role-aware metadata and still rely on:
 
 ```
 node:default
 edge:default
 ```
 
-This preserves legacy workflows.
-
-## Consequences
-
-Advantages:
-
-* backward compatibility
-* simpler default behavior
-
-Tradeoffs:
-
-* dual-path logic in builder
-
----
-
-# ADR-015: Role-Aware Architecture as Internal Feature
-
-## Context
-
-Role-aware topology significantly expands internal flexibility.
-
-However, exposing it directly in the public API would increase complexity.
-
 ## Decision
 
-Treat role-aware behavior as **internal plumbing**.
-
-Public builder workflow remains unchanged.
+All snapshot APIs must support legacy/default-role families without forcing migration.
 
 ## Consequences
 
 Advantages:
 
-* stable public API
-* easier adoption
+* preserves current workflows
+* lowers adoption friction
 
 Tradeoffs:
 
-* role-aware features require internal understanding
-
----
-
-# Updating This Document
-
-When adding a major architectural change:
-
-1. Create a new ADR entry
-2. Explain context
-3. Describe decision
-4. Describe consequences
-
-Do not remove previous decisions.
-
-Architecture evolves through **additive decisions**, not rewriting history.
-
-
+* snapshot compilation needs fallback handling

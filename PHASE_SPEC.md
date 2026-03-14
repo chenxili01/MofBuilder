@@ -7,8 +7,9 @@ Defines **implementation boundaries** for each development phase described in `P
 Executor must follow this file to avoid:
 
 * architecture drift
-* scope expansion
-* module corruption
+* optimizer-scope leakage
+* framework/API breakage
+* snapshot contract instability
 
 Each phase specifies:
 
@@ -27,442 +28,328 @@ Executor must **stop immediately** if the phase requirements are satisfied.
 
 Executor must follow these rules for **all phases**.
 
-### Do not modify
+### Do not modify unless the phase explicitly allows it
 
 ```
-NetOptimizer
-Framework
+NetOptimizer behavior
+Framework behavior
 MD modules
-supercell expansion
-fragment placement
+supercell expansion logic
+fragment placement behavior
 geometry utilities
 ```
 
-### Allowed modules
+### Default allowed modules
 
 ```
-mofbuilder/core/mof_top_library.py
-mofbuilder/core/frame_net.py
 mofbuilder/core/builder.py
+mofbuilder/core/
+tests/
+workflow markdown files
 ```
 
-Additional helper modules may be added **only inside `core/`**.
+Additional helper modules may be added **only inside `core/`** if they are snapshot/record focused.
 
 ### Do not change
 
 ```
 existing public APIs
 existing builder constructor signature
-existing optimizer pipeline
+primitive-first optimization order
 ```
 
-### Role IDs must be stored
+### Role IDs must remain stored
 
 ```
 on graph nodes
 on graph edges
 ```
 
-Never store roles outside the graph.
+Never move graph role identity out of the graph.
 
 ---
 
-# Phase 1 — Topology Metadata Loader
-
-## Allowed Modules
-
-```
-mofbuilder/core/mof_top_library.py
-```
-
-## Required Work
-
-Add role metadata support.
-
-Must support metadata fields:
-
-```
-node_roles
-edge_roles
-connectivity
-path_rules
-edge_kind
-```
-
-Loader must accept **JSON-compatible dictionary format**.
-
-Expose metadata via:
-
-```
-get_role_metadata()
-get_node_roles()
-get_edge_roles()
-```
-
-### Example structure
-
-```
-{
-  "node_roles": ["VA","VB","CA"],
-  "edge_roles": ["EA","EB"],
-  "connectivity": {
-     "VA":4,
-     "CA":2
-  },
-  "edge_kind": {
-     "EB":"null"
-  }
-}
-```
-
-## Forbidden Changes
-
-Do not modify:
-
-```
-FrameNet
-Builder
-Optimizer
-```
-
-## Completion Criteria
-
-```
-metadata loader exists
-metadata accessible via MofTopLibrary
-unit test loads metadata successfully
-```
-
----
-
-# Phase 2 — Role Graph in FrameNet
-
-## Allowed Modules
-
-```
-mofbuilder/core/frame_net.py
-```
-
-## Required Work
-
-Modify `FrameNet.create_net()`.
-
-Attach role identifiers.
-
-Node attribute:
-
-```
-node_role_id
-```
-
-Edge attribute:
-
-```
-edge_role_id
-```
-
-Add slot metadata:
-
-```
-slot_index
-```
-
-Compute cyclic order for linker centers.
-
-Store:
-
-```
-cyclic_edge_order
-```
-
-Only compute ordering for:
-
-```
-C* nodes
-```
-
-## Forbidden Changes
-
-Do not modify:
-
-```
-Builder
-Optimizer
-fragment resolution
-```
-
-## Completion Criteria
-
-Graph contains:
-
-```
-node_role_id
-edge_role_id
-slot_index
-cyclic_edge_order
-```
-
----
-
-# Phase 3 — FrameNet Validation
-
-## Allowed Modules
-
-```
-mofbuilder/core/frame_net.py
-```
-
-## Required Work
-
-Add validation function:
-
-```
-FrameNet.validate_roles()
-```
-
-Validation checks:
-
-```
-legal role prefixes
-valid grammar (V-E-V, V-E-C)
-connectivity consistency
-slot metadata present
-cyclic order valid
-null-edge metadata valid
-```
-
-Return format:
-
-```
-ValidationResult
-{
-  ok: bool
-  errors: list
-}
-```
-
-Builder must call validation before optimization.
-
-## Forbidden Changes
-
-Do not modify:
-
-```
-Builder internals
-Optimizer
-```
-
-## Completion Criteria
-
-```
-validate_roles() implemented
-validation errors descriptive
-builder calls validation
-```
-
----
-
-# Phase 4 — Builder Role Registries
+# Phase 1 — Snapshot Architecture and Record Types
 
 ## Allowed Modules
 
 ```
 mofbuilder/core/builder.py
+mofbuilder/core/ (new helper module allowed)
+tests/
 ```
 
 ## Required Work
 
-Add builder registries:
+Add explicit record types and snapshot containers.
+
+Must support records for:
 
 ```
-node_role_registry
-edge_role_registry
+NodeRoleRecord
+EdgeRoleRecord
+BundleRecord
+ResolveInstructionRecord
+NullEdgePolicyRecord
+ProvenanceRecord
+ResolvedStateRecord
 ```
 
-Registry content:
+Must support top-level snapshot containers for:
 
 ```
-role_id
-connectivity
-metadata reference
+RoleRuntimeSnapshot
+OptimizationSemanticSnapshot
+FrameworkInputSnapshot
 ```
 
-Builder must normalize role identifiers:
-
-```
-VA -> node:VA
-EA -> edge:EA
-```
-
-Store normalized roles in graph.
+This phase may define:
+- dataclasses
+- typed mappings
+- conversion helpers
 
 ## Forbidden Changes
 
 Do not modify:
 
 ```
-FrameNet internals
-Optimizer
-fragment placement
+NetOptimizer behavior
+Framework
+FrameNet behavior
+build pipeline order
 ```
 
 ## Completion Criteria
 
 ```
-builder builds registries
-role ids normalized
-graph role ids consistent
+record types exist
+snapshot containers exist
+tests cover construction/basic fields
+no behavior change to optimizer/framework
 ```
 
 ---
 
-# Phase 5 — Bundle Compilation
+# Phase 2 — Builder Runtime Snapshot Export
 
 ## Allowed Modules
 
 ```
 mofbuilder/core/builder.py
+mofbuilder/core/ (snapshot helpers)
+tests/
 ```
 
 ## Required Work
 
-Compile linker bundles.
+Add builder-owned snapshot export methods.
 
-Bundle definition:
-
-```
-C node + incident E edges
-```
-
-Builder must:
+Builder should expose narrow getters such as:
 
 ```
-read cyclic_edge_order
-group edges into bundle
-assign bundle_id
-store bundle metadata
+get_role_runtime_snapshot()
+get_optimization_semantic_snapshot()
+get_framework_input_snapshot()
 ```
 
-Bundle metadata:
+These methods must compile from existing builder-owned state.
 
-```
-bundle_id
-center_node
-edge_list
-ordering
-```
+Legacy/default-role families must continue to work.
 
 ## Forbidden Changes
 
 Do not modify:
 
 ```
-fragment resolution
-optimizer
-framework assembly
+optimizer logic
+framework logic
+FrameNet graph stamping
+supercell behavior
 ```
 
 ## Completion Criteria
 
-Builder produces:
-
 ```
-bundle_registry
+builder exports snapshots
+snapshots are compiled from builder state
+legacy families still work
+tests cover export behavior
 ```
 
 ---
 
-# Phase 6 — Resolve Preparation
+# Phase 3 — Optimization Snapshot Semantics
 
 ## Allowed Modules
 
 ```
 mofbuilder/core/builder.py
+mofbuilder/core/ (snapshot helpers)
+tests/
 ```
 
 ## Required Work
 
-Builder prepares resolve scaffolding.
+Populate `OptimizationSemanticSnapshot` with the minimum role-aware contract needed for future placement logic.
 
-Produce structures:
+Must include, at minimum:
 
 ```
-resolve_instructions
-fragment_lookup_map
-null_edge_rules
-provenance_map
+node ids / node role ids
+edge ids / edge role ids
+slot rules
+incident edge constraints
+bundle/order hints
+null-edge rules
+resolve modes
 ```
 
-Do **not execute resolution** yet.
+This phase may add compilation helpers to derive node-local constraint views.
 
 ## Forbidden Changes
 
 Do not modify:
 
 ```
-fragment merging
-geometry placement
-Framework assembly
+optimizer algorithm
+framework materialization
+fragment placement behavior
 ```
 
 ## Completion Criteria
 
-Resolve data structures exist.
-
-No fragments modified.
+```
+optimization snapshot contains the required semantic fields
+tests cover role-aware and default-role cases
+builder remains the owner of interpretation
+```
 
 ---
 
-# Phase 7 — Post-Optimization Resolve
+# Phase 4 — Snapshot Validation and Compatibility Tests
 
 ## Allowed Modules
 
 ```
 mofbuilder/core/builder.py
+mofbuilder/core/ (snapshot helpers)
+tests/
 ```
 
 ## Required Work
 
-After `NetOptimizer`.
+Add validation/consistency checks around snapshot compilation.
 
-Perform resolution:
-
-```
-resolve node fragments
-resolve linker bundles
-resolve edge fragments
-commit bundle ownership
-merge fragments
-```
-
-Resolution order:
+Checks should cover:
 
 ```
-node → linker bundle → edge
+missing role registry data
+graph/snapshot consistency
+bundle ordering consistency
+null-edge rule consistency
+legacy/default fallback stability
 ```
 
-Output becomes input to:
-
-```
-Framework assembly
-```
+Add tests proving compatibility for:
+- legacy/default families
+- role-aware families
+- empty/partial optional data where allowed
 
 ## Forbidden Changes
 
 Do not modify:
 
 ```
-optimizer
-geometry algorithms
-supercell expansion
+optimizer behavior
+framework behavior
+public constructor signatures
 ```
 
 ## Completion Criteria
 
 ```
-fragment ownership resolved
-bundles merged correctly
-framework assembly receives resolved fragments
+snapshot validation exists
+tests prove compatibility
+no production behavior change outside snapshot export
+```
+
+---
+
+# Phase 5 — Optional Optimizer Snapshot Ingestion Hook
+
+## Allowed Modules
+
+```
+mofbuilder/core/builder.py
+mofbuilder/core/optimizer.py
+tests/
+```
+
+## Required Work
+
+Add only the smallest optional hook that allows the optimizer to accept a semantic snapshot.
+
+Examples:
+
+```
+semantic_snapshot=None
+```
+
+The old optimizer path must remain fully intact.
+
+No role-aware placement algorithm rewrite yet.
+
+## Forbidden Changes
+
+Do not modify:
+
+```
+optimizer scoring/objective logic beyond wiring the hook
+framework
+supercell
+```
+
+## Completion Criteria
+
+```
+optimizer can accept snapshot optionally
+default path unchanged
+tests cover no-snapshot and snapshot-present construction paths
+```
+
+---
+
+# Phase 6 — Documentation and Handoff for Rotation Rewrite
+
+## Allowed Modules
+
+```
+workflow markdown files
+tests/ (doc-adjacent only if needed)
+```
+
+## Required Work
+
+Document:
+- snapshot fields
+- node-local contract expectations
+- SVD initializer + constrained refinement handoff
+- unresolved decisions for the next branch
+
+## Forbidden Changes
+
+Do not modify:
+
+```
+production source behavior
+```
+
+## Completion Criteria
+
+```
+handoff docs complete
+status/worklog updated
+branch ready for later optimizer rewrite
 ```
 
 ---
@@ -473,15 +360,7 @@ Executor must stop when:
 
 ```
 phase completion criteria satisfied
-tests pass
-CHECKLIST.md satisfied
+tests/checks completed or blockers documented
+STATUS.md updated for planner handoff
+WORKLOG.md updated concretely
 ```
-
-Then update:
-
-```
-STATUS.md
-WORKLOG.md
-```
-
-

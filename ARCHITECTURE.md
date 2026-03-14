@@ -1,686 +1,238 @@
-# MOFBuilder Architecture
+# ARCHITECTURE.md
 
-## Project Overview
+# MOFBuilder Snapshot-First Architecture for `role-runtime-contract`
 
-MOFBuilder is a **data-driven Python package for constructing Metal–Organic Framework (MOF) structures** from topology templates combined with node and linker fragments, followed by geometry optimization, supercell generation, and simulation preparation.
+## Branch Context
 
-The architecture is designed around a **stable high-level workflow**:
+This branch does **not** redesign the builder pipeline.
 
-1. Select a MOF family and metal/node/linker inputs
-2. Build topology and fragment representations
-3. Optimize geometry and cell parameters
-4. Expand to a supercell and derive edge-graph representations
-5. Materialize a `Framework` object
-6. Export structures, modify defects, solvate, and prepare simulation inputs
+Instead, it formalizes a **snapshot-first seam** between:
 
-The package interface intentionally exposes a **simpler user surface** than the internal architecture.
+```
+Builder
+→ Optimizer
+→ Framework-facing materialization inputs
+```
 
-Key design choices:
-
-* Top-level imports are **lazy** to keep startup lightweight
-* CLI is **dependency-light**
-* Heavy scientific dependencies are loaded only when required
-* Graph representations are the **primary internal data model**
+The goal is to prevent later optimizer work from reading arbitrary mutable builder internals.
 
 ---
 
 # High-Level Workflow
 
-The central user object is:
+The stable high-level workflow remains:
 
-```
-MetalOrganicFrameworkBuilder
-```
+1. Topology parsing
+2. Fragment preparation
+3. Geometry optimization
+4. Supercell generation
+5. Framework materialization
+6. Post-build workflows
 
-This object orchestrates the entire build pipeline.
-
-Responsibilities:
-
-* collect user inputs
-* load topology metadata
-* construct graph representations
-* prepare fragments
-* optimize geometry
-* build the final framework
-
-The output of the build process is a:
-
-```
-Framework
-```
-
-object.
-
-`Framework` acts as the **post-build container** and exposes user-facing operations.
-
-These include:
-
-* structure export
-* defect manipulation
-* visualization
-* solvation
-* linker force-field generation
-* molecular dynamics preparation
+The current branch only formalizes **builder-owned runtime views** that can be exported safely.
 
 ---
 
-# Architectural Layers
+# Core Principle
 
-MOFBuilder architecture can be understood as five layers.
-
-```
-User API Layer
-Builder Orchestration Layer
-Topology / Fragment Layer
-Geometry / Graph Processing Layer
-Post-Build Simulation Layer
-```
-
-Each layer has defined responsibilities.
-
----
-
-# Package Surface
-
-### `src/mofbuilder/__init__.py`
-
-Provides lazy imports for the public API.
-
-### `src/mofbuilder/core/__init__.py`
-
-Provides lazy exports for core functionality.
-
-### `src/mofbuilder/cli.py`
-
-Provides a dependency-light command-line interface.
-
-Supported commands include:
-
-* version reporting
-* bundled database location
-* listing MOF families
-* listing supported metals
-
----
-
-# Core Construction Modules
-
-## `builder.py`
-
-Defines:
-
-```
-MetalOrganicFrameworkBuilder
-```
-
-This is the **central orchestration layer**.
-
-Responsibilities include:
-
-* user input management
-* family metadata lookup
-* graph construction
-* fragment preparation
-* geometry optimization
-* framework materialization
-
-The builder manages intermediate objects including:
-
-```
-FrameNet
-FrameNode
-FrameLinker
-FrameTermination
-NetOptimizer
-SupercellBuilder
-EdgeGraphBuilder
-```
-
-The builder also maintains runtime registries:
+The system already has meaningful builder-owned role state:
 
 ```
 node_role_registry
 edge_role_registry
+bundle_registry
+resolve_instructions
+fragment_lookup_map
+null_edge_rules
+provenance_map
+resolved-state maps
 ```
 
-These registries resolve payload fragments associated with topology roles.
+Those are valuable implementation artifacts, but they are not yet a clean API surface.
+
+This branch groups and narrows that state into explicit snapshot contracts.
 
 ---
 
-## `framework.py`
+# Snapshot Layers
 
-Defines:
+## 1. RoleRuntimeSnapshot
 
-```
-Framework
-```
+The broad builder-owned semantic runtime view.
 
-This object stores the **fully assembled framework state**.
-
-It owns:
-
-* merged atomic tables
-* graph metadata
-* residue assignments
-* role-aware structure annotations
-
-It provides the main **post-build user interface**.
-
-Key operations:
-
-* export structure files
-* remove or replace structural components
-* solvate framework
-* generate linker force fields
-* prepare MD inputs
-* visualize structures
-
-Mutation semantics:
+Purpose:
 
 ```
-build() -> modifies builder.framework
-remove()/replace() -> return new Framework instances
-solvate()/md_prepare() -> modify existing instance
+stable internal API surface for builder-owned role semantics
 ```
+
+Expected contents may include:
+
+- family name
+- role metadata reference
+- graph snapshot reference or graph-phase metadata
+- node role records
+- edge role records
+- bundle records
+- resolve instruction records
+- null-edge policy records
+- provenance records
+- resolved-state records
+
+This snapshot is **builder-owned** and reflects semantic runtime state without exposing arbitrary internal maps ad hoc.
 
 ---
 
-# Topology and Fragment Modules
+## 2. OptimizationSemanticSnapshot
 
-## `moftoplibrary.py`
+A narrowed semantic view intended for optimizer consumption.
 
-Defines:
-
-```
-MofTopLibrary
-```
-
-Responsibilities:
-
-* load topology metadata
-* resolve MOF family templates
-* locate topology CIF files
-* interpret topology role metadata
-
-Metadata sources include:
+Purpose:
 
 ```
-database/MOF_topology_dict
-database/template_database/
-database/MOF_topology_role_metadata.json
+give optimizer only the data it needs
 ```
 
-Future extensions will support **JSON-based role metadata schemas**.
+Expected contents may include:
+
+- graph phase / graph identity information
+- per-node role ids
+- per-edge role ids
+- slot rules / slot typing
+- incident edge constraints
+- target-order or bundle hints where relevant
+- null-edge rules
+- resolve mode hints that affect geometry interpretation
+
+This snapshot must not let optimizer become a second role-interpretation engine.
 
 ---
 
-## `net.py`
+## 3. FrameworkInputSnapshot
 
-Defines:
+A narrowed resolved/materialization input view.
+
+Purpose:
 
 ```
-FrameNet
+prepare a stable downstream handoff for framework materialization without leaking builder internals
 ```
 
-Responsibilities:
+This branch does not require framework behavior changes, but it defines the clean boundary that later branches may consume.
 
-* parse topology CIF files
-* construct graph representation `G`
-* extract unit cell information
-* compute vertex/edge connectivity
-* annotate graph roles
+---
 
-Graph attributes include:
+# Ownership Boundaries
+
+## MofTopLibrary
+
+Owns passive metadata only.
+
+## FrameNet
+
+Owns graph construction and topology-derived annotations.
+
+Examples:
+
+```
+node_role_id
+edge_role_id
+slot_index
+cyclic_edge_order
+```
+
+## Builder
+
+Owns:
+- metadata ingestion
+- role normalization
+- registries
+- bundle compilation
+- resolve scaffolding
+- snapshot compilation
+
+## Optimizer
+
+Consumes the optimization snapshot only.
+
+Does not own role interpretation.
+
+## Framework
+
+Consumes resolved/materialization inputs only.
+
+Remains role-agnostic in this branch.
+
+---
+
+# Source of Truth Rules
+
+## Graph
+
+Graph role ids remain stored on graph objects:
 
 ```
 G.nodes[n]["node_role_id"]
 G.edges[e]["edge_role_id"]
 ```
 
-`FrameNet` is also responsible for computing **topology-derived ordering metadata**, including cyclic ordering around linker centers.
+The graph remains the topology source of truth.
+
+## Builder
+
+Builder remains the source of truth for runtime interpretation and compilation.
+
+## Snapshot
+
+Snapshots are **API views**, not new sources of truth.
+
+They compile from builder-owned state and graph-owned identity.
 
 ---
 
-## `node.py`
+# Snapshot Design Requirements
 
-Defines:
+Snapshots must be:
 
-```
-FrameNode
-```
+- stable
+- explicit
+- typed or structurally clear
+- inspectable
+- phase-bounded
+- backward compatible for legacy/default-role families
 
-Responsibilities:
+Snapshots must not:
 
-* parse node fragments
-* normalize node atomic data
-* prepare fragments for placement
-
----
-
-## `linker.py`
-
-Defines:
-
-```
-FrameLinker
-```
-
-Responsibilities:
-
-* parse linker fragments
-* construct molecular fragments
-* support fragment splitting logic
-* prepare connector atoms for alignment
-
-Legacy splitting logic remains supported.
+- duplicate conflicting role semantics
+- require optimizer to read builder internals directly
+- replace graph role ids
+- force immediate public API breakage
 
 ---
 
-## `termination.py`
+# Compatibility Requirements
 
-Defines:
-
-```
-FrameTermination
-```
-
-Responsibilities:
-
-* parse termination fragments
-* prepare capping groups for unsaturated sites
-
----
-
-# Geometry and Graph Processing
-
-## `optimizer.py`
-
-Defines:
-
-```
-NetOptimizer
-```
-
-Responsibilities:
-
-* fragment placement
-* rotation alignment
-* cell optimization
-
-Optimization must respect topology role constraints.
-
-Role-aware optimization includes understanding:
-
-```
-V-E-C
-V-E-V
-slot matching
-null-edge constraints
-```
-
----
-
-## `supercell.py`
-
-Defines:
-
-```
-SupercellBuilder
-EdgeGraphBuilder
-```
-
-Responsibilities:
-
-* expand primitive cell to supercell
-* derive edge graph representations
-
-Graph states include:
-
-```
-G
-sG
-superG
-eG
-cleaved_eG
-```
-
-Role metadata must propagate through all graph states.
-
-Supercell replication uses **translation-based replication for efficiency**.
-
----
-
-# Post-Build Processing Modules
-
-## `defects.py`
-
-Defines:
-
-```
-TerminationDefectGenerator
-```
-
-Responsibilities:
-
-* removal workflows
-* replacement workflows
-* termination placement
-
-Termination logic may rely on **unsaturated site detection**.
-
----
-
-## `write.py`
-
-Defines:
-
-```
-MofWriter
-```
-
-Responsibilities:
-
-* merge atomic tables
-* export structures
-* write supported file formats
-
-Supported outputs include:
-
-```
-CIF
-PDB
-GRO
-XYZ
-```
-
-Future debug outputs may include role metadata.
-
----
-
-# Simulation Preparation Layer
-
-Located under:
-
-```
-src/mofbuilder/md/
-```
-
-Modules include:
-
-### `solvationbuilder.py`
-
-Defines:
-
-```
-SolvationBuilder
-```
-
-Used for solvating frameworks.
-
----
-
-### `linkerforcefield.py`
-
-Defines:
-
-```
-LinkerForceFieldGenerator
-ForceFieldMapper
-```
-
-Used for linker force-field generation.
-
----
-
-### `gmxfilemerge.py`
-
-Defines:
-
-```
-GromacsForcefieldMerger
-```
-
-Used for combining force-field files.
-
----
-
-### `setup.py`
-
-Defines:
-
-```
-OpenmmSetup
-```
-
-Used for MD simulation preparation.
-
----
-
-# Canonical Role Model
-
-MOFBuilder uses a **topology-driven role model**.
-
-Role identifiers are stored on graph elements.
-
-```
-FrameNet.G.nodes[n]["node_role_id"]
-FrameNet.G.edges[e]["edge_role_id"]
-```
-
-Builder maintains registries:
-
-```
-node_role_registry
-edge_role_registry
-```
-
-These registries resolve fragment payloads.
-
-For families without role metadata the system falls back to:
+Families without role metadata must continue to work through the existing fallback:
 
 ```
 node:default
 edge:default
 ```
 
----
-
-# Graph Grammar Invariant
-
-The current architecture supports only two topology path types:
-
-```
-V-E-V
-V-E-C
-```
-
-Where:
-
-```
-V = node center
-C = linker center
-E = connector edge
-```
-
-Other graph path types are not currently supported.
+The snapshot API must support that path without requiring all families to adopt new role-aware metadata.
 
 ---
 
-# Bundle Ownership
+# Future Handoff
 
-Multitopic linkers are reconstructed from:
+The next branch or later phases may use `OptimizationSemanticSnapshot` to drive:
 
-```
-C center
-+ incident E connectors
-```
+- legal slot-edge correspondence
+- deterministic node-local placement
+- SVD/Kabsch initialization
+- constrained local refinement
+- null-edge-aware placement rules
 
-`C` nodes act as **bundle owners**.
+That future work depends on the clean boundary created here.
 
-`V` nodes represent inorganic centers.
-
----
-
-# Null Edge Semantics
-
-Null edges represent topology connections without explicit chemistry.
-
-They are stored as:
-
-```
-two overlapping anchor points
-```
-
-Important distinction:
-
-```
-null edge != zero-length real edge
-```
-
-Null edges allow representation of rod-like or shared-node topologies.
-
----
-
-# Data Flow Through the System
-
-## 1 Database Lookup
-
-`MofTopLibrary` resolves topology metadata and template CIF files.
-
----
-
-## 2 Net Parsing
-
-`FrameNet` constructs graph `G`.
-
----
-
-## 3 Fragment Preparation
-
-Builder prepares node/linker fragments.
-
----
-
-## 4 Optimization
-
-`NetOptimizer` aligns fragments to topology.
-
----
-
-## 5 Supercell Generation
-
-`SupercellBuilder` expands the structure.
-
----
-
-## 6 Framework Materialization
-
-Builder constructs a `Framework`.
-
----
-
-## 7 Post-Build Processing
-
-`Framework` exposes downstream workflows.
-
----
-
-# Architectural Invariants
-
-The following invariants must remain stable.
-
-### Stable graph state names
-
-```
-G
-sG
-superG
-eG
-cleaved_eG
-```
-
-### Builder orchestration
-
-All build orchestration occurs in:
-
-```
-MetalOrganicFrameworkBuilder
-```
-
-### Framework ownership
-
-Post-build operations belong to:
-
-```
-Framework
-```
-
-### Role metadata source of truth
-
-Topology graph attributes store role ids.
-
-### Default behavior
-
-Single-role workflows remain supported.
-
----
-
-# Extension Points
-
-New functionality can be added through:
-
-* topology families
-* fragment libraries
-* geometry algorithms
-* export formats
-* simulation workflows
-
----
-
-# Known High-Risk Modules
-
-Modules where regressions are most likely:
-
-```
-optimizer.py
-supercell.py
-framework.py
-linkerforcefield.py
-```
-
-Changes in these areas should be carefully validated.
-
----
-
-# Safe Refactoring Guidelines
-
-When modifying the repository:
-
-* keep public APIs stable
-* prefer localized edits
-* avoid large refactors
-* preserve builder–framework separation
-* maintain merged data consistency
-* validate graph attribute compatibility
-* avoid unnecessary dependencies
-
----
-
-# Scope of Role-Aware Architecture
-
-The role-aware system adds:
-
-* topology role identifiers
-* role-based fragment assignment
-* bundle-aware linker reconstruction
-* role-aware optimization behavior
-
-It **does not redesign**:
-
-* the builder workflow
-* graph state architecture
-* core geometry algorithms
-* defect modeling pipeline
-
-Role-awareness is an **internal extension**, not a new public API layer.
-
+This branch itself does not implement that rotation logic.

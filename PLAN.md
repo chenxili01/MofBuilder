@@ -26,6 +26,24 @@ Executor implements **one phase only**.
 
 ---
 
+# Branch Objective
+
+Branch:
+
+```
+role-runtime-contract
+```
+
+Goal:
+
+Establish a **clean snapshot API** that lets the builder expose a stable, read-only, role-aware optimization contract without forcing the optimizer to reach into builder internals.
+
+This branch is **not** the full optimizer rewrite branch.
+
+This branch prepares the seam that the later optimizer/rotation reconstruction will consume.
+
+---
+
 # Architectural Invariants
 
 Must not change:
@@ -36,6 +54,9 @@ Primitive optimization before supercell
 Graph states: G → sG → superG → eG → cleaved_eG
 Role ids stored on graph
 Single-role families remain valid
+Graph grammar limited to V-E-V and V-E-C
+Builder owns role interpretation
+Framework remains role-agnostic
 ```
 
 Pipeline remains:
@@ -48,328 +69,221 @@ supercell expansion
 Framework assembly
 ```
 
-Role system is an **extension**, not redesign.
+The snapshot API is an **extension seam**, not a pipeline redesign.
 
 ---
 
-# Role Model
+# Snapshot API Model
 
-Role identifiers:
+The branch introduces a stable, builder-owned, read-only runtime contract for downstream consumption.
 
-```
-V*  node center
-C*  linker center
-E*  connector edge
-```
-
-Examples:
+Working names in this plan:
 
 ```
-VA
-VB
-CA
-EA
-EB
+RoleRuntimeSnapshot
+OptimizationSemanticSnapshot
+FrameworkInputSnapshot
 ```
 
-Runtime ids:
-
-```
-node:VA
-node:CA
-edge:EA
-```
-
-Suffix letters are **family-local**.
+The exact final class names may vary slightly, but the API must preserve the same ownership and meaning.
 
 ---
 
-# Graph Grammar
-
-Allowed paths:
-
-```
-V-E-V
-V-E-C
-```
-
-Meaning:
-
-```
-V = node center
-C = linker center
-E = connector
-```
-
-No other patterns allowed.
-
----
-
-# Null Edge
-
-Null edge is still an **E role**.
-
-Metadata:
-
-```
-edge_kind: null
-```
-
-Representation:
-
-```
-two overlapping anchor points
-```
-
-Null edges are explicit graph objects. 
-Null edges represent topology connectivity without linker atoms.
-They are implemented as two overlapping anchor points.
----
-
-# Module Responsibilities
-
-## MofTopLibrary
-
-Owns topology metadata:
-
-```
-role declarations
-connectivity
-path rules
-edge-kind metadata
-family policies
-fragment lookup hints
-```
-
-Metadata example:
-
-```
-VA(EA,EA,EB,EB)
-VA-EA-CA
-VA-EB-VA
-EB: null
-```
-
----
-
-## FrameNet
-
-`create_net()` builds the topology graph.
-
-Responsibilities:
-
-```
-construct primitive graph
-attach node_role_id
-attach edge_role_id
-attach slot metadata
-compute cyclic order around C nodes
-store ordering metadata
-```
-
-FrameNet does **not resolve chemistry**.
-
----
+# Ownership Rules
 
 ## Builder
 
-`MetalOrganicFrameworkBuilder` orchestrates compilation.
-
-Responsibilities:
+Owns:
 
 ```
-load topology metadata
-normalize role ids
-build role registries
-call FrameNet validation
-compile bundle maps
-prepare resolve instructions
-```
-
-Builder owns:
-
-```
-node_role_registry
-edge_role_registry
-bundle registry
+role metadata ingestion
+graph role normalization
+role registries
+bundle compilation
 resolve scaffolding
+snapshot compilation
+```
+
+Builder exports snapshots.
+
+Builder does **not** hand optimizer its full mutable internal state.
+
+## Optimizer
+
+Consumes a narrowed snapshot.
+
+Optimizer does **not** reinterpret builder internals and does **not** become the owner of role metadata meaning.
+
+## Framework
+
+Consumes resolved/materialization inputs only.
+
+Framework remains role-agnostic unless a later explicit phase expands its input surface.
+
+---
+
+# Snapshot Design Rules
+
+Snapshots must be:
+
+```
+read-only by convention
+typed or structurally explicit
+builder-owned
+minimal
+stable across phases
+debuggable
+```
+
+Snapshots must not:
+
+```
+duplicate competing sources of truth
+replace graph-stored role ids
+require optimizer to read arbitrary builder fields
+force public API breakage
 ```
 
 ---
 
-# Resolve Timing
-
-Two-stage model.
-
-Stage 1 (Builder):
-
-```
-prepare resolve instructions
-compile bundle maps
-prepare provenance scaffolding
-```
-
-Stage 2 (post-optimization):
-
-```
-resolve fragments
-commit bundle ownership
-merge fragments
-```
-
-Resolution happens **before Framework assembly**.
-
----
-
-# Development Phases
+# Phase Roadmap
 
 Executor implements **phases sequentially**.
 
 ---
 
-# Phase 1 — Topology Metadata Loader
+# Phase 1 — Snapshot Architecture and Record Types
 
-Add to `MofTopLibrary`:
+Add typed record definitions and architecture-safe container objects for the new branch.
 
-```
-role metadata loader
-JSON-readable metadata format
-expose roles
-expose connectivity
-expose path rules
-expose edge-kind metadata
-```
-
-Constraints:
+Primary goal:
 
 ```
-no builder logic change
+replace ad hoc dict surfaces with explicit runtime records
 ```
 
----
-
-# Phase 2 — Role Graph in FrameNet
-
-Modify `FrameNet.create_net()`.
-
-Add:
+Scope:
 
 ```
-node_role_id on nodes
-edge_role_id on edges
-slot metadata
-cyclic order computation for C nodes
-ordering metadata on graph
+builder-owned snapshot/record definitions only
+no optimizer behavior change
 ```
 
-Constraints:
+Outputs should include record types for:
 
 ```
-no optimizer change
-no chemistry resolution
+node role records
+edge role records
+bundle records
+resolve instruction records
+null-edge policy records
+provenance records
+resolved-state records
+```
+
+and top-level snapshot containers for:
+
+```
+RoleRuntimeSnapshot
+OptimizationSemanticSnapshot
+FrameworkInputSnapshot
 ```
 
 ---
 
-# Phase 3 — FrameNet Validation
+# Phase 2 — Builder Runtime Snapshot Export
 
-Add:
+Add builder-side snapshot compilation/export methods.
 
-```
-FrameNet.validate_roles()
-```
-
-Validation checks:
+Primary goal:
 
 ```
-legal role prefixes
-valid grammar (V-E-V, V-E-C)
-connectivity consistency
-slot metadata presence
-ordering metadata sanity
-null-edge metadata consistency
+builder can export a stable runtime snapshot without changing existing build behavior
 ```
 
-Builder must call validation before build.
+Builder should expose narrow getters such as:
+
+```
+get_role_runtime_snapshot()
+get_optimization_semantic_snapshot()
+get_framework_input_snapshot()
+```
+
+These methods must compile from existing builder-owned state rather than introduce new ownership.
+
+No optimizer or framework behavior changes yet.
 
 ---
 
-# Phase 4 — Builder Role Registries
+# Phase 3 — Optimization Snapshot Semantics
 
-Add builder structures:
+Populate the optimization snapshot with the minimum semantic contract needed for future node placement logic.
 
-```
-node_role_registry
-edge_role_registry
-```
-
-Responsibilities:
+This phase should compile, at minimum:
 
 ```
-normalize role ids
-map roles to payload definitions
-prepare bundle scaffolding
-compile ordering data
-```
-
-Constraints:
-
-```
-optimizer unchanged
-```
-
----
-
-# Phase 5 — Bundle Compilation
-
-Builder compiles linker bundles.
-
-Use ordering metadata from FrameNet.
-
-Bundle definition:
-
-```
-C center + incident E edges
-```
-
-Builder produces:
-
-```
-bundle registry
-```
-
----
-
-# Phase 6 — Resolve Preparation
-
-Builder prepares:
-
-```
-resolve instructions
-fragment lookup hints
+graph role ids
+slot rules
+incident edge constraints
+bundle/order hints
 null-edge rules
-provenance scaffolding
+resolve modes
 ```
 
-No execution yet.
+This is still a builder/export phase.
+
+No optimizer rewrite yet.
 
 ---
 
-# Phase 7 — Post-Optimization Resolve
+# Phase 4 — Snapshot Validation and Compatibility Tests
 
-After `NetOptimizer`.
+Harden the snapshot seam with focused validation and compatibility tests.
 
-Builder performs:
+Goals:
 
 ```
-resolve node fragments
-resolve linker bundles
-resolve edge fragments
-commit ownership
-merge fragments
+single-role families still work
+role-aware families export stable snapshots
+snapshot contents stay phase-bounded
+no builder/framework/optimizer ownership drift
 ```
 
-Output becomes **Framework assembly input**.
+No new runtime behavior is introduced in this phase.
+
+---
+
+# Phase 5 — Optional Optimizer Snapshot Ingestion Hook
+
+Add only the smallest optional hook that allows the optimizer to accept the new snapshot object without changing default behavior.
+
+Examples:
+
+```
+rotation_and_cell_optimization(..., semantic_snapshot=None)
+NetOptimizer(..., semantic_snapshot=None)
+```
+
+This phase must preserve the old optimizer path completely.
+
+No role-aware placement algorithm rewrite yet.
+
+---
+
+# Phase 6 — Documentation and Handoff for Rotation Rewrite
+
+Prepare the branch handoff for the later optimizer/rotation reconstruction branch.
+
+Goals:
+
+```
+document snapshot fields
+document expected node-local contract
+document SVD + constrained refinement plan
+record unresolved decisions cleanly
+```
+
+No additional production behavior changes.
 
 ---
 
@@ -390,14 +304,22 @@ Executor must not modify architecture outside the active phase.
 
 ---
 
+# Stop Rule
+
+Stop immediately if a task requires:
+
+```
+optimizer algorithm rewrite
+framework materialization redesign
+supercell semantic redesign
+new graph grammar beyond V-E-V / V-E-C
+moving role interpretation out of builder
+```
+
+Those belong to later branches/phases.
+
+---
+
 # End of Plan
 
-Scope limited to grammar:
-
-```
-V-E-V
-V-E-C
-```
-
-Future graph types are **out of scope**.
-
+This branch is successful when the repository has a stable, builder-owned snapshot API that future optimizer work can consume safely.
