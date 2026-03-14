@@ -585,7 +585,11 @@ def test_load_and_optimize_framework_single_role_keeps_scalar_state_and_passes_d
     optimizer_calls = []
     captured_optimizer = {}
 
-    def fake_rotation(self, semantic_snapshot=None):
+    def fake_rotation(
+        self,
+        semantic_snapshot=None,
+        use_role_aware_local_placement=False,
+    ):
         optimizer_calls.append("rotation")
         captured_optimizer["instance"] = self
         assert self.node_role_registry is builder.node_role_registry
@@ -596,8 +600,8 @@ def test_load_and_optimize_framework_single_role_keeps_scalar_state_and_passes_d
         assert self.edge_role_registry["edge:default"]["linker_center_data"] == (
             linker_center_data
         )
-        assert isinstance(semantic_snapshot, OptimizationSemanticSnapshot)
-        assert semantic_snapshot == builder.get_optimization_semantic_snapshot()
+        assert semantic_snapshot is None
+        assert use_role_aware_local_placement is False
         self.sG = self.G.copy()
         self.optimized_cell_info = [11.0, 11.0, 11.0, 90.0, 90.0, 90.0]
         self.sc_unit_cell = np.eye(3) * 11.0
@@ -710,6 +714,67 @@ def test_load_and_optimize_framework_single_role_keeps_scalar_state_and_passes_d
     assert builder.frame_cell_info == [11.0, 11.0, 11.0, 90.0, 90.0, 90.0]
     assert np.array_equal(builder.frame_unit_cell, np.eye(3) * 11.0)
     assert nx.is_isomorphic(builder.sG, builder.G)
+
+
+@pytest.mark.core
+def test_optimize_framework_passes_snapshot_only_when_role_aware_local_placement_enabled(
+    monkeypatch,
+):
+    builder = _make_role_aware_snapshot_builder()
+    builder.use_role_aware_local_placement = True
+    builder.net_cell_info = [10.0, 10.0, 10.0, 90.0, 90.0, 90.0]
+    builder.frame_nodes.node_data = _ComparableTable(
+        [["Zn", "Zn1", 1, "NODE", 1, "0.0", "0.0", "0.0", 1.0, 0.0, "Zn"]]
+    )
+    builder.frame_nodes.node_X_data = _ComparableTable(
+        [["X", "X1", 1, "NODE", 1, "1.0", "0.0", "0.0", 1.0, 0.0, "X"]]
+    )
+    builder.frame_linker.linker_center_data = _ComparableTable(
+        [["C", "C1", 1, "LIG", 1, "0.0", "0.0", "0.0", 1.0, 0.0, "C"]]
+    )
+    builder.frame_linker.linker_center_X_data = _ComparableTable(
+        [["X", "X1", 1, "LIG", 1, "1.0", "0.0", "0.0", 1.0, 0.0, "X"]]
+    )
+    builder.linker_outer_data = None
+    builder.linker_outer_X_data = None
+    builder.linker_frag_length = 1.0
+    builder.linker_fake_edge = False
+    builder.constant_length = 1.54
+    builder.frame_net.sorted_nodes = ["V0", "V1", "C0"]
+    builder.frame_net.sorted_edges = [("V0", "C0"), ("V1", "C0"), ("V0", "V1")]
+    builder.frame_net.linker_connectivity = 4
+
+    captured = {}
+
+    def fake_rotation(
+        self,
+        semantic_snapshot=None,
+        use_role_aware_local_placement=False,
+    ):
+        captured["snapshot"] = semantic_snapshot
+        captured["flag"] = use_role_aware_local_placement
+        captured["optimizer_flag"] = self.use_role_aware_local_placement
+        self.sG = self.G.copy()
+        self.optimized_cell_info = [12.0, 12.0, 12.0, 90.0, 90.0, 90.0]
+        self.sc_unit_cell = np.eye(3) * 12.0
+
+    monkeypatch.setattr(
+        builder.net_optimizer,
+        "rotation_and_cell_optimization",
+        MethodType(fake_rotation, builder.net_optimizer),
+    )
+    monkeypatch.setattr(
+        builder.net_optimizer,
+        "place_edge_in_net",
+        MethodType(lambda self: self.sG, builder.net_optimizer),
+    )
+
+    builder.optimize_framework()
+
+    assert captured["flag"] is True
+    assert captured["optimizer_flag"] is True
+    assert isinstance(captured["snapshot"], OptimizationSemanticSnapshot)
+    assert captured["snapshot"] == builder.get_optimization_semantic_snapshot()
 
 
 @pytest.mark.core

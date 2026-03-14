@@ -84,6 +84,8 @@ class NetOptimizer:
         self.node_fragment_payloads = None
         self.edge_fragment_payloads = None
         self.semantic_snapshot = semantic_snapshot
+        self.use_role_aware_local_placement = False
+        self.role_aware_local_placement_records = {}
         #self.constant_length = 1.54  #default C-C single bond length
         self.linker_frag_length = None
 
@@ -174,6 +176,7 @@ class NetOptimizer:
     def rotation_and_cell_optimization(
         self,
         semantic_snapshot: Optional[OptimizationSemanticSnapshot] = None,
+        use_role_aware_local_placement: Optional[bool] = None,
     ):
         """
         two optimization steps:
@@ -182,6 +185,8 @@ class NetOptimizer:
         """
         if semantic_snapshot is not None:
             self.semantic_snapshot = semantic_snapshot
+        if use_role_aware_local_placement is not None:
+            self.use_role_aware_local_placement = use_role_aware_local_placement
         #if self._debug:
         self.ostream.print_info(f"constant_length: {self.constant_length}")
         self.ostream.flush()
@@ -251,6 +256,14 @@ class NetOptimizer:
 
         if saved_optimized_rotations is None:
             self.skip_rotation_optimization = False
+            role_aware_initial_rotations = self._compile_role_aware_initial_rotations(
+                pname_set_dict,
+                semantic_snapshot=self.semantic_snapshot,
+            )
+            for index, group_name in enumerate(pname_set_dict):
+                rotation_matrix = role_aware_initial_rotations.get(group_name)
+                if rotation_matrix is not None:
+                    ini_rot[index] = rotation_matrix
 
         if not self.skip_rotation_optimization:
             ####TODO: modified for mil53
@@ -371,6 +384,38 @@ class NetOptimizer:
         self.rotated_node_positions = rot_node_pos
         self.Xatoms_positions_dict = node_X_pos_dict
         self.node_pos_dict = node_pos_dict
+
+    def _compile_role_aware_initial_rotations(self,
+                                              pname_set_dict,
+                                              semantic_snapshot=None):
+        snapshot = semantic_snapshot or self.semantic_snapshot
+        if not self.use_role_aware_local_placement or snapshot is None:
+            self.role_aware_local_placement_records = {}
+            return {}
+
+        initial_rotations = {}
+        placement_records = {}
+        for group_name, group_data in pname_set_dict.items():
+            if not group_data["ind_ofsortednodes"]:
+                continue
+            node_id = self.sorted_nodes[group_data["ind_ofsortednodes"][0]]
+            node_record = snapshot.graph_node_records.get(node_id)
+            if node_record is None or node_record.role_class != "V":
+                continue
+            try:
+                refinement = self.compile_local_constrained_refinement(
+                    node_id,
+                    semantic_snapshot=snapshot,
+                )
+            except (KeyError, ValueError):
+                continue
+            placement_records[node_id] = refinement
+            initial_rotations[group_name] = np.asarray(
+                refinement.rotation_matrix,
+                dtype=float,
+            )
+        self.role_aware_local_placement_records = placement_records
+        return initial_rotations
 
     def place_edge_in_net(self):
         """

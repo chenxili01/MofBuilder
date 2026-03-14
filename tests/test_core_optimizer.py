@@ -106,9 +106,86 @@ def test_rotation_and_cell_optimization_stores_optional_semantic_snapshot(
     monkeypatch.setattr(optimizer, "_prepare_role_fragment_payloads", stop_after_hook)
 
     with pytest.raises(RuntimeError, match="stop-after-hook"):
-        optimizer.rotation_and_cell_optimization(semantic_snapshot=semantic_snapshot)
+        optimizer.rotation_and_cell_optimization(
+            semantic_snapshot=semantic_snapshot,
+            use_role_aware_local_placement=True,
+        )
 
     assert optimizer.semantic_snapshot is semantic_snapshot
+    assert optimizer.use_role_aware_local_placement is True
+
+
+def test_compile_role_aware_initial_rotations_requires_explicit_opt_in(monkeypatch):
+    semantic_snapshot = OptimizationSemanticSnapshot(
+        family_name="ROLE-AWARE",
+        graph_phase="sG",
+        graph_node_records={
+            "V0": GraphNodeSemanticRecord(
+                node_id="V0",
+                role_id="node:VA",
+                role_class="V",
+            ),
+        },
+    )
+    optimizer = opt.NetOptimizer(semantic_snapshot=semantic_snapshot)
+    optimizer.sorted_nodes = ["V0"]
+
+    calls = []
+
+    def fake_refinement(node_id, semantic_snapshot=None, **_kwargs):
+        calls.append((node_id, semantic_snapshot))
+        return NodeLocalConstrainedRefinement(
+            node_id=node_id,
+            node_role_id="node:VA",
+            correspondence=LegalNodeCorrespondence(
+                node_id=node_id,
+                node_role_id="node:VA",
+            ),
+            rigid_initialization=NodeLocalRigidInitialization(
+                node_id=node_id,
+                node_role_id="node:VA",
+                correspondence=LegalNodeCorrespondence(
+                    node_id=node_id,
+                    node_role_id="node:VA",
+                ),
+                anchor_pairs=(),
+                rotation_matrix=((1.0, 0.0, 0.0),
+                                 (0.0, 1.0, 0.0),
+                                 (0.0, 0.0, 1.0)),
+                translation_vector=(0.0, 0.0, 0.0),
+                rmsd=0.0,
+                source_anchor_representation="anchor_vector",
+                target_anchor_representation="target_point",
+            ),
+            rotation_matrix=((1.0, 0.0, 0.0),
+                             (0.0, 1.0, 0.0),
+                             (0.0, 0.0, 1.0)),
+            translation_vector=(0.0, 0.0, 0.0),
+        )
+
+    monkeypatch.setattr(
+        optimizer,
+        "compile_local_constrained_refinement",
+        fake_refinement,
+    )
+
+    disabled = optimizer._compile_role_aware_initial_rotations(
+        {"group:V": {"ind_ofsortednodes": [0]}},
+        semantic_snapshot=semantic_snapshot,
+    )
+
+    assert disabled == {}
+    assert calls == []
+
+    optimizer.use_role_aware_local_placement = True
+    enabled = optimizer._compile_role_aware_initial_rotations(
+        {"group:V": {"ind_ofsortednodes": [0]}},
+        semantic_snapshot=semantic_snapshot,
+    )
+
+    assert calls == [("V0", semantic_snapshot)]
+    assert np.allclose(enabled["group:V"], np.eye(3))
+    assert "V0" in optimizer.role_aware_local_placement_records
 
 
 def test_compile_node_placement_contract_supports_default_role_snapshot():

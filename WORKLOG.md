@@ -1150,3 +1150,139 @@ notes:
 - Checkpoint: phase-6-executor-implemented
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews completion and decides whether to advance
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T20:59:39+00:00
+
+## Active Phase
+- Phase: 7
+- Name: Optional Integrated Optimizer Path
+
+## Objective
+Integrate the optimizer-owned node-local semantic placement path into the existing optimizer behind an explicit opt-in guard so one representative role-aware case can use the new helper stack, while the legacy optimizer path remains the default and unchanged when the guard or snapshot input is absent.
+
+## Scope
+- `src/mofbuilder/core/optimizer.py`
+- `src/mofbuilder/core/builder.py`
+- `tests/test_core_optimizer.py`
+- `tests/test_core_runtime_snapshot.py`
+- `STATUS.md`
+
+## Tasks
+1. Add a minimal guarded integration seam in `builder.py` and `optimizer.py` so the new local placement path is used only when explicit inputs are provided, for example a non-`None` semantic snapshot plus a flag such as `use_role_aware_local_placement=False` by default.
+2. Route one representative eligible node-local case through the existing optimizer-owned helper stack in order: snapshot-derived node placement contract, legal correspondence compilation, SVD/Kabsch initialization, and current local constrained refinement, without changing semantics ownership or requiring optimizer access to arbitrary builder internals.
+3. Preserve the current legacy optimizer behavior as the default fallback for no-snapshot, guard-disabled, unsupported, or non-representative cases, and keep the integration narrow rather than broadening coverage.
+4. Add tests covering both paths: legacy behavior when the guard is off or no snapshot is provided, and guarded role-aware behavior when the snapshot and flag are enabled for the representative case.
+
+## Validation
+- `python -m py_compile src/mofbuilder/core/optimizer.py src/mofbuilder/core/builder.py tests/test_core_optimizer.py tests/test_core_runtime_snapshot.py`
+- `python -m pytest tests/test_core_optimizer.py tests/test_core_runtime_snapshot.py`
+- Verify the guarded path consumes only the snapshot seam and existing optimizer-owned helpers, with legality still determined before geometry.
+- Verify the default legacy path remains available and unchanged when the guard is not enabled.
+
+## Non-goals
+- Framework, `FrameNet`, or snapshot ownership/schema changes.
+- Broad rollout beyond one representative family or case.
+- New ambiguity-search redesign, global optimizer redesign, or legacy-path removal.
+- Moving role interpretation, canonical ordering, or bundle ownership out of builder-owned surfaces.
+
+## Exit Criteria
+- The new local placement path can be enabled explicitly through a narrow guard and snapshot input.
+- The default execution path still uses the legacy optimizer behavior unchanged.
+- Tests cover both no-snapshot or guard-disabled fallback and snapshot-enabled guarded execution for one representative case.
+- `STATUS.md` is executor-ready and the phase scope remains limited to Phase 7 integration only.
+
+## STATUS.md Update
+- Phase: Phase 7
+- Checkpoint: phase-7-plan-ready
+- Status: READY_FOR_EXECUTOR
+- Next step: Executor implements the active phase only
+
+`STATUS.md` was updated accordingly at [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
+
+
+## 2026-03-14 — executor — phase 7 guarded optimizer integration
+
+branch:
+optimizer-reconstruction
+
+phase:
+Phase 7 — Optional Integrated Optimizer Path
+
+checkpoint:
+phase-7-executor-implemented
+
+summary:
+- Added an explicit `use_role_aware_local_placement` guard on builder and optimizer entry points so the legacy path remains the default behavior.
+- Wired the optimizer to seed its existing rotation search from the role-aware local refinement helper only when the explicit guard is enabled and a semantic snapshot is provided.
+- Limited the guarded integration to a representative `V`-class local-placement case and preserved silent fallback to the legacy initialization when semantic compilation is unavailable.
+
+files touched:
+- src/mofbuilder/core/optimizer.py
+- src/mofbuilder/core/builder.py
+- tests/test_core_optimizer.py
+- tests/test_core_builder.py
+- WORKLOG.md
+- STATUS.md
+
+invariants checked:
+- Builder remains the owner of role interpretation and snapshot compilation.
+- Optimizer consumes the snapshot seam only through the explicit guarded path and does not inspect arbitrary builder internals.
+- Legacy optimizer behavior remains the default because the new path is opt-in only.
+- Framework, FrameNet, snapshot schema ownership, graph grammar, primitive-first ordering, and null-edge semantics were not modified.
+
+validation:
+- `python -m py_compile src/mofbuilder/core/optimizer.py src/mofbuilder/core/builder.py tests/test_core_optimizer.py tests/test_core_builder.py`
+- `pytest tests/test_core_optimizer.py tests/test_core_builder.py` was not run because `pytest` is not installed in the active interpreter.
+
+notes:
+- The guarded integration currently seeds the existing optimizer with role-aware local refinement only for representative `V`-class node groups; broader coverage remains Phase 8 work.
+- The handoff files `SNAPSHOT_API_HANDOFF.md`, `OPTIMIZER_DISCUSSION_MEMORY.md`, and `OPTIMIZER_TODO_ROADMAP.md` are still absent from this checkout, so execution relied on the in-repo workflow docs and implemented snapshot types.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T21:05:40+00:00
+
+## Active Phase
+- Phase: 7
+- Name: Optional Integrated Optimizer Path
+
+## Implemented
+- Added an explicit `use_role_aware_local_placement` guard to the builder and optimizer so the legacy path remains the default. See [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py#L208) and [optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py#L86).
+- Wired the guarded optimizer path to seed legacy rotation optimization from the existing optimizer-owned local refinement helper for representative `V`-class groups only. See [optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py#L176) and [optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py#L388).
+- Updated tests to cover both guard-disabled legacy behavior and snapshot-enabled guarded wiring. See [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py#L588) and [test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py#L92).
+- Updated workflow handoff state in [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md) and [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md#L5).
+
+## Files Changed
+- [optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py)
+- [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py)
+- [test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py)
+- [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+
+## Validation
+- `python -m py_compile src/mofbuilder/core/optimizer.py src/mofbuilder/core/builder.py tests/test_core_optimizer.py tests/test_core_builder.py`
+- `git diff --check -- src/mofbuilder/core/optimizer.py src/mofbuilder/core/builder.py tests/test_core_optimizer.py tests/test_core_builder.py STATUS.md WORKLOG.md`
+- `python -m pytest --version` failed because `pytest` is not installed in `/Users/chenxili/.venv/bin/python`.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- The guarded integration currently seeds only representative `V`-class node groups; broader coverage remains future-phase work.
+- Full pytest execution is still pending in an environment with `pytest` installed.
+- `SNAPSHOT_API_HANDOFF.md`, `OPTIMIZER_DISCUSSION_MEMORY.md`, and `OPTIMIZER_TODO_ROADMAP.md` are not present in this checkout, so execution relied on the in-repo workflow docs and implemented snapshot types.
+
+## STATUS.md Update
+- Phase: Phase 7
+- Checkpoint: phase-7-executor-implemented
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance
