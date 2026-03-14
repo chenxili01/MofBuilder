@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import re
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import networkx as nx
@@ -13,6 +14,12 @@ from veloxchem.veloxchemlib import mpi_master
 from veloxchem.errorhandler import assert_msg_critical
 import mpi4py.MPI as MPI
 import sys
+
+
+@dataclass(frozen=True)
+class ValidationResult:
+    ok: bool
+    errors: List[Dict[str, Any]]
 
 
 class FrameNet:
@@ -92,6 +99,21 @@ class FrameNet:
 
         #debug
         self._debug = False
+
+    def _validation_error(
+        self,
+        code: str,
+        message: str,
+        *,
+        hint: Optional[str] = None,
+        context: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        error = {"code": code, "message": message}
+        if hint is not None:
+            error["hint"] = hint
+        if context:
+            error["context"] = context
+        return error
 
     def _make_supercell_3x3x3(self, array_xyz):
         """Generate 3x3x3 supercell by shifting coordinates by [-1,0,1] in each dimension. Returns (N*27, 3) array."""
@@ -246,6 +268,289 @@ class FrameNet:
         node_data = self.G.nodes[node_name]
         role_id = str(node_data.get("node_role_id", ""))
         return role_id.startswith("node:C") or node_data.get("note") == "CV"
+
+    def _classify_node_role(self, node_name):
+        """Classify a graph node as V or C while preserving legacy single-role graphs."""
+        node_data = self.G.nodes[node_name]
+        role_id = str(node_data.get("node_role_id") or "")
+        if role_id == "node:default":
+            return "C" if node_data.get("note") == "CV" else "V"
+        if role_id.startswith("node:") and len(role_id) > len("node:"):
+            role_alias = role_id.split(":", 1)[1]
+            if role_alias.startswith(("V", "C")):
+                return role_alias[0]
+        return None
+
+    def _classify_edge_role(self, edge):
+        """Classify a graph edge as E while preserving legacy single-role graphs."""
+        edge_role_id = str(self.G.edges[edge].get("edge_role_id") or "")
+        if edge_role_id == "edge:default":
+            return "E"
+        if edge_role_id.startswith("edge:") and len(edge_role_id) > len("edge:"):
+            role_alias = edge_role_id.split(":", 1)[1]
+            if role_alias.startswith("E"):
+                return "E"
+        return None
+
+    def _role_alias_from_id(self, role_id):
+        role_id = str(role_id or "")
+        if ":" not in role_id:
+            return None
+        return role_id.split(":", 1)[1] or None
+
+    def _normalize_validation_metadata(self, role_metadata):
+        """Normalize passive role metadata into a small validation view."""
+        if not role_metadata:
+            return {
+                "connectivity": {},
+                "path_rules": {},
+                "edge_kind": {},
+            }
+
+        canonical_metadata = role_metadata.get("canonical_role_metadata", role_metadata)
+        connectivity_map = {}
+        path_rules = {}
+        edge_kind_map = {}
+
+        if "roles" in canonical_metadata:
+            for role_alias, rule in canonical_metadata.get("connectivity_rules", {}).items():
+                connectivity_map[str(role_alias)] = len(rule.get("incident_edge_aliases", []))
+            for rule in canonical_metadata.get("path_rules", []):
+                endpoint_pattern = tuple(rule.get("endpoint_pattern", []))
+                if len(endpoint_pattern) == 3:
+                    path_rules[str(rule.get("edge_alias"))] = endpoint_pattern
+            for edge_alias, rule in canonical_metadata.get("edge_kind_rules", {}).items():
+                edge_kind_map[str(edge_alias)] = str(rule.get("edge_kind"))
+        else:
+            if "connectivity" in canonical_metadata:
+                connectivity_map = {
+                    str(role_alias): int(degree)
+                    for role_alias, degree in canonical_metadata.get("connectivity", {}).items()
+                }
+            elif "node_roles" in role_metadata:
+                for role_entry in role_metadata.get("node_roles", []):
+                    if not isinstance(role_entry, dict):
+                        continue
+                    topology_labels = role_entry.get("topology_labels", [])
+                    if topology_labels:
+                        connectivity_map[str(topology_labels[0])] = int(
+                            role_entry.get("expected_connectivity", 0)
+                        )
+            for raw_rule in canonical_metadata.get("path_rules", []):
+                if isinstance(raw_rule, str):
+                    endpoint_pattern = tuple(part.strip() for part in raw_rule.split("-"))
+                elif isinstance(raw_rule, dict):
+                    endpoint_pattern = tuple(raw_rule.get("endpoint_pattern", []))
+                else:
+                    continue
+                if len(endpoint_pattern) == 3:
+                    path_rules[str(endpoint_pattern[1])] = endpoint_pattern
+            raw_edge_kind = canonical_metadata.get("edge_kind", {})
+            for edge_alias, kind in raw_edge_kind.items():
+                if isinstance(kind, dict):
+                    edge_kind_map[str(edge_alias)] = str(kind.get("edge_kind"))
+                else:
+                    edge_kind_map[str(edge_alias)] = str(kind)
+
+        return {
+            "connectivity": connectivity_map,
+            "path_rules": path_rules,
+            "edge_kind": edge_kind_map,
+        }
+
+    def validate_roles(self, role_metadata=None) -> ValidationResult:
+        """Validate graph role annotations against the active role grammar and metadata."""
+        errors = []
+        normalized_metadata = self._normalize_validation_metadata(role_metadata)
+
+        for node_name, node_data in self.G.nodes(data=True):
+            role_id = str(node_data.get("node_role_id") or "")
+            node_class = self._classify_node_role(node_name)
+            if not role_id:
+                errors.append(
+                    self._validation_error(
+                        "missing_node_role_id",
+                        f"Node {node_name} is missing node_role_id.",
+                        hint="Ensure FrameNet.create_net() stamps every graph node with node_role_id.",
+                        context={"node": node_name},
+                    )
+                )
+                continue
+            if node_class is None:
+                errors.append(
+                    self._validation_error(
+                        "illegal_node_role_prefix",
+                        f"Node {node_name} has unsupported role id {role_id}.",
+                        hint="Use node:default for legacy graphs or node:V* / node:C* for explicit role-aware templates.",
+                        context={"node": node_name, "role_id": role_id},
+                    )
+                )
+
+        for edge in self.G.edges():
+            edge_data = self.G.edges[edge]
+            edge_role_id = str(edge_data.get("edge_role_id") or "")
+            edge_class = self._classify_edge_role(edge)
+            if not edge_role_id:
+                errors.append(
+                    self._validation_error(
+                        "missing_edge_role_id",
+                        f"Edge {edge} is missing edge_role_id.",
+                        hint="Ensure FrameNet.create_net() stamps every graph edge with edge_role_id.",
+                        context={"edge": edge},
+                    )
+                )
+            elif edge_class is None:
+                errors.append(
+                    self._validation_error(
+                        "illegal_edge_role_prefix",
+                        f"Edge {edge} has unsupported role id {edge_role_id}.",
+                        hint="Use edge:default for legacy graphs or edge:E* for explicit role-aware templates.",
+                        context={"edge": edge, "role_id": edge_role_id},
+                    )
+                )
+
+            left_class = self._classify_node_role(edge[0])
+            right_class = self._classify_node_role(edge[1])
+            valid_endpoint_classes = {left_class, right_class}
+            if edge_class == "E" and valid_endpoint_classes not in ({"V"}, {"V", "C"}):
+                errors.append(
+                    self._validation_error(
+                        "invalid_graph_grammar",
+                        f"Edge {edge} violates the allowed graph grammar.",
+                        hint="Allowed topology paths are V-E-V and V-E-C only.",
+                        context={
+                            "edge": edge,
+                            "left_role_class": left_class,
+                            "right_role_class": right_class,
+                            "edge_role_id": edge_role_id,
+                        },
+                    )
+                )
+
+            slot_index = edge_data.get("slot_index")
+            if not isinstance(slot_index, dict):
+                errors.append(
+                    self._validation_error(
+                        "missing_slot_metadata",
+                        f"Edge {edge} is missing slot_index metadata.",
+                        hint="Each graph edge must carry a slot_index mapping for both endpoint nodes.",
+                        context={"edge": edge},
+                    )
+                )
+            else:
+                endpoint_names = set(edge)
+                slot_nodes = set(slot_index)
+                if slot_nodes != endpoint_names or not all(
+                    isinstance(index, int) and index >= 0 for index in slot_index.values()
+                ):
+                    errors.append(
+                        self._validation_error(
+                            "invalid_slot_metadata",
+                            f"Edge {edge} has invalid slot_index metadata.",
+                            hint="slot_index must map both endpoint node names to non-negative integer attachment indices.",
+                            context={"edge": edge, "slot_index": slot_index},
+                        )
+                    )
+
+            edge_alias = self._role_alias_from_id(edge_role_id)
+            declared_path = normalized_metadata["path_rules"].get(edge_alias)
+            if declared_path is not None:
+                observed_pattern = (
+                    self._role_alias_from_id(self.G.nodes[edge[0]].get("node_role_id")) or "default",
+                    edge_alias,
+                    self._role_alias_from_id(self.G.nodes[edge[1]].get("node_role_id")) or "default",
+                )
+                reversed_pattern = (observed_pattern[2], observed_pattern[1], observed_pattern[0])
+                if observed_pattern != declared_path and reversed_pattern != declared_path:
+                    errors.append(
+                        self._validation_error(
+                            "path_rule_mismatch",
+                            f"Edge {edge} does not match the declared path rule for {edge_alias}.",
+                            hint="Check node_role_id stamping against the family path_rules metadata.",
+                            context={
+                                "edge": edge,
+                                "declared_path": declared_path,
+                                "observed_path": observed_pattern,
+                            },
+                        )
+                    )
+
+            declared_edge_kind = normalized_metadata["edge_kind"].get(edge_alias)
+            if declared_edge_kind is not None and declared_edge_kind not in {"real", "null"}:
+                errors.append(
+                    self._validation_error(
+                        "invalid_null_edge_metadata",
+                        f"Edge role {edge_alias} declares unsupported edge kind {declared_edge_kind}.",
+                        hint="edge_kind metadata must preserve the explicit distinction between real and null edges.",
+                        context={"edge": edge, "edge_alias": edge_alias},
+                    )
+                )
+
+        for node_name in self.G.nodes():
+            role_alias = self._role_alias_from_id(self.G.nodes[node_name].get("node_role_id"))
+            expected_connectivity = normalized_metadata["connectivity"].get(role_alias)
+            if expected_connectivity is not None and self.G.degree(node_name) != expected_connectivity:
+                errors.append(
+                    self._validation_error(
+                        "connectivity_mismatch",
+                        f"Node {node_name} has degree {self.G.degree(node_name)} but role {role_alias} expects {expected_connectivity}.",
+                        hint="Check the topology graph and passive connectivity metadata for the active family.",
+                        context={
+                            "node": node_name,
+                            "role_alias": role_alias,
+                            "observed_degree": self.G.degree(node_name),
+                            "expected_degree": expected_connectivity,
+                        },
+                    )
+                )
+
+            if self._classify_node_role(node_name) != "C":
+                continue
+
+            incident_edges = set(self.G.edges(node_name))
+            cyclic_edge_order = self.G.nodes[node_name].get("cyclic_edge_order")
+            if not isinstance(cyclic_edge_order, list):
+                errors.append(
+                    self._validation_error(
+                        "missing_cyclic_order",
+                        f"Linker-center node {node_name} is missing cyclic_edge_order metadata.",
+                        hint="C* nodes must carry cyclic_edge_order metadata produced by FrameNet.create_net().",
+                        context={"node": node_name},
+                    )
+                )
+                continue
+            if len(cyclic_edge_order) != len(incident_edges) or set(cyclic_edge_order) != incident_edges:
+                errors.append(
+                    self._validation_error(
+                        "invalid_cyclic_order",
+                        f"Linker-center node {node_name} has inconsistent cyclic_edge_order metadata.",
+                        hint="cyclic_edge_order must list each incident edge exactly once.",
+                        context={
+                            "node": node_name,
+                            "cyclic_edge_order": cyclic_edge_order,
+                            "incident_edges": list(incident_edges),
+                        },
+                    )
+                )
+                continue
+            for order_index, edge in enumerate(cyclic_edge_order):
+                order_map = self.G.edges[edge].get("cyclic_edge_order")
+                if not isinstance(order_map, dict) or order_map.get(node_name) != order_index:
+                    errors.append(
+                        self._validation_error(
+                            "invalid_cyclic_order",
+                            f"Edge {edge} does not mirror the cyclic order index for linker-center node {node_name}.",
+                            hint="Incident edges must store the local cyclic order index for each C* endpoint.",
+                            context={
+                                "node": node_name,
+                                "edge": edge,
+                                "expected_order_index": order_index,
+                                "edge_cyclic_order": order_map,
+                            },
+                        )
+                    )
+
+        return ValidationResult(ok=not errors, errors=errors)
 
     def _compute_cyclic_edge_order(self, node_name, incident_edges):
         """Compute a deterministic local cyclic order around a linker-center node."""

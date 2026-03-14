@@ -3,10 +3,45 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from mofbuilder.core.net import FrameNet, arr_dimension, is_list_A_in_B, lname, pname
+from mofbuilder.core.net import (
+    FrameNet,
+    arr_dimension,
+    is_list_A_in_B,
+    lname,
+    pname,
+)
 
 
 TESTDATA = Path(__file__).resolve().parent / "testdata"
+
+
+def _canonical_validation_role_metadata():
+    return {
+        "schema_name": "mof_reticular_role_metadata",
+        "schema_version": 1,
+        "family_name": "TEST-MULTI",
+        "roles": {
+            "VA": {"role_class": "V", "canonical_role_id": "node:VA"},
+            "CA": {"role_class": "C", "canonical_role_id": "node:CA"},
+            "EA": {"role_class": "E", "canonical_role_id": "edge:EA"},
+            "EB": {"role_class": "E", "canonical_role_id": "edge:EB"},
+        },
+        "connectivity_rules": {
+            "VA": {"incident_edge_aliases": ["EA", "EA", "EB", "EB"]},
+            "CA": {"incident_edge_aliases": ["EA", "EA", "EA", "EA"]},
+        },
+        "path_rules": [
+            {"edge_alias": "EA", "endpoint_pattern": ["VA", "EA", "CA"]},
+            {"edge_alias": "EB", "endpoint_pattern": ["VA", "EB", "VA"]},
+        ],
+        "edge_kind_rules": {
+            "EA": {"edge_kind": "real"},
+            "EB": {
+                "edge_kind": "null",
+                "null_payload_model": "duplicated_zero_length_anchors",
+            },
+        },
+    }
 
 
 def write_test_cif(tmp_path, atom_lines, v_con=1, ec_con=None):
@@ -216,6 +251,69 @@ loop_
         assert cv_node in edge
         assert net.G.edges[edge]["cyclic_edge_order"][cv_node] == order_index
         assert net.G.edges[edge]["slot_index"][cv_node] in range(net.G.degree(cv_node))
+
+
+@pytest.mark.core
+def test_validate_roles_accepts_role_aware_graph_with_metadata(tmp_path):
+    cif_path = write_raw_test_cif(
+        tmp_path,
+        """data_role_specific_template
+_symmetry_space_group_name_H-M    'P1'
+_symmetry_Int_Tables_number       1
+loop_
+_symmetry_equiv_pos_as_xyz
+  x,y,z
+_cell_length_a                    10.0
+_cell_length_b                    10.0
+_cell_length_c                    10.0
+_cell_angle_alpha                 90.0
+_cell_angle_beta                  90.0
+_cell_angle_gamma                 90.0
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+VA      VA1  -0.2500   0.0000   0.0000
+VA      VA2   0.2500   0.0000   0.0000
+VA      VA3   0.0000  -0.2500   0.0000
+VA      VA4   0.0000   0.2500   0.0000
+CA      CA1   0.0000   0.0000   0.0000
+EA      EA1  -0.1250   0.0000   0.0000
+EA      EA2   0.1250   0.0000   0.0000
+EA      EA3   0.0000  -0.1250   0.0000
+EA      EA4   0.0000   0.1250   0.0000
+loop_
+""",
+    )
+    net = FrameNet()
+    net.create_net(cif_file=str(cif_path))
+
+    result = net.validate_roles(role_metadata=_canonical_validation_role_metadata())
+
+    assert result.ok is True
+    assert result.errors == []
+
+
+@pytest.mark.core
+def test_validate_roles_reports_descriptive_errors_for_missing_slot_metadata():
+    net = FrameNet()
+    net.G.add_node("V0", note="V", node_role_id="node:VA")
+    net.G.add_node("C0", note="CV", node_role_id="node:CA")
+    net.G.add_edge("V0", "C0", edge_role_id="edge:EA")
+
+    result = net.validate_roles(role_metadata=_canonical_validation_role_metadata())
+
+    assert result.ok is False
+    assert [error["code"] for error in result.errors] == [
+        "missing_slot_metadata",
+        "connectivity_mismatch",
+        "connectivity_mismatch",
+        "missing_cyclic_order",
+    ]
+    assert "slot_index metadata" in result.errors[0]["message"]
+    assert "FrameNet.create_net()" in result.errors[0]["hint"]
 
 
 @pytest.mark.core

@@ -418,6 +418,18 @@ class MetalOrganicFrameworkBuilder:
             role_entry["linker_frag_length"] = self.linker_frag_length
             role_entry["linker_fake_edge"] = self.linker_fake_edge
 
+    def _format_role_validation_errors(self, validation_result):
+        error_lines = []
+        for error in validation_result.errors:
+            message = error.get("message", "Unknown validation error.")
+            code = error.get("code")
+            hint = error.get("hint")
+            line = f"[{code}] {message}" if code else message
+            if hint:
+                line = f"{line} Hint: {hint}"
+            error_lines.append(line)
+        return "\n".join(error_lines)
+
     def _read_net(self):
         if self.data_path is None:
             self.data_path = get_data_path()
@@ -430,6 +442,14 @@ class MetalOrganicFrameworkBuilder:
             "Template cif file is not set in mof_top_library.")
         self.frame_net.edge_length_range = self.linker_frag_length_search_range
         self.frame_net.create_net()
+        validation_result = self.frame_net.validate_roles(
+            role_metadata=self.mof_top_library.canonical_role_metadata
+        )
+        assert_msg_critical(
+            validation_result.ok,
+            "Role validation failed before optimization.\n"
+            + self._format_role_validation_errors(validation_result),
+        )
         #check if the max_degree of the net matches the node_connectivity
         assert_msg_critical(
             self.frame_net.max_degree ==

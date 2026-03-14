@@ -8,6 +8,7 @@ import pytest
 import mofbuilder.core.builder as builder_module
 from mofbuilder.core.builder import MetalOrganicFrameworkBuilder
 from mofbuilder.core.moftoplibrary import MofTopLibrary
+from mofbuilder.core.net import ValidationResult
 
 
 class _DummyDefectGenerator:
@@ -590,3 +591,69 @@ def test_load_and_optimize_framework_single_role_keeps_scalar_state_and_passes_d
     assert builder.frame_cell_info == [11.0, 11.0, 11.0, 90.0, 90.0, 90.0]
     assert np.array_equal(builder.frame_unit_cell, np.eye(3) * 11.0)
     assert nx.is_isomorphic(builder.sG, builder.G)
+
+
+@pytest.mark.core
+def test_read_net_calls_framenet_role_validation_before_registry_initialization(
+    monkeypatch,
+):
+    builder = MetalOrganicFrameworkBuilder(mof_family="TEST-MULTI")
+    builder.data_path = "tests/database"
+
+    created_graph = nx.Graph()
+    created_graph.add_node("V0", note="V", node_role_id="node:VA")
+    created_graph.add_node(
+        "C0",
+        note="CV",
+        node_role_id="node:CA",
+        cyclic_edge_order=[("V0", "C0")],
+    )
+    created_graph.add_edge(
+        "V0",
+        "C0",
+        edge_role_id="edge:EA",
+        slot_index={"V0": 0, "C0": 0},
+        cyclic_edge_order={"C0": 0},
+    )
+
+    expected_metadata = _canonical_family_role_metadata()
+    expected_metadata["connectivity_rules"]["VA"] = {"incident_edge_aliases": ["EA"]}
+    expected_metadata["connectivity_rules"]["CA"] = {"incident_edge_aliases": ["EA"]}
+    validation_calls = []
+
+    def fake_fetch(mof_family):
+        assert mof_family == "TEST-MULTI"
+        builder.mof_top_library.node_connectivity = 1
+        builder.mof_top_library.role_metadata = {
+            "schema": "mof_topology_role_metadata/v1",
+            "canonical_role_metadata": expected_metadata,
+        }
+        builder.mof_top_library.canonical_role_metadata = expected_metadata
+        return "tests/database/template_database/MOF-TEST.cif"
+
+    def fake_create_net():
+        builder.frame_net.max_degree = 1
+        builder.frame_net.cifreader.spacegroup = "P1"
+        builder.frame_net.cell_info = [10.0, 10.0, 10.0, 90.0, 90.0, 90.0]
+        builder.frame_net.unit_cell = np.eye(3)
+        builder.frame_net.unit_cell_inv = np.eye(3)
+        builder.frame_net.linker_connectivity = 2
+        builder.frame_net.sorted_nodes = ["V0", "C0"]
+        builder.frame_net.sorted_edges = [("V0", "C0")]
+        builder.frame_net.pair_vertex_edge = [("V0", "C0", "EA0")]
+        builder.frame_net.G = created_graph.copy()
+
+    def fake_validate_roles(role_metadata=None):
+        validation_calls.append(role_metadata)
+        return ValidationResult(ok=True, errors=[])
+
+    monkeypatch.setattr(builder.mof_top_library, "fetch", fake_fetch)
+    monkeypatch.setattr(builder.frame_net, "create_net", fake_create_net)
+    monkeypatch.setattr(builder.frame_net, "validate_roles", fake_validate_roles)
+
+    builder._read_net()
+
+    assert validation_calls == [expected_metadata]
+    assert builder.G.nodes["V0"]["node_role_id"] == "node:VA"
+    assert builder.G.nodes["C0"]["node_role_id"] == "node:CA"
+    assert builder.G.edges["V0", "C0"]["edge_role_id"] == "edge:EA"

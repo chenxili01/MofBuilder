@@ -2,10 +2,10 @@
 
 ## Workflow Status
 
-- Phase: Phase 2
-- Checkpoint: phase-2-plan-finalized
+- Phase: Phase 3
+- Checkpoint: phase-3-validation-implemented
 - Status: COMPLETED_PENDING_PLANNER
-- Next step: Planner reviews Phase 2 completion and decides whether to advance
+- Next step: Planner reviews Phase 3 completion and decides whether to advance
 - Last update: 2026-03-14
 
 ## Branch
@@ -18,7 +18,7 @@ Implement the role-based topology semantics defined in `ROUND1_CHECKPOINT.md` an
 
 ## Current Focus
 
-Phase 2 execution completed: `FrameNet.create_net()` now preserves the existing role-id stamping path and attaches graph-local `slot_index` metadata on edges plus deterministic `cyclic_edge_order` metadata for linker-center (`C*` / legacy `CV`) nodes and their incident edges, with no builder, optimizer, framework, or later-phase behavior added.
+Phase 3 execution completed: `FrameNet.validate_roles()` and the minimal builder-side pre-optimization validation hook are in place, with focused tests added for the validation path and builder call seam. Planner review is required before any later-phase work.
 
 ## Invariants
 
