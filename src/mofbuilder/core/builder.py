@@ -181,8 +181,12 @@ class MetalOrganicFrameworkBuilder:
         #will be set when reading the linker
         self.linker_center_data = None
         self.linker_center_X_data = None
+        self.linker_center_attachment_data_by_type = {}
+        self.linker_center_attachment_coords_by_type = {}
         self.linker_outer_data = None
         self.linker_outer_X_data = None
+        self.linker_outer_attachment_data_by_type = {}
+        self.linker_outer_attachment_coords_by_type = {}
         self.linker_frag_length = None
         self.linker_fake_edge = False
 
@@ -193,6 +197,8 @@ class MetalOrganicFrameworkBuilder:
         #will be set when reading the node
         self.node_data = None
         self.node_X_data = None
+        self.node_attachment_data_by_type = {}
+        self.node_attachment_coords_by_type = {}
         self.dummy_atom_node_dict = None
 
         #need to be set by user
@@ -509,6 +515,55 @@ class MetalOrganicFrameworkBuilder:
     def _get_role_prefix(self, role_id):
         role_alias = self._get_role_alias(role_id)
         return role_alias[:1] if role_alias else ""
+
+    def _extract_attachment_coords_by_type(self, attachment_data_by_type):
+        coords_by_type = {}
+        for source_atom_type, rows in (attachment_data_by_type or {}).items():
+            if rows is None:
+                continue
+            coords_by_type[str(source_atom_type)] = np.asarray(
+                rows[:, 5:8],
+                dtype=float,
+            )
+        return coords_by_type
+
+    def _recenter_attachment_data_by_type(
+        self,
+        attachment_data_by_type,
+        offset,
+    ):
+        recentered = {}
+        for source_atom_type, rows in (attachment_data_by_type or {}).items():
+            if rows is None:
+                continue
+            recentered[str(source_atom_type)] = np.hstack(
+                (
+                    rows[:, 0:5],
+                    np.asarray(rows[:, 5:8], dtype=float) - offset,
+                    rows[:, 8:],
+                )
+            )
+        return recentered
+
+    def _duplicate_point_attachment_data_by_type(self, attachment_data_by_type):
+        duplicated = {}
+        for source_atom_type, rows in (attachment_data_by_type or {}).items():
+            if rows is None:
+                continue
+            if len(rows) != 1:
+                duplicated[str(source_atom_type)] = rows
+                continue
+            dup_point = np.hstack(
+                (
+                    rows[:, 0:5],
+                    np.asarray(rows[:, 5:8], dtype=float) + [1.0, 0, 0],
+                    rows[:, 8:],
+                )
+            )
+            duplicated_rows = np.vstack((rows, dup_point))
+            duplicated_rows[:, 1] = "Fr"
+            duplicated[str(source_atom_type)] = duplicated_rows
+        return duplicated
 
     def _has_role_aware_graph(self):
         if self.G is None:
@@ -1897,6 +1952,8 @@ class MetalOrganicFrameworkBuilder:
                 "filename": None,
                 "node_data": None,
                 "node_X_data": None,
+                "node_attachment_data_by_type": {},
+                "node_attachment_coords_by_type": {},
                 "dummy_atom_node_dict": None,
             }
 
@@ -1917,8 +1974,12 @@ class MetalOrganicFrameworkBuilder:
                 "linker_multiplicity": self.linker_multiplicity,
                 "linker_center_data": None,
                 "linker_center_X_data": None,
+                "linker_center_attachment_data_by_type": {},
+                "linker_center_attachment_coords_by_type": {},
                 "linker_outer_data": None,
                 "linker_outer_X_data": None,
+                "linker_outer_attachment_data_by_type": {},
+                "linker_outer_attachment_coords_by_type": {},
                 "linker_frag_length": None,
                 "linker_fake_edge": False,
             }
@@ -1931,6 +1992,12 @@ class MetalOrganicFrameworkBuilder:
                 self.frame_nodes.filename) if self.frame_nodes.filename is not None else None
             role_entry["node_data"] = self.node_data
             role_entry["node_X_data"] = self.node_X_data
+            role_entry["node_attachment_data_by_type"] = dict(
+                self.node_attachment_data_by_type
+            )
+            role_entry["node_attachment_coords_by_type"] = dict(
+                self.node_attachment_coords_by_type
+            )
             role_entry["dummy_atom_node_dict"] = self.dummy_atom_node_dict
 
     def _update_edge_role_registry_data(self):
@@ -1941,8 +2008,20 @@ class MetalOrganicFrameworkBuilder:
                 continue
             role_entry["linker_center_data"] = self.linker_center_data
             role_entry["linker_center_X_data"] = self.linker_center_X_data
+            role_entry["linker_center_attachment_data_by_type"] = dict(
+                self.linker_center_attachment_data_by_type
+            )
+            role_entry["linker_center_attachment_coords_by_type"] = dict(
+                self.linker_center_attachment_coords_by_type
+            )
             role_entry["linker_outer_data"] = self.linker_outer_data
             role_entry["linker_outer_X_data"] = self.linker_outer_X_data
+            role_entry["linker_outer_attachment_data_by_type"] = dict(
+                self.linker_outer_attachment_data_by_type
+            )
+            role_entry["linker_outer_attachment_coords_by_type"] = dict(
+                self.linker_outer_attachment_coords_by_type
+            )
             role_entry["linker_frag_length"] = self.linker_frag_length
             role_entry["linker_fake_edge"] = self.linker_fake_edge
 
@@ -2020,6 +2099,9 @@ class MetalOrganicFrameworkBuilder:
         #pass linker data
         self.linker_center_data = self.frame_linker.linker_center_data
         self.linker_center_X_data = self.frame_linker.linker_center_X_data
+        self.linker_center_attachment_data_by_type = dict(
+            self.frame_linker.linker_center_attachment_data_by_type
+        )
         if len(self.frame_linker.linker_center_X_data) == 1:
             #is a point linker, prolong a norm point and get two points. can just +1 at col 5 for x
             dup_point = np.hstack(
@@ -2030,12 +2112,28 @@ class MetalOrganicFrameworkBuilder:
                 (self.linker_center_data, dup_point))
             self.linker_center_X_data = self.linker_center_data
             self.linker_center_data[:, 1] = "Fr"
+            self.linker_center_attachment_data_by_type = (
+                self._duplicate_point_attachment_data_by_type(
+                    self.linker_center_attachment_data_by_type
+                )
+            )
+        self.linker_center_attachment_coords_by_type = (
+            self._extract_attachment_coords_by_type(
+                self.linker_center_attachment_data_by_type
+            )
+        )
 
         if self.frame_linker.linker_connectivity > 2:
             #RECENTER COM of outer data
             linker_com = np.mean(
                 self.frame_linker.linker_outer_X_data[:, 5:8].astype(float),
                 axis=0)
+            self.linker_outer_attachment_data_by_type = (
+                self._recenter_attachment_data_by_type(
+                    self.frame_linker.linker_outer_attachment_data_by_type,
+                    linker_com,
+                )
+            )
             self.linker_outer_data = np.hstack(
                 (self.frame_linker.linker_outer_data[:, 0:5],
                  self.frame_linker.linker_outer_data[:, 5:8].astype(float) -
@@ -2054,11 +2152,24 @@ class MetalOrganicFrameworkBuilder:
                     (self.linker_outer_data, dup_point))
                 self.linker_outer_X_data = self.linker_outer_data
                 self.linker_outer_data[:, 1] = "Fr"
+                self.linker_outer_attachment_data_by_type = (
+                    self._duplicate_point_attachment_data_by_type(
+                        self.linker_outer_attachment_data_by_type
+                    )
+                )
+
+            self.linker_outer_attachment_coords_by_type = (
+                self._extract_attachment_coords_by_type(
+                    self.linker_outer_attachment_data_by_type
+                )
+            )
 
             self.linker_frag_length = np.linalg.norm(
                 self.linker_outer_X_data[0, 5:8].astype(float) -
                 self.linker_outer_X_data[1, 5:8].astype(float))
         else:
+            self.linker_outer_attachment_data_by_type = {}
+            self.linker_outer_attachment_coords_by_type = {}
             self.linker_frag_length = np.linalg.norm(
                 self.linker_center_X_data[0, 5:8].astype(float) -
                 self.linker_center_X_data[1, 5:8].astype(float))
@@ -2090,6 +2201,12 @@ class MetalOrganicFrameworkBuilder:
         #pass node data
         self.node_data = self.frame_nodes.node_data
         self.node_X_data = self.frame_nodes.node_X_data
+        self.node_attachment_data_by_type = dict(
+            self.frame_nodes.node_attachment_data_by_type
+        )
+        self.node_attachment_coords_by_type = self._extract_attachment_coords_by_type(
+            self.node_attachment_data_by_type
+        )
         self.dummy_atom_node_dict = self.frame_nodes.dummy_node_split_dict
         self._update_node_role_registry_data()
 

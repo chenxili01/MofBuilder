@@ -283,6 +283,43 @@ attachment_coords_by_type = {
 
 This phase should remain builder-owned and compatibility-aware.
 
+Execution plan for this phase only:
+
+1. Audit the Phase 3 allowed modules to find the builder-owned surfaces that still
+   collapse fragment-local attachment coordinates into legacy literal-`X` buckets
+   or expose only `*_X_data` compatibility payloads.
+2. Introduce builder-owned typed attachment registries such as
+   `attachment_coords_by_type` in the node/linker-to-builder path so fragment-local
+   attachment coordinates remain grouped by preserved `source_atom_type`.
+3. Keep existing literal-`X` compatibility helpers available for current callers,
+   but ensure they are derived compatibility views rather than the only builder-owned
+   attachment representation.
+4. Add bounded regression tests that prove:
+   typed attachment coordinates survive into builder-owned surfaces without being
+   collapsed to one universal bucket, and legacy literal-`X` compatibility behavior
+   still works for existing families.
+5. Limit Phase 3 scope to the typed registry layer only:
+   do not compile resolved anchors yet, do not migrate optimizer placement logic,
+   and do not change framework or FrameNet ownership boundaries.
+
+Executor handoff constraints:
+
+- Allowed files: `mofbuilder/core/builder.py`, `mofbuilder/core/node.py`,
+  `mofbuilder/core/linker.py`, `mofbuilder/core/fetch.py`,
+  `mofbuilder/core/` new helper modules if needed, `tests/`, and workflow markdown
+  files only.
+- Required outcome: builder-owned surfaces expose typed attachment coordinate tables
+  keyed by preserved `source_atom_type` instead of relying on a universal literal-`X`
+  bucket as the only representation.
+- Required compatibility statement: legacy literal-`X` helper surfaces may remain,
+  but they must be preserved as guarded compatibility outputs rather than the
+  semantic source of truth for all attachment types.
+- Required test coverage: at least one builder-surface typed attachment registry case
+  and at least one legacy literal-`X` compatibility case.
+- Stop rule: stop immediately if the work would require resolved-anchor compilation,
+  optimizer-local placement migration, framework changes, FrameNet changes, or
+  broader pipeline redesign.
+
 ---
 
 # Phase 4 — Resolved Anchor Compilation

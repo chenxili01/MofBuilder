@@ -2,8 +2,8 @@
 
 ## Workflow Status
 
-- Phase: Phase 2
-- Checkpoint: phase-2-reader-preservation-complete
+- Phase: Phase 3
+- Checkpoint: phase-3-builder-registry-complete
 - Status: COMPLETED
 - Next step: planner
 - Last update: 2026-03-15
@@ -20,27 +20,31 @@ resolved anchors rather than a universal literal `X` bucket.
 
 ## Current Focus
 
-Phase 2 implementation is complete. Reader/parser surfaces now preserve typed
-attachment candidates by source atom type while keeping the legacy literal-`X`
-compatibility outputs available for existing builder and optimizer code.
+Phase 3 implementation is complete. Builder-owned surfaces now retain typed
+attachment tables and coordinate registries keyed by preserved
+`source_atom_type`, while legacy literal-`X` payloads remain available as
+compatibility views for existing callers.
 
 ## Executor Handoff
 
-1. Phase 2 completed without widening scope beyond reader/parser preservation.
-2. `PdbReader` now preserves attachment rows grouped by source atom type, while
-   still exposing legacy `X_data` for literal-`X` compatibility.
-3. `FrameNode` and `FrameLinker` now retain typed attachment tables alongside
-   existing `*_X_data` outputs so later builder phases can resolve `source_atom_type`
-   without re-reading fragment atoms.
-4. Phase 2 tests were added for:
-   typed attachment preservation and recentering in `PdbReader`
-   and legacy literal-`X` compatibility in node/linker public outputs.
-5. Validation was limited in this shell:
-   `python -m compileall` passed for the changed production modules, but
-   `python -m pytest` could not run because `pytest` is not installed and direct
-   runtime checks could not execute because `numpy` is unavailable in the active
-   interpreter.
-6. Next step is planner handoff for Phase 3 only.
+1. Phase 3 completed without widening into resolved-anchor compilation or
+   optimizer migration.
+2. `MetalOrganicFrameworkBuilder` now keeps builder-owned typed attachment
+   tables and coordinate registries for node, linker-center, and linker-outer
+   fragment surfaces.
+3. Builder role registries now store typed attachment payloads alongside the
+   existing legacy `node_X_data`, `linker_center_X_data`, and
+   `linker_outer_X_data` compatibility fields.
+4. Builder loading paths now preserve Phase 2 typed fragment inputs into
+   builder-owned registries, including recentered outer-linker attachment
+   coordinates.
+5. Phase 3 tests were updated to cover a builder-surface typed attachment
+   registry case and a legacy literal-`X` compatibility case.
+6. Validation was limited in this shell:
+   `python -m compileall` passed for the changed files, but
+   `python -m pytest` could not run because `pytest` is not installed in the
+   active interpreter.
+7. Next step is planner handoff for Phase 4 only.
 
 ## Invariants
 

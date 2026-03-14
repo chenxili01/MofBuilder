@@ -49,3 +49,51 @@ When drafting, first summarize the branch objective in one paragraph, then produ
 
 
 Use my previous branch routine exactly: full phased control-doc workflow, not a simplified draft. Mirror the same PLAN.md + PHASE_SPEC.md + STATUS.md + WORKLOG.md discipline, with strict planner/executor separation, invariant-first architecture, one-phase-only execution, explicit validations, and honest blocker reporting.
+
+
+
+Task
+Fix PdbReader anchor filtering for typed atoms.
+
+Scope
+basic.py, pdb_reader.py, tests
+
+Constraints
+Do not change builder/runtime schema.
+Preserve legacy X behavior.
+
+Done
+Typed atoms are preserved.
+Legacy X still works.
+Regression test added.
+
+Use my structured development style, but choose the lightest control level that still preserves architecture.
+
+Default to planner + executor only.
+Skip reviewer unless the task changes architecture, ownership boundaries, or rollout safety.
+
+If the task is small, use a lightweight format:
+- task
+- scope
+- constraints
+- validation
+- completion note
+
+If the task is branch-sized or compatibility-sensitive, use my full routine:
+- PLAN.md with real phases
+- PHASE_SPEC.md
+- STATUS.md
+- WORKLOG.md
+- CHECKLIST.md
+
+Preserve my core style:
+- graph/topology is source of truth
+- builder owns semantics
+- optimizer consumes compiled semantics
+- framework remains role-agnostic
+- backward compatibility preserved
+- semantics before geometry
+- no future-phase leakage
+- honest validation and blockers
+
+Optimize for full control with minimal unnecessary ceremony.

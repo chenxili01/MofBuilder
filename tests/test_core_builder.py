@@ -363,6 +363,13 @@ def test_initialize_role_registries_normalizes_scalar_inputs_to_default_roles():
     }
     assert builder.edge_role_registry["edge:default"]["linker_charge"] == -2
     assert builder.edge_role_registry["edge:default"]["linker_multiplicity"] == 1
+    assert builder.node_role_registry["node:default"]["node_attachment_data_by_type"] == {}
+    assert (
+        builder.edge_role_registry["edge:default"][
+            "linker_center_attachment_data_by_type"
+        ]
+        == {}
+    )
 
 
 @pytest.mark.core
@@ -426,11 +433,49 @@ def test_role_registries_consume_phase_two_metadata_without_local_role_maps():
     builder.frame_nodes.filename = "tests/database/node_8c_Zn.pdb"
     builder.node_data = np.array([["Zn"]], dtype=object)
     builder.node_X_data = np.array([["X"]], dtype=object)
+    builder.node_attachment_data_by_type = {
+        "X": np.array(
+            [["X", "X1", 1, "NODE", 1, "1.0", "0.0", "0.0", 1.0, 0.0, "X"]],
+            dtype=object,
+        ),
+        "XA": np.array(
+            [["XA", "XA1", 2, "NODE", 1, "0.0", "1.0", "0.0", 1.0, 0.0, "XA"]],
+            dtype=object,
+        ),
+    }
+    builder.node_attachment_coords_by_type = {
+        key: rows[:, 5:8].astype(float)
+        for key, rows in builder.node_attachment_data_by_type.items()
+    }
     builder.dummy_atom_node_dict = {"Zn": 1}
     builder.linker_center_data = np.array([["C"]], dtype=object)
     builder.linker_center_X_data = np.array([["X"]], dtype=object)
+    builder.linker_center_attachment_data_by_type = {
+        "X": np.array(
+            [["X", "X1", 1, "LIG", 1, "0.0", "0.0", "0.0", 1.0, 0.0, "X"]],
+            dtype=object,
+        ),
+        "XB": np.array(
+            [["XB", "XB1", 2, "LIG", 1, "2.0", "0.0", "0.0", 1.0, 0.0, "XB"]],
+            dtype=object,
+        ),
+    }
+    builder.linker_center_attachment_coords_by_type = {
+        key: rows[:, 5:8].astype(float)
+        for key, rows in builder.linker_center_attachment_data_by_type.items()
+    }
     builder.linker_outer_data = np.array([["O"]], dtype=object)
     builder.linker_outer_X_data = np.array([["XO"]], dtype=object)
+    builder.linker_outer_attachment_data_by_type = {
+        "X": np.array(
+            [["X", "X2", 3, "LIG", 1, "3.0", "0.0", "0.0", 1.0, 0.0, "X"]],
+            dtype=object,
+        )
+    }
+    builder.linker_outer_attachment_coords_by_type = {
+        key: rows[:, 5:8].astype(float)
+        for key, rows in builder.linker_outer_attachment_data_by_type.items()
+    }
     builder.linker_frag_length = 12.5
     builder.linker_fake_edge = False
 
@@ -441,12 +486,32 @@ def test_role_registries_consume_phase_two_metadata_without_local_role_maps():
     assert builder.node_role_registry["node:cluster"]["filename"] == (
         "tests/database/node_8c_Zn.pdb"
     )
+    assert set(
+        builder.node_role_registry["node:cluster"]["node_attachment_data_by_type"]
+    ) == {"X", "XA"}
+    np.testing.assert_allclose(
+        builder.node_role_registry["node:cluster"]["node_attachment_coords_by_type"][
+            "XA"
+        ],
+        [[0.0, 1.0, 0.0]],
+    )
     assert builder.node_role_registry["node:porphyrin"]["node_data"] is None
     assert (
         builder.edge_role_registry["edge:tetratopic"]["linker_frag_length"] == 12.5
     )
     assert builder.edge_role_registry["edge:tetratopic"]["linker_center_data"] is (
         builder.linker_center_data
+    )
+    assert set(
+        builder.edge_role_registry["edge:tetratopic"][
+            "linker_center_attachment_data_by_type"
+        ]
+    ) == {"X", "XB"}
+    np.testing.assert_allclose(
+        builder.edge_role_registry["edge:tetratopic"][
+            "linker_center_attachment_coords_by_type"
+        ]["XB"],
+        [[2.0, 0.0, 0.0]],
     )
     assert builder.edge_role_registry["edge:ditopic"]["linker_center_data"] is None
 
@@ -569,8 +634,12 @@ def test_load_and_optimize_framework_single_role_keeps_scalar_state_and_passes_d
         assert molecule is not None
         builder.frame_linker.linker_center_data = linker_center_data
         builder.frame_linker.linker_center_X_data = linker_center_x_data
+        builder.frame_linker.linker_center_attachment_data_by_type = {
+            "X": linker_center_x_data
+        }
         builder.frame_linker.linker_outer_data = None
         builder.frame_linker.linker_outer_X_data = None
+        builder.frame_linker.linker_outer_attachment_data_by_type = {}
         builder.frame_linker.fake_edge = False
 
     node_data = (("Zr", "Zr1"),)
@@ -580,6 +649,7 @@ def test_load_and_optimize_framework_single_role_keeps_scalar_state_and_passes_d
     def fake_node_create():
         builder.frame_nodes.node_data = node_data
         builder.frame_nodes.node_X_data = node_x_data
+        builder.frame_nodes.node_attachment_data_by_type = {}
         builder.frame_nodes.dummy_node_split_dict = dummy_atom_node_dict
 
     optimizer_calls = []
@@ -655,53 +725,59 @@ def test_load_and_optimize_framework_single_role_keeps_scalar_state_and_passes_d
     assert builder.G.nodes["V1"]["node_role_id"] == "node:default"
     assert builder.G.edges["V0", "V1"]["edge_role_id"] == "edge:default"
 
-    assert builder.node_role_registry == {
-        "node:default": {
-            "role_id": "node:default",
-            "expected_connectivity": 6,
-            "topology_labels": [],
-            "metadata_reference": {
-                "source": "legacy_default",
-                "role_id": "node:default",
-                "connectivity": 6,
-            },
-            "node_metal": "Zr",
-            "dummy_atom_node": False,
-            "fragment_source": {
-                "kind": "database",
-                "keywords": ["6c", "Zr"],
-                "exclude_keywords": ["dummy"],
-            },
-            "filename": "tests/database/nodes_database/node_6c_Zr.pdb",
-            "node_data": node_data,
-            "node_X_data": node_x_data,
-            "dummy_atom_node_dict": dummy_atom_node_dict,
-        }
+    node_registry_entry = builder.node_role_registry["node:default"]
+    assert node_registry_entry["role_id"] == "node:default"
+    assert node_registry_entry["expected_connectivity"] == 6
+    assert node_registry_entry["topology_labels"] == []
+    assert node_registry_entry["metadata_reference"] == {
+        "source": "legacy_default",
+        "role_id": "node:default",
+        "connectivity": 6,
     }
-    assert builder.edge_role_registry == {
-        "edge:default": {
-            "role_id": "edge:default",
-            "linker_connectivity": 2,
-            "topology_labels": [],
-            "metadata_reference": {
-                "source": "legacy_default",
-                "role_id": "edge:default",
-                "connectivity": 2,
-            },
-            "fragment_source": {
-                "kind": "smiles",
-                "value": "C1=CC=CC=C1",
-            },
-            "linker_charge": -2,
-            "linker_multiplicity": 1,
-            "linker_center_data": linker_center_data,
-            "linker_center_X_data": linker_center_x_data,
-            "linker_outer_data": None,
-            "linker_outer_X_data": None,
-            "linker_frag_length": 1.5,
-            "linker_fake_edge": False,
-        }
+    assert node_registry_entry["node_metal"] == "Zr"
+    assert node_registry_entry["dummy_atom_node"] is False
+    assert node_registry_entry["fragment_source"] == {
+        "kind": "database",
+        "keywords": ["6c", "Zr"],
+        "exclude_keywords": ["dummy"],
     }
+    assert node_registry_entry["filename"] == "tests/database/nodes_database/node_6c_Zr.pdb"
+    assert node_registry_entry["node_data"] == node_data
+    assert node_registry_entry["node_X_data"] == node_x_data
+    assert node_registry_entry["node_attachment_data_by_type"] == {}
+    assert node_registry_entry["node_attachment_coords_by_type"] == {}
+    assert node_registry_entry["dummy_atom_node_dict"] == dummy_atom_node_dict
+
+    edge_registry_entry = builder.edge_role_registry["edge:default"]
+    assert edge_registry_entry["role_id"] == "edge:default"
+    assert edge_registry_entry["linker_connectivity"] == 2
+    assert edge_registry_entry["topology_labels"] == []
+    assert edge_registry_entry["metadata_reference"] == {
+        "source": "legacy_default",
+        "role_id": "edge:default",
+        "connectivity": 2,
+    }
+    assert edge_registry_entry["fragment_source"] == {
+        "kind": "smiles",
+        "value": "C1=CC=CC=C1",
+    }
+    assert edge_registry_entry["linker_charge"] == -2
+    assert edge_registry_entry["linker_multiplicity"] == 1
+    assert edge_registry_entry["linker_center_data"] == linker_center_data
+    assert edge_registry_entry["linker_center_X_data"] == linker_center_x_data
+    assert edge_registry_entry["linker_center_attachment_data_by_type"] == {
+        "X": linker_center_x_data
+    }
+    np.testing.assert_allclose(
+        edge_registry_entry["linker_center_attachment_coords_by_type"]["X"],
+        [[0.0, 0.0, 0.0], [1.5, 0.0, 0.0]],
+    )
+    assert edge_registry_entry["linker_outer_data"] is None
+    assert edge_registry_entry["linker_outer_X_data"] is None
+    assert edge_registry_entry["linker_outer_attachment_data_by_type"] == {}
+    assert edge_registry_entry["linker_outer_attachment_coords_by_type"] == {}
+    assert edge_registry_entry["linker_frag_length"] == 1.5
+    assert edge_registry_entry["linker_fake_edge"] is False
 
     builder.optimize_framework()
 

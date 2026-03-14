@@ -3,6 +3,75 @@
 Append-only development log.
 
 
+## executor-run
+
+- Timestamp: 2026-03-15T00:00:00+00:00
+
+Implemented `Phase 3` only: builder-owned typed attachment registries for
+fragment-local attachment coordinates.
+
+Changed files:
+
+- [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py)
+- [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+
+What changed:
+
+- Added builder-owned typed attachment tables and coordinate registries for node,
+  linker-center, and linker-outer surfaces:
+  `node_attachment_data_by_type`, `node_attachment_coords_by_type`,
+  `linker_center_attachment_data_by_type`,
+  `linker_center_attachment_coords_by_type`,
+  `linker_outer_attachment_data_by_type`, and
+  `linker_outer_attachment_coords_by_type`.
+- Updated builder role registry initialization and registry refresh paths so
+  typed attachment payloads are stored alongside the existing legacy
+  `node_X_data`, `linker_center_X_data`, and `linker_outer_X_data`
+  compatibility views.
+- Preserved Phase 2 typed fragment inputs through builder loading, including
+  recentered outer-linker attachment tables before deriving builder-owned typed
+  coordinate registries.
+- Updated builder tests to cover a builder-surface typed attachment registry
+  case and confirm legacy literal-`X` compatibility fields still remain
+  populated for existing callers.
+- Updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+  to mark Phase 3 complete.
+
+Validations:
+
+- `python -m compileall src/mofbuilder/core/builder.py tests/test_core_builder.py`
+- Attempted `pytest -q tests/test_core_builder.py tests/test_core_node.py tests/test_core_linker.py tests/test_io_reader.py`, but `pytest` is not installed in this shell.
+- Attempted `python -m pytest -q tests/test_core_builder.py tests/test_core_node.py tests/test_core_linker.py tests/test_io_reader.py`, but the active interpreter does not have the `pytest` module installed.
+
+Risks:
+
+- Phase 3 preserves typed builder-owned attachment registries, but slot-rule
+  source-type resolution and resolved-anchor compilation are still deferred to
+  later phases.
+- Full test execution remains unverified in this environment until `pytest` is
+  available.
+
+
+## planner-run
+
+- Timestamp: 2026-03-15T00:00:00+00:00
+
+Active phase is `Phase 3`, and I bounded the planner output to that phase only.
+
+I updated [PLAN.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/PLAN.md) to add an implementation-ready Phase 3 execution contract: audit the builder-owned attachment surfaces, introduce typed coordinate registries keyed by preserved `source_atom_type`, keep literal-`X` outputs as compatibility views only, add bounded tests, and stop before resolved-anchor compilation or optimizer migration.
+
+I also updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md) to move the workflow to executor handoff:
+
+- Phase: `Phase 3`
+- Checkpoint: `phase-3-plan-generated`
+- Status: `READY FOR EXECUTOR`
+- Next step: `executor`
+
+No production code or tests were changed during planning.
+
+
 ## planner-run
 
 - Timestamp: 2026-03-14T23:13:49+00:00
@@ -126,3 +195,34 @@ Phase 2 is complete and `STATUS.md` is marked accordingly at [STATUS.md](/Users/
 Phase 2 tests were added in [test_io_reader.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_io_reader.py#L74), with compatibility checks updated in [test_core_node.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_node.py#L91) and [test_core_linker.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_linker.py#L98). The executor log is appended in [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md#L83).
 
 Validation was limited: `python -m compileall` passed for the changed production modules, but `python -m pytest` could not run because this interpreter is missing `pytest`, and direct runtime checks could not run because `numpy` is unavailable in the active environment.
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T23:19:36+00:00
+
+Updated the Phase 3 planning docs and moved the workflow to executor handoff.
+
+The active phase is `Phase 3`. I added a bounded implementation-ready Phase 3 plan in [PLAN.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/PLAN.md), covering: builder-surface audit, typed attachment registries keyed by `source_atom_type`, legacy `X` compatibility as a derived view only, required tests, and explicit stop rules before resolved-anchor compilation or optimizer migration.
+
+I also updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md) to:
+- set checkpoint to `phase-3-plan-generated`
+- set status to `READY FOR EXECUTOR`
+- set next step to `executor`
+
+For traceability, I appended the planner entry to [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md).
+
+No production code or tests were implemented.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T23:24:34+00:00
+
+Phase 3 is complete.
+
+I updated [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py) so the builder now owns typed attachment registries and coordinate tables for node, linker-center, and linker-outer surfaces, and threads those typed tables into the builder role registries while keeping `node_X_data`, `linker_center_X_data`, and `linker_outer_X_data` as compatibility views. The point-linker compatibility path was also adjusted to preserve the original typed source key instead of forcing everything back into `"X"`.
+
+I updated [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py) to cover the new builder-surface typed registry behavior and to keep explicit legacy literal-`X` compatibility assertions. I also updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md) and [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md) for the phase handoff.
+
+Validation: `python -m compileall src/mofbuilder/core/builder.py tests/test_core_builder.py` passed. `pytest` could not be run here because the active interpreter does not have the `pytest` module installed.
