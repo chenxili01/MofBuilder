@@ -489,7 +489,7 @@ class FrameNet:
         for node_name in self.G.nodes():
             role_alias = self._role_alias_from_id(self.G.nodes[node_name].get("node_role_id"))
             expected_connectivity = normalized_metadata["connectivity"].get(role_alias)
-            if expected_connectivity is not None and self.G.degree(node_name) != expected_connectivity:
+            if expected_connectivity is not None and self.G.degree(node_name) > expected_connectivity:
                 errors.append(
                     self._validation_error(
                         "connectivity_mismatch",

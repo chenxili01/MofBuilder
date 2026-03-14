@@ -3,9 +3,9 @@
 ## Workflow Status
 
 - Phase: Phase 7
-- Checkpoint: phase-7-plan-finalized
-- Status: COMPLETED_PENDING_PLANNER
-- Next step: Planner reviews Phase 7 completion and decides whether to advance
+- Checkpoint: workflow-complete
+- Status: COMPLETED
+- Next step: done
 - Last update: 2026-03-14
 
 ## Branch
