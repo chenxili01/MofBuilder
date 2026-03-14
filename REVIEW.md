@@ -56,3 +56,25 @@ machine-readable block is retained as history only; its scope-mismatch finding
 was tied to the earlier contract wording before localized workflow,
 environment/configuration, and one-file regression-test support seams were
 explicitly authorized in the control docs.
+
+
+## reviewer-raw (2026-03-14T00:10:09+00:00)
+
+{"approved":true,"executor_can_proceed":true,"summary":"Review decision: APPROVED\nPhase: Phase 1 - Planning/spec\nCheckpoint: P1.0\nCan executor proceed?: yes\n\nBlocking findings:\n- none\n\nRequired fixes:\n- none\n\nScope violations:\n- none\n\nArchitecture / compatibility risks:\n- none\n\nRequired tests before approval:\n- none\n\nRequired log/status corrections:\n- none","issues":["Current local phase/checkpoint in workflow STATUS.md is `Phase 1 - Planning/spec` / `P1.0`, and the matching latest executor entry in workflow WORKLOG.md is `Checkpoint P1.0 — executor implementation/handoff (2026-03-14 approved baseline)`.","The reviewed execution stayed within the active local Phase Contract: only `workflow/WORKLOG.md` and `workflow/STATUS.md` were recorded as changed, which matches the allowed-file list.","No tests were added. The executor recorded `Tests run: none`, which is consistent with the active `P1.0` planning/spec contract stating that no tests are required for this checkpoint.","No source, test, database, or runtime workflow files were modified in the reviewed execution, so the locked pipeline order, graph states (`G`, `sG`, `superG`, `eG`, `cleaved_eG`), canonical role-id storage locations, deterministic role behavior, and single-role compatibility remain unchanged.","Implementation quality is acceptable for the phase boundary: the change is minimal, localized to control-doc synchronization, and does not introduce refactoring or misplaced logic.","Local workflow STATUS.md and WORKLOG.md are synchronized for the reviewed execution: both reflect `P1.0` as complete with the next step set to reviewer validation."]}
+
+
+## reviewer-parsed (2026-03-14T00:10:09+00:00)
+
+{
+  "approved": true,
+  "executor_can_proceed": true,
+  "summary": "Review decision: APPROVED\nPhase: Phase 1 - Planning/spec\nCheckpoint: P1.0\nCan executor proceed?: yes\n\nBlocking findings:\n- none\n\nRequired fixes:\n- none\n\nScope violations:\n- none\n\nArchitecture / compatibility risks:\n- none\n\nRequired tests before approval:\n- none\n\nRequired log/status corrections:\n- none",
+  "issues": [
+    "Current local phase/checkpoint in workflow STATUS.md is `Phase 1 - Planning/spec` / `P1.0`, and the matching latest executor entry in workflow WORKLOG.md is `Checkpoint P1.0 \u2014 executor implementation/handoff (2026-03-14 approved baseline)`.",
+    "The reviewed execution stayed within the active local Phase Contract: only `workflow/WORKLOG.md` and `workflow/STATUS.md` were recorded as changed, which matches the allowed-file list.",
+    "No tests were added. The executor recorded `Tests run: none`, which is consistent with the active `P1.0` planning/spec contract stating that no tests are required for this checkpoint.",
+    "No source, test, database, or runtime workflow files were modified in the reviewed execution, so the locked pipeline order, graph states (`G`, `sG`, `superG`, `eG`, `cleaved_eG`), canonical role-id storage locations, deterministic role behavior, and single-role compatibility remain unchanged.",
+    "Implementation quality is acceptable for the phase boundary: the change is minimal, localized to control-doc synchronization, and does not introduce refactoring or misplaced logic.",
+    "Local workflow STATUS.md and WORKLOG.md are synchronized for the reviewed execution: both reflect `P1.0` as complete with the next step set to reviewer validation."
+  ]
+}
