@@ -1886,6 +1886,125 @@ def test_place_edge_in_net_uses_typed_resolved_anchors_for_role_aware_placement(
     assert np.allclose(placed.edges[("V0", "V1")]["coords"], [2.0, 0.0, 0.0])
 
 
+def test_place_edge_in_net_preserves_legacy_x_behavior_when_role_aware_guard_is_disabled(
+    monkeypatch,
+):
+    optimizer = opt.NetOptimizer()
+    optimizer.constant_length = 0.0
+    optimizer.use_role_aware_local_placement = False
+    optimizer.sorted_nodes = ["V0", "V1"]
+    optimizer.optimized_pair = {("V0", "V1"): (0, 0)}
+    optimizer.sc_rot_node_X_pos = {
+        0: np.array([[0, 1.0, 0.0, 0.0]], dtype=object),
+        1: np.array([[0, 3.0, 0.0, 0.0]], dtype=object),
+    }
+    optimizer.sc_rot_node_attachment_lookup = {
+        "V0": {("XA", 0): np.array([9.0, 0.0, 0.0])},
+        "V1": {("XA", 0): np.array([13.0, 0.0, 0.0])},
+    }
+    optimizer.sc_rot_node_pos = {
+        0: np.array([[0, 0.0, 0.0, 0.0]], dtype=object),
+        1: np.array([[0, 4.0, 0.0, 0.0]], dtype=object),
+    }
+    optimizer.sc_unit_cell_inv = np.eye(3)
+    optimizer.nodes_atom = {
+        "V0": _fragment_table([["A", "A"]]),
+        "V1": _fragment_table([["B", "B"]]),
+    }
+    optimizer.edge_fragment_payloads = {
+        ("V0", "V1"): {
+            "atom": _fragment_table([["ROLE", "ROLE"], ["ROLE", "ROLE"]]),
+            "coords": np.array([[-2.0, 0.0, 0.0], [2.0, 0.0, 0.0]]),
+            "x_coords": np.array([[-1.0, 0.0, 0.0], [1.0, 0.0, 0.0]]),
+            "attachment_coords_by_type": {
+                "XA": np.array([[-1.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
+            },
+            "linker_frag_length": 2.0,
+            "fake_edge": False,
+        },
+        ("V1", "V0"): {
+            "atom": _fragment_table([["ROLE", "ROLE"], ["ROLE", "ROLE"]]),
+            "coords": np.array([[-2.0, 0.0, 0.0], [2.0, 0.0, 0.0]]),
+            "x_coords": np.array([[-1.0, 0.0, 0.0], [1.0, 0.0, 0.0]]),
+            "attachment_coords_by_type": {
+                "XA": np.array([[-1.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
+            },
+            "linker_frag_length": 2.0,
+            "fake_edge": False,
+        },
+    }
+    optimizer.sG = nx.Graph()
+    optimizer.sG.add_node("V0", ccoords=np.array([0.0, 0.0, 0.0]))
+    optimizer.sG.add_node("V1", ccoords=np.array([4.0, 0.0, 0.0]))
+    optimizer.sG.add_edge("V0", "V1", edge_role_id="edge:EA")
+    optimizer.semantic_snapshot = OptimizationSemanticSnapshot(
+        family_name="ROLE-AWARE",
+        graph_phase="sG",
+        graph_node_records={
+            "V0": GraphNodeSemanticRecord(
+                node_id="V0",
+                role_id="node:VA",
+                role_class="V",
+                slot_rules=(
+                    {
+                        "attachment_index": 0,
+                        "slot_type": "XA",
+                        "anchor_source_type": "XA",
+                        "anchor_source_ordinal": 0,
+                    },
+                ),
+            ),
+            "V1": GraphNodeSemanticRecord(
+                node_id="V1",
+                role_id="node:VB",
+                role_class="V",
+                slot_rules=(
+                    {
+                        "attachment_index": 1,
+                        "slot_type": "XA",
+                        "anchor_source_type": "XA",
+                        "anchor_source_ordinal": 0,
+                    },
+                ),
+            ),
+        },
+        graph_edge_records={
+            "V0|V1": GraphEdgeSemanticRecord(
+                edge_id="V0|V1",
+                graph_edge=("V0", "V1"),
+                edge_role_id="edge:EA",
+                slot_index={"V0": 0, "V1": 1},
+                slot_rules=(
+                    {
+                        "attachment_index": 0,
+                        "slot_type": "XA",
+                        "endpoint_side": "V",
+                        "anchor_source_type": "XA",
+                        "anchor_source_ordinal": 0,
+                    },
+                    {
+                        "attachment_index": 1,
+                        "slot_type": "XA",
+                        "endpoint_side": "V",
+                        "anchor_source_type": "XA",
+                        "anchor_source_ordinal": 1,
+                    },
+                ),
+            ),
+        },
+    )
+
+    monkeypatch.setattr(
+        opt,
+        "superimpose_rotation_only",
+        lambda a, b: (0.0, np.eye(3), np.zeros(3)),
+    )
+
+    placed = optimizer.place_edge_in_net()
+
+    assert np.allclose(placed.edges[("V0", "V1")]["coords"], [2.0, 0.0, 0.0])
+
+
 def test_place_edge_in_net_preserves_legacy_literal_x_compatibility_through_resolved_anchors(
     monkeypatch,
 ):

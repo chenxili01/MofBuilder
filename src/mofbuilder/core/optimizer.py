@@ -741,6 +741,15 @@ class NetOptimizer:
             )
         return edge_record, np.asarray(endpoint_coords, dtype=float)
 
+    def _should_use_semantic_anchor_placement(self):
+        if not self.use_role_aware_local_placement:
+            return False
+        if self.semantic_snapshot is None:
+            raise ValueError(
+                "Missing builder-compiled resolved anchor semantics: OptimizationSemanticSnapshot is required for role-aware optimizer placement."
+            )
+        return True
+
     def place_edge_in_net(self):
         """
         based on the optimized rotations and cell parameters, use optimized pair to find connected X-X pair in optimized cell,
@@ -759,13 +768,7 @@ class NetOptimizer:
         nodes_atom = self.nodes_atom
         norm_xx_vector_record = []
         rot_record = []
-        use_semantic_anchors = (
-            self.use_role_aware_local_placement and self.semantic_snapshot is not None
-        )
-        if self.use_role_aware_local_placement and self.semantic_snapshot is None:
-            raise ValueError(
-                "Missing builder-compiled resolved anchor semantics: OptimizationSemanticSnapshot is required for role-aware optimizer placement."
-            )
+        use_semantic_anchors = self._should_use_semantic_anchor_placement()
         edge_items = (
             [
                 (edge, optimized_pair.get(edge, (0, 0)))

@@ -2,9 +2,9 @@
 
 ## Workflow Status
 
-- Phase: Phase 5
-- Checkpoint: phase-5-complete
-- Status: READY FOR PLANNER
+- Phase: Phase 6
+- Checkpoint: phase-6-executor-complete
+- Status: COMPLETED
 - Next step: planner
 - Last update: 2026-03-15
 
@@ -20,31 +20,24 @@ resolved anchors rather than a universal literal `X` bucket.
 
 ## Current Focus
 
-Phase 5 execution is complete. The next step is planner handoff for the next
-bounded phase after optimizer-local placement now consumes builder-compiled
-resolved anchors for covered role-aware paths.
+Phase 6 is complete: compatibility layer and guarded rollout are now bounded
+explicitly at the optimizer local-placement seam.
+Legacy literal-`X` behavior remains the guard-off path, while guard-enabled
+placement requires builder-owned resolved-anchor semantics and stays limited to
+covered optimizer-local placement flows.
 
-## Planner Handoff
+## Executor Handoff
 
-1. Phase 5 is complete: optimizer-local placement now resolves node and linker
-   anchors from builder-compiled semantic snapshot records instead of treating
-   raw literal-`X` payloads as the universal semantic source.
-2. The implemented scope stayed bounded to `mofbuilder/core/optimizer.py`,
-   `tests/test_core_optimizer.py`, and workflow markdown files.
-3. Typed role-aware placement now consumes compiled `anchor_source_type` and
-   `anchor_source_ordinal` metadata plus typed attachment coordinate tables to
-   place edges from resolved anchors.
-4. Legacy literal-`X` families remain valid only through resolved-anchor
-   compatibility metadata; the optimizer still permits literal `X` placement
-   when the compiled anchor source explicitly resolves to `X`.
-5. Missing or incomplete resolved-anchor inputs now fail with explicit semantic
-   `ValueError`s that identify missing builder-compiled anchor semantics.
-6. Required bounded tests were added for:
-   one typed optimizer-consumption case,
-   one legacy literal-`X` compatibility-through-resolved-anchor case, and
-   one explicit missing-anchor semantic failure case.
-7. Planner should bound the next phase without reopening Phase 5 or widening
-   into framework, graph-grammar, or pipeline-order changes.
+1. Planner should start from the completed Phase 6 seam:
+   guard-off optimizer placement remains legacy literal-`X`,
+   guard-enabled placement consumes builder-compiled resolved anchors only, and
+   explicit `anchor_source_type == "X"` compatibility records remain supported.
+2. Supported versus unsupported rollout scope is now documented in
+   `ARCHITECTURE.md`; do not assume typed-family coverage beyond the covered
+   optimizer-local placement path.
+3. Phase 7 may expand regression coverage and debug surfaces, but it must not
+   blur builder ownership, remove compatibility paths prematurely, or widen the
+   rollout beyond documented support without replanning.
 
 ## Invariants
 

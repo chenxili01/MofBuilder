@@ -35,3 +35,30 @@ all attachable atoms are literal `X`.
 
 Phase 1 is documentation-only.
 Production code, tests, runtime payloads, and runtime schemas remain unchanged in this phase.
+
+## Phase 6 Rollout Status
+
+The guarded typed-attachment rollout remains intentionally narrow in Phase 6.
+
+Supported in-scope behavior:
+
+- `use_role_aware_local_placement=False` keeps legacy optimizer-local placement on
+  literal-`X` arrays even if typed attachment metadata exists upstream.
+- `use_role_aware_local_placement=True` with a builder-owned
+  `OptimizationSemanticSnapshot` enables covered optimizer-local placement paths to
+  consume builder-compiled resolved anchors.
+- Covered typed families are limited to source types that builder resolution compiled
+  into resolved-anchor metadata and that remain available in per-type attachment
+  coordinate registries at optimizer runtime.
+- Legacy literal-`X` families remain valid only through explicit resolved-anchor
+  compatibility records that point back to `anchor_source_type == "X"`.
+
+Unsupported or explicitly out-of-scope behavior in Phase 6:
+
+- Guard-enabled placement without a builder-owned semantic snapshot is a semantic
+  error, not an implicit fallback.
+- Guard-enabled paths with missing resolved-anchor source metadata or missing
+  per-type coordinates fail explicitly rather than silently reinterpreting fragment
+  atoms.
+- Broader framework assembly, supercell expansion, export paths, and unbounded
+  typed-family rollout remain outside the Phase 6 seam.

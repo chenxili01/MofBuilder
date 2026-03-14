@@ -389,3 +389,82 @@ Implemented Phase 5 only.
 `[test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py)` now includes the bounded Phase 5 cases: typed resolved-anchor placement, legacy literal-`X` compatibility-through-resolved-anchor, and explicit missing-anchor failure. I also updated `[STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)` and `[WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)` to mark Phase 5 complete and hand back to planner.
 
 Validation was limited to `python -m compileall src/mofbuilder/core/optimizer.py tests/test_core_optimizer.py`, which passed. I could not run `pytest` because the available interpreter is missing `pytest`, and direct runtime checks were blocked by missing dependencies such as `numpy`. `PLAN.md` already had unrelated local changes and was left untouched.
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T23:47:29+00:00
+
+Active phase is `Phase 6 — Compatibility Layer and Guarded Rollout`.
+
+I updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md) to make it executor-ready:
+- checkpoint: `phase-6-plan-generated`
+- status: `READY FOR EXECUTOR`
+- next step: `executor`
+
+The Phase 6 plan is bounded to compatibility and guarded rollout only: keep legacy literal-`X` paths working, add any typed-attachment rollout guards narrowly and explicitly, document supported versus unsupported families honestly, add bounded fallback/guard tests, and stop before framework changes, snapshot-schema redesign, legacy-path removal, or Phase 7 regression expansion. No production code was implemented.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T23:48:29Z
+
+Implemented `Phase 6` only: compatibility layer and guarded rollout remained
+bounded at the optimizer local-placement seam.
+
+Changed files:
+
+- [optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py)
+- [test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py)
+- [ARCHITECTURE.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/ARCHITECTURE.md)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+
+What changed:
+
+- Made the edge-placement rollout decision explicit in the optimizer with a
+  dedicated semantic-anchor guard helper so Phase 6 behavior is narrow and
+  intentional:
+  guard-off placement stays on legacy literal-`X` arrays,
+  guard-enabled placement requires a builder-owned semantic snapshot,
+  and missing snapshot input now fails through one centralized semantic check.
+- Added a bounded optimizer test showing that guard-off `place_edge_in_net()`
+  preserves legacy literal-`X` placement even when typed resolved-anchor
+  metadata and typed attachment lookups are present.
+- Kept the covered typed and explicit literal-`X` compatibility placement cases
+  intact through the existing Phase 5 tests; Phase 6 adds the missing fallback
+  coverage rather than widening family support.
+- Documented the honest rollout contract in `ARCHITECTURE.md`:
+  supported paths are the covered optimizer-local placement seam with
+  builder-compiled resolved anchors,
+  explicit `anchor_source_type == "X"` compatibility remains valid,
+  and broader typed-family rollout, framework assembly, supercell behavior, and
+  guard-enabled unsupported paths remain out of scope.
+- Updated [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+  to mark Phase 6 complete and hand back to planner.
+
+Validations:
+
+- `python -m compileall src/mofbuilder/core/optimizer.py tests/test_core_optimizer.py`
+- Attempted `python -m pytest -q tests/test_core_optimizer.py -k "place_edge_in_net or compile_role_aware_initial_rotations"`, but the active interpreter does not have the `pytest` module installed.
+
+Risks:
+
+- Guard-enabled placement still fails explicitly when resolved-anchor metadata
+  or per-type coordinates are missing; this is intentional for Phase 6, but
+  unsupported typed families remain unrolled and will need broader regression
+  coverage in Phase 7.
+- Validation is still limited by the active environment lacking `pytest`.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T23:50:39+00:00
+
+Implemented Phase 6 only.
+
+The optimizer rollout decision is now explicit in [optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer.py#L744): guard-off stays on legacy literal-`X` placement, and guard-enabled edge placement requires a builder-owned semantic snapshot before using resolved anchors. I also added a bounded fallback test in [test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py#L1889) proving `place_edge_in_net()` preserves legacy `X` behavior when the role-aware guard is disabled, even if typed semantic data is present.
+
+The workflow docs are updated to close Phase 6: [ARCHITECTURE.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/ARCHITECTURE.md#L39) now states the supported and unsupported rollout scope honestly, [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md#L5) is marked `COMPLETED` for Phase 6 with next step `planner`, and [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md#L408) has the append-only executor entry.
+
+Validation: `python -m compileall src/mofbuilder/core/optimizer.py tests/test_core_optimizer.py` passed. `python -m pytest -q tests/test_core_optimizer.py -k "place_edge_in_net or compile_role_aware_initial_rotations"` could not run because the active interpreter does not have `pytest` installed.
