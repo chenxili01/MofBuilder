@@ -31,50 +31,42 @@ Executor implements **one phase only**.
 Branch:
 
 ```
-optimizer-reconstruction
+typed-attachment-hardening
 ```
 
 Goal:
 
-Reconstruct the optimizer / rotation logic so local placement is driven by the completed
-snapshot contract from the `role-runtime-contract` branch.
+Systematically remove hard-coded universal attachment-atom assumptions so fragment loading,
+builder/runtime compilation, and optimizer-local placement all operate on typed attachment
+sources derived from slot/path semantics rather than a universal literal `X` bucket.
 
 This branch must implement the agreed future flow:
 
 ```text
-semantic legality
-→ node-local contract compilation
-→ legal correspondence compilation
-→ SVD/Kabsch rigid initialization
-→ constrained local chemistry-aware refinement
-→ optional broader/global residual handling
+typed attachment preservation
+→ builder-owned source-type resolution
+→ resolved anchor compilation
+→ optimizer consumption of resolved anchors
+→ guarded compatibility for legacy literal-X families
 ```
 
 This branch must **not** redesign builder ownership, graph semantics, or framework ownership.
 
 ---
 
-# Upstream Contract Baseline
+# Upstream Branch Baseline
 
-The optimizer reconstruction branch must treat the snapshot seam as already implemented upstream.
+This branch reuses the same development routine that worked in the completed
+`optimizer-reconstruction` branch:
 
-Authoritative references:
+- phase-bounded planner/executor workflow
+- explicit phase roadmap in `PLAN.md`
+- hard module boundaries in `PHASE_SPEC.md`
+- append-only `WORKLOG.md`
+- explicit `STATUS.md` handoff after planner and executor steps
+- conservative architectural invariants and stop rules
 
-- `SNAPSHOT_API_HANDOFF.md`
-- `OPTIMIZER_DISCUSSION_MEMORY.md`
-- `OPTIMIZER_TODO_ROADMAP.md`
-- `ROUND1_CHECKPOINT.md`
-- `ROUND2_CHECKPOINT.md`
-
-The implemented upstream snapshot contract includes:
-
-- `RoleRuntimeSnapshot`
-- `OptimizationSemanticSnapshot`
-- `FrameworkInputSnapshot`
-- `GraphNodeSemanticRecord`
-- `GraphEdgeSemanticRecord`
-
-The optimizer branch must consume that contract rather than re-invent it.
+The new branch changes the problem target, not the workflow discipline.
 
 ---
 
@@ -100,44 +92,58 @@ Pipeline remains:
 ```
 FrameNet
 fragment preparation
+builder/runtime compilation
 NetOptimizer
 supercell expansion
 Framework assembly
 ```
 
-The optimizer rewrite is a **consumer-side reconstruction**, not a pipeline redesign.
+This branch is a **semantic seam hardening**, not a pipeline redesign.
 
 ---
 
 # Core Design Rules
 
-## 1. Builder owns meaning
+## 1. Builder owns attachment meaning
 
-The optimizer must consume compiled semantics from `OptimizationSemanticSnapshot`.
+The optimizer must consume compiled attachment semantics from builder-owned runtime/snapshot
+records.
 
 The optimizer must not:
-- reinterpret family metadata ad hoc
+- reinterpret fragment atom labels ad hoc
 - inspect arbitrary builder internals
-- redefine canonical order
-- infer slot legality from geometry first
+- invent slot legality from geometry first
+- assume all attachable atoms are literal `X`
 
-## 2. Semantic legality is hard
+## 2. Slot semantics are hard
 
-The optimizer may refine geometry, but it must not violate:
-- legal path class
-- legal slot correspondence
-- null-edge semantics
-- bundle ownership assumptions
+Attachment legality comes from slot/path semantics first.
 
-## 3. SVD is the initializer, not the whole optimizer
+The code must distinguish:
+- `slot_type` as semantic meaning
+- `source_atom_type` as fragment-local attachment lookup class
 
-When correspondence is known, use SVD/Kabsch for local rigid placement.
+## 3. Typed sources must be preserved
 
-Then optionally refine with a local chemistry-aware objective.
+Fragment readers/parsers must preserve typed attachment candidates such as:
+- `X`
+- `XA`
+- `XB`
+- `Al`
 
-## 4. Old path must remain available initially
+rather than filtering everything into or through one literal class.
 
-The existing optimizer behavior must remain available as a fallback while the new path is introduced behind explicit guards.
+## 4. Builder compiles resolved anchors
+
+Builder-owned runtime/snapshot outputs should carry resolved anchor metadata so downstream
+code consumes explicit anchor records rather than reconstructing them from raw atom buckets.
+
+## 5. Legacy paths remain available initially
+
+Existing literal-`X` families must continue to work during migration.
+
+Old payloads such as `node_X_data` may remain temporarily for compatibility, but must no
+longer be the only attachment representation.
 
 ---
 
@@ -147,130 +153,177 @@ Executor implements **phases sequentially**.
 
 ---
 
-# Phase 1 — Node-Local Placement Contract
+# Phase 1 — Attachment Semantics Audit and Contract
 
-Build a node-local semantic contract helper derived from `OptimizationSemanticSnapshot`.
-
-Primary goal:
-
-```
-compile the minimum per-node placement input from the snapshot seam
-```
-
-This phase should create a helper structure such as:
-
-```
-NodePlacementContract
-```
-
-It must not yet rewrite the full optimizer algorithm.
-
----
-
-# Phase 2 — Legal Correspondence Compilation
-
-Implement legality-first slot/edge correspondence compilation.
+Define the typed-attachment branch contract and pin the exact ownership boundaries.
 
 Primary goal:
 
 ```
-determine which incident edges may legally map to which local slots
+name the failure class explicitly and freeze the builder/optimizer seam
 ```
 
-This phase must use semantics first, not geometry first.
+This phase is documentation-only. It establishes terminology such as:
+
+```
+slot_type
+source_atom_type
+resolved anchor
+legacy literal-X compatibility
+```
+
+It must not modify production code.
+
+Execution plan for this phase only:
+
+1. Update the control docs so the branch objective, typed-attachment failure
+   class, and builder/optimizer ownership seam are stated directly and
+   consistently.
+2. Record the required Phase 1 terminology in the docs:
+   `slot_type`, `source_atom_type`, `resolved anchor`, and
+   `legacy literal-X compatibility`.
+3. Document the forbidden assumption set for later phases:
+   fragment readers, builder compilation, and optimizer helpers must not treat
+   literal `X` as the only attachable atom class.
+4. Freeze the downstream ownership rule:
+   builder-owned runtime/snapshot records are the only valid source for
+   optimizer-consumable resolved-anchor semantics.
+5. Keep the executor scope documentation-only:
+   allowed edits are workflow/control markdown files; production code, tests,
+   and runtime schemas remain out of scope in Phase 1.
+
+Executor handoff constraints:
+
+- Allowed files: workflow markdown files only.
+- Required outcome: the docs must name the failure mode as typed attachments
+  being collapsed or dropped into a universal literal-`X` assumption before
+  builder-owned resolution.
+- Required seam statement: raw fragment atom typing is upstream input, builder
+  resolves source types and compiles anchors, optimizer consumes compiled
+  anchors only.
+- Required compatibility statement: legacy literal-`X` families remain valid
+  during migration, but they are no longer the semantic model for all
+  attachments.
+- Stop rule: stop immediately if the work would require editing production
+  modules, tests, runtime payloads, or widening Phase 1 into parser, builder,
+  or optimizer implementation.
 
 ---
 
-# Phase 3 — SVD / Kabsch Local Rigid Initialization
+# Phase 2 — Reader / Parser Typed Attachment Preservation
 
-Implement deterministic local rigid placement when a legal correspondence is known.
+Preserve typed attachment candidates during low-level fragment parsing and loading.
 
 Primary goal:
 
 ```
-compute node-local rigid pose directly from legal correspondences
+stop losing valid typed attachment atoms at the reader boundary
 ```
 
-This phase introduces SVD/Kabsch-based initialization only.
+Representative targets include:
+- atom-name normalization behavior
+- PDB note / anchor filtering logic
+- node/linker fragment attachment extraction
+
+This phase should eliminate the specific “typed atom dropped before runtime compilation”
+failure mode, but it must not yet redesign builder runtime payloads broadly.
 
 ---
 
-# Phase 4 — Discrete Ambiguity Handling
+# Phase 3 — Builder Typed Attachment Registry
 
-Handle small legal candidate sets caused by:
-- repeated slot types
-- local symmetry
-- mirrored or near-degenerate assignments
+Add builder-owned typed attachment registries for fragment-local attachment coordinates.
 
 Primary goal:
 
 ```
-enumerate legal discrete candidates, solve SVD for each, and score them
+store typed attachment coordinates without collapsing them into one universal bucket
 ```
 
-No broad continuous search should replace the legal candidate model.
+Representative output shape:
+
+```python
+attachment_coords_by_type = {
+    "X": [...],
+    "XA": [...],
+    "Al": [...],
+}
+```
+
+This phase should remain builder-owned and compatibility-aware.
 
 ---
 
-# Phase 5 — Local Constrained Refinement
+# Phase 4 — Resolved Anchor Compilation
 
-Add a small local chemistry-aware refinement stage after SVD.
+Compile slot-rule-resolved anchors from typed fragment attachments into runtime/snapshot records.
 
 Primary goal:
 
 ```
-recover chemically realistic local pose without breaking semantic legality
+export explicit resolved anchors so downstream code no longer has to infer them
 ```
 
-This phase should start with a minimal local objective only.
+Representative outputs may include:
+- `anchor_vector`
+- `anchor_source_type`
+- `anchor_source_ordinal`
+
+This phase must preserve semantics-first legality and builder ownership.
 
 ---
 
-# Phase 6 — Null-Edge-Specific Behavior
+# Phase 5 — Optimizer Consumption Migration
 
-Add explicit null-edge and alignment-only handling inside the new local placement path.
+Move optimizer local placement helpers to consume resolved anchors instead of universal `X`
+buckets.
 
 Primary goal:
 
 ```
-let null edges influence orientation differently from normal linker-length chemistry
+make optimizer local placement depend on compiled anchor semantics, not raw X-only payloads
 ```
 
-Null-edge semantics must remain explicit.
+This phase should cover:
+- local rigid initialization inputs
+- narrow helper surfaces that still assume universal `X`
+- explicit semantic guardrails for missing anchors
+
+It must not broaden into framework or global optimizer redesign.
 
 ---
 
-# Phase 7 — Optional Integrated Optimizer Path
+# Phase 6 — Compatibility Layer and Guarded Rollout
 
-Wire the new node-local path into the optimizer behind an optional guarded path.
+Preserve old behavior while allowing typed-attachment cases to run through the new seam.
+
+Primary goal:
+
+```
+keep legacy literal-X behavior stable while enabling typed attachment paths carefully
+```
 
 Examples:
 
 ```python
+use_typed_attachment_runtime=False
 semantic_snapshot=None
-use_role_aware_local_placement=False
 ```
 
-Primary goal:
-
-```
-integrate the new path without breaking the old path
-```
-
-Start with one representative family/case only.
+The exact guard surface may vary, but rollout must remain narrow and explicit.
 
 ---
 
-# Phase 8 — Expanded Coverage, Debug Surfaces, and Handoff
+# Phase 7 — Regression Coverage, Debug Surfaces, and Handoff
 
-Broaden coverage cautiously and harden observability.
+Broaden coverage cautiously and make failures inspectable.
 
 Goals:
 
-- expand from one representative node-local case
-- add debug records for local assignments and scores
-- add compatibility coverage
-- document unresolved follow-ups if broader integration is still pending
+- add regression coverage for literal `X`, typed `XA`, and mixed-source cases such as `XA` + `Al`
+- add explicit semantic failure messages for missing/unresolved anchors
+- document remaining unsupported families honestly
+- finalize handoff notes
 
 ---
 
@@ -300,8 +353,8 @@ builder semantic ownership redesign
 framework semantic redesign
 new graph grammar beyond V-E-V / V-E-C
 supercell semantic redesign
-deleting the old optimizer path before new path is proven
-changing snapshot schema ownership ad hoc
+deleting compatibility surfaces before typed paths are proven
+changing snapshot ownership ad hoc
 ```
 
 Those require explicit replanning.
@@ -310,4 +363,6 @@ Those require explicit replanning.
 
 # End of Plan
 
-This branch is successful when the optimizer can consume the completed snapshot seam and place at least one representative role-aware case through legality-first correspondence, SVD initialization, and constrained refinement while preserving the legacy path.
+This branch is successful when typed attachment atoms are preserved, builder compiles
+resolved anchors from typed sources, optimizer consumes those compiled anchors for covered
+paths, and legacy literal-`X` behavior remains available during migration.
