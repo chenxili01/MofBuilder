@@ -2,8 +2,8 @@
 
 ## Workflow Status
 
-- Phase: Phase 5
-- Checkpoint: phase-5-executor-implemented
+- Phase: Phase 6
+- Checkpoint: phase-6-executor-implemented
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews completion and decides whether to advance
 - Last update: 2026-03-14
@@ -18,7 +18,7 @@ Reconstruct the optimizer / rotation logic so local placement is driven by the c
 
 ## Current Focus
 
-Phase 5 executor work is complete and ready for planner review. The optimizer now has a passive local constrained refinement helper that runs only after a known legal correspondence and rigid initialization, keeps the same legal mapping fixed, and uses a documented narrow objective of anchor mismatch plus angle alignment when chemistry-direction target vectors are present. Scope remained limited to optimizer-owned modules and tests; no builder changes, framework changes, supercell changes, guarded integration wiring, null-edge-specific behavior changes, or legacy-path replacement were introduced.
+Phase 6 executor work is complete and pending planner review. The optimizer-owned local placement helpers now treat null and `alignment_only` edges as explicit orientation-only constraints inside rigid initialization and local constrained refinement, while preserving the distinction between null edges and zero-length real edges. Scope remained limited to optimizer-owned modules, tests, and workflow logs/status; no builder ownership changes, framework changes, graph-grammar changes, or Phase 7 guarded integration wiring were introduced.
 
 ## Invariants
 

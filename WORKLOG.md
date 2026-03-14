@@ -973,3 +973,180 @@ notes:
 - Checkpoint: phase-5-executor-implemented
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews completion and decides whether to advance
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T20:46:04+00:00
+
+## Active Phase
+- Phase: 6
+- Name: Null-Edge-Specific Behavior
+
+## Objective
+Add explicit null-edge and alignment-only behavior to the existing optimizer-side local placement helper path so null edges influence local orientation according to snapshot semantics, without collapsing them into normal linker-length chemistry or changing builder/framework ownership boundaries. The named handoff files `SNAPSHOT_API_HANDOFF.md`, `OPTIMIZER_DISCUSSION_MEMORY.md`, and `OPTIMIZER_TODO_ROADMAP.md` are not present in this checkout, so this plan is bounded by the in-repo checkpoints and architecture documents that restate those constraints.
+
+## Scope
+- `src/mofbuilder/core/optimizer.py`
+- `src/mofbuilder/core/optimizer_contract.py`
+- `tests/test_core_optimizer.py`
+- `tests/test_core_runtime_snapshot.py`
+- `WORKLOG.md`
+- `STATUS.md`
+
+## Tasks
+1. Extend the optimizer-owned null-edge handling in the node-local helper pipeline so `NodePlacementContract`-derived requirements drive explicit null-edge and alignment-only behavior through legal correspondence, rigid initialization, and local constrained refinement without reading new builder internals.
+2. Define a narrow null-edge behavior rule inside the helper path: null or alignment-only edges may contribute orientation targets and metadata differently from real edges, but must not be treated as ordinary bond-length chemistry and must remain semantically distinct from zero-length real edges.
+3. Keep the current legal mapping fixed while updating scoring/objective metadata and any helper-side weighting or target-selection logic needed for null-edge-aware local placement; do not wire the new path into the legacy optimizer flow.
+4. Add focused tests for at least one null-edge-aware local placement case and one distinction case showing that a zero-length real edge is not treated as a null edge, while preserving existing default-role and legacy helper behavior.
+
+## Validation
+- Run `pytest tests/test_core_optimizer.py tests/test_core_runtime_snapshot.py`.
+- Verify null-edge behavior is explicit in the new local helper path and that null-edge metadata survives through correspondence/init/refinement surfaces where applicable.
+- Verify legality still comes from snapshot semantics first, not geometry, and that the legal correspondence does not remap during refinement.
+- Verify no builder, framework, graph-grammar, or Phase 7 guarded integration changes were introduced.
+
+## Non-goals
+- Any change to builder snapshot schema, builder ownership, or framework behavior.
+- Any guarded integration of the new helper path into the main optimizer execution flow.
+- Any redesign of graph grammar, bundle ownership, canonical ordering, or primitive-first pipeline order.
+- Any replacement or removal of the legacy optimizer path.
+
+## Exit Criteria
+- Null-edge and alignment-only behavior is explicit inside the optimizer-owned local placement helper path.
+- Tests cover at least one null-edge-aware case and confirm null edge remains distinct from zero-length real edge.
+- Only Phase 6 allowed modules are modified, and legacy optimizer behavior remains available and unchanged.
+- [`STATUS.md`](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md) is updated for executor handoff.
+
+## STATUS.md Update
+- Phase: Phase 6
+- Checkpoint: phase-6-plan-ready
+- Status: READY_FOR_EXECUTOR
+- Next step: Executor implements the active phase only
+
+
+## 2026-03-14 — executor — phase 6 null-edge-specific local placement behavior
+
+branch:
+optimizer-reconstruction
+
+phase:
+Phase 6 — Null-Edge-Specific Behavior
+
+checkpoint:
+phase-6-executor-implemented
+
+summary:
+- Added explicit orientation-only handling for null and `alignment_only` edges inside the optimizer-owned local rigid initialization helper, so those edges contribute rotation constraints without being treated as normal linker-length translation anchors.
+- Extended local constrained refinement to keep null/alignment direction pairs explicit through a dedicated null-edge alignment term instead of folding them into ordinary anchor mismatch chemistry.
+- Fixed target anchor and target direction lookup so the optimizer helper path reads the snapshot-derived incident requirement metadata compiled by the node placement contract.
+- Added focused Phase 6 tests for null-edge-aware rigid initialization and refinement metadata without wiring the new path into the legacy optimizer execution flow.
+
+files touched:
+- src/mofbuilder/core/optimizer_contract.py
+- tests/test_core_optimizer.py
+- WORKLOG.md
+- STATUS.md
+
+invariants checked:
+- Builder remains the owner of role interpretation and snapshot compilation.
+- Optimizer continues to consume snapshot-derived contracts only and does not read new builder internals.
+- Null edge remains explicit and distinct from zero-length real-edge chemistry in the local placement helpers.
+- Framework, graph grammar, primitive-first ordering, and legacy optimizer path wiring were not modified.
+
+validation:
+- `python -m py_compile src/mofbuilder/core/optimizer_contract.py tests/test_core_optimizer.py`
+- `PYTHONPATH=src /Users/chenxili/miniforge3/bin/python - <<'PY' ... null-edge rigid-init/refinement smoke check ... PY`
+- `python -m pytest tests/test_core_optimizer.py tests/test_core_runtime_snapshot.py` could not run because `pytest` is not installed in the active `/Users/chenxili/.venv/bin/python` interpreter.
+
+notes:
+- The workflow references `SNAPSHOT_API_HANDOFF.md`, `OPTIMIZER_DISCUSSION_MEMORY.md`, and `OPTIMIZER_TODO_ROADMAP.md`, but those files are still not present in this checkout; execution remained bounded by the in-repo checkpoints and architecture docs.
+- The smoke check used `/Users/chenxili/miniforge3/bin/python` because the active interpreter lacks `numpy`; no Phase 7 guarded integration or broader optimizer-path wiring was added.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T21:47:41+0100
+
+## Active Phase
+- Phase: 6
+- Name: Null-Edge-Specific Behavior
+
+## Implemented
+- Added explicit orientation-only pseudo-anchor handling for `is_null_edge` and `resolve_mode=\"alignment_only\"` requirements in [src/mofbuilder/core/optimizer_contract.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer_contract.py).
+- Kept null/alignment direction pairs explicit in local constrained refinement with a dedicated `null_edge_alignment` term and metadata counts in [src/mofbuilder/core/optimizer_contract.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer_contract.py).
+- Fixed snapshot-derived target anchor/vector extraction to read the compiled incident requirement metadata path used by the node placement contract in [src/mofbuilder/core/optimizer_contract.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer_contract.py).
+- Added Phase 6 tests for null-edge-aware rigid initialization and refinement metadata in [tests/test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py).
+- Updated [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md) and [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
+
+## Files Changed
+- [src/mofbuilder/core/optimizer_contract.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer_contract.py)
+- [tests/test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+
+## Validation
+- `python -m py_compile src/mofbuilder/core/optimizer_contract.py tests/test_core_optimizer.py`
+- `PYTHONPATH=src /Users/chenxili/miniforge3/bin/python ...` null-edge rigid-init/refinement smoke check passed.
+- `python -m pytest tests/test_core_optimizer.py tests/test_core_runtime_snapshot.py` could not run because `pytest` is not installed in the active interpreter.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Full pytest validation is still pending in an environment with `pytest` installed.
+- The active `/Users/chenxili/.venv/bin/python` interpreter is also missing `numpy`, so runtime validation currently depends on the separate `miniforge3` Python.
+
+## STATUS.md Update
+- Phase: Phase 6
+- Checkpoint: phase-6-executor-implemented
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T20:58:35+00:00
+
+## Active Phase
+- Phase: 6
+- Name: Null-Edge-Specific Behavior
+
+## Implemented
+- Added explicit orientation-only handling for `is_null_edge` and `resolve_mode="alignment_only"` inside the optimizer-owned local rigid initialization helper, so null/alignment edges affect rotation without being treated as normal linker-length translation anchors.
+- Extended local constrained refinement with a dedicated `null_edge_alignment` term and metadata counts for orientation-only null/alignment direction pairs.
+- Fixed snapshot-derived target anchor/vector extraction so the helper path reads the compiled incident requirement metadata from the node placement contract.
+- Added Phase 6 tests covering null-edge-aware rigid initialization and null-edge-aware refinement metadata.
+
+## Files Changed
+- [src/mofbuilder/core/optimizer_contract.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/optimizer_contract.py)
+- [tests/test_core_optimizer.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_optimizer.py)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+
+## Validation
+- `python -m py_compile src/mofbuilder/core/optimizer_contract.py tests/test_core_optimizer.py`
+- `git diff --check -- src/mofbuilder/core/optimizer_contract.py tests/test_core_optimizer.py WORKLOG.md STATUS.md`
+- `PYTHONPATH=src /Users/chenxili/miniforge3/bin/python ...` null-edge rigid-init/refinement smoke check passed.
+- `python -m pytest tests/test_core_optimizer.py tests/test_core_runtime_snapshot.py` could not run because `pytest` is not installed in the active `/Users/chenxili/.venv/bin/python` interpreter.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Full pytest validation is still pending in an environment with `pytest` installed.
+- The workflow references `SNAPSHOT_API_HANDOFF.md`, `OPTIMIZER_DISCUSSION_MEMORY.md`, and `OPTIMIZER_TODO_ROADMAP.md`, but those files are not present in this checkout.
+
+## STATUS.md Update
+- Phase: Phase 6
+- Checkpoint: phase-6-executor-implemented
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance

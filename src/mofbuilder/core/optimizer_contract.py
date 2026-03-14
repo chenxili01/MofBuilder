@@ -440,10 +440,13 @@ def _extract_target_anchor(
     requirement: IncidentEdgePlacementRequirement,
     local_node_id: str,
 ) -> Optional[Tuple[float, float, float]]:
-    if requirement.target_direction is None:
-        return None
-
-    metadata = requirement.target_direction.metadata
+    metadata = requirement.metadata
+    if requirement.target_direction is not None:
+        target_metadata = requirement.target_direction.metadata
+        metadata = {
+            **dict(target_metadata),
+            **dict(requirement.metadata),
+        }
     edge_metadata = metadata.get("edge_metadata", {})
     constraint = metadata.get("constraint", {})
 
@@ -475,10 +478,13 @@ def _extract_target_direction_vector(
     requirement: IncidentEdgePlacementRequirement,
     local_node_id: str,
 ) -> Optional[Tuple[float, float, float]]:
-    if requirement.target_direction is None:
-        return None
-
-    metadata = requirement.target_direction.metadata
+    metadata = requirement.metadata
+    if requirement.target_direction is not None:
+        target_metadata = requirement.target_direction.metadata
+        metadata = {
+            **dict(target_metadata),
+            **dict(requirement.metadata),
+        }
     edge_metadata = metadata.get("edge_metadata", {})
     constraint = metadata.get("constraint", {})
 
@@ -494,11 +500,64 @@ def _extract_target_direction_vector(
     )
 
 
+def _is_orientation_only_requirement(requirement: IncidentEdgePlacementRequirement) -> bool:
+    return requirement.is_null_edge or requirement.resolve_mode == "alignment_only"
+
+
 def _normalize_vector(vector: np.ndarray) -> Optional[np.ndarray]:
     norm = float(np.linalg.norm(vector))
     if norm <= 1.0e-12:
         return None
     return vector / norm
+
+
+def _resolve_orientation_reference_scale(
+    requirement: IncidentEdgePlacementRequirement,
+) -> float:
+    metadata = requirement.metadata
+    constraint = metadata.get("constraint", {})
+    edge_metadata = metadata.get("edge_metadata", {})
+    scale = (
+        constraint.get("orientation_reference_scale")
+        or constraint.get("alignment_reference_scale")
+        or edge_metadata.get("orientation_reference_scale")
+        or edge_metadata.get("alignment_reference_scale")
+    )
+    if scale is None:
+        if requirement.null_payload_model == "duplicated_zero_length_anchors":
+            return 1.0
+        return 1.0
+    try:
+        scale_value = float(scale)
+    except (TypeError, ValueError):
+        return 1.0
+    return scale_value if scale_value > 0.0 else 1.0
+
+
+def _extract_orientation_pair_points(
+    slot_rule: FrozenMapping,
+    requirement: IncidentEdgePlacementRequirement,
+    local_node_id: str,
+) -> Tuple[Tuple[Tuple[float, float, float], Tuple[float, float, float]], ...]:
+    source_direction = _extract_source_direction(slot_rule)
+    target_direction = _extract_target_direction_vector(requirement, local_node_id)
+    if source_direction is None or target_direction is None:
+        return ()
+
+    normalized_source = _normalize_vector(np.asarray(source_direction, dtype=float))
+    normalized_target = _normalize_vector(np.asarray(target_direction, dtype=float))
+    if normalized_source is None or normalized_target is None:
+        return ()
+
+    scale = _resolve_orientation_reference_scale(requirement)
+    positive_source = tuple(float(value) for value in normalized_source * scale)
+    positive_target = tuple(float(value) for value in normalized_target * scale)
+    negative_source = tuple(float(value) for value in -normalized_source * scale)
+    negative_target = tuple(float(value) for value in -normalized_target * scale)
+    return (
+        (positive_source, positive_target),
+        (negative_source, negative_target),
+    )
 
 
 def _rotation_matrix_from_vector(rotation_vector: np.ndarray) -> np.ndarray:
@@ -523,11 +582,21 @@ def _rotation_matrix_from_vector(rotation_vector: np.ndarray) -> np.ndarray:
     )
 
 
+def _fit_rotation_from_point_pairs(
+    source_points: np.ndarray,
+    target_points: np.ndarray,
+) -> Tuple[float, np.ndarray]:
+    rmsd, rotation_matrix, _ = svd_superimpose(source_points, target_points)
+    return float(rmsd), rotation_matrix
+
+
 def _evaluate_refinement_objective(
     source_points: np.ndarray,
     target_points: np.ndarray,
     source_directions: np.ndarray,
     target_directions: np.ndarray,
+    null_edge_source_directions: np.ndarray,
+    null_edge_target_directions: np.ndarray,
     initial_rotation: np.ndarray,
     initial_translation: np.ndarray,
     params: np.ndarray,
@@ -537,10 +606,12 @@ def _evaluate_refinement_objective(
     rotation = initial_rotation @ rotation_delta
     translation = initial_translation + params[3:]
 
-    transformed_points = source_points @ rotation + translation
-    anchor_mismatch = float(
-        np.mean(np.sum((transformed_points - target_points) ** 2, axis=1))
-    )
+    anchor_mismatch = 0.0
+    if source_points.size and target_points.size:
+        transformed_points = source_points @ rotation + translation
+        anchor_mismatch = float(
+            np.mean(np.sum((transformed_points - target_points) ** 2, axis=1))
+        )
 
     angle_alignment_penalty = 0.0
     if source_directions.size and target_directions.size:
@@ -559,17 +630,37 @@ def _evaluate_refinement_objective(
         if direction_penalties:
             angle_alignment_penalty = float(np.mean(direction_penalties))
 
+    null_edge_alignment_penalty = 0.0
+    if null_edge_source_directions.size and null_edge_target_directions.size:
+        transformed_null_directions = null_edge_source_directions @ rotation
+        null_direction_penalties = []
+        for transformed_direction, target_direction in zip(
+            transformed_null_directions,
+            null_edge_target_directions,
+        ):
+            normalized_transformed = _normalize_vector(transformed_direction)
+            normalized_target = _normalize_vector(target_direction)
+            if normalized_transformed is None or normalized_target is None:
+                continue
+            cosine = float(np.clip(np.dot(normalized_transformed, normalized_target), -1.0, 1.0))
+            null_direction_penalties.append(1.0 - cosine)
+        if null_direction_penalties:
+            null_edge_alignment_penalty = float(np.mean(null_direction_penalties))
+
     objective_value = (
         float(weights["anchor_mismatch"]) * anchor_mismatch
         + float(weights["angle_alignment"]) * angle_alignment_penalty
+        + float(weights["null_edge_alignment"]) * null_edge_alignment_penalty
     )
     return (
         objective_value,
         {
             "anchor_mismatch": anchor_mismatch,
             "angle_alignment_penalty": angle_alignment_penalty,
+            "null_edge_alignment_penalty": null_edge_alignment_penalty,
             "weighted_anchor_mismatch": float(weights["anchor_mismatch"]) * anchor_mismatch,
             "weighted_angle_alignment": float(weights["angle_alignment"]) * angle_alignment_penalty,
+            "weighted_null_edge_alignment": float(weights["null_edge_alignment"]) * null_edge_alignment_penalty,
         },
         rotation,
         translation,
@@ -815,12 +906,47 @@ def compile_local_rigid_initialization(
         requirement.edge_id: requirement for requirement in contract.incident_requirements
     }
     anchor_pairs = []
-    source_points = []
-    target_points = []
+    translation_source_points = []
+    translation_target_points = []
+    orientation_source_points = []
+    orientation_target_points = []
+    orientation_only_pair_count = 0
+    fallback_orientation_anchor_count = 0
 
     for assignment in selected_correspondence.assignments:
         requirement = requirement_by_edge_id[assignment.edge_id]
         slot_rule = contract.slot_rules[assignment.slot_index]
+        orientation_only_pairs = ()
+        if _is_orientation_only_requirement(requirement):
+            orientation_only_pairs = _extract_orientation_pair_points(
+                slot_rule,
+                requirement,
+                contract.node_id,
+            )
+        if orientation_only_pairs:
+            orientation_only_pair_count += len(orientation_only_pairs)
+            for pair_index, (source_anchor, target_anchor) in enumerate(orientation_only_pairs):
+                orientation_source_points.append(source_anchor)
+                orientation_target_points.append(target_anchor)
+                anchor_pairs.append(
+                    RigidAnchorPair(
+                        edge_id=assignment.edge_id,
+                        slot_index=assignment.slot_index,
+                        source_anchor=source_anchor,
+                        target_anchor=target_anchor,
+                        metadata={
+                            "slot_type": assignment.slot_type,
+                            "path_type": assignment.path_type,
+                            "resolve_mode": assignment.resolve_mode,
+                            "is_null_edge": assignment.is_null_edge,
+                            "pair_kind": "orientation_only",
+                            "orientation_pair_index": pair_index,
+                            "null_payload_model": requirement.null_payload_model,
+                        },
+                    )
+                )
+            continue
+
         source_anchor = _extract_source_anchor(slot_rule)
         if source_anchor is None:
             raise ValueError(
@@ -831,8 +957,10 @@ def compile_local_rigid_initialization(
             raise ValueError(
                 f"Missing explicit target anchor representation for edge {assignment.edge_id} on node {node_id}."
             )
-        source_points.append(source_anchor)
-        target_points.append(target_anchor)
+        translation_source_points.append(source_anchor)
+        translation_target_points.append(target_anchor)
+        if _is_orientation_only_requirement(requirement):
+            fallback_orientation_anchor_count += 1
         anchor_pairs.append(
             RigidAnchorPair(
                 edge_id=assignment.edge_id,
@@ -844,6 +972,11 @@ def compile_local_rigid_initialization(
                     "path_type": assignment.path_type,
                     "resolve_mode": assignment.resolve_mode,
                     "is_null_edge": assignment.is_null_edge,
+                    "pair_kind": (
+                        "orientation_only_anchor_fallback"
+                        if _is_orientation_only_requirement(requirement)
+                        else "anchor"
+                    ),
                 },
             )
         )
@@ -851,10 +984,29 @@ def compile_local_rigid_initialization(
     if len(anchor_pairs) < 2:
         raise ValueError("At least two explicit anchor pairs are required for local rigid initialization.")
 
-    rmsd, rotation_matrix, translation_vector = svd_superimpose(
-        np.asarray(source_points, dtype=float),
-        np.asarray(target_points, dtype=float),
+    rotation_source_points = []
+    rotation_target_points = []
+    if translation_source_points:
+        real_source_array = np.asarray(translation_source_points, dtype=float)
+        real_target_array = np.asarray(translation_target_points, dtype=float)
+        rotation_source_points.extend(real_source_array - np.mean(real_source_array, axis=0))
+        rotation_target_points.extend(real_target_array - np.mean(real_target_array, axis=0))
+    rotation_source_points.extend(orientation_source_points)
+    rotation_target_points.extend(orientation_target_points)
+
+    source_point_array = np.asarray(rotation_source_points, dtype=float)
+    target_point_array = np.asarray(rotation_target_points, dtype=float)
+    rmsd, rotation_matrix = _fit_rotation_from_point_pairs(
+        source_point_array,
+        target_point_array,
     )
+    if translation_source_points:
+        translation_vector = (
+            np.mean(np.asarray(translation_target_points, dtype=float), axis=0)
+            - np.mean(np.asarray(translation_source_points, dtype=float), axis=0) @ rotation_matrix
+        )
+    else:
+        translation_vector = np.zeros(3, dtype=float)
 
     return NodeLocalRigidInitialization(
         node_id=contract.node_id,
@@ -866,14 +1018,24 @@ def compile_local_rigid_initialization(
         rmsd=float(rmsd),
         source_anchor_representation=(
             "node slot_rules[*]['anchor_vector'|'anchor_point'|'anchor_position'] "
-            "provide node-local source anchors."
+            "provide node-local source anchors; orientation-only null/alignment edges "
+            "use normalized chemistry_direction vectors as centered pseudo-anchor pairs."
         ),
         target_anchor_representation=(
             "compiled target_direction metadata carries edge-local target anchors via "
-            "constraint or edge metadata target_* fields."
+            "constraint or edge metadata target_* fields; orientation-only null/alignment "
+            "edges use target_direction/target_vector data without contributing linker-length translation."
         ),
         metadata={
             "anchor_count": len(anchor_pairs),
+            "real_anchor_pair_count": len(translation_source_points),
+            "orientation_only_pair_count": orientation_only_pair_count,
+            "orientation_only_anchor_fallback_count": fallback_orientation_anchor_count,
+            "translation_mode": (
+                "real_anchor_centroid"
+                if translation_source_points
+                else "orientation_only_default_zero"
+            ),
             "graph_phase": semantic_snapshot.graph_phase,
         },
     )
@@ -991,6 +1153,7 @@ def compile_local_constrained_refinement(
     weights = {
         "anchor_mismatch": 1.0,
         "angle_alignment": 0.25,
+        "null_edge_alignment": 0.5,
     }
     if objective_weights is not None:
         weights.update({key: float(value) for key, value in objective_weights.items()})
@@ -1002,12 +1165,37 @@ def compile_local_constrained_refinement(
     target_points = []
     source_directions = []
     target_directions = []
+    null_edge_source_directions = []
+    null_edge_target_directions = []
+    orientation_only_anchor_fallback_count = 0
 
     for assignment in selected_correspondence.assignments:
         requirement = requirement_by_edge_id[assignment.edge_id]
         slot_rule = contract.slot_rules[assignment.slot_index]
+        source_direction = _extract_source_direction(slot_rule)
+        target_direction = _extract_target_direction_vector(requirement, contract.node_id)
+        orientation_only = _is_orientation_only_requirement(requirement)
+        if source_direction is not None and target_direction is not None:
+            if orientation_only:
+                null_edge_source_directions.append(source_direction)
+                null_edge_target_directions.append(target_direction)
+            else:
+                source_directions.append(source_direction)
+                target_directions.append(target_direction)
+
         source_anchor = _extract_source_anchor(slot_rule)
         target_anchor = _extract_target_anchor(requirement, contract.node_id)
+        if orientation_only:
+            if source_direction is None or target_direction is None:
+                if source_anchor is None or target_anchor is None:
+                    raise ValueError(
+                        f"Local constrained refinement requires explicit alignment directions or anchor fallbacks for orientation-only edge {assignment.edge_id}."
+                    )
+                orientation_only_anchor_fallback_count += 1
+                source_points.append(source_anchor)
+                target_points.append(target_anchor)
+            continue
+
         if source_anchor is None or target_anchor is None:
             raise ValueError(
                 f"Local constrained refinement requires explicit source and target anchors for edge {assignment.edge_id}."
@@ -1015,14 +1203,8 @@ def compile_local_constrained_refinement(
         source_points.append(source_anchor)
         target_points.append(target_anchor)
 
-        source_direction = _extract_source_direction(slot_rule)
-        target_direction = _extract_target_direction_vector(requirement, contract.node_id)
-        if source_direction is not None and target_direction is not None:
-            source_directions.append(source_direction)
-            target_directions.append(target_direction)
-
-    if len(source_points) < 2:
-        raise ValueError("At least two anchor pairs are required for local constrained refinement.")
+    if not source_points and not source_directions and not null_edge_source_directions:
+        raise ValueError("At least one explicit local constraint is required for local constrained refinement.")
 
     source_point_array = np.asarray(source_points, dtype=float)
     target_point_array = np.asarray(target_points, dtype=float)
@@ -1031,6 +1213,16 @@ def compile_local_constrained_refinement(
     )
     target_direction_array = (
         np.asarray(target_directions, dtype=float) if target_directions else np.empty((0, 3), dtype=float)
+    )
+    null_edge_source_direction_array = (
+        np.asarray(null_edge_source_directions, dtype=float)
+        if null_edge_source_directions
+        else np.empty((0, 3), dtype=float)
+    )
+    null_edge_target_direction_array = (
+        np.asarray(null_edge_target_directions, dtype=float)
+        if null_edge_target_directions
+        else np.empty((0, 3), dtype=float)
     )
     initial_rotation = np.asarray(selected_initialization.rotation_matrix, dtype=float)
     initial_translation = np.asarray(selected_initialization.translation_vector, dtype=float)
@@ -1042,6 +1234,8 @@ def compile_local_constrained_refinement(
             target_point_array,
             source_direction_array,
             target_direction_array,
+            null_edge_source_direction_array,
+            null_edge_target_direction_array,
             initial_rotation,
             initial_translation,
             params,
@@ -1088,6 +1282,8 @@ def compile_local_constrained_refinement(
                     target_point_array,
                     source_direction_array,
                     target_direction_array,
+                    null_edge_source_direction_array,
+                    null_edge_target_direction_array,
                     initial_rotation,
                     initial_translation,
                     candidate_params,
@@ -1126,10 +1322,13 @@ def compile_local_constrained_refinement(
         converged=not improved or objective_value <= initial_objective_value + 1.0e-12,
         metadata={
             "anchor_count": len(source_points),
-            "direction_pair_count": len(source_directions),
+            "direction_pair_count": len(source_directions) + len(null_edge_source_directions),
+            "null_edge_direction_pair_count": len(null_edge_source_directions),
+            "orientation_only_anchor_fallback_count": orientation_only_anchor_fallback_count,
             "objective_terms": (
                 "anchor mismatch penalty from rigidly transformed source anchors to target anchors",
                 "angle alignment penalty from chemistry_direction/target_vector pairs when present",
+                "null-edge alignment penalty from orientation-only null/alignment direction pairs",
             ),
             "search_strategy": "deterministic coordinate descent around passive SVD pose",
             "weights": weights,

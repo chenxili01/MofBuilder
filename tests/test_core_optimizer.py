@@ -778,6 +778,197 @@ def test_compile_local_rigid_initialization_requires_single_known_correspondence
         compile_local_rigid_initialization(semantic_snapshot, "V0")
 
 
+def test_compile_local_rigid_initialization_treats_null_alignment_edges_as_orientation_only():
+    rotation_expected = np.array(
+        [
+            [0.0, -1.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    translation_expected = np.array([5.0, -2.0, 0.5])
+    source_anchor_real = (2.0, 0.0, 0.0)
+    source_anchor_real_2 = (0.0, 0.0, 2.0)
+    source_direction_null = (0.0, 1.0, 0.0)
+    target_anchor_real = tuple(
+        np.dot(np.asarray(source_anchor_real), rotation_expected) + translation_expected
+    )
+    target_anchor_real_2 = tuple(
+        np.dot(np.asarray(source_anchor_real_2), rotation_expected) + translation_expected
+    )
+    target_direction_null = tuple(
+        np.dot(np.asarray(source_direction_null), rotation_expected)
+    )
+
+    semantic_snapshot = OptimizationSemanticSnapshot(
+        family_name="ROLE-AWARE",
+        graph_phase="sG",
+        graph_node_records={
+            "V0": GraphNodeSemanticRecord(
+                node_id="V0",
+                role_id="node:VA",
+                role_class="V",
+                slot_rules=(
+                    {
+                        "attachment_index": 0,
+                        "slot_type": "XA",
+                        "anchor_vector": source_anchor_real,
+                        "chemistry_direction": source_anchor_real,
+                    },
+                    {
+                        "attachment_index": 1,
+                        "slot_type": "XB",
+                        "anchor_vector": source_direction_null,
+                        "chemistry_direction": source_direction_null,
+                    },
+                    {
+                        "attachment_index": 2,
+                        "slot_type": "XC",
+                        "anchor_vector": source_anchor_real_2,
+                        "chemistry_direction": source_anchor_real_2,
+                    },
+                ),
+                incident_edge_ids=("V0|V1", "V0|V2", "V0|V3"),
+                incident_edge_role_ids=("edge:EA", "edge:EB", "edge:EC"),
+                incident_edge_constraints=(
+                    {"edge_id": "V0|V1", "edge_role_id": "edge:EA", "slot_index": 0},
+                    {"edge_id": "V0|V2", "edge_role_id": "edge:EB", "slot_index": 1},
+                    {"edge_id": "V0|V3", "edge_role_id": "edge:EC", "slot_index": 2},
+                ),
+            ),
+        },
+        graph_edge_records={
+            "V0|V1": GraphEdgeSemanticRecord(
+                edge_id="V0|V1",
+                graph_edge=("V0", "V1"),
+                edge_role_id="edge:EA",
+                path_type="V-E-V",
+                endpoint_node_ids=("V0", "V1"),
+                endpoint_role_ids=("node:VA", "node:VB"),
+                endpoint_pattern=("VA", "EA", "VB"),
+                slot_index={"V0": 0, "V1": 0},
+                slot_rules=(
+                    {"attachment_index": 0, "slot_type": "XA", "endpoint_side": "V"},
+                ),
+                metadata={"target_point_by_node": {"V0": target_anchor_real}},
+            ),
+            "V0|V2": GraphEdgeSemanticRecord(
+                edge_id="V0|V2",
+                graph_edge=("V0", "V2"),
+                edge_role_id="edge:EB",
+                path_type="V-E-V",
+                endpoint_node_ids=("V0", "V2"),
+                endpoint_role_ids=("node:VA", "node:VC"),
+                endpoint_pattern=("VA", "EB", "VC"),
+                slot_index={"V0": 1, "V2": 0},
+                slot_rules=(
+                    {"attachment_index": 1, "slot_type": "XB", "endpoint_side": "V"},
+                ),
+                resolve_mode="alignment_only",
+                is_null_edge=True,
+                null_payload_model="duplicated_zero_length_anchors",
+                metadata={"target_vector_by_node": {"V0": target_direction_null}},
+            ),
+            "V0|V3": GraphEdgeSemanticRecord(
+                edge_id="V0|V3",
+                graph_edge=("V0", "V3"),
+                edge_role_id="edge:EC",
+                path_type="V-E-V",
+                endpoint_node_ids=("V0", "V3"),
+                endpoint_role_ids=("node:VA", "node:VD"),
+                endpoint_pattern=("VA", "EC", "VD"),
+                slot_index={"V0": 2, "V3": 0},
+                slot_rules=(
+                    {"attachment_index": 2, "slot_type": "XC", "endpoint_side": "V"},
+                ),
+                metadata={"target_point_by_node": {"V0": target_anchor_real_2}},
+            ),
+        },
+        node_role_records={
+            "node:VA": NodeRoleRecord(
+                role_id="node:VA",
+                family_alias="VA",
+                role_class="V",
+                slot_rules=(
+                    {
+                        "attachment_index": 0,
+                        "slot_type": "XA",
+                        "anchor_vector": source_anchor_real,
+                        "chemistry_direction": source_anchor_real,
+                    },
+                    {
+                        "attachment_index": 1,
+                        "slot_type": "XB",
+                        "anchor_vector": source_direction_null,
+                        "chemistry_direction": source_direction_null,
+                    },
+                    {
+                        "attachment_index": 2,
+                        "slot_type": "XC",
+                        "anchor_vector": source_anchor_real_2,
+                        "chemistry_direction": source_anchor_real_2,
+                    },
+                ),
+            ),
+        },
+        edge_role_records={
+            "edge:EA": EdgeRoleRecord(
+                role_id="edge:EA",
+                family_alias="EA",
+                role_class="E",
+                endpoint_pattern=("VA", "EA", "VB"),
+                slot_rules=(
+                    {"attachment_index": 0, "slot_type": "XA", "endpoint_side": "V"},
+                ),
+            ),
+            "edge:EB": EdgeRoleRecord(
+                role_id="edge:EB",
+                family_alias="EB",
+                role_class="E",
+                endpoint_pattern=("VA", "EB", "VC"),
+                slot_rules=(
+                    {"attachment_index": 1, "slot_type": "XB", "endpoint_side": "V"},
+                ),
+                resolve_mode="alignment_only",
+                null_edge_policy=NullEdgePolicyRecord(
+                    edge_role_id="edge:EB",
+                    edge_kind="null",
+                    is_null_edge=True,
+                    null_payload_model="duplicated_zero_length_anchors",
+                ),
+            ),
+            "edge:EC": EdgeRoleRecord(
+                role_id="edge:EC",
+                family_alias="EC",
+                role_class="E",
+                endpoint_pattern=("VA", "EC", "VD"),
+                slot_rules=(
+                    {"attachment_index": 2, "slot_type": "XC", "endpoint_side": "V"},
+                ),
+            ),
+        },
+        null_edge_policy_records={
+            "edge:EB": NullEdgePolicyRecord(
+                edge_role_id="edge:EB",
+                edge_kind="null",
+                is_null_edge=True,
+                null_payload_model="duplicated_zero_length_anchors",
+            ),
+        },
+    )
+
+    rigid_init = compile_local_rigid_initialization(semantic_snapshot, "V0")
+
+    assert np.allclose(np.asarray(rigid_init.rotation_matrix), rotation_expected)
+    assert np.allclose(np.asarray(rigid_init.translation_vector), translation_expected)
+    assert rigid_init.metadata["real_anchor_pair_count"] == 2
+    assert rigid_init.metadata["orientation_only_pair_count"] == 2
+    assert rigid_init.metadata["translation_mode"] == "real_anchor_centroid"
+    assert sum(
+        pair.metadata["pair_kind"] == "orientation_only" for pair in rigid_init.anchor_pairs
+    ) == 2
+
+
 def test_compile_discrete_ambiguity_resolution_scores_legal_candidates_and_selects_best():
     source_anchors = {
         0: (1.0, 0.0, 0.0),
@@ -1311,3 +1502,184 @@ def test_compile_local_constrained_refinement_improves_combined_local_objective_
         np.asarray(refinement.rotation_matrix),
         np.asarray(rigid_initialization.rotation_matrix),
     )
+
+
+def test_compile_local_constrained_refinement_tracks_null_edge_alignment_terms_explicitly():
+    rotation_expected = np.array(
+        [
+            [0.0, -1.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    translation_expected = np.array([5.0, -2.0, 0.5])
+    source_anchor_real = (2.0, 0.0, 0.0)
+    source_anchor_real_2 = (0.0, 0.0, 2.0)
+    source_direction_null = (0.0, 1.0, 0.0)
+    target_anchor_real = tuple(
+        np.dot(np.asarray(source_anchor_real), rotation_expected) + translation_expected
+    )
+    target_anchor_real_2 = tuple(
+        np.dot(np.asarray(source_anchor_real_2), rotation_expected) + translation_expected
+    )
+    target_direction_null = tuple(
+        np.dot(np.asarray(source_direction_null), rotation_expected)
+    )
+
+    semantic_snapshot = OptimizationSemanticSnapshot(
+        family_name="ROLE-AWARE",
+        graph_phase="sG",
+        graph_node_records={
+            "V0": GraphNodeSemanticRecord(
+                node_id="V0",
+                role_id="node:VA",
+                role_class="V",
+                slot_rules=(
+                    {
+                        "attachment_index": 0,
+                        "slot_type": "XA",
+                        "anchor_vector": source_anchor_real,
+                        "chemistry_direction": source_anchor_real,
+                    },
+                    {
+                        "attachment_index": 1,
+                        "slot_type": "XB",
+                        "anchor_vector": source_direction_null,
+                        "chemistry_direction": source_direction_null,
+                    },
+                    {
+                        "attachment_index": 2,
+                        "slot_type": "XC",
+                        "anchor_vector": source_anchor_real_2,
+                        "chemistry_direction": source_anchor_real_2,
+                    },
+                ),
+                incident_edge_ids=("V0|V1", "V0|V2", "V0|V3"),
+                incident_edge_role_ids=("edge:EA", "edge:EB", "edge:EC"),
+                incident_edge_constraints=(
+                    {"edge_id": "V0|V1", "edge_role_id": "edge:EA", "slot_index": 0},
+                    {"edge_id": "V0|V2", "edge_role_id": "edge:EB", "slot_index": 1},
+                    {"edge_id": "V0|V3", "edge_role_id": "edge:EC", "slot_index": 2},
+                ),
+            ),
+        },
+        graph_edge_records={
+            "V0|V1": GraphEdgeSemanticRecord(
+                edge_id="V0|V1",
+                graph_edge=("V0", "V1"),
+                edge_role_id="edge:EA",
+                path_type="V-E-V",
+                endpoint_node_ids=("V0", "V1"),
+                endpoint_role_ids=("node:VA", "node:VB"),
+                endpoint_pattern=("VA", "EA", "VB"),
+                slot_index={"V0": 0, "V1": 0},
+                slot_rules=(
+                    {"attachment_index": 0, "slot_type": "XA", "endpoint_side": "V"},
+                ),
+                metadata={"target_point_by_node": {"V0": target_anchor_real}},
+            ),
+            "V0|V2": GraphEdgeSemanticRecord(
+                edge_id="V0|V2",
+                graph_edge=("V0", "V2"),
+                edge_role_id="edge:EB",
+                path_type="V-E-V",
+                endpoint_node_ids=("V0", "V2"),
+                endpoint_role_ids=("node:VA", "node:VC"),
+                endpoint_pattern=("VA", "EB", "VC"),
+                slot_index={"V0": 1, "V2": 0},
+                slot_rules=(
+                    {"attachment_index": 1, "slot_type": "XB", "endpoint_side": "V"},
+                ),
+                resolve_mode="alignment_only",
+                is_null_edge=True,
+                null_payload_model="duplicated_zero_length_anchors",
+                metadata={"target_vector_by_node": {"V0": target_direction_null}},
+            ),
+            "V0|V3": GraphEdgeSemanticRecord(
+                edge_id="V0|V3",
+                graph_edge=("V0", "V3"),
+                edge_role_id="edge:EC",
+                path_type="V-E-V",
+                endpoint_node_ids=("V0", "V3"),
+                endpoint_role_ids=("node:VA", "node:VD"),
+                endpoint_pattern=("VA", "EC", "VD"),
+                slot_index={"V0": 2, "V3": 0},
+                slot_rules=(
+                    {"attachment_index": 2, "slot_type": "XC", "endpoint_side": "V"},
+                ),
+                metadata={"target_point_by_node": {"V0": target_anchor_real_2}},
+            ),
+        },
+        node_role_records={
+            "node:VA": NodeRoleRecord(
+                role_id="node:VA",
+                family_alias="VA",
+                role_class="V",
+                slot_rules=(
+                    {
+                        "attachment_index": 0,
+                        "slot_type": "XA",
+                        "anchor_vector": source_anchor_real,
+                        "chemistry_direction": source_anchor_real,
+                    },
+                    {
+                        "attachment_index": 1,
+                        "slot_type": "XB",
+                        "anchor_vector": source_direction_null,
+                        "chemistry_direction": source_direction_null,
+                    },
+                    {
+                        "attachment_index": 2,
+                        "slot_type": "XC",
+                        "anchor_vector": source_anchor_real_2,
+                        "chemistry_direction": source_anchor_real_2,
+                    },
+                ),
+            ),
+        },
+        edge_role_records={
+            "edge:EA": EdgeRoleRecord(
+                role_id="edge:EA",
+                family_alias="EA",
+                role_class="E",
+                endpoint_pattern=("VA", "EA", "VB"),
+                slot_rules=(
+                    {"attachment_index": 0, "slot_type": "XA", "endpoint_side": "V"},
+                ),
+            ),
+            "edge:EB": EdgeRoleRecord(
+                role_id="edge:EB",
+                family_alias="EB",
+                role_class="E",
+                endpoint_pattern=("VA", "EB", "VC"),
+                slot_rules=(
+                    {"attachment_index": 1, "slot_type": "XB", "endpoint_side": "V"},
+                ),
+                resolve_mode="alignment_only",
+            ),
+            "edge:EC": EdgeRoleRecord(
+                role_id="edge:EC",
+                family_alias="EC",
+                role_class="E",
+                endpoint_pattern=("VA", "EC", "VD"),
+                slot_rules=(
+                    {"attachment_index": 2, "slot_type": "XC", "endpoint_side": "V"},
+                ),
+            ),
+        },
+        null_edge_policy_records={
+            "edge:EB": NullEdgePolicyRecord(
+                edge_role_id="edge:EB",
+                edge_kind="null",
+                is_null_edge=True,
+                null_payload_model="duplicated_zero_length_anchors",
+            ),
+        },
+    )
+
+    refinement = compile_local_constrained_refinement(semantic_snapshot, "V0")
+
+    assert refinement.metadata["null_edge_direction_pair_count"] == 1
+    assert refinement.metadata["weights"]["null_edge_alignment"] == pytest.approx(0.5)
+    assert refinement.objective_breakdown["null_edge_alignment_penalty"] == pytest.approx(0.0)
+    assert "null-edge alignment penalty" in refinement.metadata["objective_terms"][2]
