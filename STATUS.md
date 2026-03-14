@@ -2,10 +2,10 @@
 
 ## Workflow Status
 
-- Phase: Phase 4
-- Checkpoint: phase-4-executor-complete
+- Phase: Phase 5
+- Checkpoint: phase-5-plan-finalized
 - Status: COMPLETED_PENDING_PLANNER
-- Next step: Planner reviews completion and decides whether to advance
+- Next step: Planner reviews Phase 5 completion and decides whether to advance
 - Last update: 2026-03-14
 
 ## Branch
@@ -18,7 +18,7 @@ Implement the role-based topology semantics defined in `ROUND1_CHECKPOINT.md` an
 
 ## Current Focus
 
-Phase 4 executor work is complete. The builder now normalizes graph-stored role ids into canonical runtime ids, compiles graph-driven `node_role_registry` and `edge_role_registry` entries with metadata references, preserves the legacy single-role path, and stops before any Phase 5 bundle compilation or optimizer/framework changes.
+Phase 5 executor work is complete. The builder now compiles a builder-owned `bundle_registry` from graph-stored `C*` centers and incident `E*` edges using FrameNet-provided `cyclic_edge_order`, preserves the legacy single-role path by leaving legacy graphs with an empty registry, and stops before optimizer, framework, resolve, or fragment-resolution changes.
 
 ## Invariants
 

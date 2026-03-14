@@ -749,3 +749,111 @@ def test_read_net_normalizes_alias_role_ids_on_graph_before_registry_build(
     assert builder.frame_net.G.edges["V0", "C0"]["edge_role_id"] == "edge:EA"
     assert list(builder.node_role_registry) == ["node:VA", "node:CA"]
     assert list(builder.edge_role_registry) == ["edge:EA"]
+
+
+@pytest.mark.core
+def test_compile_bundle_registry_uses_cyclic_edge_order_for_role_aware_c_centers():
+    builder = MetalOrganicFrameworkBuilder(mof_family="TEST-MULTI")
+    builder.G = nx.Graph()
+    builder.G.add_node("V0", node_role_id="node:VA")
+    builder.G.add_node("V1", node_role_id="node:VA")
+    builder.G.add_node(
+        "C0",
+        node_role_id="node:CA",
+        cyclic_edge_order=[("V1", "C0"), ("V0", "C0")],
+    )
+    builder.G.add_edge("V0", "C0", edge_role_id="edge:EA")
+    builder.G.add_edge("V1", "C0", edge_role_id="edge:EA")
+
+    builder._compile_bundle_registry()
+
+    assert builder.bundle_registry == {
+        "bundle:C0": {
+            "bundle_id": "bundle:C0",
+            "center_node": "C0",
+            "edge_list": [("V1", "C0"), ("V0", "C0")],
+            "ordering": [0, 1],
+        }
+    }
+
+
+@pytest.mark.core
+def test_compile_bundle_registry_builds_multiple_deterministic_bundles():
+    builder = MetalOrganicFrameworkBuilder(mof_family="TEST-MULTI")
+    builder.G = nx.Graph()
+    builder.G.add_node("V0", node_role_id="node:VA")
+    builder.G.add_node("V1", node_role_id="node:VA")
+    builder.G.add_node("V2", node_role_id="node:VA")
+    builder.G.add_node("V3", node_role_id="node:VA")
+    builder.G.add_node(
+        "C0",
+        node_role_id="node:CA",
+        cyclic_edge_order=[("V0", "C0"), ("V1", "C0")],
+    )
+    builder.G.add_node(
+        "C1",
+        node_role_id="node:CB",
+        cyclic_edge_order=[("V3", "C1"), ("V2", "C1")],
+    )
+    builder.G.add_edge("V0", "C0", edge_role_id="edge:EA")
+    builder.G.add_edge("V1", "C0", edge_role_id="edge:EA")
+    builder.G.add_edge("V2", "C1", edge_role_id="edge:EB")
+    builder.G.add_edge("V3", "C1", edge_role_id="edge:EB")
+
+    builder._compile_bundle_registry()
+
+    assert list(builder.bundle_registry) == ["bundle:C0", "bundle:C1"]
+    assert builder.bundle_registry["bundle:C0"]["edge_list"] == [
+        ("V0", "C0"),
+        ("V1", "C0"),
+    ]
+    assert builder.bundle_registry["bundle:C1"]["edge_list"] == [
+        ("V3", "C1"),
+        ("V2", "C1"),
+    ]
+    assert builder.bundle_registry["bundle:C1"]["ordering"] == [0, 1]
+
+
+@pytest.mark.core
+def test_read_net_keeps_bundle_registry_empty_for_legacy_default_role_graphs(
+    monkeypatch,
+):
+    builder = MetalOrganicFrameworkBuilder(mof_family="MOF-TEST")
+    builder.data_path = "tests/database"
+
+    created_graph = nx.Graph()
+    created_graph.add_node("V0", note="V", node_role_id="node:default")
+    created_graph.add_node("V1", note="V", node_role_id="node:default")
+    created_graph.add_edge(
+        "V0",
+        "V1",
+        edge_role_id="edge:default",
+        slot_index={"V0": 0, "V1": 0},
+    )
+
+    def fake_fetch(_mof_family):
+        builder.mof_top_library.node_connectivity = 1
+        builder.mof_top_library.role_metadata = None
+        builder.mof_top_library.canonical_role_metadata = None
+        return "tests/database/template_database/MOF-TEST.cif"
+
+    def fake_create_net():
+        builder.frame_net.max_degree = 1
+        builder.frame_net.cifreader.spacegroup = "P1"
+        builder.frame_net.cell_info = [10.0, 10.0, 10.0, 90.0, 90.0, 90.0]
+        builder.frame_net.unit_cell = np.eye(3)
+        builder.frame_net.unit_cell_inv = np.eye(3)
+        builder.frame_net.linker_connectivity = 2
+        builder.frame_net.sorted_nodes = ["V0", "V1"]
+        builder.frame_net.sorted_edges = [("V0", "V1")]
+        builder.frame_net.pair_vertex_edge = [("V0", "V1", "E0")]
+        builder.frame_net.G = created_graph.copy()
+
+    monkeypatch.setattr(builder.mof_top_library, "fetch", fake_fetch)
+    monkeypatch.setattr(builder.frame_net, "create_net", fake_create_net)
+
+    builder._read_net()
+
+    assert builder.bundle_registry == {}
+    assert list(builder.node_role_registry) == ["node:default"]
+    assert list(builder.edge_role_registry) == ["edge:default"]

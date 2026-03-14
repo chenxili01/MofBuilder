@@ -661,3 +661,124 @@ notes:
 - Checkpoint: phase-4-executor-complete
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews completion and decides whether to advance
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T10:22:50+00:00
+
+## Active Phase
+- Phase: 5
+- Name: Bundle Compilation
+
+## Objective
+Implement Phase 5 in the builder only: compile a builder-owned `bundle_registry` from the topology graph after Phase 4 role normalization, using `C*` center nodes and their incident `E*` edges plus `cyclic_edge_order` from `FrameNet`, while preserving backward compatibility and stopping before any resolve, optimizer, or framework behavior changes.
+
+## Scope
+- `src/mofbuilder/core/builder.py`
+- `tests/test_core_builder.py`
+
+## Tasks
+1. Add Phase 5 builder state for bundle compilation in `MetalOrganicFrameworkBuilder`, including a `bundle_registry` container and a private helper that scans `self.G` after `_initialize_role_registries()` to find bundle-owner nodes whose normalized `node_role_id` is `node:C*`.
+2. For each `C*` node, compile exactly one bundle from the graph source of truth: read the node’s `cyclic_edge_order`, collect the incident edges in that canonical order, assign a deterministic `bundle_id`, and store only Phase 5 metadata required by `PHASE_SPEC.md` (`bundle_id`, `center_node`, `edge_list`, `ordering`). Use graph-normalized `edge_role_id` values and existing graph edge identities; do not resolve chemistry or attach fragment payloads here.
+3. Wire bundle compilation into the existing builder read path after graph role normalization, FrameNet validation, graph copy, and role-registry initialization, so role-aware `V-E-C` graphs produce a populated `bundle_registry` and legacy `V-E-V` / single-role graphs leave `bundle_registry` empty.
+4. Add focused builder tests that prove: a role-aware graph with one `C*` node produces the expected ordered bundle entry; multiple `C*` nodes compile into separate deterministic bundle ids; and legacy/default-role graphs keep an empty `bundle_registry` without changing existing registry behavior.
+
+## Validation
+- Targeted tests in `tests/test_core_builder.py` cover successful bundle compilation from `cyclic_edge_order` and empty-registry behavior for legacy graphs.
+- Regression checks confirm `node_role_registry` and `edge_role_registry` outputs remain unchanged for existing Phase 4 tests.
+- Self-check confirms no production files outside `src/mofbuilder/core/builder.py` were modified and no optimizer/framework/resolve code paths were touched.
+
+## Non-goals
+- No changes to `src/mofbuilder/core/net.py`, optimizer, framework assembly, supercell, linker splitting, defects, termination, or writer modules.
+- No resolve preparation or execution, no provenance scaffolding, no fragment lookup changes, and no null-edge policy execution beyond preserving existing metadata.
+- No new graph grammar beyond `V-E-V` and `V-E-C`, and no shift of bundle ownership away from `C*`.
+
+## Exit Criteria
+- Builder produces a `bundle_registry` for role-aware `C*` bundle owners using graph-stored ordering metadata, with entries containing `bundle_id`, `center_node`, `edge_list`, and `ordering`.
+- Legacy single-role and `V-E-V` workflows remain functional and produce no bundle entries.
+- Implementation remains Phase-5 bounded and does not modify optimizer, framework, or resolve behavior.
+
+## STATUS.md Update
+- Phase: Phase 5
+- Checkpoint: phase-5-plan-finalized
+- Status: READY_FOR_EXECUTOR
+- Next step: Executor implements the active phase only
+
+`STATUS.md` has been updated in [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
+
+## 2026-03-14 — executor — phase 5 bundle compilation
+
+branch:
+mofbuilder-role-refactor
+
+phase:
+Phase 5
+
+summary:
+- Added builder-owned `bundle_registry` state in `src/mofbuilder/core/builder.py`.
+- Compiled one deterministic bundle per `node:C*` center from graph-stored `cyclic_edge_order`, preserving graph edge identities and storing only `bundle_id`, `center_node`, `edge_list`, and `ordering`.
+- Wired bundle compilation into `_read_net()` after role normalization, FrameNet validation, graph copy, and role-registry initialization so legacy/default-role graphs keep an empty registry.
+- Added focused Phase 5 tests in `tests/test_core_builder.py` for single-bundle, multi-bundle, and legacy-empty behavior.
+
+files touched:
+- src/mofbuilder/core/builder.py
+- tests/test_core_builder.py
+- WORKLOG.md
+- STATUS.md
+
+invariants checked:
+- Topology graph remained the source of truth for bundle compilation.
+- Builder retained role interpretation ownership; framework and optimizer paths were not modified.
+- Backward compatibility remained intact for legacy/default-role graphs by leaving `bundle_registry` empty outside role-aware `C*` cases.
+- Bundle ownership stayed on `C*` nodes and no resolve or provenance behavior was added.
+- Null-edge semantics were preserved because bundle compilation only reads existing normalized `edge:E*` graph metadata.
+
+notes:
+- Validation run: `python3 -m py_compile src/mofbuilder/core/builder.py tests/test_core_builder.py`.
+- `python3 -m pytest -q tests/test_core_builder.py` could not run because `pytest` is not installed in the active environment.
+- The active environment also lacks runtime dependencies including `numpy`, `networkx`, and `veloxchem`, so behavioral test execution remains pending.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T10:26:13+00:00
+
+## Active Phase
+- Phase: 5
+- Name: Bundle Compilation
+
+## Implemented
+- Added builder-owned `bundle_registry` state in [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py#L149).
+- Added `_compile_bundle_registry()` in [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py#L463) to compile one deterministic bundle per `node:C*` center from graph `cyclic_edge_order`, storing only `bundle_id`, `center_node`, `edge_list`, and `ordering`.
+- Wired bundle compilation into `_read_net()` in [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py#L651) after role normalization, validation, graph copy, and role-registry initialization.
+- Added focused Phase 5 coverage in [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py#L755) for single-bundle, multi-bundle, and legacy-empty cases.
+- Updated planner handoff state in [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md#L710) and [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md#L5).
+
+## Files Changed
+- [src/mofbuilder/core/builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py)
+- [tests/test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py)
+- [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md)
+- [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md)
+
+## Validation
+- Ran `python3 -m py_compile src/mofbuilder/core/builder.py tests/test_core_builder.py`.
+- `python3 -m pytest -q tests/test_core_builder.py` could not run because `pytest` is not installed.
+- Full runtime execution is still blocked here because the active environment also lacks `numpy`, `networkx`, and `veloxchem`.
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Behavioral validation is still pending in an environment with the project test/runtime dependencies installed.
+- `bundle_registry` is builder-only in this phase; no resolve/framework propagation was added by design.
+
+## STATUS.md Update
+- Phase: Phase 5
+- Checkpoint: phase-5-plan-finalized
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews Phase 5 completion and decides whether to advance

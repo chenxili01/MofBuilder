@@ -146,6 +146,7 @@ class MetalOrganicFrameworkBuilder:
         self.edge_role_specs = {}
         self.node_role_registry = {}
         self.edge_role_registry = {}
+        self.bundle_registry = {}
 
         #need to be set by user
         self.linker_xyzfile = None  #can be set directly
@@ -459,6 +460,48 @@ class MetalOrganicFrameworkBuilder:
             return {"kind": "xyzfile", "value": self.linker_xyzfile}
         return {"kind": None, "value": None}
 
+    def _compile_bundle_registry(self):
+        self.bundle_registry = {}
+        if self.G is None:
+            return
+
+        for center_node in sorted(self.G.nodes()):
+            node_role_id = self._normalize_runtime_role_id(
+                self.G.nodes[center_node].get("node_role_id"),
+                namespace="node",
+            )
+            if not node_role_id.startswith("node:C"):
+                continue
+
+            cyclic_edge_order = self.G.nodes[center_node].get("cyclic_edge_order")
+            if not isinstance(cyclic_edge_order, list) or not cyclic_edge_order:
+                continue
+
+            ordered_edges = []
+            ordering = []
+            for order_index, edge in enumerate(cyclic_edge_order):
+                if len(edge) != 2 or not self.G.has_edge(*edge):
+                    continue
+                edge_role_id = self._normalize_runtime_role_id(
+                    self.G.edges[edge].get("edge_role_id"),
+                    namespace="edge",
+                )
+                if not edge_role_id.startswith("edge:E"):
+                    continue
+                ordered_edges.append(tuple(edge))
+                ordering.append(order_index)
+
+            if not ordered_edges:
+                continue
+
+            bundle_id = f"bundle:{center_node}"
+            self.bundle_registry[bundle_id] = {
+                "bundle_id": bundle_id,
+                "center_node": center_node,
+                "edge_list": ordered_edges,
+                "ordering": ordering,
+            }
+
     def _initialize_role_registries(self):
         self.role_metadata = self.mof_top_library.role_metadata
         metadata = self.role_metadata or {}
@@ -606,6 +649,7 @@ class MetalOrganicFrameworkBuilder:
         self.net_sorted_edges = self.frame_net.sorted_edges
         self.net_pair_vertex_edge = self.frame_net.pair_vertex_edge
         self._initialize_role_registries()
+        self._compile_bundle_registry()
 
     def _read_linker(self):
         self.frame_linker.linker_connectivity = self.linker_connectivity
