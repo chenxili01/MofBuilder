@@ -206,7 +206,7 @@ It is still an `E*` role whose metadata says it is null.
 
 Canonical null payload model:
 
-- duplicated zero-length anchor points
+- two overlapping anchor points
     
 
 So the null case is represented explicitly as a runtime object, not as absence.
@@ -328,7 +328,7 @@ It should not yet attempt a fully arbitrary role-path grammar.
 > The first planning scope only allows `V-E-V` and `V-E-C` graph patterns.  
 > Graph roles are conceptual topology anchors, but runtime role registries may resolve them into atomic, X-point, orientation, or null payloads.  
 > `C*` always owns the linker bundle. A multitopic linker is reconstructed from one `C*` center plus incident `E*` roles, using metadata for slot typing, ordered endpoint patterns, stable attachment indices, cyclic order, null-edge semantics, and resolve mode.  
-> Null edges are explicit `E*` roles with null metadata and duplicated zero-length anchor payloads; they are distinct from zero-length real edges.  
+> Null edges are explicit `E*` roles with null metadata and two overlapping anchor points ; they are distinct from zero-length real edges.  
 > Resolve behavior is family-controlled and may be alignment-only or ownership-transfer. Provenance must be tracked through build and preserved into the final merged structure.  
 > The target planning scope is medium-broad: support `V-E-C` and `V-E-V`, bundle ownership, typed slots, cyclic order, null-edge behavior, and resolve mode, but not fully arbitrary path grammars.
 

@@ -677,6 +677,14 @@ class MofTopLibrary:
                 f"{self.ROLE_METADATA_FILENAME}"
             )
 
+        if "roles" not in raw_metadata and (
+            "node_roles" in raw_metadata or "edge_roles" in raw_metadata
+        ):
+            return self._normalize_phase1_family_role_metadata(
+                family_name,
+                raw_metadata,
+            )
+
         schema_name = raw_metadata.get("schema_name", self.ROLE_METADATA_SCHEMA_NAME)
         if schema_name != self.ROLE_METADATA_SCHEMA_NAME:
             raise ValueError(
@@ -761,6 +769,244 @@ class MofTopLibrary:
             "resolve_rules": resolve_rules,
             "unresolved_edge_policy": unresolved_edge_policy,
             "fragment_lookup_hints": fragment_lookup_hints,
+        }
+
+    def _normalize_phase1_role_aliases(
+        self,
+        family_name: str,
+        *,
+        field_name: str,
+        raw_roles: Any,
+        allowed_prefixes: tuple[str, ...],
+    ) -> List[str]:
+        """Normalize the Phase 1 list-based role declarations."""
+        role_aliases = self._normalize_string_list(
+            family_name,
+            field_name=field_name,
+            raw_values=raw_roles,
+        )
+        if not role_aliases:
+            raise ValueError(f"{family_name} {field_name} must not be empty")
+        if len(role_aliases) != len(set(role_aliases)):
+            raise ValueError(f"{family_name} {field_name} must not contain duplicates")
+
+        for role_alias in role_aliases:
+            if role_alias[0] not in allowed_prefixes:
+                allowed = ", ".join(allowed_prefixes)
+                raise ValueError(
+                    f"{family_name} {field_name} aliases must start with {allowed}, "
+                    f"got {role_alias}"
+                )
+
+        return role_aliases
+
+    def _normalize_phase1_connectivity(
+        self,
+        family_name: str,
+        raw_connectivity: Any,
+        node_roles: List[str],
+    ) -> Dict[str, int]:
+        """Normalize the Phase 1 passive connectivity map."""
+        if raw_connectivity is None:
+            return {}
+        if not isinstance(raw_connectivity, dict):
+            raise ValueError(
+                f"{family_name} connectivity must be a mapping in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_connectivity = {}
+        for raw_role_alias, raw_degree in raw_connectivity.items():
+            role_alias = str(raw_role_alias)
+            if role_alias not in node_roles:
+                raise ValueError(
+                    f"{family_name} connectivity references unknown node role "
+                    f"{role_alias}"
+                )
+            degree = int(raw_degree)
+            if degree <= 0:
+                raise ValueError(
+                    f"{family_name} connectivity.{role_alias} must be positive"
+                )
+            normalized_connectivity[role_alias] = degree
+
+        return normalized_connectivity
+
+    def _normalize_phase1_path_rules(
+        self,
+        family_name: str,
+        raw_path_rules: Any,
+        node_roles: List[str],
+        edge_roles: List[str],
+    ) -> List[str]:
+        """Normalize Phase 1 ordered path rules while preserving declaration order."""
+        if raw_path_rules is None:
+            return []
+        if not isinstance(raw_path_rules, list):
+            raise ValueError(
+                f"{family_name} path_rules must be a list in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_path_rules = []
+        valid_node_roles = set(node_roles)
+        valid_edge_roles = set(edge_roles)
+        for index, raw_rule in enumerate(raw_path_rules):
+            if isinstance(raw_rule, str):
+                rule = raw_rule
+            elif isinstance(raw_rule, dict):
+                endpoint_pattern = self._normalize_string_list(
+                    family_name,
+                    field_name=f"path_rules[{index}].endpoint_pattern",
+                    raw_values=raw_rule.get("endpoint_pattern"),
+                )
+                if len(endpoint_pattern) != 3:
+                    raise ValueError(
+                        f"{family_name} path_rules[{index}] must contain three "
+                        "aliases"
+                    )
+                rule = "-".join(endpoint_pattern)
+            else:
+                raise ValueError(
+                    f"{family_name} path_rules[{index}] must be a string or mapping"
+                )
+
+            parts = rule.split("-")
+            if len(parts) != 3:
+                raise ValueError(
+                    f"{family_name} path_rules[{index}] must contain three aliases"
+                )
+            if parts[0] not in valid_node_roles:
+                raise ValueError(
+                    f"{family_name} path_rules[{index}] references unknown node role "
+                    f"{parts[0]}"
+                )
+            if parts[1] not in valid_edge_roles:
+                raise ValueError(
+                    f"{family_name} path_rules[{index}] references unknown edge role "
+                    f"{parts[1]}"
+                )
+            if parts[2] not in valid_node_roles:
+                raise ValueError(
+                    f"{family_name} path_rules[{index}] references unknown node role "
+                    f"{parts[2]}"
+                )
+
+            role_classes = (parts[0][0], parts[1][0], parts[2][0])
+            if role_classes not in (("V", "E", "V"), ("V", "E", "C")):
+                raise ValueError(
+                    f"{family_name} path_rules[{index}] must be limited to V-E-V "
+                    "or V-E-C"
+                )
+
+            normalized_path_rules.append(rule)
+
+        return normalized_path_rules
+
+    def _normalize_phase1_edge_kind(
+        self,
+        family_name: str,
+        raw_edge_kind: Any,
+        edge_roles: List[str],
+    ) -> Dict[str, str]:
+        """Normalize the Phase 1 passive edge-kind map."""
+        if raw_edge_kind is None:
+            return {}
+        if not isinstance(raw_edge_kind, dict):
+            raise ValueError(
+                f"{family_name} edge_kind must be a mapping in "
+                f"{self.ROLE_METADATA_FILENAME}"
+            )
+
+        normalized_edge_kind = {}
+        valid_edge_roles = set(edge_roles)
+        for raw_role_alias, raw_edge_kind_value in raw_edge_kind.items():
+            role_alias = str(raw_role_alias)
+            if role_alias not in valid_edge_roles:
+                raise ValueError(
+                    f"{family_name} edge_kind references unknown edge role "
+                    f"{role_alias}"
+                )
+
+            if isinstance(raw_edge_kind_value, dict):
+                edge_kind = str(raw_edge_kind_value.get("edge_kind"))
+            else:
+                edge_kind = str(raw_edge_kind_value)
+
+            if edge_kind not in {"real", "null"}:
+                raise ValueError(
+                    f"{family_name} edge_kind.{role_alias} must be 'real' or 'null'"
+                )
+
+            normalized_edge_kind[role_alias] = edge_kind
+
+        return normalized_edge_kind
+
+    def _normalize_phase1_family_role_metadata(
+        self,
+        family_name: str,
+        raw_metadata: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        """Normalize the simpler Phase 1 passive metadata dictionary."""
+        schema_name = str(
+            raw_metadata.get("schema_name", self.ROLE_METADATA_SCHEMA_NAME)
+        )
+        if schema_name != self.ROLE_METADATA_SCHEMA_NAME:
+            raise ValueError(
+                f"{family_name} metadata must declare schema_name "
+                f"{self.ROLE_METADATA_SCHEMA_NAME}"
+            )
+
+        schema_version = int(
+            raw_metadata.get("schema_version", self.ROLE_METADATA_SCHEMA_VERSION)
+        )
+        if schema_version != self.ROLE_METADATA_SCHEMA_VERSION:
+            raise ValueError(
+                f"{family_name} metadata must declare schema_version "
+                f"{self.ROLE_METADATA_SCHEMA_VERSION}"
+            )
+
+        declared_family_name = str(raw_metadata.get("family_name", family_name))
+        if declared_family_name != family_name:
+            raise ValueError(
+                f"{family_name} metadata family_name must match the families key"
+            )
+
+        node_roles = self._normalize_phase1_role_aliases(
+            family_name,
+            field_name="node_roles",
+            raw_roles=raw_metadata.get("node_roles"),
+            allowed_prefixes=("V", "C"),
+        )
+        edge_roles = self._normalize_phase1_role_aliases(
+            family_name,
+            field_name="edge_roles",
+            raw_roles=raw_metadata.get("edge_roles"),
+            allowed_prefixes=("E",),
+        )
+
+        return {
+            "schema_name": self.ROLE_METADATA_SCHEMA_NAME,
+            "schema_version": self.ROLE_METADATA_SCHEMA_VERSION,
+            "family_name": family_name,
+            "node_roles": node_roles,
+            "edge_roles": edge_roles,
+            "connectivity": self._normalize_phase1_connectivity(
+                family_name,
+                raw_metadata.get("connectivity"),
+                node_roles,
+            ),
+            "path_rules": self._normalize_phase1_path_rules(
+                family_name,
+                raw_metadata.get("path_rules"),
+                node_roles,
+                edge_roles,
+            ),
+            "edge_kind": self._normalize_phase1_edge_kind(
+                family_name,
+                raw_metadata.get("edge_kind"),
+                edge_roles,
+            ),
         }
 
     def _build_compat_role_metadata(
@@ -898,11 +1144,14 @@ class MofTopLibrary:
             canonical_role_metadata = canonical_role_metadata_by_family.get(mof_name)
             role_metadata = None
             if canonical_role_metadata is not None:
-                role_metadata = self._build_compat_role_metadata(
-                    mof_name,
-                    canonical_role_metadata,
-                    family_linker_connectivity=int(mof_fields[3]),
-                )
+                if "roles" in canonical_role_metadata:
+                    role_metadata = self._build_compat_role_metadata(
+                        mof_name,
+                        canonical_role_metadata,
+                        family_linker_connectivity=int(mof_fields[3]),
+                    )
+                else:
+                    role_metadata = canonical_role_metadata
             if mof_name not in mof_top_dict.keys():
                 mof_top_dict[mof_name] = {
                     "node_connectivity": int(mof_fields[1]),
@@ -940,7 +1189,59 @@ class MofTopLibrary:
         if role_metadata is None:
             return None
 
-        return role_metadata.get("canonical_role_metadata")
+        return role_metadata.get("canonical_role_metadata", role_metadata)
+
+    def get_node_roles(self, mof_family: Optional[str] = None) -> List[str]:
+        """Return the declared node-role aliases for a family."""
+        role_metadata = self.get_role_metadata(mof_family)
+        if role_metadata is None:
+            return []
+
+        if "node_roles" in role_metadata:
+            node_roles = role_metadata["node_roles"]
+            if node_roles and isinstance(node_roles[0], dict):
+                return [
+                    role["topology_labels"][0]
+                    for role in node_roles
+                    if role.get("topology_labels")
+                ]
+            return list(node_roles)
+
+        canonical_role_metadata = self.get_canonical_role_metadata(mof_family) or {}
+        if "node_roles" in canonical_role_metadata:
+            return list(canonical_role_metadata["node_roles"])
+
+        return [
+            role_alias
+            for role_alias, role_spec in canonical_role_metadata.get("roles", {}).items()
+            if role_spec.get("role_class") in {"V", "C"}
+        ]
+
+    def get_edge_roles(self, mof_family: Optional[str] = None) -> List[str]:
+        """Return the declared edge-role aliases for a family."""
+        role_metadata = self.get_role_metadata(mof_family)
+        if role_metadata is None:
+            return []
+
+        if "edge_roles" in role_metadata:
+            edge_roles = role_metadata["edge_roles"]
+            if edge_roles and isinstance(edge_roles[0], dict):
+                return [
+                    role["topology_labels"][0]
+                    for role in edge_roles
+                    if role.get("topology_labels")
+                ]
+            return list(edge_roles)
+
+        canonical_role_metadata = self.get_canonical_role_metadata(mof_family) or {}
+        if "edge_roles" in canonical_role_metadata:
+            return list(canonical_role_metadata["edge_roles"])
+
+        return [
+            role_alias
+            for role_alias, role_spec in canonical_role_metadata.get("roles", {}).items()
+            if role_spec.get("role_class") == "E"
+        ]
 
     def list_mof_families(self) -> None:
         """Print all available MOF family names from the topology dictionary to the output stream."""

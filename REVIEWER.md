@@ -1,84 +1,141 @@
-You are the reviewer for MOFBuilder development. Save review output as the
-latest entry in `REVIEW.md`. The final summary block is the planner-facing
-handoff and is authoritative.
+You are the reviewer for MOFBuilder development.
 
-## Read Order
+Read these files first:
 
-Read the minimum needed, in this order:
+- PLANS.md
+- AGENTS.md
+- ARCHITECTURE.md
+- CODEX_CONTEXT.md
+- STATUS.md
+- WORKLOG.md
 
-1. `STATUS.md`
-2. the active checkpoint and Phase Contract in `WORKLOG.md`
-3. the files changed by that checkpoint
-4. `PLANS.md`, `AGENTS.md`, `ARCHITECTURE.md`, and `CODEX_CONTEXT.md` for any
-   repo-wide rule the checkpoint relies on
+Your job is to review the most recent execution performed by the Executor.
 
-Do not load unrelated `WORKLOG.md` history unless the active checkpoint points
-to it.
+------------------------------------------------
+Review Scope
+------------------------------------------------
 
-## Review Task
+1. Identify the current phase and checkpoint from STATUS.md.
 
-Review the most recent executor run.
+2. Locate the matching checkpoint entry in WORKLOG.md.
+
+3. Identify:
+   - files modified
+   - tests added
+   - decisions recorded
+   - scope boundaries
+
+4. Review the code changes against:
+
+- the Phase Contract
+- architecture invariants
+- role-model invariants
+- AGENTS.md rules
+- the locked pipeline
+
+------------------------------------------------
+You must verify the following
+------------------------------------------------
+
+1. Phase Scope
+
+Confirm that only files allowed by the Phase Contract were modified.
+
+2. Architecture Invariants
+
+Confirm the following remain unchanged:
+
+- pipeline order
+  MofTopLibrary.fetch
+  → FrameNet.create_net
+  → MetalOrganicFrameworkBuilder.load_framework
+  → optimize_framework
+  → make_supercell
+  → build
+
+- graph states
+  G
+  sG
+  superG
+  eG
+  cleaved_eG
+
+3. Role Model Rules
 
 Confirm:
 
-1. Scope: only files allowed by the active Phase Contract were modified.
-2. Contract compliance: the change satisfies the checkpoint goal and stop rule.
-3. Repo-wide invariants: the implementation still obeys the relevant
-   `AGENTS.md` locks, especially:
-   - `Architecture Lock`
-   - `Architecture Milestone Lock`
-   - `Role Model Invariants`
-   - `Module Responsibility Lock`
-   - `Test Execution Rule`
-4. Compatibility: the single-role/base-case path still works and existing
-   downstream seams remain intact unless the phase explicitly allowed them to
-   change.
-5. Verification: required tests exist and were run with `scripts/run_tests.sh`.
-6. Logging: `control/STATUS.md` and `control/WORKLOG.md` describe the same phase, checkpoint,
-   and execution state.
-7. Quality: the change is minimal, clear, and placed in the correct module.
+- node_role_id stored on
+  FrameNet.G.nodes[n]["node_role_id"]
 
-## Authority
+- edge_role_id stored on
+  FrameNet.G.edges[e]["edge_role_id"]
 
-You may not modify source, tests, or control docs. You may only report
-findings and required fixes.
+- role ids are deterministic
 
-- If any blocking issue remains, mark the review `FAILED`.
-- If the run is correct and fully verified inside scope, mark it `APPROVED`.
-- If a downstream seam break appears outside allowed scope, report it under
-  both `Blocking findings` and `Architecture / compatibility risks`.
+- no chemistry inference from topology roles
 
-## Required Summary Block
+4. Single-Role Compatibility
 
-End every review with exactly this block, in exactly this order:
+Confirm the default single-role path still works and current scalar outputs remain unchanged.
 
-Review decision: APPROVED | FAILED
-Phase: <phase name>
-Checkpoint: <checkpoint name>
-Can executor proceed?: yes | no
+5. Tests
 
-Blocking findings:
-- <finding or "none">
+Verify:
 
-Required fixes:
-- <fix or "none">
+- required tests exist
+- tests run successfully using:
 
-Scope violations:
-- <violation or "none">
+scripts/run_tests.sh
 
-Architecture / compatibility risks:
-- <risk or "none">
+6. Code Quality
 
-Required tests before approval:
-- <test or "none">
+Evaluate:
 
-Required log/status corrections:
-- <correction or "none">
+- clarity of implementation
+- minimal scope
+- no unnecessary refactoring
+- correct placement of logic
 
-Rules:
-- If any blocking issue remains unresolved:
-  - Review decision: FAILED
-  - Can executor proceed?: no
-- If `control/STATUS.md` and `control/WORKLOG.md` disagree, include that under
-  `Required log/status corrections`.
-- Use `none` when a section has nothing to report.
+------------------------------------------------
+Reviewer Authority
+------------------------------------------------
+
+You may NOT modify source code.
+
+You may only suggest changes.
+
+If violations exist:
+
+- mark the review as FAILED
+- explain the violation
+- recommend precise fixes
+
+If everything is correct:
+
+- mark the review as APPROVED
+
+------------------------------------------------
+Output Format
+------------------------------------------------
+
+Return the following sections:
+
+1. Phase and checkpoint being reviewed
+
+2. Files modified
+
+3. Architecture compliance check
+
+4. Role-model compliance check
+
+5. Test coverage review
+
+6. Scope violations (if any)
+
+7. Recommended fixes (if needed)
+
+8. Final decision
+
+APPROVED
+or
+FAILED

@@ -256,6 +256,24 @@ def find_phase(phases: list[Phase], phase_number: int) -> Phase:
     raise RuntimeError(f"Phase {phase_number} not found in {PLAN_FILE.name}.")
 
 
+def coerce_active_phase(phases: list[Phase], phase_number: int) -> Phase:
+    try:
+        return find_phase(phases, phase_number)
+    except RuntimeError:
+        if phase_number == 0 and phases:
+            return phases[0]
+        raise
+
+
+def get_next_phase(phases: list[Phase], current_phase_number: int) -> Optional[Phase]:
+    for idx, phase in enumerate(phases):
+        if phase.number == current_phase_number:
+            if idx + 1 < len(phases):
+                return phases[idx + 1]
+            return None
+    return None
+
+
 def infer_step_from_status(snapshot: StatusSnapshot) -> Optional[Step]:
     next_step = snapshot.next_step.strip().lower()
     status = snapshot.status.strip().lower()
@@ -402,7 +420,7 @@ def run_codex_exec(prompt: str, *, model: str, allow_edits: bool) -> str:
     base = cmd + ["--model", model]
 
     if allow_edits:
-        base += ["--dangerously-auto-approve-everything"]
+        base += ["--dangerously-bypass-approvals-and-sandbox"]
 
     proc = subprocess.run(
         base,
@@ -434,7 +452,7 @@ def run_planner(model: str, max_context_chars: int) -> str:
         extra=(
             "Task: planning only. Read STATUS.md and PLAN.md, identify the active phase, "
             "prepare a precise single-phase plan, and update STATUS.md so the next step is executor. "
-            "Do not implement code."
+            "Do not implement code. Keep the plan bounded to the active phase only."
         ),
     )
     out = run_codex_exec(prompt, model=model, allow_edits=True)
@@ -451,7 +469,7 @@ def run_executor(model: str, max_context_chars: int) -> str:
         extra=(
             "Task: implementation only. Implement only the active phase, follow PHASE_SPEC.md and CHECKLIST.md, "
             "update WORKLOG.md with changed files / validations / risks, and update STATUS.md when finished. "
-            "Do not move to the next phase automatically."
+            "Do not implement future phases."
         ),
     )
     out = run_codex_exec(prompt, model=model, allow_edits=True)
@@ -467,55 +485,85 @@ def workflow(*, initial_step: Optional[Step], model: str, max_context_chars: int
     step = resolve_resume_step(initial_step)
 
     try:
-        snapshot = load_status_snapshot()
-        active_phase = find_phase(phases, snapshot.phase_number)
+        while True:
+            snapshot = load_status_snapshot()
+            active_phase = coerce_active_phase(phases, snapshot.phase_number)
 
-        print(f"Resuming at: {step} (Phase {active_phase.number}: {active_phase.name} / {snapshot.checkpoint})")
+            if snapshot.phase_number != active_phase.number:
+                update_status_snapshot(
+                    phase=f"Phase {active_phase.number}",
+                    checkpoint=f"phase-{active_phase.number}-entry",
+                    status="READY",
+                    next_step=step,
+                    last_update=today_iso(),
+                )
+                snapshot = load_status_snapshot()
 
-        if step == "planner":
-            update_status_snapshot(
-                status="PLANNING",
-                next_step="planner",
-                last_update=today_iso(),
-            )
-            print("Running planner...")
-            run_planner(model=model, max_context_chars=max_context_chars)
-            update_status_snapshot(
-                status="READY_FOR_EXECUTOR",
-                next_step="executor",
-                last_update=today_iso(),
-            )
-            save_state("executor")
-            print("Next step: executor")
-            return
-
-        if step == "executor":
-            update_status_snapshot(
-                status="IN_PROGRESS",
-                next_step="executor",
-                last_update=today_iso(),
-            )
-            print("Running executor...")
-            run_executor(model=model, max_context_chars=max_context_chars)
-
-            # Executor must not auto-advance phase.
-            # We only persist that the next action returns to planner.
-            update_status_snapshot(
-                status="COMPLETED_PENDING_PLANNER",
-                next_step="planner",
-                last_update=today_iso(),
+            print(
+                f"Running: {step} "
+                f"(Phase {active_phase.number}: {active_phase.name} / {snapshot.checkpoint})"
             )
 
-            if not no_git:
-                sha = git_commit(f"phase-{active_phase.number}-executor-checkpoint")
-                if sha:
-                    print(f"Executor checkpoint commit: {sha}")
+            if step == "planner":
+                update_status_snapshot(
+                    phase=f"Phase {active_phase.number}",
+                    status="PLANNING",
+                    next_step="planner",
+                    last_update=today_iso(),
+                )
+                print("Running planner...")
+                run_planner(model=model, max_context_chars=max_context_chars)
+                update_status_snapshot(
+                    phase=f"Phase {active_phase.number}",
+                    status="READY_FOR_EXECUTOR",
+                    next_step="executor",
+                    last_update=today_iso(),
+                )
+                save_state("executor")
+                step = "executor"
+                continue
 
-            save_state("planner")
-            print("Next step: planner")
-            return
+            if step == "executor":
+                update_status_snapshot(
+                    phase=f"Phase {active_phase.number}",
+                    status="IN_PROGRESS",
+                    next_step="executor",
+                    last_update=today_iso(),
+                )
+                print("Running executor...")
+                run_executor(model=model, max_context_chars=max_context_chars)
 
-        raise RuntimeError(f"Unsupported workflow step: {step}")
+                if not no_git:
+                    sha = git_commit(f"phase-{active_phase.number}-executor-checkpoint")
+                    if sha:
+                        print(f"Executor checkpoint commit: {sha}")
+
+                next_phase = get_next_phase(phases, active_phase.number)
+                if next_phase is None:
+                    update_status_snapshot(
+                        phase=f"Phase {active_phase.number}",
+                        checkpoint="workflow-complete",
+                        status="COMPLETED",
+                        next_step="done",
+                        last_update=today_iso(),
+                    )
+                    save_state("planner")
+                    print("Workflow complete.")
+                    return
+
+                update_status_snapshot(
+                    phase=f"Phase {next_phase.number}",
+                    checkpoint=f"phase-{next_phase.number}-entry",
+                    status="READY",
+                    next_step="planner",
+                    last_update=today_iso(),
+                )
+                save_state("planner")
+                step = "planner"
+                print(f"Advancing automatically to Phase {next_phase.number}: {next_phase.name}")
+                continue
+
+            raise RuntimeError(f"Unsupported workflow step: {step}")
 
     except Exception as exc:
         print(f"Workflow failure: {exc}", file=sys.stderr)

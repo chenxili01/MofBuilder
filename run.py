@@ -402,7 +402,7 @@ def run_codex_exec(prompt: str, *, model: str, allow_edits: bool) -> str:
     base = cmd + ["--model", model]
 
     if allow_edits:
-        base += ["--dangerously-auto-approve-everything"]
+        base += ["--dangerously-bypass-approvals-and-sandbox"]
 
     proc = subprocess.run(
         base,

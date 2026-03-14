@@ -2,389 +2,685 @@
 
 ## Project Overview
 
-MOFBuilder is a data-driven Python package for constructing MOF structures from
-topology templates plus node/linker fragments, then exporting, modifying,
-solvating, and preparing them for simulation.
+MOFBuilder is a **data-driven Python package for constructing Metal–Organic Framework (MOF) structures** from topology templates combined with node and linker fragments, followed by geometry optimization, supercell generation, and simulation preparation.
 
-The repo is organized around a stable high-level workflow:
+The architecture is designed around a **stable high-level workflow**:
 
 1. Select a MOF family and metal/node/linker inputs
 2. Build topology and fragment representations
 3. Optimize geometry and cell parameters
-4. Expand to a supercell and derive the edge graph
-5. Materialize a `Framework`
-6. Export, edit defects, solvate, and prepare MD inputs
-
-The package surface is intentionally lighter than the implementation:
-
-- `mofbuilder` top-level imports are lazy
-- `cli.py` is dependency-light
-- `core` and `md` pull in heavy scientific dependencies once accessed
-
-## Main Workflow / Mental Model
-
-The central user object is `MetalOrganicFrameworkBuilder`. It is a stateful
-orchestrator that gathers user inputs, pulls data from the bundled database,
-constructs graph/fragment intermediates, and returns a built `Framework`.
-
-`Framework` is the post-build container. It owns the assembled graph and merged
-atom tables and provides the user-facing operations after construction:
-
-- file export
-- removal/replacement workflows
-- visualization
-- solvation
-- linker force-field generation
-- MD preparation
-
-## Core Modules and Responsibilities
-
-### Package Surface
-
-- `src/mofbuilder/__init__.py`
-  - lazy top-level imports
-- `src/mofbuilder/core/__init__.py`
-  - lazy exports for core classes
-- `src/mofbuilder/cli.py`
-  - dependency-light CLI for `--version`, `data-path`, `list-families`, and
-    `list-metals`
-
-### Core Construction
-
-- `src/mofbuilder/core/builder.py`
-  - `MetalOrganicFrameworkBuilder`
-  - central orchestration layer
-- `src/mofbuilder/core/framework.py`
-  - `Framework`
-  - built-object container plus post-build workflow API
-- `src/mofbuilder/core/moftoplibrary.py`
-  - `MofTopLibrary`
-  - reads `database/MOF_topology_dict` and resolves template CIFs
-- `src/mofbuilder/core/net.py`
-  - `FrameNet`
-  - parses topology CIFs into graph/unit-cell data
-- `src/mofbuilder/core/node.py`
-  - `FrameNode`
-  - prepares node fragments
-- `src/mofbuilder/core/linker.py`
-  - `FrameLinker`
-  - prepares linker fragments from XYZ, molecule objects, or SMILES
-- `src/mofbuilder/core/termination.py`
-  - `FrameTermination`
-  - prepares termination fragments
-- `src/mofbuilder/core/optimizer.py`
-  - `NetOptimizer`
-  - rotates/places fragments and optimizes the cell
-- `src/mofbuilder/core/supercell.py`
-  - `SupercellBuilder`, `EdgeGraphBuilder`
-  - expands periodic structure and derives edge-graph representations
-- `src/mofbuilder/core/defects.py`
-  - `TerminationDefectGenerator`
-  - removal/replacement/termination workflows
-- `src/mofbuilder/core/write.py`
-  - `MofWriter`
-  - merged structure assembly and format export
-
-### I/O and Helpers
+4. Expand to a supercell and derive edge-graph representations
+5. Materialize a `Framework` object
+6. Export structures, modify defects, solvate, and prepare simulation inputs
 
-- `src/mofbuilder/io/`
-  - readers/writers for CIF, PDB, GRO, XYZ
-- `src/mofbuilder/utils/geometry.py`
-  - unit-cell and coordinate transforms plus geometric matching helpers
-- `src/mofbuilder/utils/environment.py`
-  - bundled data-path resolution
-- `src/mofbuilder/utils/fetch.py`
-  - file lookup support
+The package interface intentionally exposes a **simpler user surface** than the internal architecture.
 
-### Post-Build Simulation Pipeline
+Key design choices:
 
-- `src/mofbuilder/md/solvationbuilder.py`
-  - `SolvationBuilder`
-- `src/mofbuilder/md/linkerforcefield.py`
-  - `LinkerForceFieldGenerator`, `ForceFieldMapper`
-- `src/mofbuilder/md/gmxfilemerge.py`
-  - `GromacsForcefieldMerger`
-- `src/mofbuilder/md/setup.py`
-  - `OpenmmSetup`
+* Top-level imports are **lazy** to keep startup lightweight
+* CLI is **dependency-light**
+* Heavy scientific dependencies are loaded only when required
+* Graph representations are the **primary internal data model**
 
-### Secondary / Less Mature Areas
+---
 
-- `src/mofbuilder/visualization/viewer.py`
-  - `Viewer`
-- `src/mofbuilder/analysis/`
-  - `GraphAnalyzer`, `PorosityAnalyzer`
-  - currently placeholder-level, not a mature subsystem
+# High-Level Workflow
 
-## Important Classes and Their Relationships
+The central user object is:
 
-### `MetalOrganicFrameworkBuilder`
+```
+MetalOrganicFrameworkBuilder
+```
 
-Owns:
+This object orchestrates the entire build pipeline.
 
-- user inputs such as `mof_family`, `node_metal`, linker source, termination
-  settings, supercell settings, defect options, and MD-prep options
-- intermediate graph states
-- helper instances such as `FrameNet`, `FrameNode`, `FrameLinker`,
-  `FrameTermination`, `MofTopLibrary`, `NetOptimizer`, `MofWriter`,
-  `TerminationDefectGenerator`
+Responsibilities:
 
-Depends on:
+* collect user inputs
+* load topology metadata
+* construct graph representations
+* prepare fragments
+* optimize geometry
+* build the final framework
 
-- bundled database assets
-- `veloxchem`, `mpi4py`, `networkx`, `numpy`
-- core helper classes and I/O readers
+The output of the build process is a:
 
-Relationship:
+```
+Framework
+```
 
-- populates and returns the `Framework` instance stored on `builder.framework`
+object.
 
-### `Framework`
+`Framework` acts as the **post-build container** and exposes user-facing operations.
 
-Owns:
+These include:
 
-- assembled graph and metadata copied from the builder
-- merged Cartesian/fractional atom tables
-- output settings and post-build workflow helpers
+* structure export
+* defect manipulation
+* visualization
+* solvation
+* linker force-field generation
+* molecular dynamics preparation
 
-Depends on:
+---
 
-- `MofWriter`
-- `TerminationDefectGenerator`
-- `SolvationBuilder`
-- linker force-field and OpenMM setup classes
+# Architectural Layers
 
-Relationship:
+MOFBuilder architecture can be understood as five layers.
 
-- is the stable post-build interface for most user workflows
-- `remove()` and `replace()` return new `Framework` instances
-- `solvate()`, `generate_linker_forcefield()`, `md_prepare()`, and `show()`
-  mutate the current instance
+```
+User API Layer
+Builder Orchestration Layer
+Topology / Fragment Layer
+Geometry / Graph Processing Layer
+Post-Build Simulation Layer
+```
 
-### `MofTopLibrary`
+Each layer has defined responsibilities.
 
-Owns:
+---
 
-- MOF-family metadata read from `MOF_topology_dict`
-- template selection logic
+# Package Surface
 
-### `FrameNet`
+### `src/mofbuilder/__init__.py`
 
-Owns:
+Provides lazy imports for the public API.
 
-- topology graph construction from template CIF
-- cell information
-- vertex/edge pairing and sorted topology metadata
+### `src/mofbuilder/core/__init__.py`
 
-### `FrameNode`, `FrameLinker`, `FrameTermination`
+Provides lazy exports for core functionality.
 
-Own:
+### `src/mofbuilder/cli.py`
 
-- fragment parsing and normalization for later placement
+Provides a dependency-light command-line interface.
 
-### `NetOptimizer`
+Supported commands include:
 
-Owns:
+* version reporting
+* bundled database location
+* listing MOF families
+* listing supported metals
 
-- rotation placement and optimized cell state
+---
 
-### `SupercellBuilder`, `EdgeGraphBuilder`
+# Core Construction Modules
 
-Own:
+## `builder.py`
 
-- supercell expansion
-- edge-graph derivation
-- matched node/edge bookkeeping used downstream
+Defines:
 
-## Main Data Flow Through the Package
+```
+MetalOrganicFrameworkBuilder
+```
 
-### 1. Database lookup
+This is the **central orchestration layer**.
 
-`MofTopLibrary` reads:
+Responsibilities include:
 
-- `database/MOF_topology_dict`
-- `database/template_database/`
+* user input management
+* family metadata lookup
+* graph construction
+* fragment preparation
+* geometry optimization
+* framework materialization
 
-It can also load optional additive family role metadata from:
+The builder manages intermediate objects including:
 
-- `database/MOF_topology_role_metadata.json`
+```
+FrameNet
+FrameNode
+FrameLinker
+FrameTermination
+NetOptimizer
+SupercellBuilder
+EdgeGraphBuilder
+```
 
-This resolves node connectivity, linker topic, available metals, and the
-template CIF file for the chosen MOF family.
+The builder also maintains runtime registries:
 
-`MOF_topology_dict` is treated as a tabular schema with columns for MOF family,
-node connectivity, metal, linker topic, and topology stem.
+```
+node_role_registry
+edge_role_registry
+```
 
-### 2. Net parsing
+These registries resolve payload fragments associated with topology roles.
 
-`FrameNet` parses the topology CIF and derives:
+---
 
-- graph `G`
-- unit-cell data
-- sorted topology metadata
-- linker connectivity information
-- deterministic graph role annotations:
-  - `G.nodes[n]["node_role_id"]`
-  - `G.edges[e]["edge_role_id"]`
+## `framework.py`
 
-### 3. Fragment preparation
+Defines:
 
-The builder prepares:
+```
+Framework
+```
 
-- node data via `FrameNode`
-- linker data via `FrameLinker`
-- optional termination data via `FrameTermination`
-- builder-owned runtime role registries:
-  - `node_role_registry`
-  - `edge_role_registry`
+This object stores the **fully assembled framework state**.
 
-For families without role metadata, the builder normalizes to the single-role
-base case:
+It owns:
 
-- `node:default`
-- `edge:default`
+* merged atomic tables
+* graph metadata
+* residue assignments
+* role-aware structure annotations
 
-### 4. Optimization
+It provides the main **post-build user interface**.
 
-`NetOptimizer` aligns fragments onto the topology and optimizes:
+Key operations:
 
-- node rotations
-- cell parameters
+* export structure files
+* remove or replace structural components
+* solvate framework
+* generate linker force fields
+* prepare MD inputs
+* visualize structures
 
-Role-aware fragment selection is driven by graph-stored role ids plus the
-builder-owned registries; the single-role path remains the default fast path.
+Mutation semantics:
 
-This yields the optimized graph `sG` and frame-unit-cell information.
+```
+build() -> modifies builder.framework
+remove()/replace() -> return new Framework instances
+solvate()/md_prepare() -> modify existing instance
+```
 
-### 5. Supercell and edge-graph generation
+---
 
-`SupercellBuilder` expands the system into `superG`.
+# Topology and Fragment Modules
 
-`EdgeGraphBuilder` derives:
+## `moftoplibrary.py`
 
-- `eG`
-- `cleaved_eG`
-- matching dictionaries and residue-related metadata used downstream
+Defines:
 
-Role metadata is propagated through `superG`, `eG`, and `cleaved_eG`.
+```
+MofTopLibrary
+```
 
-### 6. Framework materialization
+Responsibilities:
 
-`MetalOrganicFrameworkBuilder.build()` copies the resulting state into
-`Framework`, applies termination logic, and materializes merged structure data
-through `Framework.get_merged_data()`.
+* load topology metadata
+* resolve MOF family templates
+* locate topology CIF files
+* interpret topology role metadata
 
-### 7. Post-build processing
+Metadata sources include:
 
-`Framework` can then:
+```
+database/MOF_topology_dict
+database/template_database/
+database/MOF_topology_role_metadata.json
+```
 
-- write output files
-- remove or replace substructures
-- solvate the framework
-- generate linker force-field data
-- prepare MD inputs
-- launch the OpenMM pipeline through `md_driver`
+Future extensions will support **JSON-based role metadata schemas**.
 
-The built `Framework` retains the role-aware data needed by later post-build
-steps, including the edge-role registry used by the current MD-preparation
-path.
+---
 
-## Canonical Role Model
+## `net.py`
 
-MOFBuilder now uses one internal role model across the pipeline:
+Defines:
 
-- topology role ids are stored on graphs, not inferred from chemistry
-- `FrameNet.G.nodes[n]["node_role_id"]` is the node-role source of truth
-- `FrameNet.G.edges[e]["edge_role_id"]` is the edge-role source of truth
-- `MetalOrganicFrameworkBuilder` owns `node_role_registry` and
-  `edge_role_registry`
-- families without role metadata normalize to `node:default` and
-  `edge:default`
+```
+FrameNet
+```
 
-This role model is internal plumbing around the stable public workflow, not a
-separate public orchestration path.
+Responsibilities:
 
-Specific behaviors that matter for modifications:
+* parse topology CIF files
+* construct graph representation `G`
+* extract unit cell information
+* compute vertex/edge connectivity
+* annotate graph roles
 
-- `Framework.solvate()` defaults to TIP3P when no solvent list is provided
-- `Framework.solvate()` writes `<mof_family>_in_solvent.gro`
-- `Framework.md_prepare()` generates a topology with
-  `GromacsForcefieldMerger`, writes a framework-only GRO if the system was not
-  solvated, and then creates `OpenmmSetup`
-- `Framework.generate_linker_forcefield()` can bypass generation when
-  `provided_linker_itpfile` is set
+Graph attributes include:
 
-## Important Design Constraints
+```
+G.nodes[n]["node_role_id"]
+G.edges[e]["edge_role_id"]
+```
 
-- Public builder/framework APIs should remain stable
-- Top-level imports and CLI behavior are intentionally dependency-light
-- Graph state names already have established meaning:
-  - `G`
-  - `sG`
-  - `superG`
-  - `eG`
-  - `cleaved_eG`
-- `Framework.framework_data` and `Framework.framework_fcoords_data` are central
-  downstream payloads; changes here affect writing, solvation, and MD prep
-- Structural changes must keep merged data and residue metadata synchronized;
-  current code does this by calling `get_merged_data()` after build/remove/
-  replace flows
-- Runtime behavior depends heavily on bundled data in `database/`
-- Similar fixtures exist in `tests/database/`; data-format changes should keep
-  them aligned
+`FrameNet` is also responsible for computing **topology-derived ordering metadata**, including cyclic ordering around linker centers.
 
-## Likely Extension Points
+---
 
-- new topology families or template assets via `MofTopLibrary`
-- new fragment sources or preprocessing logic in `FrameNode`/`FrameLinker`
-- geometry algorithms in `NetOptimizer` and `utils/geometry.py`
-- new export behavior in `MofWriter` or `io/`
-- expanded simulation-prep behavior in `md/`
-- richer analysis implementations in `analysis/`
-  - currently this area is mostly scaffolding
+## `node.py`
 
-## Known Ambiguity / Areas Needing Caution
+Defines:
 
-- `src/mofbuilder/analysis/` contains stub methods with `pass`
-- Some documentation content is duplicated between `docs/` and
-  `docs/source/manual/`
-- `Framework.write()` references `remove_defects()`, but the visible public
-  defect-removal method on `Framework` is `remove()`
-  - inspect actual usage/tests before changing this area
-- The repository root contains notebooks, outputs, and sample structure files;
-  they appear exploratory or generated rather than architectural source files
-- `optimizer.py`, `supercell.py`, `framework.py`, and `linkerforcefield.py`
-  are the highest-risk modules for unintended regressions
-- `tests/conftest.py` stubs heavy dependencies for testability
-  - useful for interface coverage
-  - not a substitute for validating real numerical/simulation behavior
+```
+FrameNode
+```
 
-## Refactoring Safely in This Repo
+Responsibilities:
 
-- Route each change to the narrowest owning module
-- Prefer local edits over broad cleanup passes
-- Preserve class names, public method names, and established attribute names
-- Keep builder orchestration in `MetalOrganicFrameworkBuilder`
-- Keep post-build behavior in `Framework`
-- Preserve current mutation semantics
-  - `build()` reuses `builder.framework`
-  - `remove()` and `replace()` allocate new framework objects
-- Preserve numerical behavior in geometry/optimization code unless explicitly
-  improving it
-- Re-check downstream consumers before changing graph attributes, coordinate
-  conventions, or merged-data shape
-- Avoid new dependencies unless there is a clear technical need
-- Update tests and docs alongside behavior changes
-- If scientific intent is unclear, inspect call sites, tests, comments, and
-  docstrings before changing behavior
+* parse node fragments
+* normalize node atomic data
+* prepare fragments for placement
 
-## Scope of Multi-Role Support
+---
 
-This feature introduces role-aware topology and fragment assignment.
+## `linker.py`
 
-It does not redesign:
-- the builder workflow
-- the graph-state architecture
-- the optimization algorithms
-- defect modeling
+Defines:
 
-Changes should remain localized to role-awareness and fragment selection.
+```
+FrameLinker
+```
+
+Responsibilities:
+
+* parse linker fragments
+* construct molecular fragments
+* support fragment splitting logic
+* prepare connector atoms for alignment
+
+Legacy splitting logic remains supported.
+
+---
+
+## `termination.py`
+
+Defines:
+
+```
+FrameTermination
+```
+
+Responsibilities:
+
+* parse termination fragments
+* prepare capping groups for unsaturated sites
+
+---
+
+# Geometry and Graph Processing
+
+## `optimizer.py`
+
+Defines:
+
+```
+NetOptimizer
+```
+
+Responsibilities:
+
+* fragment placement
+* rotation alignment
+* cell optimization
+
+Optimization must respect topology role constraints.
+
+Role-aware optimization includes understanding:
+
+```
+V-E-C
+V-E-V
+slot matching
+null-edge constraints
+```
+
+---
+
+## `supercell.py`
+
+Defines:
+
+```
+SupercellBuilder
+EdgeGraphBuilder
+```
+
+Responsibilities:
+
+* expand primitive cell to supercell
+* derive edge graph representations
+
+Graph states include:
+
+```
+G
+sG
+superG
+eG
+cleaved_eG
+```
+
+Role metadata must propagate through all graph states.
+
+Supercell replication uses **translation-based replication for efficiency**.
+
+---
+
+# Post-Build Processing Modules
+
+## `defects.py`
+
+Defines:
+
+```
+TerminationDefectGenerator
+```
+
+Responsibilities:
+
+* removal workflows
+* replacement workflows
+* termination placement
+
+Termination logic may rely on **unsaturated site detection**.
+
+---
+
+## `write.py`
+
+Defines:
+
+```
+MofWriter
+```
+
+Responsibilities:
+
+* merge atomic tables
+* export structures
+* write supported file formats
+
+Supported outputs include:
+
+```
+CIF
+PDB
+GRO
+XYZ
+```
+
+Future debug outputs may include role metadata.
+
+---
+
+# Simulation Preparation Layer
+
+Located under:
+
+```
+src/mofbuilder/md/
+```
+
+Modules include:
+
+### `solvationbuilder.py`
+
+Defines:
+
+```
+SolvationBuilder
+```
+
+Used for solvating frameworks.
+
+---
+
+### `linkerforcefield.py`
+
+Defines:
+
+```
+LinkerForceFieldGenerator
+ForceFieldMapper
+```
+
+Used for linker force-field generation.
+
+---
+
+### `gmxfilemerge.py`
+
+Defines:
+
+```
+GromacsForcefieldMerger
+```
+
+Used for combining force-field files.
+
+---
+
+### `setup.py`
+
+Defines:
+
+```
+OpenmmSetup
+```
+
+Used for MD simulation preparation.
+
+---
+
+# Canonical Role Model
+
+MOFBuilder uses a **topology-driven role model**.
+
+Role identifiers are stored on graph elements.
+
+```
+FrameNet.G.nodes[n]["node_role_id"]
+FrameNet.G.edges[e]["edge_role_id"]
+```
+
+Builder maintains registries:
+
+```
+node_role_registry
+edge_role_registry
+```
+
+These registries resolve fragment payloads.
+
+For families without role metadata the system falls back to:
+
+```
+node:default
+edge:default
+```
+
+---
+
+# Graph Grammar Invariant
+
+The current architecture supports only two topology path types:
+
+```
+V-E-V
+V-E-C
+```
+
+Where:
+
+```
+V = node center
+C = linker center
+E = connector edge
+```
+
+Other graph path types are not currently supported.
+
+---
+
+# Bundle Ownership
+
+Multitopic linkers are reconstructed from:
+
+```
+C center
++ incident E connectors
+```
+
+`C` nodes act as **bundle owners**.
+
+`V` nodes represent inorganic centers.
+
+---
+
+# Null Edge Semantics
+
+Null edges represent topology connections without explicit chemistry.
+
+They are stored as:
+
+```
+two overlapping anchor points
+```
+
+Important distinction:
+
+```
+null edge != zero-length real edge
+```
+
+Null edges allow representation of rod-like or shared-node topologies.
+
+---
+
+# Data Flow Through the System
+
+## 1 Database Lookup
+
+`MofTopLibrary` resolves topology metadata and template CIF files.
+
+---
+
+## 2 Net Parsing
+
+`FrameNet` constructs graph `G`.
+
+---
+
+## 3 Fragment Preparation
+
+Builder prepares node/linker fragments.
+
+---
+
+## 4 Optimization
+
+`NetOptimizer` aligns fragments to topology.
+
+---
+
+## 5 Supercell Generation
+
+`SupercellBuilder` expands the structure.
+
+---
+
+## 6 Framework Materialization
+
+Builder constructs a `Framework`.
+
+---
+
+## 7 Post-Build Processing
+
+`Framework` exposes downstream workflows.
+
+---
+
+# Architectural Invariants
+
+The following invariants must remain stable.
+
+### Stable graph state names
+
+```
+G
+sG
+superG
+eG
+cleaved_eG
+```
+
+### Builder orchestration
+
+All build orchestration occurs in:
+
+```
+MetalOrganicFrameworkBuilder
+```
+
+### Framework ownership
+
+Post-build operations belong to:
+
+```
+Framework
+```
+
+### Role metadata source of truth
+
+Topology graph attributes store role ids.
+
+### Default behavior
+
+Single-role workflows remain supported.
+
+---
+
+# Extension Points
+
+New functionality can be added through:
+
+* topology families
+* fragment libraries
+* geometry algorithms
+* export formats
+* simulation workflows
+
+---
+
+# Known High-Risk Modules
+
+Modules where regressions are most likely:
+
+```
+optimizer.py
+supercell.py
+framework.py
+linkerforcefield.py
+```
+
+Changes in these areas should be carefully validated.
+
+---
+
+# Safe Refactoring Guidelines
+
+When modifying the repository:
+
+* keep public APIs stable
+* prefer localized edits
+* avoid large refactors
+* preserve builder–framework separation
+* maintain merged data consistency
+* validate graph attribute compatibility
+* avoid unnecessary dependencies
+
+---
+
+# Scope of Role-Aware Architecture
+
+The role-aware system adds:
+
+* topology role identifiers
+* role-based fragment assignment
+* bundle-aware linker reconstruction
+* role-aware optimization behavior
+
+It **does not redesign**:
+
+* the builder workflow
+* graph state architecture
+* core geometry algorithms
+* defect modeling pipeline
+
+Role-awareness is an **internal extension**, not a new public API layer.
+

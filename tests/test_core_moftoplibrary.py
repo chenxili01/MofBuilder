@@ -111,6 +111,19 @@ def _compat_family_role_metadata():
     }
 
 
+def _phase1_family_role_metadata():
+    return {
+        "schema_name": "mof_reticular_role_metadata",
+        "schema_version": 1,
+        "family_name": "TEST-MULTI",
+        "node_roles": ["VA", "CA"],
+        "edge_roles": ["EA", "EB"],
+        "connectivity": {"VA": 4, "CA": 2},
+        "path_rules": ["VA-EA-CA", "VA-EB-VA"],
+        "edge_kind": {"EA": "real", "EB": "null"},
+    }
+
+
 def _write_test_database(db_path, *, metadata=None):
     (db_path / "template_database").mkdir(parents=True)
     (db_path / "MOF_topology_dict").write_text(
@@ -173,6 +186,22 @@ def test_read_mof_top_dict_loads_builder_compatible_role_metadata_sidecar(tmp_pa
         lib.get_canonical_role_metadata("TEST-MULTI")
         == expected_role_metadata["canonical_role_metadata"]
     )
+    assert lib.get_node_roles("TEST-MULTI") == ["VA", "CA"]
+    assert lib.get_edge_roles("TEST-MULTI") == ["EA", "EB"]
+
+
+def test_read_mof_top_dict_loads_phase1_passive_role_metadata_shape(tmp_path):
+    db = tmp_path / "db"
+    expected_role_metadata = _phase1_family_role_metadata()
+    _write_test_database(db, metadata=expected_role_metadata)
+
+    lib = MofTopLibrary()
+    lib._read_mof_top_dict(str(db))
+
+    assert lib.get_role_metadata("TEST-MULTI") == expected_role_metadata
+    assert lib.get_canonical_role_metadata("TEST-MULTI") == expected_role_metadata
+    assert lib.get_node_roles("TEST-MULTI") == ["VA", "CA"]
+    assert lib.get_edge_roles("TEST-MULTI") == ["EA", "EB"]
 
 
 def test_read_mof_top_dict_rejects_invalid_schema_at_library_boundary(tmp_path):
@@ -186,6 +215,18 @@ def test_read_mof_top_dict_rejects_invalid_schema_at_library_boundary(tmp_path):
     lib = MofTopLibrary()
 
     with pytest.raises(ValueError, match="V-E-V or V-E-C"):
+        lib._read_mof_top_dict(str(db))
+
+
+def test_read_mof_top_dict_rejects_invalid_phase1_role_prefixes(tmp_path):
+    db = tmp_path / "db"
+    invalid_metadata = _phase1_family_role_metadata()
+    invalid_metadata["edge_roles"] = ["VA"]
+    _write_test_database(db, metadata=invalid_metadata)
+
+    lib = MofTopLibrary()
+
+    with pytest.raises(ValueError, match="edge_roles aliases must start with E"):
         lib._read_mof_top_dict(str(db))
 
 
