@@ -393,3 +393,181 @@ notes:
 - Checkpoint: phase-2-snapshot-export-implemented
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews completion and decides whether to advance
+
+
+## planner-run
+
+- Timestamp: 2026-03-14T15:23:14+00:00
+
+## Active Phase
+- Phase: 3
+- Name: Optimization Snapshot Semantics
+
+## Objective
+Populate the builder-owned `OptimizationSemanticSnapshot` with the minimum role-aware semantic contract required for later optimizer node-placement work, while preserving the existing pipeline, keeping graph role ids as the source of truth, and avoiding any optimizer or framework behavior change in this phase.
+
+## Scope
+- `src/mofbuilder/core/builder.py`
+- `src/mofbuilder/core/runtime_snapshot.py`
+- `tests/test_core_builder.py`
+- `tests/test_core_runtime_snapshot.py`
+
+## Tasks
+1. Narrow and extend the Phase 2 optimization snapshot so it exposes explicit Phase 3 semantic fields derived from existing builder-owned state: node ids with node role ids, edge ids with edge role ids, slot rules/slot typing, incident edge constraints, bundle/order hints, null-edge rules, and resolve modes.
+2. Add or refine snapshot-focused helper structures in `src/mofbuilder/core/runtime_snapshot.py` only as needed to represent those optimizer-facing semantics explicitly and narrowly, without turning the optimization snapshot into a duplicate source of truth or a dump of arbitrary builder internals.
+3. Update builder-side compilation in `src/mofbuilder/core/builder.py` so `get_optimization_semantic_snapshot()` compiles the Phase 3 semantic contract from graph role ids, role registries, bundle registry/order hints, null-edge policies, and resolve scaffolding, while preserving Phase 2 getters and keeping `RoleRuntimeSnapshot`/`FrameworkInputSnapshot` ownership boundaries intact.
+4. Add focused tests covering both default-role and role-aware cases to prove the optimization snapshot contains the required semantic fields, preserves legacy fallback behavior, and keeps builder ownership of interpretation.
+
+## Validation
+- Run targeted tests for the touched snapshot export paths and snapshot record/container behavior; if `pytest` is still unavailable, use compile/import or direct assertion coverage and document the blocker honestly.
+- Verify the invariants remain intact: graph role ids still live on graph elements, builder still owns interpretation and snapshot compilation, framework stays role-agnostic, optimizer behavior is unchanged, primitive-first ordering is preserved, graph grammar stays `V-E-V` / `V-E-C`, and null-edge semantics remain distinct from zero-length real edges.
+
+## Non-goals
+- Do not modify optimizer algorithms, optimizer call sites, framework materialization, FrameNet graph stamping, linker behavior, supercell behavior, or build pipeline order.
+- Do not redesign snapshot architecture beyond the minimum needed to express the Phase 3 optimizer-facing semantic contract, and do not start Phase 4 validation hardening or Phase 5 optimizer ingestion hooks.
+
+## Exit Criteria
+- `OptimizationSemanticSnapshot` exposes explicit Phase 3 semantic fields for graph role ids, slot rules, incident edge constraints, bundle/order hints, null-edge rules, and resolve modes, compiled from existing builder-owned state only.
+- Tests demonstrate both role-aware and legacy/default-role snapshot behavior with no ownership drift, no public API breakage, and no optimizer/framework behavior change.
+
+## STATUS.md Update
+- Phase: Phase 3
+- Checkpoint: phase-3-plan-ready
+- Status: READY_FOR_EXECUTOR
+- Next step: Executor implements the active phase only
+
+`STATUS.md` was updated at [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md).
+
+
+## 2026-03-14 — executor — populate phase 3 optimization snapshot semantics
+
+branch:
+role-runtime-contract
+
+phase:
+Phase 3 — Optimization Snapshot Semantics
+
+checkpoint:
+phase-3-semantics-implemented
+
+summary:
+- Added explicit optimizer-facing graph node and graph edge semantic records so the optimization snapshot now carries graph element role ids, slot rules, incident edge constraints, bundle/order hints, null-edge rules, and resolve modes as builder-owned derived views.
+- Compiled the new Phase 3 semantic records inside `get_optimization_semantic_snapshot()` from existing graph role ids, role registries, bundle registry, resolve scaffolding, and null-edge policy without changing optimizer or framework behavior.
+- Extended focused tests to cover both default-role and role-aware exports, including legacy fallback behavior and explicit null-edge semantics.
+
+files touched:
+- src/mofbuilder/core/runtime_snapshot.py
+- src/mofbuilder/core/builder.py
+- tests/test_core_builder.py
+- tests/test_core_runtime_snapshot.py
+- WORKLOG.md
+- STATUS.md
+
+invariants checked:
+- Topology graph remains the source of truth for node and edge role ids.
+- Builder remains the owner of role interpretation, bundle compilation, resolve scaffolding, and snapshot compilation.
+- Framework remains role-agnostic and optimizer behavior was not changed.
+- Primitive-first flow and null-edge versus zero-length real-edge distinction were preserved.
+- No forbidden modules outside `core/`, tests, and workflow markdown files were modified.
+
+validation:
+- `python -m compileall src/mofbuilder/core/runtime_snapshot.py src/mofbuilder/core/builder.py tests/test_core_builder.py tests/test_core_runtime_snapshot.py`
+- `python -m pytest tests/test_core_builder.py -k snapshot_export_getters_compile -q` (blocked: `pytest` not installed)
+- `python -m pytest tests/test_core_runtime_snapshot.py -q` (blocked: `pytest` not installed)
+- `PYTHONPATH=src python - <<'PY' ... PY` direct import/instantiation check for `GraphNodeSemanticRecord`, `GraphEdgeSemanticRecord`, and `OptimizationSemanticSnapshot`
+
+notes:
+- Runtime import validation beyond bytecode compilation is currently blocked because the available Python interpreters in this environment do not have project dependencies such as `networkx`, `pytest`, or `veloxchem`.
+- Phase scope was kept to builder snapshot compilation, snapshot helper records, focused tests, and required workflow status/log updates only.
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T16:00:00+00:00
+
+## Active Phase
+- Phase: 3
+- Name: Optimization Snapshot Semantics
+
+## Implemented
+- Added explicit `GraphNodeSemanticRecord` and `GraphEdgeSemanticRecord` types in [runtime_snapshot.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/runtime_snapshot.py#L168) and attached them to [OptimizationSemanticSnapshot](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/runtime_snapshot.py#L291).
+- Compiled builder-owned graph semantic records in [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py#L983) and exported them from [get_optimization_semantic_snapshot()](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py#L1507).
+- Expanded focused snapshot export coverage in [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py#L1230) and [test_core_runtime_snapshot.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_runtime_snapshot.py#L1).
+
+## Files Changed
+- `src/mofbuilder/core/runtime_snapshot.py`
+- `src/mofbuilder/core/builder.py`
+- `tests/test_core_builder.py`
+- `tests/test_core_runtime_snapshot.py`
+- `WORKLOG.md`
+- `STATUS.md`
+
+## Validation
+- `python -m compileall src/mofbuilder/core/runtime_snapshot.py src/mofbuilder/core/builder.py tests/test_core_builder.py tests/test_core_runtime_snapshot.py`
+- `python -m pytest tests/test_core_builder.py -k snapshot_export_getters_compile -q` blocked because `pytest` is not installed in the available interpreter
+- `python -m pytest tests/test_core_runtime_snapshot.py -q` blocked because `pytest` is not installed in the available interpreter
+- `PYTHONPATH=src python - <<'PY' ... PY` direct import/instantiation check for the new runtime snapshot record types completed successfully
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Full builder runtime validation is still environment-blocked because the available Python interpreters do not have `networkx`, `pytest`, or `veloxchem`.
+- The optimizer still does not consume the new semantic snapshot; that remains future planned work and was not started here.
+
+## STATUS.md Update
+- Phase: Phase 3
+- Checkpoint: phase-3-semantics-implemented
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance
+
+
+## executor-run
+
+- Timestamp: 2026-03-14T15:35:33+00:00
+
+## Active Phase
+- Phase: 3
+- Name: Optimization Snapshot Semantics
+
+## Implemented
+- Added explicit graph-level optimizer records in [runtime_snapshot.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/runtime_snapshot.py#L168): `GraphNodeSemanticRecord`, `GraphEdgeSemanticRecord`, and new `OptimizationSemanticSnapshot` fields for graph node/edge semantics.
+- Compiled those Phase 3 semantics in [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py#L986) and exported them from [builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/src/mofbuilder/core/builder.py#L1507) using existing graph role ids, slot rules, resolve scaffolding, bundle ordering, and null-edge policy.
+- Extended focused coverage in [test_core_builder.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_builder.py#L1272) and [test_core_runtime_snapshot.py](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/tests/test_core_runtime_snapshot.py#L154) for default-role and role-aware snapshot semantics.
+
+## Files Changed
+- `src/mofbuilder/core/runtime_snapshot.py`
+- `src/mofbuilder/core/builder.py`
+- `tests/test_core_builder.py`
+- `tests/test_core_runtime_snapshot.py`
+- `WORKLOG.md`
+- `STATUS.md`
+
+## Validation
+- `python -m compileall src/mofbuilder/core/runtime_snapshot.py src/mofbuilder/core/builder.py tests/test_core_builder.py tests/test_core_runtime_snapshot.py`
+- `PYTHONPATH=src python - <<'PY' ... PY` direct import/instantiation check for the new runtime snapshot record types
+- `python -m pytest tests/test_core_builder.py -k snapshot_export_getters_compile -q` blocked because `pytest` is not installed
+- `python -m pytest tests/test_core_runtime_snapshot.py -q` blocked because `pytest` is not installed
+
+## Self-Review
+- Scope respected: yes
+- Future-phase leakage: no
+- Ownership preserved: yes
+- Backward compatibility preserved: yes
+- Checklist reviewed: yes
+
+## Risks / Follow-ups
+- Full builder runtime validation is still blocked by missing environment dependencies: `networkx`, `pytest`, and `veloxchem`.
+- Optimizer ingestion was not touched; Phase 5 work remains separate.
+
+## STATUS.md Update
+- Phase: Phase 3
+- Checkpoint: phase-3-semantics-implemented
+- Status: COMPLETED_PENDING_PLANNER
+- Next step: Planner reviews completion and decides whether to advance
+
+`STATUS.md` is updated at [STATUS.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/STATUS.md#L1), and the execution log is appended in [WORKLOG.md](/Users/chenxili/GitHub/Cursor_repo/mof_cursor/MOFbuilder/WORKLOG.md#L442).

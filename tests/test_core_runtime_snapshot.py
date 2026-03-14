@@ -6,6 +6,8 @@ from mofbuilder.core.runtime_snapshot import (
     BundleRecord,
     EdgeRoleRecord,
     FrameworkInputSnapshot,
+    GraphEdgeSemanticRecord,
+    GraphNodeSemanticRecord,
     NodeRoleRecord,
     NullEdgePolicyRecord,
     OptimizationSemanticSnapshot,
@@ -152,6 +154,41 @@ def test_snapshot_records_capture_role_aware_bundle_resolve_and_null_edge_fields
     optimization_snapshot = OptimizationSemanticSnapshot(
         family_name="TEST-MULTI",
         graph_phase="sG",
+        graph_node_records={
+            "C0": GraphNodeSemanticRecord(
+                node_id="C0",
+                role_id="node:CA",
+                role_class="C",
+                slot_rules=node_record.slot_rules,
+                incident_edge_ids=("V0|C0",),
+                incident_edge_role_ids=("edge:EA",),
+                incident_edge_constraints=(
+                    {
+                        "edge_id": "V0|C0",
+                        "edge_role_id": "edge:EA",
+                        "slot_index": 0,
+                    },
+                ),
+                bundle_id="bundle:CA:0",
+                bundle_order_hint={"ordered_attachment_indices": (0, 1)},
+            )
+        },
+        graph_edge_records={
+            "V0|C0": GraphEdgeSemanticRecord(
+                edge_id="V0|C0",
+                graph_edge=("V0", "C0"),
+                edge_role_id="edge:EA",
+                path_type="V-E-C",
+                endpoint_node_ids=("V0", "C0"),
+                endpoint_role_ids=("node:VA", "node:CA"),
+                endpoint_pattern=edge_record.endpoint_pattern,
+                slot_index={"V0": 0, "C0": 0},
+                slot_rules=edge_record.slot_rules,
+                bundle_id="bundle:CA:0",
+                bundle_order_index=0,
+                resolve_mode="ownership_transfer",
+            )
+        },
         node_role_records=runtime_snapshot.node_role_records,
         edge_role_records=runtime_snapshot.edge_role_records,
         bundle_records=runtime_snapshot.bundle_records,
@@ -176,6 +213,8 @@ def test_snapshot_records_capture_role_aware_bundle_resolve_and_null_edge_fields
         == "null_edge_not_zero_length_real_edge"
     )
     assert optimization_snapshot.metadata["consumer"] == "future_optimizer"
+    assert optimization_snapshot.graph_node_records["C0"].bundle_id == "bundle:CA:0"
+    assert optimization_snapshot.graph_edge_records["V0|C0"].path_type == "V-E-C"
     assert framework_snapshot.provenance_records["prov:edge:EA"].source_kind == "graph_edge"
     assert framework_snapshot.resolved_state_records["resolved:bundle:CA:0"].payload_ref == (
         "fragment:linker_center"

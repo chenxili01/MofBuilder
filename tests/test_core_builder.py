@@ -1270,6 +1270,27 @@ def test_snapshot_export_getters_compile_default_role_builder_state():
     assert runtime_snapshot.provenance_records == {}
     assert runtime_snapshot.resolved_state_records == {}
     assert optimization_snapshot.graph_phase == "G"
+    assert list(optimization_snapshot.graph_node_records) == ["V0", "V1"]
+    assert optimization_snapshot.graph_node_records["V0"].role_id == "node:default"
+    assert optimization_snapshot.graph_node_records["V0"].incident_edge_ids == ("V0|V1",)
+    assert optimization_snapshot.graph_node_records["V0"].incident_edge_constraints == (
+        {
+            "edge_id": "V0|V1",
+            "edge_role_id": "edge:default",
+            "slot_index": None,
+            "path_type": None,
+            "endpoint_pattern": (),
+            "bundle_id": None,
+            "bundle_order_index": None,
+            "resolve_mode": None,
+            "is_null_edge": False,
+        },
+    )
+    assert list(optimization_snapshot.graph_edge_records) == ["V0|V1"]
+    assert optimization_snapshot.graph_edge_records["V0|V1"].edge_role_id == "edge:default"
+    assert optimization_snapshot.graph_edge_records["V0|V1"].slot_rules == ()
+    assert optimization_snapshot.graph_edge_records["V0|V1"].resolve_mode is None
+    assert optimization_snapshot.graph_edge_records["V0|V1"].is_null_edge is False
     assert optimization_snapshot.bundle_records == {}
     assert framework_snapshot.graph_phase == "G"
     assert framework_snapshot.bundle_records == {}
@@ -1386,7 +1407,69 @@ def test_snapshot_export_getters_compile_role_aware_builder_runtime_state():
         is True
     )
     assert optimization_snapshot.graph_phase == "sG"
-    assert optimization_snapshot.metadata["phase_bounded"] == "phase_2_export"
+    assert list(optimization_snapshot.graph_node_records) == ["C0", "V0", "V1"]
+    assert optimization_snapshot.graph_node_records["C0"].role_id == "node:CA"
+    assert optimization_snapshot.graph_node_records["C0"].slot_rules == (
+        {"attachment_index": 0, "slot_type": "XA"},
+        {"attachment_index": 1, "slot_type": "XA"},
+    )
+    assert optimization_snapshot.graph_node_records["C0"].bundle_id == "bundle:C0"
+    assert (
+        optimization_snapshot.graph_node_records["C0"].bundle_order_hint[
+            "ordered_attachment_indices"
+        ]
+        == (0, 1)
+    )
+    assert optimization_snapshot.graph_node_records["C0"].incident_edge_role_ids == (
+        "edge:EA",
+        "edge:EA",
+    )
+    assert (
+        optimization_snapshot.graph_node_records["C0"].incident_edge_constraints[0][
+            "path_type"
+        ]
+        == "V-E-C"
+    )
+    assert (
+        optimization_snapshot.graph_node_records["C0"].incident_edge_constraints[0][
+            "bundle_order_index"
+        ]
+        == 0
+    )
+    assert list(optimization_snapshot.graph_edge_records) == [
+        "V0|C0",
+        "V0|V1",
+        "V1|C0",
+    ]
+    assert optimization_snapshot.graph_edge_records["V0|C0"].edge_role_id == "edge:EA"
+    assert (
+        optimization_snapshot.graph_edge_records["V0|C0"].endpoint_role_ids
+        == ("node:VA", "node:CA")
+    )
+    assert optimization_snapshot.graph_edge_records["V0|C0"].endpoint_pattern == (
+        "VA",
+        "EA",
+        "CA",
+    )
+    assert optimization_snapshot.graph_edge_records["V0|C0"].slot_index == {
+        "V0": 0,
+        "C0": 0,
+    }
+    assert optimization_snapshot.graph_edge_records["V0|C0"].bundle_id == "bundle:C0"
+    assert optimization_snapshot.graph_edge_records["V0|C0"].bundle_order_index == 0
+    assert (
+        optimization_snapshot.graph_edge_records["V0|C0"].resolve_mode
+        == "ownership_transfer"
+    )
+    assert optimization_snapshot.graph_edge_records["V0|V1"].edge_role_id == "edge:EB"
+    assert optimization_snapshot.graph_edge_records["V0|V1"].path_type == "V-E-V"
+    assert optimization_snapshot.graph_edge_records["V0|V1"].is_null_edge is True
+    assert (
+        optimization_snapshot.graph_edge_records["V0|V1"].null_payload_model
+        == "duplicated_zero_length_anchors"
+    )
+    assert optimization_snapshot.graph_edge_records["V0|V1"].allows_null_fallback is True
+    assert optimization_snapshot.metadata["phase_bounded"] == "phase_3_semantics"
     assert not hasattr(optimization_snapshot, "provenance_records")
     assert framework_snapshot.graph_phase == "cleaved_eG"
     assert list(framework_snapshot.bundle_records) == ["bundle:C0"]

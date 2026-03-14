@@ -35,6 +35,8 @@ from .runtime_snapshot import (
     BundleRecord,
     EdgeRoleRecord,
     FrameworkInputSnapshot,
+    GraphEdgeSemanticRecord,
+    GraphNodeSemanticRecord,
     NodeRoleRecord,
     NullEdgePolicyRecord,
     OptimizationSemanticSnapshot,
@@ -981,6 +983,222 @@ class MetalOrganicFrameworkBuilder:
     def _get_edge_slot_rules(self, canonical_metadata, role_id):
         return tuple(canonical_metadata.get("slot_rules", {}).get(self._get_role_alias(role_id), ()))
 
+    def _get_semantic_graph(self):
+        if self.sG is not None:
+            return self.sG
+        if getattr(self.net_optimizer, "sG", None) is not None:
+            return self.net_optimizer.sG
+        return self._get_graph_for_role_lookup()
+
+    def _get_graph_edge_lookup_key(self, edge):
+        return tuple(sorted(str(node_name) for node_name in edge))
+
+    def _get_graph_edge_id(self, edge):
+        return "|".join(str(node_name) for node_name in edge)
+
+    def _get_bundle_order_index(self, bundle_id, graph_edge):
+        if bundle_id is None:
+            return None
+        bundle_entry = self.bundle_registry.get(bundle_id)
+        if bundle_entry is None:
+            return None
+        target_key = self._get_graph_edge_lookup_key(graph_edge)
+        for index, bundle_edge in enumerate(bundle_entry.get("edge_list", ())):
+            if self._get_graph_edge_lookup_key(bundle_edge) == target_key:
+                return index
+        return None
+
+    def _build_optimization_graph_node_records(
+        self,
+        canonical_metadata,
+        node_role_records,
+    ):
+        graph = self._get_semantic_graph()
+        if graph is None:
+            return {}
+
+        instruction_lookup = {
+            self._get_graph_edge_lookup_key(instruction["graph_edge"]): instruction
+            for instruction in self.resolve_instructions
+            if len(instruction.get("graph_edge", ())) == 2
+        }
+        records = {}
+
+        for node_name in sorted(graph.nodes(), key=str):
+            node_data = graph.nodes[node_name]
+            role_id = self._normalize_runtime_role_id(
+                node_data.get("node_role_id"),
+                namespace="node",
+            )
+            node_record = node_role_records.get(role_id)
+            bundle_id = f"bundle:{node_name}" if f"bundle:{node_name}" in self.bundle_registry else None
+            bundle_record = self.bundle_registry.get(bundle_id, {})
+            incident_edge_ids = []
+            incident_edge_role_ids = []
+            incident_edge_constraints = []
+
+            for edge in sorted(graph.edges(node_name), key=lambda item: tuple(str(value) for value in item)):
+                edge_data = graph.edges[edge]
+                edge_role_id = self._normalize_runtime_role_id(
+                    edge_data.get("edge_role_id"),
+                    namespace="edge",
+                )
+                instruction = instruction_lookup.get(self._get_graph_edge_lookup_key(edge), {})
+                edge_id = self._get_graph_edge_id(instruction.get("graph_edge", edge))
+                incident_edge_ids.append(edge_id)
+                incident_edge_role_ids.append(edge_role_id)
+                incident_edge_constraints.append(
+                    {
+                        "edge_id": edge_id,
+                        "edge_role_id": edge_role_id,
+                        "slot_index": (
+                            edge_data.get("slot_index", {}).get(node_name)
+                            if isinstance(edge_data.get("slot_index"), dict)
+                            else None
+                        ),
+                        "path_type": instruction.get("path_type"),
+                        "endpoint_pattern": tuple(
+                            self._get_edge_endpoint_pattern(
+                                canonical_metadata,
+                                edge_role_id,
+                                instruction=instruction if instruction else None,
+                            )
+                        ),
+                        "bundle_id": instruction.get("bundle_id"),
+                        "bundle_order_index": self._get_bundle_order_index(
+                            instruction.get("bundle_id"),
+                            instruction.get("graph_edge", edge),
+                        ),
+                        "resolve_mode": instruction.get("resolve_mode"),
+                        "is_null_edge": bool(instruction.get("is_null_edge", False)),
+                    }
+                )
+
+            bundle_order_hint = {}
+            if bundle_id is not None:
+                bundle_order_hint = {
+                    "bundle_id": bundle_id,
+                    "ordered_attachment_indices": tuple(bundle_record.get("ordering", ())),
+                    "attachment_edge_ids": tuple(
+                        self._get_graph_edge_id(edge)
+                        for edge in bundle_record.get("edge_list", ())
+                    ),
+                }
+
+            records[str(node_name)] = GraphNodeSemanticRecord(
+                node_id=str(node_name),
+                role_id=role_id,
+                role_class=self._get_node_role_class(role_id),
+                slot_rules=(
+                    node_record.slot_rules
+                    if node_record is not None
+                    else self._get_node_slot_rules(canonical_metadata, role_id)
+                ),
+                incident_edge_ids=tuple(incident_edge_ids),
+                incident_edge_role_ids=tuple(incident_edge_role_ids),
+                incident_edge_constraints=tuple(incident_edge_constraints),
+                bundle_id=bundle_id,
+                bundle_order_hint=bundle_order_hint,
+                metadata={
+                    "topology_labels": tuple(node_data.get("topology_labels", ())),
+                    "graph_note": node_data.get("note"),
+                },
+            )
+
+        return records
+
+    def _build_optimization_graph_edge_records(
+        self,
+        canonical_metadata,
+        edge_role_records,
+    ):
+        graph = self._get_semantic_graph()
+        if graph is None:
+            return {}
+
+        instruction_lookup = {
+            self._get_graph_edge_lookup_key(instruction["graph_edge"]): instruction
+            for instruction in self.resolve_instructions
+            if len(instruction.get("graph_edge", ())) == 2
+        }
+        records = {}
+
+        for edge in sorted(graph.edges(), key=lambda item: tuple(str(value) for value in item)):
+            edge_data = graph.edges[edge]
+            graph_edge = tuple(str(node_name) for node_name in edge)
+            edge_role_id = self._normalize_runtime_role_id(
+                edge_data.get("edge_role_id"),
+                namespace="edge",
+            )
+            instruction = instruction_lookup.get(self._get_graph_edge_lookup_key(edge), {})
+            edge_record = edge_role_records.get(edge_role_id)
+            endpoint_node_ids = tuple(
+                str(node_name)
+                for node_name in instruction.get("graph_edge", graph_edge)
+            )
+            endpoint_role_ids = tuple(
+                instruction.get("node_role_ids", {}).get(
+                    node_name,
+                    self._normalize_runtime_role_id(
+                        graph.nodes[node_name].get("node_role_id"),
+                        namespace="node",
+                    ),
+                )
+                for node_name in endpoint_node_ids
+            )
+            edge_id = self._get_graph_edge_id(endpoint_node_ids)
+
+            records[edge_id] = GraphEdgeSemanticRecord(
+                edge_id=edge_id,
+                graph_edge=endpoint_node_ids,
+                edge_role_id=edge_role_id,
+                path_type=instruction.get("path_type"),
+                endpoint_node_ids=endpoint_node_ids,
+                endpoint_role_ids=endpoint_role_ids,
+                endpoint_pattern=(
+                    edge_record.endpoint_pattern
+                    if edge_record is not None
+                    else self._get_edge_endpoint_pattern(
+                        canonical_metadata,
+                        edge_role_id,
+                        instruction=instruction if instruction else None,
+                    )
+                ),
+                slot_index=(
+                    dict(edge_data.get("slot_index"))
+                    if isinstance(edge_data.get("slot_index"), dict)
+                    else {}
+                ),
+                slot_rules=(
+                    edge_record.slot_rules
+                    if edge_record is not None
+                    else self._get_edge_slot_rules(canonical_metadata, edge_role_id)
+                ),
+                bundle_id=instruction.get("bundle_id"),
+                bundle_order_index=self._get_bundle_order_index(
+                    instruction.get("bundle_id"),
+                    instruction.get("graph_edge", graph_edge),
+                ),
+                resolve_mode=instruction.get(
+                    "resolve_mode",
+                    edge_record.resolve_mode if edge_record is not None else None,
+                ),
+                is_null_edge=bool(instruction.get("is_null_edge", False)),
+                null_payload_model=instruction.get("null_payload_model"),
+                allows_null_fallback=bool(
+                    instruction.get("allows_unresolved_null_fallback", False)
+                ),
+                metadata={
+                    "edge_kind": instruction.get(
+                        "edge_kind",
+                        edge_record.edge_kind if edge_record is not None else None,
+                    ),
+                    "bundle_owner_role_id": instruction.get("bundle_owner_role_id"),
+                },
+            )
+
+        return records
+
     def _build_null_edge_policy_records(self):
         role_rules = (self.null_edge_rules or {}).get("roles", {})
         default_action = (self.null_edge_rules or {}).get("policy", {}).get("default_action")
@@ -1289,9 +1507,20 @@ class MetalOrganicFrameworkBuilder:
     def get_optimization_semantic_snapshot(self):
         runtime_snapshot = self.get_role_runtime_snapshot()
         graph_phase = self._get_snapshot_graph_phase(("sG", "G"))
+        canonical_metadata = self._get_canonical_role_metadata()
+        graph_node_records = self._build_optimization_graph_node_records(
+            canonical_metadata,
+            runtime_snapshot.node_role_records,
+        )
+        graph_edge_records = self._build_optimization_graph_edge_records(
+            canonical_metadata,
+            runtime_snapshot.edge_role_records,
+        )
         return OptimizationSemanticSnapshot(
             family_name=runtime_snapshot.family_name,
             graph_phase=graph_phase,
+            graph_node_records=graph_node_records,
+            graph_edge_records=graph_edge_records,
             node_role_records=runtime_snapshot.node_role_records,
             edge_role_records=runtime_snapshot.edge_role_records,
             bundle_records=runtime_snapshot.bundle_records,
@@ -1300,7 +1529,7 @@ class MetalOrganicFrameworkBuilder:
             metadata={
                 "builder_owned": True,
                 "derived_from": "RoleRuntimeSnapshot",
-                "phase_bounded": "phase_2_export",
+                "phase_bounded": "phase_3_semantics",
             },
         )
 

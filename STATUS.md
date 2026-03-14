@@ -2,8 +2,8 @@
 
 ## Workflow Status
 
-- Phase: Phase 2
-- Checkpoint: phase-2-snapshot-export-implemented
+- Phase: Phase 3
+- Checkpoint: phase-3-semantics-implemented
 - Status: COMPLETED_PENDING_PLANNER
 - Next step: Planner reviews completion and decides whether to advance
 - Last update: 2026-03-14
@@ -18,7 +18,7 @@ Establish a clean, builder-owned snapshot API that future optimizer/rotation rec
 
 ## Current Focus
 
-Add builder-owned snapshot export/getter methods that compile the Phase 1 snapshot records from existing builder state without changing optimizer behavior, framework behavior, FrameNet graph stamping, or the build pipeline.
+Populate `OptimizationSemanticSnapshot` with the minimum builder-owned semantic contract needed for future node placement logic, including graph role ids, slot rules, incident edge constraints, bundle/order hints, null-edge rules, and resolve modes, without changing optimizer behavior, framework behavior, FrameNet graph stamping, or the build pipeline.
 
 ## Invariants
 

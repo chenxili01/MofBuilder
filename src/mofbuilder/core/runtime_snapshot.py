@@ -165,6 +165,81 @@ class ResolvedStateRecord:
 
 
 @dataclass(frozen=True)
+class GraphNodeSemanticRecord:
+    node_id: str
+    role_id: str
+    role_class: str
+    slot_rules: Tuple[FrozenMapping, ...] = ()
+    incident_edge_ids: Tuple[str, ...] = ()
+    incident_edge_role_ids: Tuple[str, ...] = ()
+    incident_edge_constraints: Tuple[FrozenMapping, ...] = ()
+    bundle_id: Optional[str] = None
+    bundle_order_hint: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
+    metadata: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "slot_rules", _freeze_tuple(self.slot_rules))
+        object.__setattr__(self, "incident_edge_ids", _freeze_tuple(self.incident_edge_ids))
+        object.__setattr__(
+            self,
+            "incident_edge_role_ids",
+            _freeze_tuple(self.incident_edge_role_ids),
+        )
+        object.__setattr__(
+            self,
+            "incident_edge_constraints",
+            _freeze_tuple(self.incident_edge_constraints),
+        )
+        object.__setattr__(
+            self,
+            "bundle_order_hint",
+            _freeze_mapping(self.bundle_order_hint),
+        )
+        object.__setattr__(self, "metadata", _freeze_mapping(self.metadata))
+
+
+@dataclass(frozen=True)
+class GraphEdgeSemanticRecord:
+    edge_id: str
+    graph_edge: Tuple[str, ...]
+    edge_role_id: str
+    path_type: Optional[str] = None
+    endpoint_node_ids: Tuple[str, ...] = ()
+    endpoint_role_ids: Tuple[str, ...] = ()
+    endpoint_pattern: Tuple[str, ...] = ()
+    slot_index: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
+    slot_rules: Tuple[FrozenMapping, ...] = ()
+    bundle_id: Optional[str] = None
+    bundle_order_index: Optional[int] = None
+    resolve_mode: Optional[str] = None
+    is_null_edge: bool = False
+    null_payload_model: Optional[str] = None
+    allows_null_fallback: bool = False
+    metadata: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "graph_edge", _freeze_tuple(self.graph_edge))
+        object.__setattr__(
+            self,
+            "endpoint_node_ids",
+            _freeze_tuple(self.endpoint_node_ids),
+        )
+        object.__setattr__(
+            self,
+            "endpoint_role_ids",
+            _freeze_tuple(self.endpoint_role_ids),
+        )
+        object.__setattr__(
+            self,
+            "endpoint_pattern",
+            _freeze_tuple(self.endpoint_pattern),
+        )
+        object.__setattr__(self, "slot_index", _freeze_mapping(self.slot_index))
+        object.__setattr__(self, "slot_rules", _freeze_tuple(self.slot_rules))
+        object.__setattr__(self, "metadata", _freeze_mapping(self.metadata))
+
+
+@dataclass(frozen=True)
 class RoleRuntimeSnapshot:
     family_name: str
     graph_phase: str
@@ -216,6 +291,8 @@ class RoleRuntimeSnapshot:
 class OptimizationSemanticSnapshot:
     family_name: str
     graph_phase: str
+    graph_node_records: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
+    graph_edge_records: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
     node_role_records: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
     edge_role_records: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
     bundle_records: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
@@ -224,6 +301,16 @@ class OptimizationSemanticSnapshot:
     metadata: FrozenMapping = field(default_factory=lambda: MappingProxyType({}))
 
     def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "graph_node_records",
+            _freeze_mapping(self.graph_node_records),
+        )
+        object.__setattr__(
+            self,
+            "graph_edge_records",
+            _freeze_mapping(self.graph_edge_records),
+        )
         object.__setattr__(
             self,
             "node_role_records",
